@@ -7,6 +7,7 @@ import {GraphQLError} from 'graphql/error'
 import {GraphQLURL} from 'graphql-custom-types'
 
 import {Vote} from './schema'
+import {getPlayerById, getGoalSelectionCyclesForChapter} from '../../helpers'
 
 import r from '../../../../db/connect'
 
@@ -20,30 +21,20 @@ export default {
       goals: {type: new GraphQLList(GraphQLURL)},
     },
     async resolve(source, {playerId, goals}, {rootValue: {currentUser}}) {
-      // only players can vote
+      // only signed-in users can vote
       if (!currentUser) {
         throw new GraphQLError('You are not authorized to do that.')
       }
 
       // if no playerId was passed, assume the currentUser
       try {
-        const player = await r.table('players')
-          .get(playerId ? playerId : currentUser.id)
-          .merge({chapter: r.table('chapters').get(r.row('chapterId'))})
-          .without('chapterId')
-          .run()
+        const player = await getPlayerById(playerId ? playerId : currentUser.id)
         if (!player) {
           throw new GraphQLError('You are not a player in the game.')
         }
 
-        // find the cycle to which this vote belongs, which is the cycle that
-        // has the earliest `startTimestamp` of all of the ones that correspond
-        // to this chapter and are in the `GOAL_SELECTION` state
         const now = r.now()
-        const cycles = await r.table('cycles')
-          .getAll([player.chapter.id, 'GOAL_SELECTION'], {index: 'chapterIdAndState'})
-          .orderBy('startTimestamp')
-          .run()
+        const cycles = await getGoalSelectionCyclesForChapter(player.chapter.id)
         if (!cycles.length > 0) {
           throw new GraphQLError(`No cycles for ${player.chapter.name} chapter (${player.chapter.id}) in GOAL_SELECTION state.`)
         }

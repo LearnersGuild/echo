@@ -1,0 +1,16 @@
+.rightAction {
+  min-width: 2rem;
+}
+
+/* if the goal name is too long, truncate it */
+.goalTitle {
+  font-size: 1.6rem;
+  display: block;
+  flex-grow: 1;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+.voted {
+  background-color: #ccd3ff;
+}

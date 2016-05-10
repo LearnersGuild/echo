@@ -5,6 +5,8 @@ import {reducer as formReducer} from 'redux-form'
 
 import {auth} from './auth'
 import {chapters} from './chapters'
+import {cycles} from './cycles'
+import {cycleVotingResults} from './cycleVotingResults'
 import {players} from './players'
 import {errors} from './errors'
 
@@ -13,6 +15,8 @@ const rootReducer = combineReducers({
   form: formReducer,
   auth,
   chapters,
+  cycles,
+  cycleVotingResults,
   players,
   errors,
 })

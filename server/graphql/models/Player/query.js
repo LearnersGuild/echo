@@ -5,6 +5,7 @@ import {GraphQLList} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
 
 import {Player} from './schema'
+import {getPlayerById} from '../../helpers'
 
 import r from '../../../../db/connect'
 
@@ -22,11 +23,7 @@ export default {
           throw new GraphQLError('You are not authorized to do that.')
         }
 
-        const result = await r.table('players')
-          .get(args.id)
-          .merge({chapter: r.table('chapters').get(r.row('chapterId'))})
-          .without('chapterId')
-          .run()
+        const result = await getPlayerById(args.id)
         if (result) {
           return result
         }

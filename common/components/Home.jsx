@@ -17,7 +17,7 @@ export default class Home extends Component {
     const listItems = []
     if (showListChapters) {
       listItems.push(
-        <Link to="/chapters">
+        <Link key={listItems.length} to="/chapters">
           <ListItem
             caption="Chapters"
             leftIcon="view_list"
@@ -27,7 +27,7 @@ export default class Home extends Component {
     }
     if (showListPlayers) {
       listItems.push(
-        <Link to="/players">
+        <Link key={listItems.length} to="/players">
           <ListItem
             caption="Players"
             leftIcon="people"
@@ -36,13 +36,13 @@ export default class Home extends Component {
       )
     }
     listItems.push(
-      <a target="_blank" href={graphiqlUrl}>
+      <a key={listItems.length} target="_blank" href={graphiqlUrl}>
         <ListItem
           caption="Explore API"
           leftIcon="flash_on"
           />
       </a>,
-      <a href={signOutUrl}>
+      <a key={listItems.length + 1} href={signOutUrl}>
         <ListItem
           caption="Sign Out"
           leftIcon="subdirectory_arrow_left"

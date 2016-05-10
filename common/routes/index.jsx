@@ -12,6 +12,7 @@ import Home from '../containers/Home'
 import ChapterForm from '../containers/ChapterForm'
 import ChapterList from '../containers/ChapterList'
 import PlayerList from '../containers/PlayerList'
+import CycleVotingResults from '../containers/CycleVotingResults'
 
 import {userCan} from '../util'
 
@@ -54,6 +55,7 @@ const routes = store => {
           <Route path="/chapters/new" component={userCanVisit('createChapter', store)(userIsAuthenticated(ChapterForm))}/>
           <Route path="/chapters/:id" component={userCanVisit('updateChapter', store)(userIsAuthenticated(ChapterForm))}/>
           <Route path="/players" component={userCanVisit('listPlayers', store)(userIsAuthenticated(PlayerList))}/>
+          <Route path="/cycle-voting-results" component={userCanVisit('viewCycleVotingResults', store)(userIsAuthenticated(CycleVotingResults))}/>
         </Route>
       </Route>
     </Route>

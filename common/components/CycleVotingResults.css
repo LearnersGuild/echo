@@ -1,0 +1,23 @@
+.link {
+  text-decoration: none;
+  color: #212121;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.progress {
+  font-size: 1.2rem;
+  width: 100%;
+}
+
+.percentage {
+  color: #3f51b5;
+}
+
+.open {
+  color: green;
+}
+
+.closed {
+  color: red;
+}

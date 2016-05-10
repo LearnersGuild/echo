@@ -16,6 +16,23 @@ function newChapters() {
     })
 }
 
+function newOrUpdatedVotes() {
+  const newOrUpdatedVoteQueue = getQueue('newOrUpdatedVote')
+
+  // votes without githubIssue information are either new or updated
+  r.table('votes').changes()
+    .filter(r.row('new_val')('goals').filter(goal => goal.hasFields(['githubIssue']).not()).count().gt(0))
+    .then(cursor => {
+      cursor.each((err, {new_val: vote}) => {
+        if (!err) {
+          // console.log('adding vote to vote queue:', vote)
+          newOrUpdatedVoteQueue.add(vote)
+        }
+      })
+    })
+}
+
 export default function configureChangeFeeds() {
   newChapters()
+  newOrUpdatedVotes()
 }

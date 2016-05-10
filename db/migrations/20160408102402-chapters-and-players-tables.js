@@ -2,6 +2,7 @@
 
 var config = require('../config')
 var createOptions = config.createOptions
+config()
 
 exports.up = function up(r, conn) {
   return Promise.all([
