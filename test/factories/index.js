@@ -22,14 +22,12 @@ playerGoalRankDefine(factory)
 
 import r from '../../db/connect'
 
-test.before.serial('Clear Database', async () => {
+async function truncateDBTables() {
   const tables = await r.tableList()
   const tablesToTruncate = tables.filter(t => !t.startsWith('_'))
   await Promise.all(tablesToTruncate.map(t => r.table(t).delete().run()))
-})
+}
 
-test.afterEach.serial.always('Factory Cleanup', async () => {
-  await factory.cleanup()
-})
+test.beforeEach.serial(truncateDBTables)
 
 export default factory

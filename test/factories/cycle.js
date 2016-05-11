@@ -1,13 +1,14 @@
 import faker from 'faker'
+import r from '../../db/connect'
 
 import {CYCLE_STATES} from '../../common/validations/cycle'
 
 const now = new Date()
 
 export default function define(factory) {
-  factory.define('cycle', null, {
+  factory.define('cycle', r.table('cycles'), {
     id: cb => cb(null, faker.random.uuid()),
-    chapter: factory.assoc('chapter'),
+    chapterId: factory.assoc('chapter', 'id'),
     cycleNumber: faker.random.number({min: 1, max: 40}),
     startTimestamp: cb => cb(null, now),
     state: cb => cb(null, faker.random.arrayElement(CYCLE_STATES)),
