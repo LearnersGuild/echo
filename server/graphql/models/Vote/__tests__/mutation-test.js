@@ -1,5 +1,3 @@
-import test from 'ava'
-
 import fields from '../mutation'
 import r from '../../../../../db/connect'
 import factory from '../../../../../test/factories'
@@ -8,7 +6,7 @@ import {runGraphQLQuery} from '../../../../../test/graphql-helpers'
 
 class VoteForGoalsSpec extends Spec {
 
-  async given(t) {
+  async given() {
     const state = this.state
 
     state.chapter = await factory.create('chapter')
@@ -21,7 +19,7 @@ class VoteForGoalsSpec extends Spec {
     ]
   }
 
-  async when(t) {
+  async when() {
     const {voteGoals, player} = this.state
 
     return await runGraphQLQuery(

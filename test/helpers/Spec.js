@@ -5,12 +5,12 @@ import test from 'ava'
  */
 export default class Spec {
 
-  static run(state={}) {
+  static run(state = {}) {
     const spec = new this(state)
     spec.run()
   }
 
-  constructor(state={}) {
+  constructor(state = {}) {
     this.state = state
   }
 
@@ -26,7 +26,7 @@ export default class Spec {
     return this.constructor.name
   }
 
-  given(t) { /* override in subclass to create the state for the test */ }
-  when(t) { /* override in subclass to preform the action being tested */ }
-  expect(t) { /* override in subclass to make assertions on the resulting state */ }
+  given() { /* override in subclass to create the state for the test */ }
+  when() { /* override in subclass to preform the action being tested */ }
+  expect() { /* override in subclass to make assertions on the resulting state */ }
 }
