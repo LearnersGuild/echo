@@ -1,12 +1,13 @@
 import faker from 'faker'
+import r from '../../db/connect'
 
 const now = new Date()
 
 export default function define(factory) {
-  factory.define('vote', null, {
+  factory.define('vote', r.table('votes'), {
     id: cb => cb(null, faker.random.uuid()),
-    player: factory.assoc('player'),
-    cycle: factory.assoc('cycle'),
+    playerId: factory.assoc('player', 'id'),
+    cycleId: factory.assoc('cycle', 'id'),
     goals: cb => cb(null, [{
       url: 'https://github.com/GuildCraftsTesting/web-development-js-testing/issues/50',
       title: 'omnis nam beatae',
