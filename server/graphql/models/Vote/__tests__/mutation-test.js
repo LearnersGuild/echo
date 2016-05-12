@@ -26,12 +26,11 @@ class VoteForGoalsSpec extends Spec {
       `{
         voteForGoals(
           goals: ["${voteGoals[0].url}", "${voteGoals[1].url}"],
-          playerId: "${player.id}"
         )
         { id }
       }`,
       fields,
-      {currentUser: {roles: ['player']}},
+      {currentUser: {id: player.id, roles: ['player']}},
     )
   }
 
@@ -69,5 +68,28 @@ class VoteForGoalsWhenVoteExistsSpec extends VoteForGoalsSpec {
     )
   }
 }
-
 VoteForGoalsWhenVoteExistsSpec.run({r})
+
+class VoteForGoalsForAnotherPlayerSpec extends VoteForGoalsSpec {
+  async given() {
+    await super.given()
+    this.state.currentUser = factory.create('player')
+  }
+
+  async when() {
+    const {voteGoals, player, currentUser} = this.state
+
+    return await runGraphQLQuery(
+      `{
+        voteForGoals(
+          goals: ["${voteGoals[0].url}", "${voteGoals[1].url}"],
+          playerId: "${player.id}",
+        )
+        { id }
+      }`,
+      fields,
+      {currentUser: {id: currentUser.id, roles: ['player']}},
+    )
+  }
+}
+VoteForGoalsForAnotherPlayerSpec.run({r})
