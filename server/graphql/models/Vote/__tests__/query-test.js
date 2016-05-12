@@ -1,5 +1,4 @@
 import fields from '../query'
-import r from '../../../../../db/connect'
 import factory from '../../../../../test/factories'
 import Spec from '../../../../../test/helpers/Spec'
 import {runGraphQLQuery} from '../../../../../test/graphql-helpers'
@@ -7,10 +6,11 @@ import {runGraphQLQuery} from '../../../../../test/graphql-helpers'
 class GetCycleVotingResultsSpec extends Spec {
 
   async given() {
+    const self = this
     const state = this.state
 
     state.chapter = await factory.create('chapter')
-    state.cycle = await factory.create('cycle', {chapterId: state.chapter.id, state: 'GOAL_SELECTION'})
+    state.cycle = await factory.create('cycle', {chapterId: state.chapter.id})
     state.eligiblePlayers = await factory.createMany('player', {chapterId: state.chapter.id}, 3)
 
     state.firstPlaceGoalNumber = 1
@@ -29,12 +29,16 @@ class GetCycleVotingResultsSpec extends Spec {
           playerId: state.eligiblePlayers[i].id,
           cycleId: state.cycle.id,
           goals: [
-            {url: `${state.chapter.goalRepositoryURL}/issues/${goal1}`},
-            {url: `${state.chapter.goalRepositoryURL}/issues/${goal2}`},
+            {url: self.goalURLFor(goal1)},
+            {url: self.goalURLFor(goal2)},
           ],
         })
       })
     )
+  }
+
+  goalURLFor(goalId) {
+    return `${this.state.chapter.goalRepositoryURL}/issues/${goalId}`
   }
 
   async when() {
@@ -76,5 +80,25 @@ class GetCycleVotingResultsSpec extends Spec {
   }
 }
 
-GetCycleVotingResultsSpec.run({r})
+GetCycleVotingResultsSpec.run()
+
+class GetCycleVotingResultsWithIneligableVotersSpec extends GetCycleVotingResultsSpec {
+  async given(t) {
+    await super.given(t)
+    const chapter = await factory.create('chapter')
+    const cycle = await factory.create('cycle', {chapterId: chapter.id})
+    const player = await factory.create('player', {chapterId: chapter.id})
+
+    factory.create('vote', {
+      playerId: player.id,
+      cycleId: cycle.id,
+      goals: [
+        {url: this.goalURLFor(this.state.thirdPlaceGoalNumber)},
+        {url: this.goalURLFor(this.state.secondPlaceGoalNumber)},
+      ],
+    })
+  }
+}
+
+GetCycleVotingResultsWithIneligableVotersSpec.run()
 
