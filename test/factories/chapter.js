@@ -1,10 +1,11 @@
 import faker from 'faker'
+import r from '../../db/connect'
 
 const VALID_TIMEZONES = ['America/Los_Angeles', 'America/Chicago', 'America/New_York']
 const now = new Date()
 
 export default function define(factory) {
-  factory.define('chapter', null, {
+  factory.define('chapter', r.table('chapters'), {
     id: cb => cb(null, faker.random.uuid()),
     name: cb => cb(null, faker.address.city()),
     /* eslint-disable babel/object-shorthand, brace-style */

@@ -39,11 +39,17 @@ Be sure you've read the [instructions for contributing](./CONTRIBUTING.md).
 
         $ IDM_RETHINKDB_URL=rethinkdb://localhost:28015/idm_development npm run dev:testdata
 
-8. Run the server:
+
+8. Create the test database
+
+        $ RETHINKDB_URL=rethinkdb://localhost:28015/game_test npm run db:create
+        $ RETHINKDB_URL=rethinkdb://localhost:28015/game_test npm run db:migrate -- up
+
+9. Run the server:
 
         $ npm start
 
-9. Visit the server in your browser:
+10. Visit the server in your browser:
 
         $ open http://game.learnersguild.dev
 
