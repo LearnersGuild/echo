@@ -3,52 +3,73 @@ import test from 'ava'
 import fields from '../mutation'
 import r from '../../../../../db/connect'
 import factory from '../../../../../test/factories'
+import Spec from '../../../../../test/helpers/Spec'
 import {runGraphQLQuery} from '../../../../../test/graphql-helpers'
 
-async function testVoteForGoals(t, args = {}, cb) {
-  const chapter = await factory.create('chapter')
-  const cycle = await factory.create('cycle', {chapterId: chapter.id, state: 'GOAL_SELECTION'})
-  const player = await factory.create('player', {chapterId: chapter.id})
+class VoteForGoalsSpec extends Spec {
 
-  const initialVote = args.withExistingVote && await factory.create('vote', {playerId: player.id, cycleId: cycle.id})
+  async given(t) {
+    const state = this.state
 
-  const voteGoals = [
-    {url: `${chapter.goalRepositoryURL}/issues/1`},
-    {url: `${chapter.goalRepositoryURL}/issues/2`},
-  ]
+    state.chapter = await factory.create('chapter')
+    state.cycle = await factory.create('cycle', {chapterId: state.chapter.id, state: 'GOAL_SELECTION'})
+    state.player = await factory.create('player', {chapterId: state.chapter.id})
 
-  const results = await runGraphQLQuery(
-    `{
-       voteForGoals(
-         goals: ["${voteGoals[0].url}", "${voteGoals[1].url}"],
-         playerId: "${player.id}"
-       )
-       { id }
-     }`,
-    fields,
-    {currentUser: {roles: ['player']}},
-  )
-  const votes = await r.table('votes').run()
-  const vote = votes[0]
+    state.voteGoals = [
+      {url: `${state.chapter.goalRepositoryURL}/issues/1`},
+      {url: `${state.chapter.goalRepositoryURL}/issues/2`},
+    ]
+  }
 
-  t.is(vote.cycleId, cycle.id)
-  t.is(vote.playerId, player.id)
-  t.deepEqual(vote.goals, voteGoals)
+  async when(t) {
+    const {voteGoals, player} = this.state
 
-  t.deepEqual(results.data.voteForGoals.id, vote.id)
+    return await runGraphQLQuery(
+      `{
+        voteForGoals(
+          goals: ["${voteGoals[0].url}", "${voteGoals[1].url}"],
+          playerId: "${player.id}"
+        )
+        { id }
+      }`,
+      fields,
+      {currentUser: {roles: ['player']}},
+    )
+  }
 
-  if (cb) {
-    cb(vote, initialVote)
+  async expect(t) {
+    const state = this.state
+
+    state.votes = await state.r.table('votes').run()
+    state.vote = state.votes[0]
+
+    t.is(state.vote.cycleId, state.cycle.id)
+    t.is(state.vote.playerId, state.player.id)
+    t.deepEqual(state.vote.goals, state.voteGoals)
+
+    t.deepEqual(this.result.data.voteForGoals.id, state.vote.id)
   }
 }
 
-test.serial('voteForGoals first vote creates a vote', t => {
-  testVoteForGoals(t)
-})
+VoteForGoalsSpec.run({r})
 
-test.serial('voteForGoals when vote exists updates vote', t => {
-  testVoteForGoals(t, {withExistingVote: true}, (vote, initialVote) => {
-    t.is(vote.id, initialVote.id)
-    t.not(vote.updatedAt.getTime(), initialVote.updatedAt.getTime())
-  })
-})
+class VoteForGoalsWhenVoteExistsSpec extends VoteForGoalsSpec {
+  async given(t) {
+    await super.given(t)
+    this.state.initialVote = await factory.create('vote', {
+      playerId: this.state.player.id,
+      cycleId: this.state.cycle.id
+    })
+  }
+
+  async expect(t) {
+    await super.expect(t)
+    t.is(this.state.vote.id, this.state.initialVote.id)
+    t.not(
+      this.state.vote.updatedAt.getTime(),
+      this.state.initialVote.updatedAt.getTime()
+    )
+  }
+}
+
+VoteForGoalsWhenVoteExistsSpec.run({r})
