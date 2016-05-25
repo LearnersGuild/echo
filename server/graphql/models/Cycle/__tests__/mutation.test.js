@@ -5,56 +5,20 @@
 import fields from '../mutation'
 import r from '../../../../../db/connect'
 import factory from '../../../../../test/factories'
-import {GOAL_SELECTION, PRACTICE, RETROSPECTIVE} from '../../../../../common/models/cycle'
+import {CYCLE_STATES, PRACTICE, RETROSPECTIVE} from '../../../../../common/models/cycle'
 import {withDBCleanup, runGraphQLMutation} from '../../../../../test/helpers'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
 
-  describe('launchCycle', function () {
-    before(async function () {
-      this.user = await factory.build('user', {roles: ['moderator']})
-      this.launchCycle = function (id) {
-        return runGraphQLMutation(
-          `mutation($id: ID) { launchCycle(id: $id) { id state } }`,
-          fields,
-          {id},
-          {currentUser: this.user},
-        )
-      }
-    })
-
-    beforeEach(async function () {
-      this.moderator = await factory.create('moderator', {id: this.user.id})
-      this.cycle = await factory.create('cycle', {chapterId: this.moderator.chapterId, state: GOAL_SELECTION})
-    })
-
-    it('launches the cycle associated with the moderator if no cycle is specified', function () {
-      return this.launchCycle()
-        .then(() => {
-          const launchedCycle = r.table('cycles').get(this.cycle.id).run()
-          return expect(launchedCycle).to.eventually.have.property('state', PRACTICE)
-        })
-    })
-
-    it('launches the specified cycle if id given', async function () {
-      const cycle = await factory.create('cycle', {state: GOAL_SELECTION})
-      return this.launchCycle(cycle.id)
-        .then(() => {
-          const launchedCycle = r.table('cycles').get(cycle.id).run()
-          return expect(launchedCycle).to.eventually.have.property('state', PRACTICE)
-        })
-    })
-  })
-
   describe('updateCycleState', function () {
     before(async function () {
       this.user = await factory.build('user', {roles: ['moderator']})
-      this.updateCycleState = function (id, state) {
+      this.updateCycleState = function (state) {
         return runGraphQLMutation(
-          `mutation($id: ID, $state: String!) { updateCycleState(id: $id, state: $state) { id state } }`,
+          `mutation($state: String!) { updateCycleState(state: $state) { id state } }`,
           fields,
-          {id, state},
+          {state},
           {currentUser: this.user},
         )
       }
@@ -66,26 +30,21 @@ describe(testContext(__filename), function () {
     })
 
     it('affects the cycle associated with the moderator if no cycle is specified', function () {
-      return this.updateCycleState(null, RETROSPECTIVE)
-        .then(() => {
-          const updatedCycle = r.table('cycles').get(this.cycle.id).run()
-          return expect(updatedCycle).to.eventually.have.property('state', RETROSPECTIVE)
-        })
+      return this.updateCycleState(RETROSPECTIVE)
+        .then(() => r.table('cycles').get(this.cycle.id).run())
+        .then(updatedCycle => expect(updatedCycle).to.have.property('state', RETROSPECTIVE))
     })
 
-    it('affects the specified cycle if id given', async function () {
-      const cycle = await factory.create('cycle', {state: PRACTICE})
-      return this.updateCycleState(cycle.id, RETROSPECTIVE)
-        .then(() => {
-          const updatedCycle = r.table('cycles').get(cycle.id).run()
-          return expect(updatedCycle).to.eventually.have.property('state', RETROSPECTIVE)
-        })
-    })
-
-    it('returns an error if you try to change into anything but the "next" state', function () {
-      expect(function () {
-        return this.updateCycleState(this.cycle.id, GOAL_SELECTION)
-      }).to.throw(Error)
+    CYCLE_STATES.filter(state => state !== RETROSPECTIVE).forEach(state => {
+      it('returns an error if you try to change into anything but the "next" state', async function () {
+        let errorThrown
+        try {
+          await this.updateCycleState(state)
+        } catch (e) {
+          errorThrown = e
+        }
+        expect(errorThrown).to.exist
+      })
     })
   })
 })
