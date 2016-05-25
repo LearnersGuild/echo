@@ -6,7 +6,7 @@ import {GraphQLError} from 'graphql/error'
 
 import {GraphQLDateTime} from 'graphql-custom-types'
 
-import {CYCLE_STATES, PRACTICE} from '../../../../common/models/cycle'
+import {CYCLE_STATES} from '../../../../common/models/cycle'
 import {getModeratorById, getCyclesInStateForChapter} from '../../helpers'
 import {Cycle, CycleState} from './schema'
 import {userCan} from '../../../../common/util'
@@ -71,55 +71,40 @@ export default {
       }
     }
   },
-  launchCycle: {
-    type: Cycle,
-    args: {
-      id: {type: GraphQLID},
-    },
-    resolve(source, args, {rootValue: {currentUser}}) {
-      return changeCycleState(args.id, PRACTICE, currentUser)
-    }
-  },
   updateCycleState: {
     type: Cycle,
     args: {
-      id: {type: GraphQLID},
-      state: {type: GraphQLString},
+      state: {type: new GraphQLNonNull(GraphQLString)},
     },
     resolve(source, args, {rootValue: {currentUser}}) {
-      return changeCycleState(args.id, args.state, currentUser)
+      return changeCycleState(args.state, currentUser)
     }
   }
 }
 
-async function changeCycleState(cycleId, newState, currentUser) {
-  const validOriginState = CYCLE_STATES[Math.max(CYCLE_STATES.indexOf(newState) - 1, 0)]
-
+async function changeCycleState(newState, currentUser) {
+  const newStateIndex = CYCLE_STATES.indexOf(newState)
+  if (typeof newStateIndex === 'undefined') {
+    throw new GraphQLError(`Invalid cycle state given.`)
+  }
+  if (newStateIndex === 0) {
+    throw new GraphQLError(`You cannot change the cycle state back to ${newState}`)
+  }
   if (!userCan(currentUser, 'updateCycle')) {
     throw new GraphQLError('You are not authorized to do that.')
   }
+
   try {
-    // if the user is not a moderator, the cycle ID is required
-    let cycle
-    if (cycleId) {
-      cycle = await r.table('cycles').get(cycleId).run()
-      if (!cycle) {
-        throw new GraphQLError(`No cycle with that id: [${cycleId}]`)
-      }
-      if (cycle.state !== validOriginState) {
-        throw new GraphQLError(`You cannot move to the ${newState} state from ${cycle.state}`)
-      }
-    } else {
-      const moderator = await getModeratorById(currentUser.id)
-      if (!moderator) {
-        throw new GraphQLError('You are not a moderator for the game.')
-      }
-      const cycles = await getCyclesInStateForChapter(moderator.chapter.id, validOriginState)
-      if (!cycles.length > 0) {
-        throw new GraphQLError(`No cycles for ${moderator.chapter.name} chapter (${moderator.chapter.id}) in ${validOriginState} state.`)
-      }
-      cycle = cycles[0]
+    const moderator = await getModeratorById(currentUser.id)
+    if (!moderator) {
+      throw new GraphQLError('You are not a moderator for the game.')
     }
+    const validOriginState = CYCLE_STATES[newStateIndex - 1]
+    const cycles = await getCyclesInStateForChapter(moderator.chapter.id, validOriginState)
+    if (!cycles.length > 0) {
+      throw new GraphQLError(`No cycles for ${moderator.chapter.name} chapter (${moderator.chapter.id}) in ${validOriginState} state.`)
+    }
+    const cycle = cycles[0]
 
     const savedCycle = await r.table('cycles')
       .get(cycle.id)
