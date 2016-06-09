@@ -1,13 +1,5 @@
 import r from '../../db/connect'
 
-// const sleep3 = () => new Promise(resolved => {
-//   console.log('sleep start')
-//   return setTimeout(() => {
-//     console.log('sleep stopped')
-//     resolved()
-//   }, 3000)
-// })
-
 async function truncateDBTables() {
   const start = new Date().getTime()
   const tables = await r.tableList()
@@ -30,7 +22,7 @@ async function truncateDBTables() {
 /* eslint-disable prefer-arrow-callback */
 export function withDBCleanup() {
   beforeEach(function () {
-    this.timeout(10000)
+    // this.timeout(10000)
     return truncateDBTables()
   })
 }
