@@ -2,7 +2,7 @@ import url from 'url'
 import jwt from 'jsonwebtoken'
 import fetch from 'isomorphic-fetch'
 import getBullQueue from 'bull'
-import {graphQLErrorHander} from '../../common/util/getGraphQLFetcher'
+import {graphQLErrorHandler} from '../../common/util/getGraphQLFetcher'
 
 const JWT_ISSUER = 'learnersguild.org'
 
@@ -43,7 +43,7 @@ export function graphQLFetcher(baseURL, lgJWT = serverToServerJWT()) {
         }
         return resp.json()
       })
-      .then(graphQLErrorHander)
+      .then(graphQLErrorHandler)
   }
 }
 

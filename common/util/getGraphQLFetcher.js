@@ -36,12 +36,12 @@ export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASEURL,
         return resp.json()
       })
       .then(graphQLResponse => throwErrors ?
-                                graphQLErrorHander(graphQLResponse) :
-                                graphQLResponse)
+        graphQLErrorHandler(graphQLResponse) :
+        graphQLResponse)
   }
 }
 
-export function graphQLErrorHander(graphQLResponse) {
+export function graphQLErrorHandler(graphQLResponse) {
   if (graphQLResponse.errors && graphQLResponse.errors.length) {
     // throw the first error
     throw new Error(graphQLResponse.errors[0].message)
