@@ -35,9 +35,9 @@ export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASEURL,
         }
         return resp.json()
       })
-      .then(graphQLResponse => (throwErrors ?
+      .then(graphQLResponse => throwErrors ?
         graphQLErrorHandler(graphQLResponse) :
-        graphQLResponse))
+        graphQLResponse)
   }
 }
 

@@ -29,16 +29,19 @@ export default {
           await getCycleById(args.cycleId, {mergeChapter: true}) :
           await getPlayerById(currentUser.id)
             .default(customQueryError('You are not a player in the game.'))
-            .then(player => getLatestCycleForChapter(player.chapterId), {mergeChapter: true})
+            .then(player => getLatestCycleForChapter(player.chapterId, {mergeChapter: true}))
 
         const numEligiblePlayers = await r.table('players')
           .getAll(cycle.chapter.id, {index: 'chapterId'})
           .count()
           .run()
+
         const validVotesQuery = r.table('votes')
           .getAll(cycle.id, {index: 'cycleId'})
           .hasFields('goals')
+
         const numVotes = await validVotesQuery.count().run()
+
         const candidateGoals = await validVotesQuery
           .group(r.row('goals').pluck('url', 'title'), {multi: true})
           .ungroup()
