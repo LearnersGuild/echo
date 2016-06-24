@@ -3,7 +3,7 @@ import {graphql} from 'graphql'
 import randomMemorableName from '../../common/util/randomMemorableName'
 import r from '../../db/connect'
 import rootSchema from '../graphql/rootSchema'
-import {graphQLErrorHander} from '../../common/util/getGraphQLFetcher'
+import {graphQLErrorHandler} from '../../common/util/getGraphQLFetcher'
 
 export async function formProjectTeams(cycleId) {
   // TODO: this doesn't consider existing projects that span multiple cycles
@@ -48,7 +48,7 @@ function getCycleVotingResults(cycleId) {
   `
 
   return graphql(rootSchema, query, {currentUser: true}, {cycleId})
-    .then(graphQLErrorHander)
+    .then(graphQLErrorHandler)
     .then(results => results.data.getCycleVotingResults)
 }
 
