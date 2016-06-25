@@ -37,6 +37,7 @@ export default {
         if (!cycles.length > 0) {
           throw new GraphQLError(`No cycles for ${player.chapter.name} chapter (${player.chapter.id}) in ${GOAL_SELECTION} state.`)
         }
+
         const cycle = cycles[0]
 
         // see if the player has already voted to determine whether to insert
@@ -44,6 +45,7 @@ export default {
         const playerVotes = await r.table('votes')
           .getAll([player.id, cycle.id], {index: 'playerIdAndCycleId'})
           .run()
+
         const playerVote = playerVotes.length > 0 ?
           Object.assign({}, playerVotes[0], {notYetValidatedGoalDescriptors: goalDescriptors, pendingValidation: true}) : {
             playerId: player.id,

@@ -53,14 +53,14 @@ export default {
 
 async function changeCycleState(newState, currentUser) {
   const newStateIndex = CYCLE_STATES.indexOf(newState)
+  if (!userCan(currentUser, 'updateCycle')) {
+    throw new GraphQLError('You are not authorized to do that.')
+  }
   if (typeof newStateIndex === 'undefined') {
     throw new GraphQLError('Invalid cycle state given.')
   }
   if (newStateIndex === 0) {
     throw new GraphQLError(`You cannot change the cycle state back to ${newState}`)
-  }
-  if (!userCan(currentUser, 'updateCycle')) {
-    throw new GraphQLError('You are not authorized to do that.')
   }
 
   try {

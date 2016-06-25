@@ -3,21 +3,13 @@ import url from 'url'
 import fetch from 'isomorphic-fetch'
 import raven from 'raven'
 import {graphql} from 'graphql'
-import socketCluster from 'socketcluster-client'
 
 import r from '../../db/connect'
-import {getQueue} from '../util'
+import {getQueue, getSocket} from '../util'
 
 import rootSchema from '../graphql/rootSchema'
 
 const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
-
-const scHostname = process.env.NODE_ENV === 'development' ? 'game.learnersguild.dev' : 'game.learnersguild.org'
-const socket = socketCluster.connect({hostname: scHostname})
-socket.on('connect', () => console.log('... socket connected'))
-socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))
-socket.on('connectAbort', () => null)
-socket.on('error', error => console.warn(error.message))
 
 // returns a Promise, resolves to null if not valid
 function fetchGoalInfo(goalRepositoryURL, goalDescriptor) {
@@ -103,16 +95,18 @@ function formatGoals(prefix, goals) {
 }
 
 function validateGoalsAndNotifyUser(vote, goals) {
+  const socket = getSocket()
+
   const invalidGoalDescriptors = vote.notYetValidatedGoalDescriptors
     .filter((goalDescriptor, i) => goals[i] === null)
   if (invalidGoalDescriptors.length) {
-    socket.publish(`notifyUser-${vote.playerId}`, `Invalid goal(s): ${invalidGoalDescriptors.join(', ')}`)
+    socket.publish(`notifyUser-${vote.playerId}`, `The following goals are invalid: ${invalidGoalDescriptors.join(', ')}`)
     if (vote.goals) {
       socket.publish(`notifyUser-${vote.playerId}`, formatGoals('Falling back to previous vote', vote.goals))
     }
     return false
   }
-  socket.publish(`notifyUser-${vote.playerId}`, formatGoals('You voted for', goals))
+  socket.publish(`notifyUser-${vote.playerId}`, formatGoals('Votes submitted for', goals))
   return true
 }
 
@@ -161,6 +155,7 @@ query($cycleId: ID) {
 }
   `
   const args = {cycleId: vote.cycleId}
+  const socket = getSocket()
 
   graphql(rootSchema, query, {currentUser: true}, args)
     .then(graphQLResult => {
