@@ -1,113 +1,312 @@
-import {graphql} from 'graphql'
+/**
+ * Forms project teams of players eligible for assignment in a cycle's
+ * chapter based on votes submitted for goals at the start of the cycle.
+ *
+ * TODO: account for the fact that players might be engaged in multi-cycle
+ * projects. For now, we assume that every project spans one cycle only.
+ * Therefore, at the time that a new cycle is launched and project teams
+ * are being formed, every active player in the chapter is assumed to be
+ * available for assignment.
+ */
 
+import {getCycleById} from '../db/cycle'
+import {findPlayersForChapter} from '../db/player'
+import {findVotesForCycle} from '../db/vote'
+import {insertProjects, findProjects} from '../db/project'
 import randomMemorableName from '../../common/util/randomMemorableName'
-import r from '../../db/connect'
-import rootSchema from '../graphql/rootSchema'
-import {graphQLErrorHandler} from '../../common/util/getGraphQLFetcher'
+
+const MIN_ADVANCED_PLAYER_ECC_DIFF = 50
+const DEFAULT_RECOMMENDED_TEAM_SIZE = 5
 
 export async function formProjectTeams(cycleId) {
-  // TODO: this doesn't consider existing projects that span multiple cycles
-  try {
-    const votingResults = await getCycleVotingResults(cycleId)
-    const chapterPlayers = await r.table('players').getAll(votingResults.cycle.chapter.id, {index: 'chapterId'}).run()
+  const cycle = await getCycleById(cycleId)
 
-    const projects = buildProjects(votingResults, chapterPlayers)
+  const [cyclePlayers, cycleVotes] = await Promise.all([
+    findPlayersForChapter(cycle.chapterId, {active: true}),
 
-    return r.table('projects').insert(projects).run().then(() => projects)
-  } catch (e) {
-    // TODO: log this?
-    throw (e)
+    findVotesForCycle(cycleId),
+  ])
+
+  if (!cyclePlayers.length) {
+    throw new Error('Cannot form project teams; no eligible players found')
   }
+
+  const players = _mapPlayersById(cyclePlayers)
+  const playerVotes = _mapVotesByPlayerId(cycleVotes)
+  const votedGoals = _extractGoalsFromVotes(cycleVotes)
+
+  // form goal groups [{ goal, teams }, { goal, teams }, ...]
+  const goalGroups = _formGoalGroups(players, playerVotes, votedGoals)
+
+  // form projects for each goal/team pair
+  const projects = await _formProjectsForGoalGroups(cycle.chapterId, cycleId, goalGroups)
+
+  return insertProjects(projects)
 }
 
-function getCycleVotingResults(cycleId) {
-  const query = `
-    query($cycleId: ID!) {
-      getCycleVotingResults(cycleId: $cycleId) {
-        id
-        cycle {
-          id
-          chapter {
-            id
-            name
-            channelName
-          }
-        }
-        candidateGoals {
-          goal {
-            url
-            title
-          }
-          playerGoalRanks {
-            playerId
-            goalRank
-          }
-        }
+export function getTeamSizes(recTeamSize, numPlayers) {
+  const numPerfectTeams = Math.floor(numPlayers / recTeamSize)
+  const numRemainingPlayers = numPlayers % recTeamSize
+
+  const teamSizes = new Array(numPerfectTeams).fill(recTeamSize)
+
+  if (numRemainingPlayers) {
+    if (numRemainingPlayers === (recTeamSize - 1)) {
+      // team sizes can be rec size - 1
+      teamSizes.push(numRemainingPlayers)
+    } else if (numRemainingPlayers <= numPerfectTeams) {
+      // teams can be rec size + 1, so add remaining spots to existing teams
+      for (let i = 0; i < numRemainingPlayers; i++) {
+        teamSizes[i] += 1
       }
+    } else if ((numRemainingPlayers + numPerfectTeams) >= recTeamSize) {
+      // teams can be rec size - 1, so create a team with remaining
+      // spots and fill with spots taken from other teams
+      let newTeamSize = numRemainingPlayers
+      for (let j = 0; newTeamSize < (recTeamSize - 1); j++) {
+        teamSizes[j] -= 1
+        newTeamSize += 1
+      }
+      teamSizes.push(newTeamSize)
+    } else {
+      // TODO: properly handle situation where it's not possible
+      // to put every player on a team of an acceptable size
+      teamSizes.push(numRemainingPlayers)
     }
-  `
+  }
 
-  return graphql(rootSchema, query, {currentUser: true}, {cycleId})
-    .then(graphQLErrorHandler)
-    .then(results => results.data.getCycleVotingResults)
+  return teamSizes
 }
 
-function buildProjects(votingResults, chapterPlayers) {
-  const teamSizes = getTeamSizes(chapterPlayers.length)
-  const candidateGoals = votingResults.candidateGoals.slice(0, teamSizes.length)
+export function generateProjectName() {
+  const projectName = randomMemorableName()
 
-  // TODO:
-  //   * prefer to assign voters to goals they voted for
-  //   * use very popular goals for more than one project
-
-  const now = new Date()
-  return candidateGoals.map((candidateGoal, i) => {
-    const teamPlayers = chapterPlayers.splice(0, teamSizes[i])
-    return {
-      goal: {
-        url: candidateGoal.goal.url,
-        title: candidateGoal.goal.title,
-      },
-      // TODO: add unique index on this name
-      name: randomMemorableName(),
-      chapterId: votingResults.cycle.chapter.id,
-      cycleTeams: {
-        [votingResults.cycle.id]: {playerIds: teamPlayers.map(p => p.id)}
-      },
-      createdAt: now,
-      updatedAt: now,
-    }
+  return findProjects({filter: {name: projectName}}).run().then(existingProjectsWithName => {
+    return existingProjectsWithName.length ? generateProjectName() : projectName
   })
 }
 
-function getTeamSizes(playerCount, target = 4) {
-  // Note: this algorithm is imperfect and may
-  // not work if the initial target isn't 4
-  const absoluteMinumum = 3
-  const min = target - 1
+function _formGoalGroups(players, playerVotes, votedGoals) {
+  // identify advanced and non-advanced players
+  const avgPlayerECC = _getAverageECCForPlayers(players)
+  const minAdvancedPlayerECC = avgPlayerECC + MIN_ADVANCED_PLAYER_ECC_DIFF
 
-  const div = Math.floor(playerCount / target)
-  const remainder = playerCount % target
+  const advancedPlayers = new Map()
+  const nonAdvancedPlayers = new Map()
 
-  if (remainder === 0) {
-    return Array.from({length: div}, () => target)
+  players.forEach(player => {
+    if (parseInt(player.ecc, 10) >= minAdvancedPlayerECC) {
+      advancedPlayers.set(player.id, player)
+    } else {
+      nonAdvancedPlayers.set(player.id, player)
+    }
+  })
+
+  if (!advancedPlayers.size) {
+    throw new Error('Cannot form project teams; not enough advanced players found')
   }
 
-  if (remainder >= min) {
-    const perfectTeams = Array.from({length: div}, () => target)
-    return perfectTeams.concat(remainder)
+  // the number of goals that can be worked on is constrained by an upper
+  // limit equal to the number of advanced players available to be assigned
+  // to the teams working on each goal (every team must have an advanced player)
+  const maxNumGoalGroups = advancedPlayers.size
+
+  const tmpGoalGroups = new Map()
+  const assignedPlayers = new Map()
+
+  // group the non-advanced players who have voted by their most preferred
+  // goal and remove the votes for these goals from each player's collection
+  playerVotes.forEach((playerVote, playerId) => {
+    const player = nonAdvancedPlayers.get(playerId)
+
+    if (player) {
+      const nextPreferredGoal = playerVote.goals.shift()
+
+      let goalGroup = nextPreferredGoal ? tmpGoalGroups.get(nextPreferredGoal.url) : null
+      if (!goalGroup) {
+        goalGroup = {
+          goal: votedGoals.get(nextPreferredGoal.url),
+          players: [],
+          advancedPlayers: [],
+        }
+        tmpGoalGroups.set(nextPreferredGoal.url, goalGroup)
+      }
+
+      goalGroup.players.push(player)
+      assignedPlayers.set(playerId, player)
+    }
+  })
+
+  while (tmpGoalGroups.size > maxNumGoalGroups) {
+    // reassign each of the players in the lowest-ranked goal group
+    // to their next preferred goal group, if any.
+    const lowestRankedGoalGroup = _rankGoalGroups(tmpGoalGroups).pop()
+    tmpGoalGroups.delete(lowestRankedGoalGroup.goal.url)
+
+    lowestRankedGoalGroup.players.forEach(player => {
+      const remainingVotes = playerVotes.get(player.id)
+      const nextPreferredGoal = remainingVotes ? remainingVotes.goals.shift() : null
+
+      if (nextPreferredGoal) {
+        let nextGoalGroup = tmpGoalGroups.get(nextPreferredGoal.url)
+        if (!nextGoalGroup) {
+          nextGoalGroup = {
+            goal: votedGoals.get(nextPreferredGoal.url),
+            players: [],
+            advancedPlayers: [],
+          }
+          tmpGoalGroups.set(nextPreferredGoal.url, nextGoalGroup)
+        }
+        nextGoalGroup.players.push(player)
+      } else {
+        // player's vote could not be accommodated. ultimately,
+        // they'll be treated as though they didn't submit a vote.
+        // TODO: capture somehow that this happened, potentially to
+        // be used in the future in an attempt to avoid repeatedly
+        // and disproportionally ignoring a player's vote.
+        assignedPlayers.delete(player.id)
+      }
+    })
   }
 
-  if (remainder < min && div >= remainder) {
-    const perfectTeams = Array.from({length: div - remainder}, () => target)
-    const largerTeams = Array.from({length: remainder}, () => target + 1)
-    return perfectTeams.concat(...largerTeams)
+  // identify remaining unassigned players and place them into goal groups
+  const rankedGoalGroups = _rankGoalGroups(tmpGoalGroups)
+
+  const remainingPlayers = []
+  nonAdvancedPlayers.forEach(player => {
+    if (!assignedPlayers.has(player.id)) {
+      remainingPlayers.push(player)
+    }
+  })
+
+  let i = 0
+  while (remainingPlayers.length) {
+    rankedGoalGroups[i].players.push(remainingPlayers.pop())
+    i = (i + 1) % rankedGoalGroups.length
   }
 
-  if (target > absoluteMinumum) {
-    return getTeamSizes(playerCount, target - 1)
+  // assign advanced players to goal groups. while advanced players can
+  // be on more than one team, all teams must be in the same goal group.
+  const rankedAdvancedPlayers = _rankPlayers(advancedPlayers)
+
+  let j = 0
+  let currentGoalGroup = null
+  let currentAdvancedPlayer = null
+  while (rankedAdvancedPlayers.length) {
+    currentGoalGroup = rankedGoalGroups[j]
+    currentAdvancedPlayer = rankedAdvancedPlayers.shift()
+    currentGoalGroup.advancedPlayers.push(currentAdvancedPlayer)
+    j = (j + 1) % rankedGoalGroups.length
   }
 
-  throw new Error('I cannot figure what the team sizes should be!')
+  // arrange all goal group players into teams
+  const finalGoalGroups = rankedGoalGroups.map(goalGroup => {
+    const {goal, players, advancedPlayers} = goalGroup
+    const recTeamSize = goal.teamSize || DEFAULT_RECOMMENDED_TEAM_SIZE
+
+    const teamSizes = getTeamSizes((recTeamSize - 1), players.length) // leave room for 1 advanced player
+    const rankedPlayers = _rankPlayers(players)
+    const rankedAdvancedPlayers = _rankPlayers(advancedPlayers)
+
+    // fill teams with advanced + non-advanced players
+    let advancedPlayerIndex = 0
+    const teams = teamSizes.map(teamSize => {
+      // TODO: what if there are more advanced players than there are teams?
+      const team = rankedPlayers.splice(0, teamSize)
+      team.push(rankedAdvancedPlayers[advancedPlayerIndex])
+      advancedPlayerIndex = (advancedPlayerIndex + 1) % rankedAdvancedPlayers.length
+      return team
+    })
+
+    return {goal, teams}
+  })
+
+  return finalGoalGroups
 }
-export const _forTesting_ = {getTeamSizes}
+
+function _extractGoalsFromVotes(votes) {
+  return votes.reduce((result, vote) => {
+    if (Array.isArray(vote.goals)) {
+      vote.goals.forEach(goal => {
+        if (goal.url && !result.has(goal.url)) {
+          result.set(goal.url, goal)
+        }
+      })
+    }
+    return result
+  }, new Map())
+}
+
+function _mapPlayersById(players) {
+  return players.reduce((result, player) => {
+    result.set(player.id, player)
+    return result
+  }, new Map())
+}
+
+function _mapVotesByPlayerId(votes) {
+  return votes.reduce((result, vote) => {
+    result.set(vote.playerId, {
+      goals: Array.isArray(vote.goals) ? vote.goals.slice(0) : []
+    })
+    return result
+  }, new Map())
+}
+
+function _rankGoalGroups(goalGroups) {
+  if (goalGroups instanceof Map) {
+    goalGroups = Array.from(goalGroups, v => v[1])
+  }
+
+  return goalGroups.sort((goalGroupA, goalGroupB) => {
+    // order by number of players in group (desc)
+    return goalGroupB.players.length - goalGroupA.players.length
+  })
+}
+
+function _rankPlayers(players) {
+  if (players instanceof Map) {
+    players = Array.from(players, v => v[1])
+  }
+
+  return players.sort((playerA, playerB) => {
+    // order by ECC (desc)
+    const aECC = playerA.ecc || 0
+    const bECC = playerB.ecc || 0
+    return bECC - aECC
+  })
+}
+
+function _getAverageECCForPlayers(players) {
+  if (!players.length) {
+    return 0 // avoid divide by 0
+  }
+
+  return (players.reduce((sumECC, player) => {
+    return sumECC + (player.ecc || 0)
+  }, 0) / players.length)
+}
+
+function _formProjectsForGoalGroups(chapterId, cycleId, goalGroups) {
+  const projects = []
+
+  goalGroups.forEach(goalGroup => {
+    goalGroup.teams.forEach(teamPlayers => {
+      projects.push(
+        generateProjectName().then(name => {
+          return {
+            chapterId,
+            name,
+            goal: goalGroup.goal,
+            cycleHistory: [{
+              cycleId,
+              playerIds: teamPlayers.map(p => p.id)
+            }],
+          }
+        })
+      )
+    })
+  })
+
+  return Promise.all(projects)
+}

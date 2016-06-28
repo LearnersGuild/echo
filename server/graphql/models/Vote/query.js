@@ -19,7 +19,7 @@ export default {
       cycleId: {type: GraphQLID}
     },
     async resolve(source, args, {rootValue: {currentUser}}) {
-      // only signed-in users can vote
+      // only signed-in users can view results
       if (!currentUser) {
         throw new GraphQLError('You are not authorized to do that.')
       }

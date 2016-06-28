@@ -67,25 +67,19 @@ export const VALID_ROLES = Object.keys(CAPABILITY_ROLES).map(capability => {
 }, [])
 
 export default function userCan(currentUser, capability) {
-  // console.log('user', currentUser.name, 'can', capability, '?')
   if (!currentUser) {
-    // console.log(false)
     return false
   }
   const {roles} = currentUser
   if (!roles) {
-    // console.log(false)
     return false
   }
   if (!CAPABILITY_ROLES[capability]) {
-    // console.log(false)
     throw new Error(`No such capability '${capability}'`)
   }
   const permitted = roles.filter(role => (
     CAPABILITY_ROLES[capability].indexOf(role) >= 0
   )).length > 0
 
-  // console.log(permitted)
   return permitted
 }
-

@@ -11,6 +11,8 @@ import rootSchema from '../graphql/rootSchema'
 
 const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
+const TEAM_SIZE_LABEL_PREFIX = 'team-size-'
+
 // returns a Promise, resolves to null if not valid
 function fetchGoalInfo(goalRepositoryURL, goalDescriptor) {
   const issueURL = githubIssueURL(goalRepositoryURL, goalDescriptor)
@@ -42,6 +44,7 @@ function fetchGoalInfo(goalRepositoryURL, goalDescriptor) {
     .then(githubIssue => (githubIssue ? {
       url: githubIssue.html_url,
       title: githubIssue.title,
+      teamSize: getTeamSizeFromLabels(githubIssue.labels),
       githubIssue,
     } : null))
 }
@@ -92,6 +95,11 @@ function formatGoals(prefix, goals) {
     return `[(${goalIssueNum}) ${goal.title}](${goal.url}) [${rank} choice]`
   })
   return `${prefix}:\n - ${goalLinks.join('\n- ')}`
+}
+
+function getTeamSizeFromLabels(githubIssueLabels) {
+  const teamSizeLabel = (githubIssueLabels || []).find(label => (label || '').toLowerCase().startsWith(TEAM_SIZE_LABEL_PREFIX))
+  return teamSizeLabel ? parseInt(teamSizeLabel.split(TEAM_SIZE_LABEL_PREFIX)[1], 10) : null
 }
 
 function validateGoalsAndNotifyUser(vote, goals) {

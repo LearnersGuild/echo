@@ -89,12 +89,21 @@ function createCycle(chapter, startTimestamp) {
 
 function createPlayersOrModerators(table, users, chapter) {
   console.info(`creating ${users.length} ${table} in chapter ${chapter.id} ...`)
-  const usersToInsert = users.map(user => ({
-    id: user.id,
-    chapterId: chapter.id,
-    createdAt: r.now(),
-    updatedAt: r.now(),
-  }))
+  const usersToInsert = users.map(user => {
+    const data = {
+      id: user.id,
+      chapterId: chapter.id,
+      createdAt: r.now(),
+      updatedAt: r.now(),
+    }
+
+    if (table === 'players') {
+      data.active = true
+      data.ecc = 0
+    }
+
+    return data
+  })
   return r.table(table)
     .insert(usersToInsert, {returnChanges: 'always', conflict: 'replace'}) // overwrite old records
     .run()

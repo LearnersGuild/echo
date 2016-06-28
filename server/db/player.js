@@ -34,3 +34,16 @@ export function reassignPlayersToChapter(playerIds, chapterId) {
       return []
     })
 }
+
+export function findPlayers(options) {
+  const players = r.table('players')
+  return options && options.filter ?
+    players.filter(options.filter) :
+    players
+}
+
+export function findPlayersForChapter(chapterId, filters) {
+  return r.table('players')
+    .getAll(chapterId, {index: 'chapterId'})
+    .filter(filters || {})
+}

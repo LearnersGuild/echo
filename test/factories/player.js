@@ -8,6 +8,8 @@ export default function define(factory) {
     id: cb => cb(null, faker.random.uuid()),
     chapterId: factory.assoc('chapter', 'id'),
     chapterHistory: [],
+    ecc: 0,
+    active: true,
     createdAt: cb => cb(null, now),
     updatedAt: cb => cb(null, now),
   })

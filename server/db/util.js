@@ -5,7 +5,7 @@ export function updateInTable(record, table, options = {}) {
   return table
       .get(recordWithTimestamps.id)
       .update(recordWithTimestamps, options)
-      .then(result => checkForErrors(result))
+      .then(result => checkForWriteErrors(result))
 }
 
 export function updateAllInTable(records, table, options = {}) {
@@ -21,7 +21,7 @@ export function insertIntoTable(record, table, options = {}) {
 export function insertAllIntoTable(records, table, options = {}) {
   const recordsWithTimestamps = records.map(record => includeCreateAndUpdateTimestamps(record))
   return table.insert(recordsWithTimestamps, options)
-    .then(result => checkForErrors(result))
+    .then(result => checkForWriteErrors(result))
 }
 
 export function replaceInTable(record, table, options = {}) {
@@ -44,10 +44,9 @@ function includeCreateAndUpdateTimestamps(record) {
   }, includeUpdateTimestamp(record))
 }
 
-function checkForErrors(result) {
+function checkForWriteErrors(result) {
   if (result.errors > 0) {
     throw new Error(result.first_error)
   }
   return result
 }
-

@@ -1,18 +1,26 @@
 import r from '../../db/connect'
-import {customQueryError} from '../../server/db/errors'
+import {customQueryError} from './errors'
+import {insertAllIntoTable} from './util'
 
-export const projectsTable = r.table('projects')
+const table = r.table('projects')
 
 export function getProjectById(id) {
-  return projectsTable.get(id)
+  return table.get(id)
 }
 
 export function getProjectsForChapter(chapterId) {
-  return projectsTable.getAll(chapterId, {index: 'chapterId'})
+  return table.getAll(chapterId, {index: 'chapterId'})
 }
 
-export function findProjects(filter) {
-  return projectsTable.filter(filter)
+export function findProjects(options) {
+  const projects = table
+  return options && options.filter ?
+    projects.filter(options.filter) :
+    projects
+}
+
+export function insertProjects(projects) {
+  return insertAllIntoTable(projects, r.table('projects'))
 }
 
 export function findProjectByPlayerIdAndCycleId(playerId, cycleId) {

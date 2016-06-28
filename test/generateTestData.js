@@ -20,7 +20,12 @@ function createPlayers(users, chapters) {
   }, {})
 
   const overwriteObjs = users.map(user => {
-    return {id: user.id, chapterId: chapterMap[user.inviteCode].id}
+    return {
+      id: user.id,
+      chapterId: chapterMap[user.inviteCode].id,
+      active: true,
+      ecc: 0,
+    }
   })
 
   return factory.createMany('player', overwriteObjs, overwriteObjs.length)
