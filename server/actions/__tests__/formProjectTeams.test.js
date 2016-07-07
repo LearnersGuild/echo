@@ -140,7 +140,7 @@ async function _setup(options = {}) {
 }
 
 function _generatePlayers(data, numPlayers) {
-  return factory.createMany('player', new Array(numPlayers).fill(data))
+  return factory.createMany('player', data, numPlayers)
 }
 
 function _generateVotes(cycleId, players) {
@@ -173,22 +173,20 @@ function _generateVotes(cycleId, players) {
 
 function _extractGoalsFromProjects(projects) {
   const goals = projects.reduce((result, project) => {
-    result[project.goal.url] = project.goal
+    result.set(project.goal.url, project.goal)
     return result
-  }, {})
+  }, new Map())
 
-  return Object.keys(goals).map(key => goals[key])
+  return Array.from(goals.values())
 }
 
 function _extractPlayerIdsFromProjects(cycleId, projects) {
   const playerIds = projects.reduce((result, project) => {
     project.cycleHistory
       .find(projectCycle => projectCycle.cycleId === cycleId)
-      .playerIds.forEach(playerId => {
-        result[playerId] = playerId
-      })
+      .playerIds.forEach(playerId => result.set(playerId, playerId))
     return result
-  }, {})
+  }, new Map())
 
-  return Object.keys(playerIds).map(key => playerIds[key])
+  return Array.from(playerIds.values())
 }

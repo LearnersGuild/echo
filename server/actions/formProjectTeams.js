@@ -88,7 +88,7 @@ export function getTeamSizes(recTeamSize, numPlayers) {
 export function generateProjectName() {
   const projectName = randomMemorableName()
 
-  return findProjects({filter8: {name: projectName}}).run().then(existingProjectsWithName => {
+  return findProjects({filter: {name: projectName}}).run().then(existingProjectsWithName => {
     return existingProjectsWithName.length ? generateProjectName() : projectName
   })
 }
@@ -250,7 +250,7 @@ function _mapVotesByPlayerId(votes) {
 
 function _rankGoalGroups(goalGroups) {
   if (goalGroups instanceof Map) {
-    goalGroups = Array.from(goalGroups, v => v[1])
+    goalGroups = Array.from(goalGroups.values())
   }
   return goalGroups.sort((goalGroupA, goalGroupB) => {
     // order by number of players in group (desc)
@@ -260,7 +260,7 @@ function _rankGoalGroups(goalGroups) {
 
 function _rankPlayers(players) {
   if (players instanceof Map) {
-    players = Array.from(players, v => v[1])
+    players = Array.from(players.values())
   }
   return players.sort((playerA, playerB) => {
     // order by ECC (desc)
