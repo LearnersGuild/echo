@@ -1,5 +1,5 @@
 /**
- * Forms project teams of players eligible for assignment in a cycle's
+ * Forms projects for teams of players eligible for assignment in a cycle's
  * chapter based on votes submitted for goals at the start of the cycle.
  *
  * TODO: account for the fact that players might be engaged in multi-cycle
@@ -18,7 +18,7 @@ import randomMemorableName from '../../common/util/randomMemorableName'
 const MIN_ADVANCED_PLAYER_ECC_DIFF = 50
 const DEFAULT_RECOMMENDED_TEAM_SIZE = 5
 
-export async function formProjectTeams(cycleId) {
+export async function formProjects(cycleId) {
   const cycle = await getCycleById(cycleId)
 
   const [cyclePlayers, cycleVotes] = await Promise.all([
@@ -29,6 +29,10 @@ export async function formProjectTeams(cycleId) {
 
   if (!cyclePlayers.length) {
     throw new Error('Cannot form project teams; no eligible players found')
+  }
+
+  if (!cycleVotes.length) {
+    throw new Error('Cannot form project teams; no votes found')
   }
 
   const players = _mapPlayersById(cyclePlayers)
@@ -52,16 +56,19 @@ export function getTeamSizes(recTeamSize, numPlayers) {
 
   if (numRemainingPlayers) {
     if (numRemainingPlayers === (recTeamSize - 1)) {
-      // team sizes can be rec size - 1
+      // team sizes can be rec size - 1, so just make a final team out of
+      // the remaining spots.
       teamSizes.push(numRemainingPlayers)
     } else if (numRemainingPlayers <= numPerfectTeams) {
-      // teams can be rec size + 1, so add remaining spots to existing teams
+      // teams can be rec size + 1, and there are few enough remaining spots that
+      // we can add each of them to an existing (previously "perfect-sized") team.
       for (let i = 0; i < numRemainingPlayers; i++) {
         teamSizes[i] += 1
       }
-    } else if ((numRemainingPlayers + numPerfectTeams) >= recTeamSize) {
-      // teams can be rec size - 1, so create a team with remaining
-      // spots and fill with spots taken from other teams
+    } else if (((recTeamSize - 1) - numRemainingPlayers) <= numPerfectTeams) {
+      // teams can be rec size - 1, and there are enough "perfect-sized" teams
+      // that we can take 1 spot from some of them and add those to the leftover
+      // spots to make 1 more team.
       let newTeamSize = numRemainingPlayers
       for (let j = 0; newTeamSize < (recTeamSize - 1); j++) {
         teamSizes[j] -= 1
@@ -81,7 +88,7 @@ export function getTeamSizes(recTeamSize, numPlayers) {
 export function generateProjectName() {
   const projectName = randomMemorableName()
 
-  return findProjects({filter: {name: projectName}}).run().then(existingProjectsWithName => {
+  return findProjects({filter8: {name: projectName}}).run().then(existingProjectsWithName => {
     return existingProjectsWithName.length ? generateProjectName() : projectName
   })
 }
@@ -109,98 +116,86 @@ function _formGoalGroups(players, playerVotes, votedGoals) {
   // the number of goals that can be worked on is constrained by an upper
   // limit equal to the number of advanced players available to be assigned
   // to the teams working on each goal (every team must have an advanced player)
-  const maxNumGoalGroups = advancedPlayers.size
+  const maxNumGoalGroups = Math.min(advancedPlayers.size, votedGoals.size)
 
   const tmpGoalGroups = new Map()
   const assignedPlayers = new Map()
 
-  // group the non-advanced players who have voted by their most preferred
-  // goal and remove the votes for these goals from each player's collection
-  playerVotes.forEach((playerVote, playerId) => {
-    const player = nonAdvancedPlayers.get(playerId)
-
-    if (player) {
-      const nextPreferredGoal = playerVote.goals.shift()
-
-      let goalGroup = nextPreferredGoal ? tmpGoalGroups.get(nextPreferredGoal.url) : null
-      if (!goalGroup) {
-        goalGroup = {
-          goal: votedGoals.get(nextPreferredGoal.url),
-          players: [],
-          advancedPlayers: [],
-        }
-        tmpGoalGroups.set(nextPreferredGoal.url, goalGroup)
-      }
-
-      goalGroup.players.push(player)
-      assignedPlayers.set(playerId, player)
+  do {
+    if (tmpGoalGroups.size && (tmpGoalGroups.size > maxNumGoalGroups)) {
+      // too many goal groups, so remove the one ranked lowest (least popular).
+      // we'll attempt to reassign the players in this group to their next
+      // most-preferred goal below.
+      const lowestRankedGoalGroup = _rankGoalGroups(tmpGoalGroups).pop()
+      lowestRankedGoalGroup.players.forEach(player => assignedPlayers.delete(player.id))
+      tmpGoalGroups.delete(lowestRankedGoalGroup.goal.url)
     }
-  })
 
-  while (tmpGoalGroups.size > maxNumGoalGroups) {
-    // reassign each of the players in the lowest-ranked goal group
-    // to their next preferred goal group, if any.
-    const lowestRankedGoalGroup = _rankGoalGroups(tmpGoalGroups).pop()
-    tmpGoalGroups.delete(lowestRankedGoalGroup.goal.url)
+    // group the non-advanced players who have voted by their most preferred
+    // goal and remove the votes for these goals from each player's collection
+    playerVotes.forEach((playerVote, playerId) => {
+      const player = nonAdvancedPlayers.get(playerId)
 
-    lowestRankedGoalGroup.players.forEach(player => {
-      const remainingVotes = playerVotes.get(player.id)
-      const nextPreferredGoal = remainingVotes ? remainingVotes.goals.shift() : null
+      // skip vote handling if player is advanced or already assigned to a group
+      if (player && !assignedPlayers.has(player.id)) {
+        // remove the player's vote to prevent duplicate processing
+        const nextPreferredGoal = playerVote.goals.shift()
 
-      if (nextPreferredGoal) {
-        let nextGoalGroup = tmpGoalGroups.get(nextPreferredGoal.url)
-        if (!nextGoalGroup) {
-          nextGoalGroup = {
-            goal: votedGoals.get(nextPreferredGoal.url),
-            players: [],
-            advancedPlayers: [],
+        if (nextPreferredGoal) {
+          let nextGoalGroup = tmpGoalGroups.get(nextPreferredGoal.url)
+
+          // add to goal groups if doesn't already exist
+          if (!nextGoalGroup) {
+            nextGoalGroup = {
+              goal: votedGoals.get(nextPreferredGoal.url),
+              players: [],
+              advancedPlayers: [],
+            }
+            tmpGoalGroups.set(nextPreferredGoal.url, nextGoalGroup)
           }
-          tmpGoalGroups.set(nextPreferredGoal.url, nextGoalGroup)
+
+          nextGoalGroup.players.push(player)
+          assignedPlayers.set(playerId, player)
+        } else {
+          // the player's vote could not be accommodated. ultimately,
+          // they'll be treated as though they didn't submit a vote.
+          // TODO: capture somehow that this happened, potentially to
+          // be used in the future in an attempt to avoid repeatedly
+          // and disproportionally ignoring a player's vote.
+          assignedPlayers.delete(player.id)
         }
-        nextGoalGroup.players.push(player)
-      } else {
-        // player's vote could not be accommodated. ultimately,
-        // they'll be treated as though they didn't submit a vote.
-        // TODO: capture somehow that this happened, potentially to
-        // be used in the future in an attempt to avoid repeatedly
-        // and disproportionally ignoring a player's vote.
-        assignedPlayers.delete(player.id)
       }
     })
-  }
+  } while (tmpGoalGroups.size > maxNumGoalGroups)
 
   // identify remaining unassigned players and place them into goal groups
-  const rankedGoalGroups = _rankGoalGroups(tmpGoalGroups)
-
-  const remainingPlayers = []
+  const remainingNonAdvancedPlayers = []
   nonAdvancedPlayers.forEach(player => {
     if (!assignedPlayers.has(player.id)) {
-      remainingPlayers.push(player)
+      remainingNonAdvancedPlayers.push(player)
     }
   })
 
+  const rankedGoalGroups = _rankGoalGroups(tmpGoalGroups)
+  const rankedNonAdvancedPlayers = _rankPlayers(remainingNonAdvancedPlayers)
+  const rankedAdvancedPlayers = _rankPlayers(advancedPlayers)
+
+  // assign remaining non-advanced players to goal groups
   let i = 0
-  while (remainingPlayers.length) {
-    rankedGoalGroups[i].players.push(remainingPlayers.pop())
+  while (rankedNonAdvancedPlayers.length) {
+    rankedGoalGroups[i].players.push(rankedNonAdvancedPlayers.shift())
     i = (i + 1) % rankedGoalGroups.length
   }
 
-  // assign advanced players to goal groups. while advanced players can
-  // be on more than one team, all teams must be in the same goal group.
-  const rankedAdvancedPlayers = _rankPlayers(advancedPlayers)
-
+  // assign advanced players to goal groups
   let j = 0
-  let currentGoalGroup = null
-  let currentAdvancedPlayer = null
   while (rankedAdvancedPlayers.length) {
-    currentGoalGroup = rankedGoalGroups[j]
-    currentAdvancedPlayer = rankedAdvancedPlayers.shift()
-    currentGoalGroup.advancedPlayers.push(currentAdvancedPlayer)
+    rankedGoalGroups[j].advancedPlayers.push(rankedAdvancedPlayers.shift())
     j = (j + 1) % rankedGoalGroups.length
   }
 
   // arrange all goal group players into teams
-  const finalGoalGroups = rankedGoalGroups.map(goalGroup => {
+  const finalGoalGroups = _rankGoalGroups(tmpGoalGroups).map(goalGroup => {
     const {goal, players, advancedPlayers} = goalGroup
     const recTeamSize = goal.teamSize || DEFAULT_RECOMMENDED_TEAM_SIZE
 
@@ -257,7 +252,6 @@ function _rankGoalGroups(goalGroups) {
   if (goalGroups instanceof Map) {
     goalGroups = Array.from(goalGroups, v => v[1])
   }
-
   return goalGroups.sort((goalGroupA, goalGroupB) => {
     // order by number of players in group (desc)
     return goalGroupB.players.length - goalGroupA.players.length
@@ -268,7 +262,6 @@ function _rankPlayers(players) {
   if (players instanceof Map) {
     players = Array.from(players, v => v[1])
   }
-
   return players.sort((playerA, playerB) => {
     // order by ECC (desc)
     const aECC = playerA.ecc || 0
@@ -281,7 +274,6 @@ function _getAverageECCForPlayers(players) {
   if (!players.length) {
     return 0 // avoid divide by 0
   }
-
   return (players.reduce((sumECC, player) => {
     return sumECC + (player.ecc || 0)
   }, 0) / players.length)
