@@ -10,10 +10,26 @@ import {GOAL_SELECTION} from '../../../common/models/cycle'
 
 import {formProjects, getTeamSizes, generateProjectName} from '../formProjectTeams'
 
-const POPULAR_ISSUES = {ONE: 101, TWO: 102}
+const POPULAR_ISSUES = {ONE: 101, TWO: 102, THREE: 103, FOUR: 104}
 const UNPOPULAR_ISSUES = {ONE: 201, TWO: 202, THREE: 203, FOUR: 204, FIVE: 205, SIX: 206}
 const ADVANCED_PLAYER_ECC = 500
 const DEFAULT_RECOMMENDED_TEAM_SIZE = 5
+
+const FOUR_VOTES_WITH_FOUR_POPULAR = [
+  [POPULAR_ISSUES.ONE, POPULAR_ISSUES.TWO],
+  [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.ONE],
+  [POPULAR_ISSUES.THREE, UNPOPULAR_ISSUES.TWO],
+  [POPULAR_ISSUES.FOUR, UNPOPULAR_ISSUES.THREE],
+]
+
+const SIX_VOTES_WITH_TWO_POPULAR = [
+  [POPULAR_ISSUES.ONE, POPULAR_ISSUES.TWO],
+  [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.ONE],
+  [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.TWO],
+  [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.THREE],
+  [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.FOUR],
+  [UNPOPULAR_ISSUES.FIVE, UNPOPULAR_ISSUES.SIX],
+]
 
 describe(testContext(__filename), function () {
   withDBCleanup()
@@ -23,79 +39,30 @@ describe(testContext(__filename), function () {
       beforeEach(async function () {
         this.data = await _setup({
           players: {total: 10, advanced: 2},
+          votes: SIX_VOTES_WITH_TWO_POPULAR,
         })
       })
+      _itPerformsAsExpected()
+    })
 
-      it('places all players on teams when not everyone voted', async function () {
-        const {cycle, players} = this.data
-
-        expect(players.regular.length).to.be.equal(8)
-        expect(players.advanced.length).to.be.equal(2)
-
-        await formProjects(cycle.id)
-
-        const projects = await findProjects().run()
-        const projectPlayerIds = _extractPlayerIdsFromProjects(cycle.id, projects)
-
-        const allPlayers = players.regular.concat(players.advanced)
-        expect(projectPlayerIds.length).to.equal(allPlayers.length)
-
-        allPlayers.forEach(player => {
-          const playerIdInProject = projectPlayerIds.find(playerId => playerId === player.id)
-          expect(playerIdInProject).to.exist
+    describe.skip('more advanced players than teams', function () {
+      beforeEach(async function () {
+        this.data = await _setup({
+          players: {total: 10, advanced: 4},
+          votes: SIX_VOTES_WITH_TWO_POPULAR,
         })
       })
+      _itPerformsAsExpected()
+    })
 
-      it('creates project teams that all contain at least one advanced player', async function () {
-        const {cycle, players} = this.data
-
-        await formProjects(cycle.id)
-
-        const projects = await findProjects().run()
-        const advancedPlayers = players.advanced.reduce((result, player) => {
-          result[player.id] = player
-          return result
-        }, {})
-
-        projects.forEach(project => {
-          const playerIds = _extractPlayerIdsFromProjects(cycle.id, [project])
-          const advancedPlayerId = playerIds.find(playerId => advancedPlayers[playerId])
-          expect(advancedPlayerId).to.exist
+    describe('19 players (4 advanced), 6 votes (4 popular)', function () {
+      beforeEach(async function () {
+        this.data = await _setup({
+          players: {total: 19, advanced: 4},
+          votes: FOUR_VOTES_WITH_FOUR_POPULAR,
         })
       })
-
-      it('creates projects for as many goals as were voted for and can be supported by the number of available advanced players', async function () {
-        const {cycle, votes, players} = this.data
-
-        expect(votes.length).to.be.equal(6)
-
-        await formProjects(cycle.id)
-
-        const projects = await findProjects().run()
-        const projectGoals = _extractGoalsFromProjects(projects)
-
-        const votedForGoals = votes.reduce((result, vote) => {
-          vote.goals.forEach(goal => result.set(goal.url, true))
-          return result
-        }, new Map())
-
-        const maxNumExpectedProjectGoals = Math.min(votedForGoals.size, players.advanced.length)
-
-        expect(projectGoals.length).to.be.within(1, maxNumExpectedProjectGoals)
-      })
-
-      it('creates projects for the most popular goals', async function () {
-        const {cycle} = this.data
-
-        await formProjects(cycle.id)
-
-        const projects = await findProjects().run()
-        const projectGoals = _extractGoalsFromProjects(projects)
-
-        projectGoals.forEach(goal => {
-          expect(POPULAR_ISSUES[goal.id] !== null)
-        })
-      })
+      _itPerformsAsExpected()
     })
   })
 
@@ -120,6 +87,74 @@ describe(testContext(__filename), function () {
   })
 })
 
+function _itPerformsAsExpected() {
+  it('places all players on teams when not everyone voted', async function () {
+    const {cycle, players} = this.data
+
+    await formProjects(cycle.id)
+
+    const projects = await findProjects().run()
+    const projectPlayerIds = _extractPlayerIdsFromProjects(cycle.id, projects)
+
+    const allPlayers = players.regular.concat(players.advanced)
+    expect(projectPlayerIds.length).to.equal(allPlayers.length)
+
+    allPlayers.forEach(player => {
+      const playerIdInProject = projectPlayerIds.find(playerId => playerId === player.id)
+      expect(playerIdInProject).to.exist
+    })
+  })
+
+  it('creates project teams that all contain at least one advanced player', async function () {
+    const {cycle, players} = this.data
+
+    await formProjects(cycle.id)
+
+    const projects = await findProjects().run()
+    const advancedPlayers = players.advanced.reduce((result, player) => {
+      result[player.id] = player
+      return result
+    }, {})
+
+    projects.forEach(project => {
+      const playerIds = _extractPlayerIdsFromProjects(cycle.id, [project])
+      const advancedPlayerId = playerIds.find(playerId => advancedPlayers[playerId])
+      expect(advancedPlayerId).to.exist
+    })
+  })
+
+  it('creates projects for as many goals as were voted for and can be supported by the number of available advanced players', async function () {
+    const {cycle, votes, players} = this.data
+
+    await formProjects(cycle.id)
+
+    const projects = await findProjects().run()
+    const projectGoals = _extractGoalsFromProjects(projects)
+
+    const votedForGoals = votes.reduce((result, vote) => {
+      vote.goals.forEach(goal => result.set(goal.url, true))
+      return result
+    }, new Map())
+
+    const maxNumExpectedProjectGoals = Math.min(votedForGoals.size, players.advanced.length)
+
+    expect(projectGoals.length).to.be.within(1, maxNumExpectedProjectGoals)
+  })
+
+  it('creates projects for the most popular goals', async function () {
+    const {cycle} = this.data
+
+    await formProjects(cycle.id)
+
+    const projects = await findProjects().run()
+    const projectGoals = _extractGoalsFromProjects(projects)
+
+    projectGoals.forEach(goal => {
+      expect(POPULAR_ISSUES[goal.id] !== null)
+    })
+  })
+}
+
 async function _setup(options = {}) {
   // generate test cycle
   const cycle = await factory.create('cycle', {state: GOAL_SELECTION})
@@ -143,16 +178,7 @@ function _generatePlayers(data, numPlayers) {
   return factory.createMany('player', data, numPlayers)
 }
 
-function _generateVotes(cycleId, players) {
-  let votes = [
-    [POPULAR_ISSUES.ONE, POPULAR_ISSUES.TWO],
-    [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.ONE],
-    [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.TWO],
-    [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.THREE],
-    [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.FOUR],
-    [UNPOPULAR_ISSUES.FIVE, UNPOPULAR_ISSUES.SIX],
-  ]
-
+function _generateVotes(cycleId, players, votes = SIX_VOTES_WITH_TWO_POPULAR) {
   if (!(players.length >= votes.length)) {
     throw new Error('Number of players must be greater than or equal to number of votes')
   }
