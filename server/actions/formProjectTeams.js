@@ -8,6 +8,7 @@
  * are being formed, every active player in the chapter is assumed to be
  * available for assignment.
  */
+
 import {getCycleById} from '../db/cycle'
 import {findPlayersForChapter} from '../db/player'
 import {findVotesForCycle} from '../db/vote'
@@ -257,9 +258,7 @@ function _rankPlayers(players) {
   }
   return players.sort((playerA, playerB) => {
     // order by ECC (desc)
-    const aECC = playerA.ecc || 0
-    const bECC = playerB.ecc || 0
-    return bECC - aECC
+    return (playerB.ecc || 0) - (playerA.ecc || 0)
   })
 }
 

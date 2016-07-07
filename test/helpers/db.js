@@ -1,6 +1,6 @@
 import r from '../../db/connect'
 
-function truncateDBTables() {
+export function truncateDBTables() {
   this.timeout(30000)  // for some reason, truncating tables can sometimes take a long time
   return r.tableList()
     .then(tables => tables.filter(t => !t.startsWith('_')))

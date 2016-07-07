@@ -1,10 +1,11 @@
 /* eslint-env mocha */
-/* global expect, testContext */
+/* global testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
-import factory from '../../../test/factories'
-import {withDBCleanup} from '../../../test/helpers'
+import {assert} from 'chai'
+import {truncateDBTables} from '../../../test/helpers'
 import {findProjects} from '../../db/project'
+import factory from '../../../test/factories'
 
 import {GOAL_SELECTION} from '../../../common/models/cycle'
 
@@ -15,102 +16,88 @@ const UNPOPULAR_ISSUES = {ONE: 201, TWO: 202, THREE: 203, FOUR: 204, FIVE: 205, 
 const ADVANCED_PLAYER_ECC = 500
 const DEFAULT_RECOMMENDED_TEAM_SIZE = 5
 
-const FOUR_VOTES_WITH_FOUR_POPULAR = [
-  [POPULAR_ISSUES.ONE, POPULAR_ISSUES.TWO],
-  [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.ONE],
-  [POPULAR_ISSUES.THREE, UNPOPULAR_ISSUES.TWO],
-  [POPULAR_ISSUES.FOUR, UNPOPULAR_ISSUES.THREE],
-]
-
-const SIX_VOTES_WITH_TWO_POPULAR = [
-  [POPULAR_ISSUES.ONE, POPULAR_ISSUES.TWO],
-  [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.ONE],
-  [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.TWO],
-  [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.THREE],
-  [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.FOUR],
-  [UNPOPULAR_ISSUES.FIVE, UNPOPULAR_ISSUES.SIX],
-]
-
 describe(testContext(__filename), function () {
-  withDBCleanup()
-
-  describe('formProjects', function () {
-    describe('10 players (2 advanced), 6 votes (2 popular)', function () {
-      beforeEach(async function () {
-        this.data = await _setup({
-          players: {total: 10, advanced: 2},
-          votes: SIX_VOTES_WITH_TWO_POPULAR,
-        })
-      })
-      _itPerformsAsExpected()
-    })
-
-    describe.skip('more advanced players than teams', function () {
-      beforeEach(async function () {
-        this.data = await _setup({
-          players: {total: 10, advanced: 4},
-          votes: SIX_VOTES_WITH_TWO_POPULAR,
-        })
-      })
-      _itPerformsAsExpected()
-    })
-
-    describe('19 players (4 advanced), 6 votes (4 popular)', function () {
-      beforeEach(async function () {
-        this.data = await _setup({
-          players: {total: 19, advanced: 4},
-          votes: FOUR_VOTES_WITH_FOUR_POPULAR,
-        })
-      })
-      _itPerformsAsExpected()
-    })
-  })
-
-  describe('getTeamSizes(recTeamSize, numPlayers)', function () {
+  context('getTeamSizes(recTeamSize, numPlayers)', function () {
     it('determines optimal team sizes based on recommended size and player count', function () {
-      expect(getTeamSizes(4, 16)).to.deep.equal([4, 4, 4, 4])
-      expect(getTeamSizes(4, 19)).to.deep.equal([4, 4, 4, 4, 3])
-      expect(getTeamSizes(4, 18)).to.deep.equal([5, 5, 4, 4])
-      expect(getTeamSizes(4, 17)).to.deep.equal([5, 4, 4, 4])
-      expect(getTeamSizes(4, 5)).to.deep.equal([5])
-      expect(getTeamSizes(4, 2)).to.deep.equal([2])
-      expect(getTeamSizes(4, 6)).to.deep.equal([3, 3])
+      assert.deepEqual(getTeamSizes(4, 16), [4, 4, 4, 4])
+      assert.deepEqual(getTeamSizes(4, 19), [4, 4, 4, 4, 3])
+      assert.deepEqual(getTeamSizes(4, 18), [5, 5, 4, 4])
+      assert.deepEqual(getTeamSizes(4, 17), [5, 4, 4, 4])
+      assert.deepEqual(getTeamSizes(4, 5), [5])
+      assert.deepEqual(getTeamSizes(4, 2), [2])
+      assert.deepEqual(getTeamSizes(4, 6), [3, 3])
     })
   })
 
-  describe('generateProjectName()', function () {
+  context('generateProjectName()', function () {
     it('generates a valid project name', function () {
       return generateProjectName().then(function (projectName) {
-        expect(projectName).to.match(/^\w+(-\w+)+(-\d)?$/)
+        assert.match(projectName, /^\w+(-\w+)+(-\d)?$/)
+      })
+    })
+  })
+
+  describe('formProjects', function () {
+    context('fewer advanced players than popular votes', function () {
+      _itFormsProjectsAsExpected({
+        players: {total: 10, advanced: 2},
+      })
+    })
+
+    context('more advanced players than popular votes', function () {
+      _itFormsProjectsAsExpected({
+        players: {total: 10, advanced: 4},
+      })
+    })
+
+    context('all votes equally popular', function () {
+      const FOUR_VOTES_WITH_FOUR_POPULAR = [
+        [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.ONE],
+        [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.TWO],
+        [POPULAR_ISSUES.THREE, UNPOPULAR_ISSUES.THREE],
+        [POPULAR_ISSUES.FOUR, UNPOPULAR_ISSUES.FOUR],
+      ]
+
+      _itFormsProjectsAsExpected({
+        players: {total: 19, advanced: 4},
+        votes: FOUR_VOTES_WITH_FOUR_POPULAR,
       })
     })
   })
 })
 
-function _itPerformsAsExpected() {
-  it('places all players on teams when not everyone voted', async function () {
-    const {cycle, players} = this.data
+function _itFormsProjectsAsExpected(options) {
+  before(truncateDBTables)
+
+  before(async function () {
+    const {cycle, players, votes} = await _generateTestData(options)
+
+    // describe test data
+    console.log(`        ${players.regular.length} regular players, ${players.advanced.length} advanced players, ${votes.length} votes`)
 
     await formProjects(cycle.id)
 
-    const projects = await findProjects().run()
-    const projectPlayerIds = _extractPlayerIdsFromProjects(cycle.id, projects)
+    this.data = {cycle, players, votes, projects: await findProjects().run()}
+  })
 
+  it('places all players on teams when not everyone voted', function () {
+    const {cycle, players, projects} = this.data
+
+    const projectPlayerIds = _extractPlayerIdsFromProjects(cycle.id, projects)
     const allPlayers = players.regular.concat(players.advanced)
-    expect(projectPlayerIds.length).to.equal(allPlayers.length)
+
+    assert.strictEqual(projectPlayerIds.length, allPlayers.length,
+        'number of players in chapter does not equal number of players assigned to projects')
 
     allPlayers.forEach(player => {
       const playerIdInProject = projectPlayerIds.find(playerId => playerId === player.id)
-      expect(playerIdInProject).to.exist
+      assert.isOk(playerIdInProject, `player ${player.id} not assigned to a project`)
     })
   })
 
-  it('creates project teams that all contain at least one advanced player', async function () {
-    const {cycle, players} = this.data
+  it('creates project teams that all contain at least one advanced player', function () {
+    const {cycle, players, projects} = this.data
 
-    await formProjects(cycle.id)
-
-    const projects = await findProjects().run()
     const advancedPlayers = players.advanced.reduce((result, player) => {
       result[player.id] = player
       return result
@@ -119,16 +106,13 @@ function _itPerformsAsExpected() {
     projects.forEach(project => {
       const playerIds = _extractPlayerIdsFromProjects(cycle.id, [project])
       const advancedPlayerId = playerIds.find(playerId => advancedPlayers[playerId])
-      expect(advancedPlayerId).to.exist
+      assert.isOk(advancedPlayerId, `team for project ${project.id} does not include an advanced player`)
     })
   })
 
-  it('creates projects for as many goals as were voted for and can be supported by the number of available advanced players', async function () {
-    const {cycle, votes, players} = this.data
+  it('creates projects for as many goals as were voted for and can be supported by the number of available advanced players', function () {
+    const {players, votes, projects} = this.data
 
-    await formProjects(cycle.id)
-
-    const projects = await findProjects().run()
     const projectGoals = _extractGoalsFromProjects(projects)
 
     const votedForGoals = votes.reduce((result, vote) => {
@@ -138,47 +122,57 @@ function _itPerformsAsExpected() {
 
     const maxNumExpectedProjectGoals = Math.min(votedForGoals.size, players.advanced.length)
 
-    expect(projectGoals.length).to.be.within(1, maxNumExpectedProjectGoals)
+    assert.closeTo(projectGoals.length, maxNumExpectedProjectGoals, 1)
   })
 
-  it('creates projects for the most popular goals', async function () {
-    const {cycle} = this.data
+  it('creates projects for the most popular goals', function () {
+    const {projects} = this.data
 
-    await formProjects(cycle.id)
-
-    const projects = await findProjects().run()
     const projectGoals = _extractGoalsFromProjects(projects)
+    const popularGoalIds = Object.values(POPULAR_ISSUES)
 
     projectGoals.forEach(goal => {
-      expect(POPULAR_ISSUES[goal.id] !== null)
+      const isPopularGoal = popularGoalIds.includes(goal.id)
+      assert.strictEqual(isPopularGoal, true, `goal ${goal.id} is not a popular goal`)
     })
   })
 }
 
-async function _setup(options = {}) {
+async function _generateTestData(options = {}) {
   // generate test cycle
   const cycle = await factory.create('cycle', {state: GOAL_SELECTION})
 
   // generate test players
-  const numPlayers = options.players ? options.players.total : 10
-  const numPlayersAdvanced = options.players ? options.players.advanced : 2
-  const players = {
-    regular: await _generatePlayers({chapterId: cycle.chapterId}, numPlayers - numPlayersAdvanced),
-    advanced: await _generatePlayers({chapterId: cycle.chapterId, ecc: ADVANCED_PLAYER_ECC}, numPlayersAdvanced)
-  }
+  const players = await _generatePlayers(cycle.chapterId, options.players)
 
   // generate test votes
   const votes = await _generateVotes(cycle.id, players.regular, options.votes)
 
-  // return all test data
+  // return test data
   return {cycle, players, votes}
 }
 
-function _generatePlayers(data, numPlayers) {
-  return factory.createMany('player', data, numPlayers)
+async function _generatePlayers(chapterId, options) {
+  const numPlayers = options.players ? options.players.total : 10
+  const numPlayersAdvanced = options.players ? options.players.advanced : 2
+
+  return {
+    regular: await factory.createMany('player', {chapterId}, numPlayers - numPlayersAdvanced),
+    advanced: await factory.createMany('player', {chapterId, ecc: ADVANCED_PLAYER_ECC}, numPlayersAdvanced)
+  }
 }
 
-function _generateVotes(cycleId, players, votes = SIX_VOTES_WITH_TWO_POPULAR) {
+function _generateVotes(cycleId, players, votes) {
+  votes = votes || [
+    // 6 votes (2 popular)
+    [POPULAR_ISSUES.ONE, POPULAR_ISSUES.TWO],
+    [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.ONE],
+    [POPULAR_ISSUES.ONE, UNPOPULAR_ISSUES.TWO],
+    [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.THREE],
+    [POPULAR_ISSUES.TWO, UNPOPULAR_ISSUES.FOUR],
+    [UNPOPULAR_ISSUES.FIVE, UNPOPULAR_ISSUES.SIX],
+  ]
+
   if (!(players.length >= votes.length)) {
     throw new Error('Number of players must be greater than or equal to number of votes')
   }
