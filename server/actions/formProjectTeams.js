@@ -18,7 +18,7 @@ import randomMemorableName from '../../common/util/randomMemorableName'
 const MIN_ADVANCED_PLAYER_ECC_DIFF = 50
 const DEFAULT_RECOMMENDED_TEAM_SIZE = 5
 
-export async function formProjects(cycleId) {
+async function _formProjects(cycleId) {
   const cycle = await getCycleById(cycleId)
 
   const [cyclePlayers, cycleVotes] = await Promise.all([
@@ -48,63 +48,19 @@ export async function formProjects(cycleId) {
   return insertProjects(projects)
 }
 
-export function getTeamSizes(recTeamSize, numPlayers) {
-  const numPerfectTeams = Math.floor(numPlayers / recTeamSize)
-  const numRemainingPlayers = numPlayers % recTeamSize
-
-  const teamSizes = new Array(numPerfectTeams).fill(recTeamSize)
-
-  if (numRemainingPlayers) {
-    if (numRemainingPlayers === (recTeamSize - 1)) {
-      // team sizes can be rec size - 1, so just make a final team out of
-      // the remaining spots.
-      teamSizes.push(numRemainingPlayers)
-    } else if (numRemainingPlayers <= numPerfectTeams) {
-      // teams can be rec size + 1, and there are few enough remaining spots that
-      // we can add each of them to an existing (previously "perfect-sized") team.
-      for (let i = 0; i < numRemainingPlayers; i++) {
-        teamSizes[i] += 1
-      }
-    } else if (((recTeamSize - 1) - numRemainingPlayers) <= numPerfectTeams) {
-      // teams can be rec size - 1, and there are enough "perfect-sized" teams
-      // that we can take 1 spot from some of them and add those to the leftover
-      // spots to make 1 more team.
-      let newTeamSize = numRemainingPlayers
-      for (let j = 0; newTeamSize < (recTeamSize - 1); j++) {
-        teamSizes[j] -= 1
-        newTeamSize += 1
-      }
-      teamSizes.push(newTeamSize)
-    } else {
-      // make a team out of the remaining spots anyway
-      // TODO: throw an error? toss the entire goal group? do something better.
-      teamSizes.push(numRemainingPlayers)
-    }
-  }
-
-  return teamSizes
-}
-
-export function generateProjectName() {
-  const projectName = randomMemorableName()
-  return findProjects({filter: {name: projectName}}).run().then(existingProjectsWithName => {
-    return existingProjectsWithName.length ? generateProjectName() : projectName
-  })
-}
-
 function _formGoalGroups(players, playerVotes, votedGoals) {
   // identify advanced and non-advanced players
   const avgPlayerECC = _getAverageECCForPlayers(players)
   const minAdvancedPlayerECC = avgPlayerECC + MIN_ADVANCED_PLAYER_ECC_DIFF
 
   const advancedPlayers = new Map()
-  const nonAdvancedPlayers = new Map()
+  const regularPlayers = new Map()
 
   players.forEach(player => {
     if (parseInt(player.ecc, 10) >= minAdvancedPlayerECC) {
       advancedPlayers.set(player.id, player)
     } else {
-      nonAdvancedPlayers.set(player.id, player)
+      regularPlayers.set(player.id, player)
     }
   })
 
@@ -112,9 +68,8 @@ function _formGoalGroups(players, playerVotes, votedGoals) {
     throw new Error('Cannot form project teams; not enough advanced players found')
   }
 
-  // the number of goals that can be worked on is constrained by an upper
-  // limit equal to the number of advanced players available to be assigned
-  // to the teams working on each goal (every team must have an advanced player)
+  // every team must have an advanced player, sothe number of goals that can be worked on is
+  // limited to the number of adv. players avail. to be assigned to the teams working on each goal
   const maxNumGoalGroups = Math.min(advancedPlayers.size, votedGoals.size)
 
   const tmpGoalGroups = new Map()
@@ -122,9 +77,8 @@ function _formGoalGroups(players, playerVotes, votedGoals) {
 
   do {
     if (tmpGoalGroups.size && (tmpGoalGroups.size > maxNumGoalGroups)) {
-      // too many goal groups, so remove the one ranked lowest (least popular).
-      // we'll attempt to reassign the players in this group to their next
-      // most-preferred goal below.
+      // too many goal groups, so remove the one ranked lowest (least popular). we'll try
+      // to reassign the players in this group to their next most-preferred goal below.
       const lowestRankedGoalGroup = _rankGoalGroups(tmpGoalGroups).pop()
       lowestRankedGoalGroup.players.forEach(player => assignedPlayers.delete(player.id))
       tmpGoalGroups.delete(lowestRankedGoalGroup.goal.url)
@@ -132,17 +86,16 @@ function _formGoalGroups(players, playerVotes, votedGoals) {
 
     // group players who have voted by their most preferred goal
     playerVotes.forEach((playerVote, playerId) => {
-      const player = nonAdvancedPlayers.get(playerId)
+      const player = regularPlayers.get(playerId)
 
-      // skip vote handling if player is advanced or already assigned to a group
+      // skip vote if player is advanced or already assigned to a group
       if (player && !assignedPlayers.has(player.id)) {
-        // remove the player's vote to prevent duplicate processing
-        const nextPreferredGoal = playerVote.goals.shift()
+        const nextPreferredGoal = playerVote.goals.shift() // remove to prevent duplicate processing
 
         if (nextPreferredGoal) {
           let nextGoalGroup = tmpGoalGroups.get(nextPreferredGoal.url)
           if (!nextGoalGroup) {
-            // create new goal group if one doesn't already exist for the voted goal
+            // create new group if one doesn't already exist for the voted goal
             nextGoalGroup = {
               goal: votedGoals.get(nextPreferredGoal.url),
               players: [],
@@ -166,21 +119,21 @@ function _formGoalGroups(players, playerVotes, votedGoals) {
   } while (tmpGoalGroups.size > maxNumGoalGroups)
 
   // identify remaining unassigned players and place them into goal groups
-  const remainingNonAdvancedPlayers = []
-  nonAdvancedPlayers.forEach(player => {
+  const remainingRegularPlayers = []
+  regularPlayers.forEach(player => {
     if (!assignedPlayers.has(player.id)) {
-      remainingNonAdvancedPlayers.push(player)
+      remainingRegularPlayers.push(player)
     }
   })
 
   const rankedGoalGroups = _rankGoalGroups(tmpGoalGroups)
-  const rankedNonAdvancedPlayers = _rankPlayers(remainingNonAdvancedPlayers)
+  const rankedRegularPlayers = _rankPlayers(remainingRegularPlayers)
   const rankedAdvancedPlayers = _rankPlayers(advancedPlayers)
 
   // assign remaining non-advanced players to goal groups
   let i = 0
-  while (rankedNonAdvancedPlayers.length) {
-    rankedGoalGroups[i].players.push(rankedNonAdvancedPlayers.shift())
+  while (rankedRegularPlayers.length) {
+    rankedGoalGroups[i].players.push(rankedRegularPlayers.shift())
     i = (i + 1) % rankedGoalGroups.length
   }
 
@@ -192,22 +145,12 @@ function _formGoalGroups(players, playerVotes, votedGoals) {
   }
 
   // arrange all goal group players into teams
-  const finalGoalGroups = _rankGoalGroups(tmpGoalGroups).map(goalGroup => {
+  const finalGoalGroups = []
+  tmpGoalGroups.forEach(goalGroup => {
     const {goal, players, advancedPlayers} = goalGroup
     const recTeamSize = goal.teamSize || DEFAULT_RECOMMENDED_TEAM_SIZE
-    const teamSizes = getTeamSizes(recTeamSize, (players.length + advancedPlayers.length))
-    const rankedPlayers = _rankPlayers(players)
-    const rankedAdvancedPlayers = _rankPlayers(advancedPlayers)
-    const advancedPlayersPerTeam = Math.floor(rankedAdvancedPlayers.length / teamSizes.length)
-
-    // fill teams with advanced & non-advanced players
-    const teams = teamSizes.map(teamSize => {
-      const advancedPlayers = rankedAdvancedPlayers.splice(0, advancedPlayersPerTeam)
-      const nonAdvancedPlayers = rankedPlayers.splice(0, teamSize - rankedAdvancedPlayers.length)
-      return nonAdvancedPlayers.concat(advancedPlayers)
-    })
-
-    return {goal, teams}
+    const teams = _arrangePlayerTeams(recTeamSize, players, advancedPlayers)
+    finalGoalGroups.push({goal, teams})
   })
 
   return finalGoalGroups
@@ -246,9 +189,8 @@ function _rankGoalGroups(goalGroups) {
   if (goalGroups instanceof Map) {
     goalGroups = Array.from(goalGroups.values())
   }
-  return goalGroups.sort((goalGroupA, goalGroupB) => {
-    // order by number of players in group (desc)
-    return goalGroupB.players.length - goalGroupA.players.length
+  return goalGroups.sort((groupA, groupB) => {
+    return groupB.players.length - groupA.players.length // by # of players (desc)
   })
 }
 
@@ -257,8 +199,7 @@ function _rankPlayers(players) {
     players = Array.from(players.values())
   }
   return players.sort((playerA, playerB) => {
-    // order by ECC (desc)
-    return (playerB.ecc || 0) - (playerA.ecc || 0)
+    return (playerB.ecc || 0) - (playerA.ecc || 0) // by player ECC (desc)
   })
 }
 
@@ -271,13 +212,94 @@ function _getAverageECCForPlayers(players) {
   }, 0) / players.length)
 }
 
+function _arrangePlayerTeams(recTeamSize, regularPlayers, advancedPlayers) {
+  const rankedRegularPlayers = _rankPlayers(regularPlayers)
+  const rankedAdvancedPlayers = _rankPlayers(advancedPlayers)
+
+  const teamSizes = _getTeamSizes(recTeamSize, rankedRegularPlayers.length, rankedAdvancedPlayers.length)
+  const regularTeamPlayers = _playersForTeamSizes(teamSizes.map(teamSize => teamSize.regular), rankedRegularPlayers)
+  const advancedTeamPlayers = _playersForTeamSizes(teamSizes.map(teamSize => teamSize.advanced), rankedAdvancedPlayers)
+
+  return teamSizes.map((teamSize, i) => regularTeamPlayers[i].concat(advancedTeamPlayers[i]))
+}
+
+function _getTeamSizes(recTeamSize, numRegularPlayers, numAdvancedPlayers) {
+  const numPerfectRegularPlayers = recTeamSize - 1 // leave room for exactly 1 advanced player
+  const numPerfectTeams = Math.floor(numRegularPlayers / numPerfectRegularPlayers)
+
+  // form as many perfect teams as possible
+  const teamSizes = new Array(numPerfectTeams).fill(null).map(() => ({regular: numPerfectRegularPlayers, advanced: 1}))
+
+  // any regular or advanced players "left over"?
+  const remainingRegularPlayers = (numRegularPlayers % numPerfectRegularPlayers) || 0
+  const remainingAdvancedPlayers = Math.max(numAdvancedPlayers - teamSizes.length, 0)
+  const totalRemaining = remainingRegularPlayers + remainingAdvancedPlayers
+  const maxRemaining = remainingAdvancedPlayers ? totalRemaining : (remainingRegularPlayers + 1)
+
+  if (totalRemaining) {
+    const remainingTeamSize = {regular: remainingRegularPlayers, advanced: remainingAdvancedPlayers}
+    const minTeamSize = recTeamSize - 1
+    const maxTeamSize = recTeamSize + 1
+
+    if (maxRemaining >= minTeamSize && maxRemaining <= maxTeamSize) {
+      if (!remainingAdvancedPlayers) {
+        remainingTeamSize.advanced = 1
+      }
+      teamSizes.push(remainingTeamSize)
+    } else if (totalRemaining <= teamSizes.length) {
+      // teams can be rec size + 1, and there are few enough remaining spots that
+      // we can add each of them to an existing (previously "perfect-sized") team
+      let i = 0
+      for (; i < remainingRegularPlayers; i++) {
+        teamSizes[i].regular++
+      }
+      for (let j = 0; j < remainingAdvancedPlayers; i++, j++) {
+        teamSizes[j].advanced++
+      }
+    } else if ((minTeamSize - maxRemaining) <= teamSizes.length) {
+      // teams can be rec size - 1, and there are enough "perfect-sized" teams
+      // that we can take 1 spot from the regular players of some them and
+      // add those to the leftover spots to make 1 more team
+      if (!remainingTeamSize.advanced) {
+        remainingTeamSize.advanced = 1 // ensure that at least 1 advanced player is pulled onto this team
+      }
+      for (let i = 0; (remainingTeamSize.regular + remainingTeamSize.advanced) < minTeamSize; i++) {
+        teamSizes[i].regular--
+        remainingTeamSize.regular++
+      }
+      teamSizes.push(remainingTeamSize)
+    } else {
+      // make a team out of the remaining spots anyway
+      // TODO: throw an error? toss the entire goal group? do something better.
+      teamSizes.push(remainingTeamSize)
+    }
+  }
+
+  return teamSizes
+}
+
+function _playersForTeamSizes(teamSizes, players) {
+  let playerIndex = 0
+  return teamSizes.map(numPlayers => {
+    let teamPlayers = players.slice(playerIndex, playerIndex + numPlayers)
+
+    const additionalPlayersNeeded = numPlayers - teamPlayers.length
+    if (additionalPlayersNeeded) {
+      teamPlayers = teamPlayers.concat(players.slice(0, additionalPlayersNeeded))
+    }
+
+    playerIndex = (playerIndex + numPlayers) % players.length
+    return teamPlayers
+  })
+}
+
 function _formProjectsForGoalGroups(chapterId, cycleId, goalGroups) {
   const projects = []
 
   goalGroups.forEach(goalGroup => {
     goalGroup.teams.forEach(teamPlayers => {
       projects.push(
-        generateProjectName().then(name => {
+        _generateProjectName().then(name => {
           return {
             chapterId,
             name,
@@ -294,3 +316,14 @@ function _formProjectsForGoalGroups(chapterId, cycleId, goalGroups) {
 
   return Promise.all(projects)
 }
+
+function _generateProjectName() {
+  const projectName = randomMemorableName()
+  return findProjects({filter: {name: projectName}}).run().then(existingProjectsWithName => {
+    return existingProjectsWithName.length ? _generateProjectName() : projectName
+  })
+}
+
+export const formProjects = _formProjects
+export const getTeamSizes = _getTeamSizes
+export const generateProjectName = _generateProjectName
