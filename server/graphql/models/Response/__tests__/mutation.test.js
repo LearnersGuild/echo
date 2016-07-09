@@ -80,6 +80,61 @@ describe(testContext(__filename), function () {
     })
   })
 
+  describe('saveRetrospectiveSurveyResponse', function () {
+    beforeEach(async function () {
+      await this.buildOneQuestionSurvey({
+        questionAttrs: {subjectType: 'team', type: 'relativeContribution'},
+        subject: () => this.teamPlayerIds
+      })
+      this.user = await factory.build('user', {id: this.teamPlayerIds[0]})
+      this.respondentId = this.teamPlayerIds[0]
+      this.subjectId = this.teamPlayerIds[1]
+
+      this.invokeAPI = function (rccScores) {
+        const teamSize = this.teamPlayerIds.length
+        rccScores = rccScores || Array(teamSize).fill(100 / teamSize)
+        const values = rccScores.map((value, i) => (
+          {subjectId: this.teamPlayerIds[i], value}
+        ))
+
+        const response = {
+          values,
+          questionId: this.question.id,
+          surveyId: this.survey.id,
+          respondentId: this.respondentId,
+        }
+        return runGraphQLMutation(
+          `mutation($response: SurveyResponseInput!) {
+            saveRetrospectiveSurveyResponse(response: $response) {
+              createdIds
+            }
+          }`,
+          fields,
+          {response},
+          {currentUser: this.user},
+        )
+      }
+    })
+
+    it('returns new response ids for all responses created', function () {
+      return this.invokeAPI()
+        .then(result => result.data.saveRetrospectiveSurveyResponse.createdIds)
+        .then(createdIds => expect(createdIds).have.length(this.teamPlayerIds.length))
+    })
+
+    it.skip('returns helpful error messages when missing parts', function () {
+      return expect(
+        this.invokeAPI(Array(this.teamPlayerIds.length - 1).fill(20))
+      ).to.be.rejectedWith(/Expected responses for all \d team members/)
+    })
+
+    it.skip('returns helpful error messages for invalid values', function () {
+      return expect(
+        this.invokeAPI(Array(this.teamPlayerIds.length).fill(101))
+      ).to.be.rejectedWith(/must be less than or equal to 100/)
+    })
+  })
+
   describe('saveProjectReviewResponses', function () {
     useFixture.createProjectReviewSurvey()
 

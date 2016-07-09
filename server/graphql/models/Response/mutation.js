@@ -4,13 +4,14 @@ import {GraphQLNonNull, GraphQLID, GraphQLString} from 'graphql'
 import {GraphQLList, GraphQLObjectType} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
 
+import r from '../../../../db/connect'
 import {userCan} from '../../../../common/util'
 import saveRetrospectiveCLISurveyResponseForPlayer from '../../../../server/actions/saveRetrospectiveCLISurveyResponseForPlayer'
 import saveProjectReviewCLISurveyResponsesForPlayer from '../../../../server/actions/saveProjectReviewCLISurveyResponsesForPlayer'
 import {parseQueryError} from '../../../../server/db/errors'
 import {getProjectByName} from '../../../../server/db/project'
 
-import {CLISurveyResponse, CLINamedSurveyResponse} from './schema'
+import {SurveyResponseInput, CLISurveyResponse, CLINamedSurveyResponse} from './schema'
 
 const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
@@ -25,6 +26,19 @@ const CreatedIdList = new GraphQLObjectType({
 })
 
 export default {
+  saveRetrospectiveSurveyResponse: {
+    type: CreatedIdList,
+    args: {
+      response: {
+        description: 'The response to save',
+        type: new GraphQLNonNull(SurveyResponseInput)
+      }
+    },
+    async resolve(source, {response}) {
+      const fakeUUIDS = await Promise.all(response.values.map(() => r.uuid()))
+      return {createdIds: fakeUUIDS}
+    },
+  },
   saveRetrospectiveCLISurveyResponse: {
     type: CreatedIdList,
     args: {
