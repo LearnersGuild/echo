@@ -19,7 +19,7 @@ describe(testContext(__filename), function () {
   describe('createProjectReviewSurveys', function () {
     beforeEach(async function () {
       this.cycle = await factory.create('cycle')
-      this.players = await factory.createMany('player', 8, {chapterId: this.cycle.chapterId})
+      this.players = await factory.createMany('player', {chapterId: this.cycle.chapterId}, 8)
       this.projects = await Promise.all(Array.from(Array(2).keys()).map(i => {
         return factory.create('project', {
           chapterId: this.cycle.chapterId,
