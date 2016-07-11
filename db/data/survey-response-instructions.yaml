@@ -1,20 +1,11 @@
 %YAML 1.2
 ---
 relativeContribution: |
-  Use the command:
-  `/log -r -q<questionNumber> <teammate>:<%contribution> [<teammate>:<%contribution>...]`
-
-  For example:
-  `/log -r -q1 beth:30 amy:20 jose:25 tim:15`,
+  Values must add up to 100.
 percentage: |
-  Use the command:
-  `/log -r -q<questionNumber> percentage`
-
-  For example:
-  `/log -r -q1 88`,
+  Must be a number between 0 and 100.
 text: |
-  Use the command:
-  `/log -r -q<questionNumber> "your response"`
+  Free-form text response.
 likert7Agreement: |
   Respond with an integer between 0 and 7.
 
