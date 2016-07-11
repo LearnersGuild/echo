@@ -11,7 +11,7 @@ export default async function saveProjectReviewCLISurveyResponsesForPlayer(respo
 
       return await saveSurveyResponse({
         respondentId,
-        responseParams,
+        values: [{subjectId: subjectIds[0], value: responseParams[0]}],
         surveyId: survey.id,
         questionId,
         subjectIds,

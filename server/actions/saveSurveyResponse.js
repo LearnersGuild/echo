@@ -1,59 +1,50 @@
 import yup from 'yup'
 import {saveResponsesForSurveyQuestion} from '../../server/db/response'
 import {getQuestionById} from '../../server/db/question'
-import {graphQLFetcher} from '../../server/util'
+import {getSurveyById} from '../../server/db/survey'
 import {BadInputError} from '../../server/errors'
 
-export default async function saveSurveyResponse({respondentId, responseParams, surveyId, questionId, subjectIds}) {
-  const question = await getQuestionById(questionId)
+export default async function saveSurveyResponse({respondentId, values, surveyId, questionId}) {
+  await assertMatchingQuestionRefExists({surveyId, questionId, values})
 
+  const question = await getQuestionById(questionId)
   const defaultResponseAttrs = {
     questionId,
     respondentId,
     surveyId,
   }
 
-  const responses = await parseAndValidateResponseParams(responseParams, question, subjectIds)
+  const responses = await parseAndValidateResponseParams(values, question)
     .then(responses => responses.map(response => Object.assign({}, defaultResponseAttrs, response)))
 
   const createdIds = await saveResponsesForSurveyQuestion(responses)
-
   return createdIds
 }
 
-async function parseAndValidateResponseParams(responseParams, question, subjectIds) {
-  const rawResponses = await parseResponseParams(responseParams, subjectIds, question.subjectType)
-  const responses = parseResponses(rawResponses, question.responseType)
-
-  await validateResponses(responses, subjectIds, question.responseType)
-
-  return responses
+async function assertMatchingQuestionRefExists({surveyId, questionId, values}) {
+  const subjectIds = values.map(v => v.subjectId)
+  const questionRef = await getMatchingQuestionRef({surveyId, questionId, subjectIds})
+  if (!questionRef) {
+    throw new Error(`Matching QuestionRef Not Found! Unable to find an instance of this question [${questionId}] with the given subjectIds [${subjectIds.join(', ')}]`)
+  }
 }
 
-const responseParamParsers = {
-  team: async (responseParams, subjectIds) => {
-    const valuesByHandle = responseParams.reduce((prev, param) => {
-      const [handle, value] = param.split(':')
-      const strippedHandle = handle.replace(/^@/, '')
-      return Object.assign(prev, {[strippedHandle]: value})
-    }, {})
+async function getMatchingQuestionRef({surveyId, questionId, subjectIds}) {
+  const survey = await getSurveyById(surveyId)
+  const questionRef = survey.questionRefs.find(ref =>
+    ref.questionId === questionId &&
+    ref.subjectIds.length === subjectIds.length &&
+    ref.subjectIds.every(id => subjectIds.includes(id))
+  )
+  return questionRef
+}
 
-    const handles = Object.keys(valuesByHandle)
+async function parseAndValidateResponseParams(values, question) {
+  const responses = parseResponseValues(values, question.responseType)
 
-    const idsByHandle = await getHandlesForPlayerIds(subjectIds)
-    assertPlayerHandlesAreValid(handles, Object.keys(idsByHandle))
+  await validateResponses(responses, question.responseType)
 
-    return handles.map(handle => ({
-      subjectId: idsByHandle[handle],
-      value: valuesByHandle[handle],
-    }))
-  },
-  player: async (responseParams, subjectIds) => {
-    return [{subjectId: subjectIds[0], value: responseParams[0]}]
-  },
-  project: async (responseParams, subjectIds) => {
-    return [{subjectId: subjectIds[0], value: responseParams[0]}]
-  },
+  return responses
 }
 
 const responseValueParsers = {
@@ -73,17 +64,7 @@ const multipartValidators = {
   }
 }
 
-function parseResponseParams(responseParams, subjectIds, subjectType) {
-  const parser = responseParamParsers[subjectType]
-
-  if (!parser) {
-    throw new Error(`Missing param parser for subject type: ${subjectType}!`)
-  }
-
-  return parser(responseParams, subjectIds)
-}
-
-function parseResponses(unparsedValues, responseType) {
+function parseResponseValues(unparsedValues, responseType) {
   return unparsedValues.map(({subjectId, value}) => ({
     subjectId,
     value: parseValue(value, responseType)
@@ -100,9 +81,8 @@ function parseValue(value, type) {
   return parser(value)
 }
 
-async function validateResponses(responses, subjectIds, responseType) {
+async function validateResponses(responses, responseType) {
   await assertValidResponseValues(responses.map(r => r.value), responseType)
-  assertCorrectNumberOfResponses(responses, subjectIds)
   if (responses.length > 1) {
     assertValidMultipartResponse(responses, responseType)
   }
@@ -127,39 +107,6 @@ function assertValidResponseValues(values, type) {
   ).catch(e => {
     throw new BadInputError(`Invalid ${type} response. ${e}`)
   })
-}
-
-function assertPlayerHandlesAreValid(responseHandles, teamPlayerHandles) {
-  const invalidHandles = []
-  responseHandles.forEach(handle => {
-    if (teamPlayerHandles.indexOf(handle) < 0) {
-      invalidHandles.push(handle)
-    }
-  })
-  if (invalidHandles.length > 0) {
-    throw new BadInputError(`Whoops! These players are not on your team: ${invalidHandles.join(' ')}
-
-Your team was: ${teamPlayerHandles.join(' ')}`)
-  }
-}
-
-function assertCorrectNumberOfResponses(responses, subjectIds) {
-  const subjectPartCount = subjectIds.length
-  if (responses.length !== subjectPartCount) {
-    throw new BadInputError(`Expected responses for all ${subjectPartCount} team members, but you only provided ${responses.length}`)
-  }
-}
-
-function getHandlesForPlayerIds(ids) {
-  return graphQLFetcher(process.env.IDM_BASE_URL)({
-    query: 'query ($ids: [ID]!) { getUsersByIds(ids: $ids) { id handle } }',
-    variables: {ids},
-  })
-  .then(json => json.data.getUsersByIds)
-  .then(users => users.reduce(
-    (prev, u) => Object.assign(prev, {[u.handle]: u.id}),
-    {}
-  ))
 }
 
 function assertValidMultipartResponse(responseParts, type) {
