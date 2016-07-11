@@ -13,7 +13,7 @@ import {getCycleById} from '../../server/db/cycle'
 export const useFixture = {
   buildOneQuestionSurvey() {
     beforeEach(function () {
-      this.buildOneQuestionSurvey = async function ({questionAttrs, subject}) {
+      this.buildOneQuestionSurvey = async function ({questionAttrs, subjectIds}) {
         this.project = await factory.create('project')
         const cycleIds = getCycleIds(this.project)
         this.cycleId = cycleIds[cycleIds.length - 1]
@@ -22,7 +22,7 @@ export const useFixture = {
 
         this.question = await factory.create('question', questionAttrs)
         this.survey = await factory.create('survey', {
-          questionRefs: [{questionId: this.question.id, subject: subject()}]
+          questionRefs: [{questionId: this.question.id, subjectIds: subjectIds()}]
         })
         await setRetrospectiveSurveyForCycle(this.project.id, this.cycleId, this.survey.id)
       }
@@ -43,13 +43,13 @@ export const useFixture = {
             responseType: 'text',
           })
           questionRefs = this.teamPlayerIds.map(playerId => ({
-            subject: () => playerId,
+            subjectIds: () => [playerId],
             questionId: this.surveyQuestion.id
           }))
         }
 
         this.survey = await factory.create('survey', {
-          questionRefs: questionRefs.map(({questionId, subject}) => ({questionId, subject: subject()}))
+          questionRefs: questionRefs.map(({questionId, subjectIds}) => ({questionId, subjectIds: subjectIds()}))
         })
         await setRetrospectiveSurveyForCycle(this.project.id, this.cycleId, this.survey.id)
         this.project = await getProjectById(this.project.id)
@@ -73,8 +73,8 @@ export const useFixture = {
           this.questionB = await factory.create('question',
             {body: 'B', responseType: 'percentage', subjectType: 'project'})
           questionRefs = [
-            {name: 'A', questionId: this.questionA.id, subject: this.project.id},
-            {name: 'B', questionId: this.questionB.id, subject: this.project.id},
+            {name: 'A', questionId: this.questionA.id, subjectIds: [this.project.id]},
+            {name: 'B', questionId: this.questionB.id, subjectIds: [this.project.id]},
           ]
         }
 

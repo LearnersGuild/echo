@@ -26,33 +26,20 @@ function inflateSurveySubjects(survey) {
 }
 
 async function inflateSurveyQuestionSubjects(questions) {
-  try {
-    const playerIds = getSubjects(questions)
-    const playerInfo = await getPlayerInfoByIds(playerIds)
+  const playerIds = getSubjects(questions)
+  const playerInfo = await getPlayerInfoByIds(playerIds)
 
-    const inflatedQuestions = questions.map(question => {
-      let inflatedSubject
-      if (Array.isArray(question.subject)) {
-        inflatedSubject = question.subject.map(playerId => playerInfo[playerId])
-      } else {
-        inflatedSubject = playerInfo[question.subject]
-      }
-      return Object.assign({}, question, {subject: inflatedSubject})
-    })
+  const inflatedQuestions = questions.map(question => {
+    const inflatedSubject = question.subjectIds.map(playerId => playerInfo[playerId])
+    return Object.assign({}, question, {subjects: inflatedSubject})
+  })
 
-    return inflatedQuestions
-  } catch (e) {
-    throw (e)
-  }
+  return inflatedQuestions
 }
 
 function getSubjects(questions) {
-  return questions.reduce((prev, question) => {
-    if (Array.isArray(question.subject)) {
-      return prev.concat(question.subject)
-    }
-    return prev.concat([question.subject])
-  }, [])
+  return questions
+    .reduce((prev, question) => prev.concat(question.subjectIds), [])
 }
 
 function getPlayerInfoByIds(playerIds) {

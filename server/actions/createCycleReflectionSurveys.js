@@ -76,7 +76,7 @@ const questionRefBuilders = {
       case 'project':
         return [{
           questionId: question.id,
-          subject: project.id,
+          subjectIds: [project.id],
         }]
 
       default:
@@ -91,13 +91,13 @@ const questionRefBuilders = {
       case 'team':
         return [{
           questionId: question.id,
-          subject: teamPlayerIds
+          subjectIds: teamPlayerIds,
         }]
 
       case 'player':
         return teamPlayerIds.map(playerId => ({
           questionId: question.id,
-          subject: playerId
+          subjectIds: [playerId],
         }))
 
       default:

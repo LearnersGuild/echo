@@ -45,16 +45,16 @@ describe(testContext(__filename), function () {
         subjectType: 'team'
       })
       await this.buildSurvey([
-        {questionId: teamQuestion.id, subject: () => this.teamPlayerIds},
+        {questionId: teamQuestion.id, subjectIds: () => this.teamPlayerIds},
       ])
       const responseData = []
       this.teamPlayerIds.forEach(respondentId => {
-        this.teamPlayerIds.forEach(subject => {
+        this.teamPlayerIds.forEach(subjectId => {
           responseData.push({
             questionId: teamQuestion.id,
             surveyId: this.survey.id,
             respondentId,
-            subject,
+            subjectId,
             value: 20
           })
         })

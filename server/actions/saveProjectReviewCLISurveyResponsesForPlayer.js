@@ -7,14 +7,14 @@ export default async function saveProjectReviewCLISurveyResponsesForPlayer(respo
 
   const createdIdLists = await Promise.all(
     namedQuestionResponses.map(async ({questionName, responseParams}) => {
-      const {questionId, subject} = survey.questionRefs.find(ref => ref.name === questionName)
+      const {questionId, subjectIds} = survey.questionRefs.find(ref => ref.name === questionName)
 
       return await saveSurveyResponse({
         respondentId,
         responseParams,
         surveyId: survey.id,
         questionId,
-        subject,
+        subjectIds,
       })
     })
   )

@@ -68,7 +68,7 @@ describe(testContext(__filename), function () {
           survey.questionRefs.forEach(ref => expect(ref).to.have.property('name'))
 
           const projectIsSubjectOfEveryQuestion =
-            survey.questionRefs.every(({subject}) => subject === project.id)
+            survey.questionRefs.every(({subjectIds}) => subjectIds[0] === project.id)
           expect(projectIsSubjectOfEveryQuestion).to.be.true
         })
       })
@@ -104,78 +104,68 @@ describe(testContext(__filename), function () {
 
   describe('createRetrospectiveSurveys', function () {
     beforeEach(async function () {
-      try {
-        this.cycle = await factory.create('cycle')
-        this.players = await factory.createMany('player', 8, {chapterId: this.cycle.chapterId})
-        this.projects = await Promise.all(Array.from(Array(2).keys()).map(i => {
-          return factory.create('project', {
-            chapterId: this.cycle.chapterId,
-            cycleHistory: [
-              {
-                cycleId: this.cycle.id,
-                playerIds: this.players.slice(i * 4, i * 4 + 4).map(p => p.id)
-              }
-            ]
-          })
-        }))
-      } catch (e) {
-        throw (e)
-      }
+      this.cycle = await factory.create('cycle')
+      this.players = await factory.createMany('player', 8, {chapterId: this.cycle.chapterId})
+      this.projects = await Promise.all(Array.from(Array(2).keys()).map(i => {
+        return factory.create('project', {
+          chapterId: this.cycle.chapterId,
+          cycleHistory: [
+            {
+              cycleId: this.cycle.id,
+              playerIds: this.players.slice(i * 4, i * 4 + 4).map(p => p.id)
+            }
+          ]
+        })
+      }))
     })
 
     describe('when there is a restrospective surveyBlueprint with questions', function () {
       beforeEach(async function() {
-        try {
-          this.teamQuestions = await factory.createMany('question', {subjectType: 'team'}, 2)
-          this.playerQuestions = await factory.createMany('question', {subjectType: 'player'}, 2)
-          this.questions = this.teamQuestions.concat(this.playerQuestions)
-          this.surveyBlueprint = await factory.create('surveyBlueprint', {
-            descriptor: RETROSPECTIVE_DESCRIPTOR,
-            defaultQuestionRefs: this.questions.map(q => ({questionId: q.id}))
-          })
-        } catch (e) {
-          throw (e)
-        }
+        this.teamQuestions = await factory.createMany('question', {subjectType: 'team'}, 2)
+        this.playerQuestions = await factory.createMany('question', {subjectType: 'player'}, 2)
+        this.questions = this.teamQuestions.concat(this.playerQuestions)
+        this.surveyBlueprint = await factory.create('surveyBlueprint', {
+          descriptor: RETROSPECTIVE_DESCRIPTOR,
+          defaultQuestionRefs: this.questions.map(q => ({questionId: q.id}))
+        })
       })
 
       it('creates a survey for each project team with all of the default retro questions', async function() {
-        try {
-          await createRetrospectiveSurveys(this.cycle)
+        await createRetrospectiveSurveys(this.cycle)
 
-          const surveys = await r.table('surveys').run()
-          expect(surveys).to.have.length(this.projects.length)
+        const surveys = await r.table('surveys').run()
+        expect(surveys).to.have.length(this.projects.length)
 
-          const updatedProjects = await projectsTable.getAll(...this.projects.map(p => p.id))
-          updatedProjects.forEach(project => {
-            const surveyId = getProjectHistoryForCycle(project, this.cycle.id).retrospectiveSurveyId
-            const survey = surveys.find(({id}) => id === surveyId)
+        const updatedProjects = await projectsTable.getAll(...this.projects.map(p => p.id))
+        updatedProjects.forEach(project => {
+          const surveyId = getProjectHistoryForCycle(project, this.cycle.id).retrospectiveSurveyId
+          const survey = surveys.find(({id}) => id === surveyId)
 
-            expect(survey).to.exist
+          expect(survey).to.exist
 
-            const questionIds = this.questions.map(({id}) => id)
-            const surveyRefIds = survey.questionRefs.map(({questionId}) => questionId)
+          const questionIds = this.questions.map(({id}) => id)
+          const surveyRefIds = survey.questionRefs.map(({questionId}) => questionId)
 
-            const refOffsets = surveyRefIds.map(refId => questionIds.indexOf(refId))
-            expect(refOffsets).to.deep.equal(refOffsets.sort())
+          const refOffsets = surveyRefIds.map(refId => questionIds.indexOf(refId))
+          expect(refOffsets).to.deep.equal(refOffsets.sort())
 
-            expectSetEquality(questionIds, surveyRefIds)
+          expectSetEquality(questionIds, surveyRefIds)
 
-            const playerIds = getTeamPlayerIds(project, this.cycle.id)
-            this.teamQuestions.forEach(question => {
-              const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
-              expect(refs).to.have.length(1)
-              expect(refs[0].subject.sort()).to.deep.eq(playerIds.sort())
-            })
-
-            this.playerQuestions.forEach(question => {
-              const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
-              expect(refs).to.have.length(playerIds.length)
-              expect(refs.map(ref => ref.subject).sort()).to.deep.eq(playerIds.sort())
-            })
+          const playerIds = getTeamPlayerIds(project, this.cycle.id)
+          this.teamQuestions.forEach(question => {
+            const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
+            expect(refs).to.have.length(1)
+            expect(refs[0].subjectIds.sort()).to.deep.eq(playerIds.sort())
           })
-        } catch (e) {
-          throw (e)
-        }
+
+          const compareFirstElement = ([a], [b]) => a < b ? -1 : 1
+          this.playerQuestions.forEach(question => {
+            const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
+            expect(refs).to.have.length(playerIds.length)
+            expect(refs.map(ref => ref.subjectIds).sort(compareFirstElement))
+             .to.deep.eq(playerIds.sort().map(id => [id]))
+          })
+        })
       })
 
       describe('when there are other projects not in this cycle', function () {

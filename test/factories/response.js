@@ -10,7 +10,7 @@ export default function define(factory) {
     questionId: factory.assoc('question', 'id'),
     respondentId: factory.assoc('player', 'id'),
     surveyId: factory.assoc('survey', 'id'),
-    subject: factory.assoc('player', 'id'),
+    subjectId: factory.assoc('player', 'id'),
     createdAt: cb => cb(null, now),
     updatedAt: cb => cb(null, now),
   })

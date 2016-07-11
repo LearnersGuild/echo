@@ -30,7 +30,7 @@ describe(testContext(__filename), function () {
         // Complete the Survey as the first player
         .then(() =>
           factory.createMany('response', this.survey.questionRefs.map(ref => ({
-            subject: ref.subject,
+            subjectIds: ref.subjectIds,
             surveyId: this.survey.id,
             questionId: ref.questionId,
             respondentId: this.teamPlayerIds[0],
@@ -43,7 +43,7 @@ describe(testContext(__filename), function () {
         // Start, but do not complete the Survey as the second player
         .then(() =>
           factory.createMany('response', this.survey.questionRefs.map(ref => ({
-            subject: ref.subject,
+            subjectIds: ref.subjectIds,
             surveyId: this.survey.id,
             questionId: ref.questionId,
             respondentId: this.teamPlayerIds[1],
@@ -79,7 +79,7 @@ describe(testContext(__filename), function () {
 
       it('returns the correct survey', function () {
         return expect(
-          getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
+          getRetrospectiveSurveyForPlayer(this.teamPlayerIds[1])
         ).to.eventually.have.property('id', this.survey.id)
       })
 
@@ -102,7 +102,7 @@ describe(testContext(__filename), function () {
 
         const question = await factory.create('question')
         this.surveys = await factory.createMany('survey', this.projects.length, {
-          questionRefs: [{subject: this.teamPlayerIds[0], questionId: question.id}]
+          questionRefs: [{subjectIds: [this.teamPlayerIds[0]], questionId: question.id}]
         })
         await setRetrospectiveSurveyForCycle(project1.id, getLatestCycleId(project1), this.surveys[0].id)
         await setRetrospectiveSurveyForCycle(project2.id, getLatestCycleId(project2), this.surveys[1].id)
@@ -138,13 +138,13 @@ describe(testContext(__filename), function () {
         return this.buildSurvey()
       })
 
-      it('adds a questions array with subjects and responseIntructions', function () {
+      it('adds a questions array with subjectIds and responseIntructions', function () {
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(async result => {
             const {questionRefs} = await getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
             expect(questionRefs).to.have.length.gt(0)
             expect(result).to.have.property('questions').with.length(questionRefs.length)
-            result.questions.forEach(question => expect(question).to.have.property('subject'))
+            result.questions.forEach(question => expect(question).to.have.property('subjectIds'))
             result.questions.forEach(question => expect(question).to.have.property('responseIntructions'))
           })
       })
@@ -154,11 +154,11 @@ describe(testContext(__filename), function () {
       beforeEach(function () {
         return this.buildOneQuestionSurvey({
           questionAttrs: {subjectType: 'player', responseType: 'text'},
-          subject: () => this.teamPlayerIds[1]
+          subjectIds: () => [this.teamPlayerIds[1]]
         })
         .then(() =>
           factory.create('response', {
-            subject: this.teamPlayerIds[1],
+            subjectId: this.teamPlayerIds[1],
             surveyId: this.survey.id,
             questionId: this.survey.questionRefs[0].questionId,
             respondentId: this.teamPlayerIds[0],
@@ -172,8 +172,7 @@ describe(testContext(__filename), function () {
       it('includes the response', function () {
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
-            expect(result.questions[0]).to.have.property('response')
-              .and.to.have.property('id', this.response.id)
+            expect(result.questions[0].response[0]).to.have.property('id', this.response.id)
           })
       })
     })
@@ -182,7 +181,7 @@ describe(testContext(__filename), function () {
       beforeEach(function () {
         return this.buildOneQuestionSurvey({
           questionAttrs: {subjectType: 'team'},
-          subject: () => this.teamPlayerIds
+          subjectIds: () => this.teamPlayerIds
         })
       })
 
@@ -198,11 +197,11 @@ describe(testContext(__filename), function () {
       beforeEach(function () {
         return this.buildOneQuestionSurvey({
           questionAttrs: {subjectType: 'team'},
-          subject: () => this.teamPlayerIds
+          subjectIds: () => this.teamPlayerIds
         })
         .then(() =>
-          factory.createMany('response', this.teamPlayerIds.map(subject => ({
-            subject,
+          factory.createMany('response', this.teamPlayerIds.map(subjectId => ({
+            subjectId,
             surveyId: this.survey.id,
             questionId: this.survey.questionRefs[0].questionId,
             respondentId: this.teamPlayerIds[0],
@@ -214,9 +213,12 @@ describe(testContext(__filename), function () {
       })
 
       it('includes all response parts', function () {
+        const sortById = (a, b) => a.id < b.id ? -1 : 1
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
-            expect(result.questions[0].response).to.deep.eq(this.responses)
+            expect(
+              result.questions[0].response.sort(sortById)
+            ).to.deep.eq(this.responses.sort(sortById))
           })
       })
     })
