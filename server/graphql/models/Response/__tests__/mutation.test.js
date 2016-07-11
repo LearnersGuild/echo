@@ -3,6 +3,8 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
 import fields from '../mutation'
 import factory from '../../../../../test/factories'
+import {update as updateCycle} from '../../../../../server/db/cycle'
+import {COMPLETE} from '../../../../../common/models/cycle'
 import {withDBCleanup, runGraphQLMutation, useFixture} from '../../../../../test/helpers'
 
 describe(testContext(__filename), function () {
@@ -55,13 +57,24 @@ describe(testContext(__filename), function () {
     it('returns error message when missing parts', function () {
       return expect(
         this.invokeAPI(Array(2).fill(50))
-      ).to.be.rejectedWith('Matching QuestionRef Not Found')
+      ).to.be.rejectedWith('Failed to save responses')
     })
 
     it('returns helpful error messages for invalid values', function () {
       return expect(
         this.invokeAPI(Array(this.teamPlayerIds.length).fill(101))
       ).to.be.rejectedWith(/must be less than or equal to 100/)
+    })
+
+    describe('when the cycle is not in reflection', function () {
+      beforeEach(async function () {
+        await updateCycle({id: this.cycleId, state: COMPLETE})
+      })
+
+      it('returns an error', function () {
+        return expect(this.invokeAPI())
+          .to.be.rejectedWith(/cycle is not in the "reflection" state/)
+      })
     })
   })
 
@@ -101,6 +114,17 @@ describe(testContext(__filename), function () {
       return expect(
         this.invokeAPI(this.project.name, [{questionName: 'A', responseParams: ['101']}])
       ).to.be.rejectedWith(/must be less than or equal to 100/)
+    })
+
+    describe('when the cycle is not in reflection', function () {
+      beforeEach(async function () {
+        await updateCycle({id: this.cycle.id, state: COMPLETE})
+      })
+
+      it('returns an error', function () {
+        return expect(this.invokeAPI())
+          .to.be.rejectedWith(/cycle is not in the "reflection" state/)
+      })
     })
   })
 })
