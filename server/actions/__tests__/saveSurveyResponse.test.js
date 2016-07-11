@@ -25,7 +25,6 @@ describe(testContext(__filename), function () {
         respondentId: this.currentUserId,
         questionId: this.question.id,
         surveyId: this.survey.id,
-        subjectIds: this.teamPlayerIds,
         values: this.teamPlayerIds.map(subjectId => ({subjectId, value: 25})),
       })
 
@@ -40,14 +39,17 @@ describe(testContext(__filename), function () {
       })
     })
 
-    it('validates the correct number of responses are given', function () {
+    it('validates that the subjectIds + questionId given match a questionRef in the survey', function () {
+      const valuesWithOneSubjectMissing = this.teamPlayerIds
+        .slice(1)
+        .map(subjectId => ({subjectId, value: 25}))
+
       return expect(
         saveSurveyResponse({
           respondentId: this.currentUserId,
           questionId: this.question.id,
           surveyId: this.survey.id,
-          subjectIds: this.teamPlayerIds,
-          values: [{subjectId: this.teamPlayerIds[0], value: 100}],
+          values: valuesWithOneSubjectMissing,
         })
       ).to.be.rejectedWith('Matching QuestionRef Not Found')
     })
@@ -58,7 +60,6 @@ describe(testContext(__filename), function () {
          respondentId: this.currentUserId,
          questionId: this.question.id,
          surveyId: this.survey.id,
-         subjectIds: this.teamPlayerIds,
          values: this.teamPlayerIds.map(subjectId => ({subjectId, value: 50})),
        })
       ).to.be.rejectedWith('Percentages must add up to 100%')
@@ -79,7 +80,6 @@ describe(testContext(__filename), function () {
         respondentId: this.currentUserId,
         questionId: this.question.id,
         surveyId: this.survey.id,
-        subjectIds: [this.teamPlayerIds[1]],
         values: [{subjectId: this.teamPlayerIds[1], value: 'Judy is Awesome!'}],
       })
 
@@ -107,7 +107,6 @@ describe(testContext(__filename), function () {
         respondentId: this.currentUserId,
         questionId: this.question.id,
         surveyId: this.survey.id,
-        subjectIds: [this.teamPlayerIds[1]],
         values: [{subjectId: this.teamPlayerIds[1], value: '6'}],
       })
 
@@ -135,7 +134,6 @@ describe(testContext(__filename), function () {
         respondentId: this.currentUserId,
         questionId: this.question.id,
         surveyId: this.survey.id,
-        subjectIds: [this.teamPlayerIds[1]],
         values: [{subjectId: this.teamPlayerIds[1], value: '99'}],
       })
 
@@ -154,7 +152,6 @@ describe(testContext(__filename), function () {
           respondentId: this.currentUserId,
           questionId: this.question.id,
           surveyId: this.survey.id,
-          subjectIds: [this.teamPlayerIds[1]],
           values: [{subjectId: this.teamPlayerIds[1], value: '110'}],
         })
       ).to.be.rejectedWith('must be less than or equal to 100')
