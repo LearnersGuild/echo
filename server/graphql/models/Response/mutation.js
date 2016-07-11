@@ -4,9 +4,9 @@ import {GraphQLNonNull, GraphQLID, GraphQLString} from 'graphql'
 import {GraphQLList, GraphQLObjectType} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
 
-import r from '../../../../db/connect'
 import {userCan} from '../../../../common/util'
 import saveProjectReviewCLISurveyResponsesForPlayer from '../../../../server/actions/saveProjectReviewCLISurveyResponsesForPlayer'
+import saveSurveyResponse from '../../../../server/actions/saveSurveyResponse'
 import {parseQueryError} from '../../../../server/db/errors'
 
 import {SurveyResponseInput, CLINamedSurveyResponse} from './schema'
@@ -32,9 +32,23 @@ export default {
         type: new GraphQLNonNull(SurveyResponseInput)
       }
     },
-    async resolve(source, {response}) {
-      const fakeUUIDS = await Promise.all(response.values.map(() => r.uuid()))
-      return {createdIds: fakeUUIDS}
+    async resolve(source, {response}, {rootValue: {currentUser}}) {
+      if (!currentUser || !userCan(currentUser, 'saveResponse')) {
+        throw new GraphQLError('You are not authorized to do that.')
+      }
+
+      if (response.respondentId && currentUser.id !== response.respondentId) {
+        throw new GraphQLError('You cannot submit responses for other players.')
+      }
+
+      const createdIds = await saveSurveyResponse({
+        respondentId: currentUser.id,
+        surveyId: response.surveyId,
+        questionId: response.questionId,
+        values: response.values,
+      })
+
+      return {createdIds}
     },
   },
   saveProjectReviewCLISurveyResponses: {

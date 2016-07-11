@@ -52,13 +52,13 @@ describe(testContext(__filename), function () {
         .then(createdIds => expect(createdIds).have.length(this.teamPlayerIds.length))
     })
 
-    it.skip('returns helpful error messages when missing parts', function () {
+    it('returns error message when missing parts', function () {
       return expect(
-        this.invokeAPI(Array(this.teamPlayerIds.length - 1).fill(20))
-      ).to.be.rejectedWith(/Expected responses for all \d team members/)
+        this.invokeAPI(Array(2).fill(50))
+      ).to.be.rejectedWith('Matching QuestionRef Not Found')
     })
 
-    it.skip('returns helpful error messages for invalid values', function () {
+    it('returns helpful error messages for invalid values', function () {
       return expect(
         this.invokeAPI(Array(this.teamPlayerIds.length).fill(101))
       ).to.be.rejectedWith(/must be less than or equal to 100/)
