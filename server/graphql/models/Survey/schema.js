@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLID, GraphQLString, GraphQLBoolean} from 'graphql'
-import {GraphQLObjectType, GraphQLInterfaceType, GraphQLUnionType, GraphQLEnumType, GraphQLList} from 'graphql/type'
+import {GraphQLObjectType, GraphQLEnumType, GraphQLList} from 'graphql/type'
 
 import {GraphQLDateTime} from 'graphql-custom-types'
 import {ThinCycle} from '../../../../server/graphql/models/Cycle/schema'
@@ -31,12 +31,6 @@ const CommonSurveyQuestionFields = {
   responseIntructions: {type: GraphQLString, description: 'Instructions for answering the question'},
 }
 
-const SurveyQuestionInterface = new GraphQLInterfaceType({
-  name: 'SurveyQuestionInterface',
-  fields: () => CommonSurveyQuestionFields,
-  resolveType: resolveSurveyQuestionType,
-})
-
 export const PlayerSubject = new GraphQLObjectType({
   name: 'PlayerSubject',
   description: 'A describes a player that is the subject of a question',
@@ -56,14 +50,13 @@ export const PlayerSubject = new GraphQLObjectType({
   })
 })
 
-export const MultiPartSubjectSurveyQuestion = new GraphQLObjectType({
-  name: 'MultiPartSubjectSurveyQuestion',
-  description: 'A survey question about multiple subjects',
-  interfaces: [SurveyQuestionInterface],
+export const SurveyQuestion = new GraphQLObjectType({
+  name: 'SurveyQuestion',
+  description: 'A survey question',
   fields: () => (Object.assign({},
     CommonSurveyQuestionFields,
     {
-      subject: {
+      subjects: {
         type: new GraphQLNonNull(new GraphQLList(PlayerSubject)),
         description: 'The list of ids of the persons or things this question is asking about',
       },
@@ -74,38 +67,6 @@ export const MultiPartSubjectSurveyQuestion = new GraphQLObjectType({
     }
   ))
 })
-
-export const SinglePartSubjectSurveyQuestion = new GraphQLObjectType({
-  name: 'SinglePartSubjectSurveyQuestion',
-  description: 'A survey question about a single subject',
-  interfaces: [SurveyQuestionInterface],
-  fields: () => (Object.assign({},
-    CommonSurveyQuestionFields,
-    {
-      subject: {
-        type: new GraphQLNonNull(PlayerSubject),
-        description: 'The id of the person or this question is asking about',
-      },
-      response: {
-        type: Response,
-        description: 'The respondants response to this question',
-      },
-    }
-  ))
-})
-
-export const SurveyQuestion = new GraphQLUnionType({
-  name: 'SurveyQuestion',
-  types: [SinglePartSubjectSurveyQuestion, MultiPartSubjectSurveyQuestion],
-  resolveType: resolveSurveyQuestionType,
-})
-
-function resolveSurveyQuestionType(value) {
-  if (Array.isArray(value.subject)) {
-    return MultiPartSubjectSurveyQuestion
-  }
-  return SinglePartSubjectSurveyQuestion
-}
 
 export const Survey = new GraphQLObjectType({
   name: 'Survey',

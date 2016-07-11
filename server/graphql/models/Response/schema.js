@@ -3,9 +3,49 @@ import {GraphQLObjectType, GraphQLInputObjectType} from 'graphql/type'
 
 import {GraphQLDateTime} from 'graphql-custom-types'
 
+export const ResponseInputValue = new GraphQLInputObjectType({
+  name: 'ResponseInputValue',
+  description: 'A response value for a question',
+  fields: () => ({
+    subjectId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The subjectId this response pertains to',
+    },
+    value: {
+      // Becuase GraphQL Doesn't support polymorphic input types
+      // this just has to be a string.
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The response value',
+    },
+  })
+})
+
+export const SurveyResponseInput = new GraphQLInputObjectType({
+  name: 'SurveyResponseInput',
+  description: 'A response to a question on a survey',
+  fields: () => ({
+    questionId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The the UUID of the question this is a repsonse to',
+    },
+    respondentId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The the UUID of the user authoring this response',
+    },
+    surveyId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The survey this response is associated with',
+    },
+    values: {
+      type: new GraphQLList(ResponseInputValue),
+      description: 'The value(s) of the response',
+    },
+  })
+})
+
 export const CLISurveyResponse = new GraphQLInputObjectType({
   name: 'CLISurveyResponse',
-  description: 'A response to a question on a survey by number',
+  description: 'A CLI response to a question on a survey by number',
   fields: () => ({
     questionNumber: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -20,7 +60,7 @@ export const CLISurveyResponse = new GraphQLInputObjectType({
 
 export const CLINamedSurveyResponse = new GraphQLInputObjectType({
   name: 'CLINamedSurveyResponse',
-  description: 'A Response to a named question on a survey',
+  description: 'A CLI Response to a named question on a survey',
   fields: () => ({
     questionName: {
       type: new GraphQLNonNull(GraphQLString),
@@ -58,9 +98,9 @@ export const Response = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The value of the response'
     },
-    subject: {
+    subjectId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The subject of this response'
+      description: 'The id of the subject of this response'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLDateTime),

@@ -37,7 +37,7 @@ describe(testContext(__filename), function () {
       responses.forEach(response => {
         expect(response).to.have.property('surveyId', this.survey.id)
         expect(response).to.have.property('respondentId', this.currentUser.id)
-        expect(response.subject).to.eq(this.project.id)
+        expect(response.subjectId).to.eq(this.project.id)
       })
     })
   })
@@ -61,7 +61,7 @@ describe(testContext(__filename), function () {
       responses.forEach(response => {
         expect(response).to.have.property('surveyId', this.survey.id)
         expect(response).to.have.property('respondentId', this.currentUser.id)
-        expect(response.subject).to.eq(this.project.id)
+        expect(response.subjectId).to.eq(this.project.id)
       })
     })
   })

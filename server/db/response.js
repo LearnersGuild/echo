@@ -25,32 +25,28 @@ export function getSurveyResponses(surveyId, questionId) {
 
 export async function saveResponsesForSurveyQuestion(newResponses) {
   const {questionId, respondentId, surveyId} = newResponses[0]
-  const subjects = newResponses.map(response => response.subject)
+  const subjectIds = newResponses.map(response => response.subjectId)
 
-  try {
-    const existingResponses = await getSurveyResponsesForPlayer(respondentId, surveyId, questionId)
-      .filter(row => r.expr(subjects).contains(row('subject'))).run()
+  const existingResponses = await getSurveyResponsesForPlayer(respondentId, surveyId, questionId)
+    .filter(row => r.expr(subjectIds).contains(row('subjectId'))).run()
 
-    const responsesToUpdate = existingResponses.map(existingResponse => {
-      const responseToUpdate = newResponses.find(response => response.subject === existingResponse.subject)
-      return Object.assign({}, responseToUpdate, {id: existingResponse.id, updatedAt: r.now()})
-    })
+  const responsesToUpdate = existingResponses.map(existingResponse => {
+    const responseToUpdate = newResponses.find(response => response.subjectId === existingResponse.subjectId)
+    return Object.assign({}, responseToUpdate, {id: existingResponse.id, updatedAt: r.now()})
+  })
 
-    await updateAll(responsesToUpdate)
+  await updateAll(responsesToUpdate)
 
-    const responsesToInsert = newResponses
-      .filter(update => !existingResponses.find(existing => existing.subject === update.subject))
-      .map(response => Object.assign({}, response, {createdAt: r.now(), updatedAt: r.now()}))
+  const responsesToInsert = newResponses
+    .filter(update => !existingResponses.find(existing => existing.subjectId === update.subjectId))
+    .map(response => Object.assign({}, response, {createdAt: r.now(), updatedAt: r.now()}))
 
-    /* eslint-disable camelcase */
-    const {generated_keys} = await insert(responsesToInsert)
-    const responseIds = existingResponses.map(({id}) => id).concat(generated_keys || [])
-    /* eslint-enable camelcase */
+  /* eslint-disable camelcase */
+  const {generated_keys} = await insert(responsesToInsert)
+  const responseIds = existingResponses.map(({id}) => id).concat(generated_keys || [])
+  /* eslint-enable camelcase */
 
-    return responseIds
-  } catch (e) {
-    throw (e)
-  }
+  return responseIds
 }
 
 function insert(responses) {
