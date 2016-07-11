@@ -28,8 +28,8 @@ describe(testContext(__filename), function () {
         subjectType: 'player'
       })
       await this.buildSurvey([
-        {questionId: teamQuestion.id, subject: () => this.teamPlayerIds},
-        {questionId: playerQuestion.id, subject: () => this.teamPlayerIds[1]},
+        {questionId: teamQuestion.id, subjectIds: () => this.teamPlayerIds},
+        {questionId: playerQuestion.id, subjectIds: () => [this.teamPlayerIds[1]]},
       ])
       this.currentUser = await factory.build('user', {id: this.teamPlayerIds[0]})
 
@@ -59,7 +59,7 @@ describe(testContext(__filename), function () {
     it('renders the question body template', function () {
       return compileSurveyQuestionDataForPlayer(this.currentUser.id, 2).then(question => {
         expect(question.body)
-          .to.contain(`@${question.subject.handle}`)
+          .to.contain(`@${question.subjects[0].handle}`)
       })
     })
   })
@@ -74,7 +74,7 @@ describe(testContext(__filename), function () {
     it('renders the question body templates', function () {
       return compileSurveyDataForPlayer(this.currentUser.id).then(result =>
         expect(result.questions[1].body)
-          .to.contain(`@${result.questions[1].subject.handle}`)
+          .to.contain(`@${result.questions[1].subjects[0].handle}`)
       )
     })
 

@@ -4,7 +4,7 @@ import {getQuestionById} from '../../server/db/question'
 import {graphQLFetcher} from '../../server/util'
 import {BadInputError} from '../../server/errors'
 
-export default async function saveSurveyResponse({respondentId, responseParams, surveyId, questionId, subject}) {
+export default async function saveSurveyResponse({respondentId, responseParams, surveyId, questionId, subjectIds}) {
   const question = await getQuestionById(questionId)
 
   const defaultResponseAttrs = {
@@ -13,7 +13,7 @@ export default async function saveSurveyResponse({respondentId, responseParams, 
     surveyId,
   }
 
-  const responses = await parseAndValidateResponseParams(responseParams, question, subject)
+  const responses = await parseAndValidateResponseParams(responseParams, question, subjectIds)
     .then(responses => responses.map(response => Object.assign({}, defaultResponseAttrs, response)))
 
   const createdIds = await saveResponsesForSurveyQuestion(responses)
@@ -21,21 +21,17 @@ export default async function saveSurveyResponse({respondentId, responseParams, 
   return createdIds
 }
 
-async function parseAndValidateResponseParams(responseParams, question, subject) {
-  try {
-    const rawResponses = await parseResponseParams(responseParams, subject, question.subjectType)
-    const responses = parseResponses(rawResponses, question.responseType)
+async function parseAndValidateResponseParams(responseParams, question, subjectIds) {
+  const rawResponses = await parseResponseParams(responseParams, subjectIds, question.subjectType)
+  const responses = parseResponses(rawResponses, question.responseType)
 
-    await validateResponses(responses, subject, question.responseType)
+  await validateResponses(responses, subjectIds, question.responseType)
 
-    return responses
-  } catch (e) {
-    throw (e)
-  }
+  return responses
 }
 
 const responseParamParsers = {
-  team: async (responseParams, subject) => {
+  team: async (responseParams, subjectIds) => {
     const valuesByHandle = responseParams.reduce((prev, param) => {
       const [handle, value] = param.split(':')
       const strippedHandle = handle.replace(/^@/, '')
@@ -44,23 +40,19 @@ const responseParamParsers = {
 
     const handles = Object.keys(valuesByHandle)
 
-    try {
-      const idsByHandle = await getHandlesForPlayerIds(subject)
-      assertPlayerHandlesAreValid(handles, Object.keys(idsByHandle))
+    const idsByHandle = await getHandlesForPlayerIds(subjectIds)
+    assertPlayerHandlesAreValid(handles, Object.keys(idsByHandle))
 
-      return handles.map(handle => ({
-        subject: idsByHandle[handle],
-        value: valuesByHandle[handle],
-      }))
-    } catch (e) {
-      throw (e)
-    }
+    return handles.map(handle => ({
+      subjectId: idsByHandle[handle],
+      value: valuesByHandle[handle],
+    }))
   },
-  player: async (responseParams, subject) => {
-    return [{subject, value: responseParams[0]}]
+  player: async (responseParams, subjectIds) => {
+    return [{subjectId: subjectIds[0], value: responseParams[0]}]
   },
-  project: async (responseParams, subject) => {
-    return [{subject, value: responseParams[0]}]
+  project: async (responseParams, subjectIds) => {
+    return [{subjectId: subjectIds[0], value: responseParams[0]}]
   },
 }
 
@@ -81,19 +73,19 @@ const multipartValidators = {
   }
 }
 
-function parseResponseParams(responseParams, subject, subjectType) {
+function parseResponseParams(responseParams, subjectIds, subjectType) {
   const parser = responseParamParsers[subjectType]
 
   if (!parser) {
     throw new Error(`Missing param parser for subject type: ${subjectType}!`)
   }
 
-  return parser(responseParams, subject)
+  return parser(responseParams, subjectIds)
 }
 
 function parseResponses(unparsedValues, responseType) {
-  return unparsedValues.map(({subject, value}) => ({
-    subject,
+  return unparsedValues.map(({subjectId, value}) => ({
+    subjectId,
     value: parseValue(value, responseType)
   }))
 }
@@ -108,15 +100,11 @@ function parseValue(value, type) {
   return parser(value)
 }
 
-async function validateResponses(responses, subject, responseType) {
-  try {
-    await assertValidResponseValues(responses.map(r => r.value), responseType)
-    assertCorrectNumberOfResponses(responses, subject)
-    if (responses.length > 1) {
-      assertValidMultipartResponse(responses, responseType)
-    }
-  } catch (e) {
-    throw (e)
+async function validateResponses(responses, subjectIds, responseType) {
+  await assertValidResponseValues(responses.map(r => r.value), responseType)
+  assertCorrectNumberOfResponses(responses, subjectIds)
+  if (responses.length > 1) {
+    assertValidMultipartResponse(responses, responseType)
   }
 }
 
@@ -155,8 +143,8 @@ Your team was: ${teamPlayerHandles.join(' ')}`)
   }
 }
 
-function assertCorrectNumberOfResponses(responses, subject) {
-  const subjectPartCount = Array.isArray(subject) ? subject.length : 1
+function assertCorrectNumberOfResponses(responses, subjectIds) {
+  const subjectPartCount = subjectIds.length
   if (responses.length !== subjectPartCount) {
     throw new BadInputError(`Expected responses for all ${subjectPartCount} team members, but you only provided ${responses.length}`)
   }

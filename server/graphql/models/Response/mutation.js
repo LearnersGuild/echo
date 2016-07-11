@@ -6,12 +6,10 @@ import {GraphQLError} from 'graphql/error'
 
 import r from '../../../../db/connect'
 import {userCan} from '../../../../common/util'
-import saveRetrospectiveCLISurveyResponseForPlayer from '../../../../server/actions/saveRetrospectiveCLISurveyResponseForPlayer'
 import saveProjectReviewCLISurveyResponsesForPlayer from '../../../../server/actions/saveProjectReviewCLISurveyResponsesForPlayer'
 import {parseQueryError} from '../../../../server/db/errors'
-import {getProjectByName} from '../../../../server/db/project'
 
-import {SurveyResponseInput, CLISurveyResponse, CLINamedSurveyResponse} from './schema'
+import {SurveyResponseInput, CLINamedSurveyResponse} from './schema'
 
 const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
@@ -38,38 +36,6 @@ export default {
       const fakeUUIDS = await Promise.all(response.values.map(() => r.uuid()))
       return {createdIds: fakeUUIDS}
     },
-  },
-  saveRetrospectiveCLISurveyResponse: {
-    type: CreatedIdList,
-    args: {
-      response: {
-        description: 'The response to save',
-        type: new GraphQLNonNull(CLISurveyResponse)
-      },
-      projectName: {
-        type: GraphQLString,
-        description: 'The name of the project whose retrospective survey should be returned. Required if the current user is in more than one project this cycle.'
-      },
-    },
-    resolve(source, {response, projectName}, {rootValue: {currentUser}}) {
-      if (!currentUser || !userCan(currentUser, 'saveResponse')) {
-        throw new GraphQLError('You are not authorized to do that.')
-      }
-
-      const projectId = projectName ? getProjectByName(projectName)('id') : undefined
-
-      return saveRetrospectiveCLISurveyResponseForPlayer(currentUser.id, response, projectId)
-        .then(createdIds => ({createdIds}))
-        .catch(err => {
-          err = parseQueryError(err)
-          if (err.name === 'BadInputError' || err.name === 'LGCustomQueryError') {
-            throw err
-          }
-          console.error(err.stack)
-          sentry.captureException(err)
-          throw new GraphQLError('Failed to save responses')
-        })
-    }
   },
   saveProjectReviewCLISurveyResponses: {
     type: CreatedIdList,

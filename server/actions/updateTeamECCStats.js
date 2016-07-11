@@ -12,10 +12,10 @@ export async function updateTeamECCStats(project, cycleId) {
   const surveyId = projectCycle.retrospectiveSurveyId
   const survey = await getSurveyById(surveyId)
   const {id: questionId} = await getRelativeContributionQuestionForSurvey(survey)
-  const responsesBySubject = await getResponsesBySubject(surveyId, questionId)
+  const responsesBySubjectId = await getResponsesBySubjectId(surveyId, questionId)
 
   const promises = []
-  responsesBySubject.forEach((responses, subjectPlayerId) => {
+  responsesBySubjectId.forEach((responses, subjectPlayerId) => {
     const relativeContributionScores = responses.map(({value}) => value)
     const projectECC = calculateProjectECCStatsForPlayer({teamSize, relativeContributionScores})
     promises.push(updatePlayerECCStats(subjectPlayerId, projectECC, cycleId, project.id))
@@ -42,14 +42,14 @@ export function calculateProjectECCStatsForPlayer({teamSize, relativeContributio
   }
 }
 
-async function getResponsesBySubject(surveyId, questionId) {
+async function getResponsesBySubjectId(surveyId, questionId) {
   const responses = await getSurveyResponses(surveyId, questionId)
 
-  const responsesBySubject = responses.reduce((result, response) => {
-    const current = result.get(response.subject) || []
-    result.set(response.subject, current.concat(response))
+  const responsesBySubjectId = responses.reduce((result, response) => {
+    const current = result.get(response.subjectId) || []
+    result.set(response.subjectId, current.concat(response))
     return result
   }, new Map())
 
-  return responsesBySubject
+  return responsesBySubjectId
 }

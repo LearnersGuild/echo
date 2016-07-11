@@ -98,9 +98,9 @@ export const Response = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The value of the response'
     },
-    subject: {
+    subjectId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The subject of this response'
+      description: 'The id of the subject of this response'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLDateTime),

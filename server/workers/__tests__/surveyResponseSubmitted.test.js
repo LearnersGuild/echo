@@ -28,7 +28,7 @@ describe(testContext(__filename), function () {
       beforeEach('setup test data', function () {
         return this.buildOneQuestionSurvey({
           questionAttrs: {responseType: 'text', subjectType: 'player'},
-          subject: () => this.teamPlayerIds[1]
+          subjectIds: () => [this.teamPlayerIds[1]]
         })
       })
 
@@ -37,7 +37,7 @@ describe(testContext(__filename), function () {
           return factory.create('response', {
             questionId: this.survey.questionRefs[0].questionId,
             surveyId: this.survey.id,
-            subject: this.teamPlayerIds[1],
+            subjectIds: [this.teamPlayerIds[1]],
             respondentId: this.teamPlayerIds[0],
             value: 'value',
           })
@@ -95,7 +95,7 @@ describe(testContext(__filename), function () {
           const overwriteObjs = [this.questionA, this.questionB].map((question, i) => ({
             questionId: question.questionId,
             surveyId: this.survey.id,
-            subject: this.project.id,
+            subjectId: this.project.id,
             respondentId: this.teamPlayerIds[0],
             value: i * 10,
           }))
