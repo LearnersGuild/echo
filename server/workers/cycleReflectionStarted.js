@@ -44,7 +44,7 @@ async function processRetrospectiveStarted(cycle) {
 
 async function sendStartReflectionAnnouncement(cycle) {
   const announcement = `🤔  *Time to start your reflection process for cycle ${cycle.cycleNumber}*!\n`
-  const reflectionInstructions = 'To get started check out `/log --help` and `/review --help`'
+  const reflectionInstructions = 'To get started check out `/retro --help` and `/review --help`'
 
   const chapter = await r.table('chapters').get(cycle.chapterId)
   await Promise.all([
