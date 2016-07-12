@@ -13,7 +13,7 @@ export async function assertPlayersCurrentCycleInState(currentUser, state) {
     .eq(state)
 
   if (!cycleInReflection) {
-    throw new GraphQLError('This action is not allowed when the cycle is not in the "reflection" state')
+    throw new GraphQLError(`This action is not allowed when the cycle is not in the ${state} state`)
   }
 }
 
