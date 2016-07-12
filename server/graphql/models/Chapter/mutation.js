@@ -1,5 +1,3 @@
-import raven from 'raven'
-
 import {GraphQLNonNull, GraphQLString, GraphQLID} from 'graphql'
 import {GraphQLInputObjectType, GraphQLList} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
@@ -9,10 +7,9 @@ import {GraphQLDateTime, GraphQLURL} from 'graphql-custom-types'
 import {userCan} from '../../../../common/util'
 import {chapterSchema} from '../../../../common/validations'
 import r from '../../../../db/connect'
+import {handleError} from '../../../../server/graphql/models/util'
 
 import {Chapter} from './schema'
-
-const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
 const InputChapter = new GraphQLInputObjectType({
   name: 'InputChapter',
@@ -61,8 +58,7 @@ export default {
         }
         throw new GraphQLError('Could not save chapter, please try again')
       } catch (err) {
-        sentry.captureException(err)
-        throw err
+        handleError(err)
       }
     }
   },

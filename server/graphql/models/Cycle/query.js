@@ -1,15 +1,12 @@
-import raven from 'raven'
-
 import {GraphQLNonNull, GraphQLID} from 'graphql'
 import {GraphQLList} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
 
 import {getCycleById} from '../../../db/cycle'
+import {handleError} from '../../../../server/graphql/models/util'
 import r from '../../../../db/connect'
 
 import {Cycle} from './schema'
-
-const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
 export default {
   getCycleById: {
@@ -27,8 +24,7 @@ export default {
 
         return result
       } catch (err) {
-        sentry.captureException(err)
-        throw err
+        handleError(err)
       }
     },
   },
@@ -48,8 +44,7 @@ export default {
 
         return result
       } catch (err) {
-        sentry.captureException(err)
-        throw err
+        handleError(err)
       }
     },
   },

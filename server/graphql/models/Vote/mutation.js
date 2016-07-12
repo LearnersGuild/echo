@@ -1,5 +1,3 @@
-import raven from 'raven'
-
 import {GraphQLString, GraphQLID} from 'graphql'
 import {GraphQLList} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
@@ -7,11 +5,10 @@ import {GraphQLError} from 'graphql/error'
 import {GOAL_SELECTION} from '../../../../common/models/cycle'
 import {getPlayerById} from '../../../db/player'
 import {getCyclesInStateForChapter} from '../../../db/cycle'
+import {handleError} from '../../../../server/graphql/models/util'
 import r from '../../../../db/connect'
 
 import {Vote} from './schema'
-
-const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
 export default {
   voteForGoals: {
@@ -82,8 +79,7 @@ export default {
         }
         throw new GraphQLError('Could not save vote.')
       } catch (err) {
-        sentry.captureException(err)
-        throw err
+        handleError(err)
       }
     }
   },

@@ -1,5 +1,3 @@
-import raven from 'raven'
-
 import {GraphQLNonNull, GraphQLID} from 'graphql'
 import {GraphQLList} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
@@ -7,10 +5,9 @@ import {GraphQLError} from 'graphql/error'
 import {userCan} from '../../../../common/util'
 import r from '../../../../db/connect'
 import {reassignPlayersToChapter} from '../../../../server/db/player'
+import {handleError} from '../../../../server/graphql/models/util'
 
 import {Player} from './schema'
-
-const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
 export default {
   reassignPlayersToChapter: {
@@ -31,12 +28,9 @@ export default {
 
         return await reassignPlayersToChapter(playerIds, chapterId)
           .then(updatedPlayers => updatedPlayers.map(player => Object.assign({}, player, {chapter})))
-          .catch(err => {
-            throw new GraphQLError(err)
-          })
+          .catch(handleError)
       } catch (err) {
-        sentry.captureException(err)
-        throw err
+        handleError(err)
       }
     }
   },
