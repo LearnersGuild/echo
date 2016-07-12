@@ -73,7 +73,7 @@ describe(testContext(__filename), function () {
 
       it('returns an error', function () {
         return expect(this.invokeAPI())
-          .to.be.rejectedWith(/cycle is not in the "reflection" state/)
+          .to.be.rejectedWith(/cycle is not in the REFLECTION state/)
       })
     })
   })
@@ -123,7 +123,7 @@ describe(testContext(__filename), function () {
 
       it('returns an error', function () {
         return expect(this.invokeAPI())
-          .to.be.rejectedWith(/cycle is not in the "reflection" state/)
+          .to.be.rejectedWith(/cycle is not in the REFLECTION state/)
       })
     })
   })
