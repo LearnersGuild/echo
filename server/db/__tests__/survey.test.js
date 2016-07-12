@@ -162,7 +162,8 @@ describe(testContext(__filename), function () {
       it('includes the response', function () {
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
-            expect(result.questions[0].response[0]).to.have.property('id', this.response.id)
+            expect(result.questions[0].response.values[0]).to.have.property('subjectId', this.teamPlayerIds[0])
+            expect(result.questions[0].response.values[0]).to.have.property('value', 'some value')
           })
       })
     })
@@ -175,10 +176,10 @@ describe(testContext(__filename), function () {
         })
       })
 
-      it('sets response to null, not an empty array', function () {
+      it('sets response.values to an empty array', function () {
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
-            expect(result.questions[0].response).to.be.null
+            expect(result.questions[0].response.values).to.deep.eq([])
           })
       })
     })
@@ -203,12 +204,16 @@ describe(testContext(__filename), function () {
       })
 
       it('includes all response parts', function () {
-        const sortById = (a, b) => a.id < b.id ? -1 : 1
+        const sortBySubjectId = (a, b) => a.subjectId < b.subjectId ? -1 : 1
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
             expect(
-              result.questions[0].response.sort(sortById)
-            ).to.deep.eq(this.responses.sort(sortById))
+              result.questions[0].response.values.sort(sortBySubjectId)
+            ).to.deep.eq(
+              this.responses
+                .sort(sortBySubjectId)
+                .map(({subjectId, value}) => ({subjectId, value}))
+            )
           })
       })
     })

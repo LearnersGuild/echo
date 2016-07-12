@@ -94,7 +94,12 @@ describe(testContext(__filename), function () {
               questions {
                 id subjectType responseType body
                 subjects { id name handle }
-                response { value }
+                response {
+                  values {
+                    subjectId
+                    value
+                  }
+                }
               }
             }
           }

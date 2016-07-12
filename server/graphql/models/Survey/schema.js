@@ -4,7 +4,7 @@ import {GraphQLObjectType, GraphQLEnumType, GraphQLList} from 'graphql/type'
 import {GraphQLDateTime} from 'graphql-custom-types'
 import {ThinCycle} from '../../../../server/graphql/models/Cycle/schema'
 import {Project, ThinProject} from '../../../../server/graphql/models/Project/schema'
-import {Response, NamedResponse} from '../../../../server/graphql/models/Response/schema'
+import {ResponseValueGroup, NamedResponse} from '../../../../server/graphql/models/Response/schema'
 
 export const SubjectTypeEnum = new GraphQLEnumType({
   name: 'SubjectTypeEnum',
@@ -61,8 +61,8 @@ export const SurveyQuestion = new GraphQLObjectType({
         description: 'The list of ids of the persons or things this question is asking about',
       },
       response: {
-        type: new GraphQLList(Response),
-        description: 'The list of responses for each of the subject parts',
+        type: new GraphQLNonNull(ResponseValueGroup),
+        description: 'The response to this question',
       },
     }
   ))
