@@ -24,7 +24,6 @@ export function handleError(unparsedError, defaultMsg) {
   }
   console.error(err.stack)
   sentry.captureException(err)
-  console.log('>>DUMP:', JSON.stringify(defaultMsg, null, 4))
   throw new GraphQLError(defaultMsg || err)
 }
 

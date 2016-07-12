@@ -119,15 +119,16 @@ function getResponse(playerId, surveyId, questionRef) {
     questionRef('questionId')
   )
   const subjectPosition = response => questionRef('subjectIds').offsetsOf(response('subjectIds'))
-  const hasResponse = responseQuery.nth(0).default(false)
 
-  return r.branch(
-    hasResponse,
-    responseQuery
-      .orderBy(subjectPosition)
-      .coerceTo('array'),
-    null
-  )
+  const responseValueList = responseQuery
+    .orderBy(subjectPosition)
+    .map(response => ({
+      subjectId: response('subjectId'),
+      value: response('value'),
+    }))
+    .coerceTo('array')
+
+  return {values: responseValueList}
 }
 
 export function getProjectSurvey(projectId, cycleId, surveyDescriptor) {
@@ -228,4 +229,3 @@ function mergeSubjectCount(queryWithQuestionRefs) {
     subjectCount: row('subjectCount').sum()
   }))
 }
-

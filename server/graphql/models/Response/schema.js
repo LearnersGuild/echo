@@ -1,21 +1,40 @@
-import {GraphQLNonNull, GraphQLString, GraphQLList, GraphQLInt, GraphQLID} from 'graphql'
+import {GraphQLNonNull, GraphQLString, GraphQLList, GraphQLID} from 'graphql'
 import {GraphQLObjectType, GraphQLInputObjectType} from 'graphql/type'
 
 import {GraphQLDateTime} from 'graphql-custom-types'
 
+const commonResponseValueAttributes = {
+  subjectId: {
+    type: new GraphQLNonNull(GraphQLID),
+    description: 'The subjectId this response pertains to',
+  },
+  value: {
+    // Becuase GraphQL Doesn't support polymorphic input types
+    // this just has to be a string.
+    type: new GraphQLNonNull(GraphQLString),
+    description: 'The response value',
+  },
+}
+
 export const ResponseInputValue = new GraphQLInputObjectType({
   name: 'ResponseInputValue',
   description: 'A response value for a question',
+  fields: commonResponseValueAttributes,
+})
+
+export const ResponseValue = new GraphQLObjectType({
+  name: 'ResponseValue',
+  description: 'A response value for a question',
+  fields: commonResponseValueAttributes,
+})
+
+export const ResponseValueGroup = new GraphQLObjectType({
+  name: 'ResponseValueGroup',
+  description: 'The grouped response values for a question',
   fields: () => ({
-    subjectId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The subjectId this response pertains to',
-    },
-    value: {
-      // Becuase GraphQL Doesn't support polymorphic input types
-      // this just has to be a string.
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The response value',
+    values: {
+      type: new GraphQLNonNull(new GraphQLList(ResponseValue)),
+      description: 'The a list of response values by subject',
     },
   })
 })
@@ -29,8 +48,8 @@ export const SurveyResponseInput = new GraphQLInputObjectType({
       description: 'The the UUID of the question this is a repsonse to',
     },
     respondentId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The the UUID of the user authoring this response',
+      type: GraphQLID,
+      description: 'The the UUID of the user authoring this response. Defaults to currentUser',
     },
     surveyId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -39,21 +58,6 @@ export const SurveyResponseInput = new GraphQLInputObjectType({
     values: {
       type: new GraphQLList(ResponseInputValue),
       description: 'The value(s) of the response',
-    },
-  })
-})
-
-export const CLISurveyResponse = new GraphQLInputObjectType({
-  name: 'CLISurveyResponse',
-  description: 'A CLI response to a question on a survey by number',
-  fields: () => ({
-    questionNumber: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The number of the question in the survey'
-    },
-    responseParams: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      description: 'The positional parameters as parsed by the CLI'
     },
   })
 })
