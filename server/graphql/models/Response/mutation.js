@@ -1,5 +1,3 @@
-import raven from 'raven'
-
 import {GraphQLNonNull, GraphQLID, GraphQLString} from 'graphql'
 import {GraphQLList, GraphQLObjectType} from 'graphql/type'
 import {GraphQLError} from 'graphql/error'
@@ -7,14 +5,10 @@ import {GraphQLError} from 'graphql/error'
 import {userCan} from '../../../../common/util'
 import saveProjectReviewCLISurveyResponsesForPlayer from '../../../../server/actions/saveProjectReviewCLISurveyResponsesForPlayer'
 import saveSurveyResponse from '../../../../server/actions/saveSurveyResponse'
-import {getLatestCycleForChapter} from '../../../../server/db/cycle'
-import {getPlayerById} from '../../../../server/db/player'
 import {REFLECTION} from '../../../../common/models/cycle'
-import {parseQueryError} from '../../../../server/db/errors'
+import {assertPlayersCurrentCycleInState, handleError} from '../../../../server/graphql/models/util'
 
 import {SurveyResponseInput, CLINamedSurveyResponse} from './schema'
-
-const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
 const CreatedIdList = new GraphQLObjectType({
   name: 'CreatedIdList',
@@ -44,19 +38,16 @@ export default {
         throw new GraphQLError('You cannot submit responses for other players.')
       }
 
-      await assertCycleInReflection(currentUser)
+      await assertPlayersCurrentCycleInState(currentUser, REFLECTION)
 
-      try {
-        const createdIds = await saveSurveyResponse({
-          respondentId: currentUser.id,
-          surveyId: response.surveyId,
-          questionId: response.questionId,
-          values: response.values,
-        })
-        return {createdIds}
-      } catch (err) {
-        handleError(err)
-      }
+      const createdIds = await saveSurveyResponse({
+        respondentId: currentUser.id,
+        surveyId: response.surveyId,
+        questionId: response.questionId,
+        values: response.values,
+      }).catch(err => handleError(err, 'Failed to save responses'))
+
+      return {createdIds}
     },
   },
   saveProjectReviewCLISurveyResponses: {
@@ -76,34 +67,11 @@ export default {
         throw new GraphQLError('You are not authorized to do that.')
       }
 
-      await assertCycleInReflection(currentUser)
+      await assertPlayersCurrentCycleInState(currentUser, REFLECTION)
 
-      try {
-        const createdIds = await saveProjectReviewCLISurveyResponsesForPlayer(currentUser.id, projectName, responses)
-        return {createdIds}
-      } catch (err) {
-        handleError(err)
-      }
+      const createdIds = await saveProjectReviewCLISurveyResponsesForPlayer(currentUser.id, projectName, responses)
+        .catch(err => handleError(err, 'Failed to save responses'))
+      return {createdIds}
     }
   },
-}
-
-async function assertCycleInReflection(currentUser) {
-  const player = await getPlayerById(currentUser.id, {mergeChapter: true})
-  const cycleInReflection = await getLatestCycleForChapter(player.chapter.id)('state')
-    .eq(REFLECTION)
-
-  if (!cycleInReflection) {
-    throw new GraphQLError('This action is not allowed when the cycle is not in the "reflection" state')
-  }
-}
-
-function handleError(unparsedError) {
-  const err = parseQueryError(unparsedError)
-  if (err.name === 'BadInputError' || err.name === 'LGCustomQueryError') {
-    throw err
-  }
-  console.error(err.stack)
-  sentry.captureException(err)
-  throw new GraphQLError('Failed to save responses')
 }

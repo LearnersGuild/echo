@@ -1,18 +1,14 @@
-import raven from 'raven'
-
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {GraphQLError} from 'graphql/error'
 
 import {CYCLE_STATES} from '../../../../common/models/cycle'
-import {parseQueryError} from '../../../../server/db/errors'
 import {getModeratorById} from '../../../db/moderator'
 import {createNextCycleForChapter, getCyclesInStateForChapter} from '../../../db/cycle'
 import {userCan} from '../../../../common/util'
 import r from '../../../../db/connect'
+import {handleError} from '../../../../server/graphql/models/util'
 
 import {Cycle} from './schema'
-
-const sentry = new raven.Client(process.env.SENTRY_SERVER_DSN)
 
 export default {
   createCycle: {
@@ -33,10 +29,8 @@ export default {
         }
 
         return await createNextCycleForChapter(moderator.chapterId)
-      } catch (rawError) {
-        const err = parseQueryError(rawError)
-        sentry.captureException(err)
-        throw err
+      } catch (err) {
+        handleError(err)
       }
     }
   },
@@ -87,7 +81,6 @@ async function changeCycleState(newState, currentUser) {
     }
     throw new GraphQLError('Could not save cycle, please try again')
   } catch (err) {
-    sentry.captureException(err)
-    throw err
+    handleError(err)
   }
 }
