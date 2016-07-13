@@ -35,6 +35,10 @@ export const Cycle = new GraphQLObjectType({
 })
 
 export async function cycleResolver(parent /* , args, ast */) {
+  if (parent.cycle) {
+    return parent.cycle
+  }
+
   if (parent.cycleId) {
     return await getCycleById(parent.cycleId)
   }

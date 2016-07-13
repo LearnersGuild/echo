@@ -23,6 +23,10 @@ export const Chapter = new GraphQLObjectType({
 })
 
 export async function chapterResolver(parent /* , args, ast */) {
+  if (parent.chapter) {
+    return parent.chapter
+  }
+
   if (parent.chapterId) {
     return await getChapterById(parent.chapterId)
   }
