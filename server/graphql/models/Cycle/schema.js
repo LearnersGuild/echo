@@ -34,14 +34,6 @@ export const Cycle = new GraphQLObjectType({
   }),
 })
 
-export const ThinCycle = new GraphQLObjectType({
-  name: 'ThinCycle',
-  description: 'A "thin" cycle object with just the id',
-  fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: "The cycle's UUID"},
-  })
-})
-
 export async function cycleResolver(parent /* , args, ast */) {
   return await getCycleById(parent.cycleId)
 }
