@@ -6,14 +6,6 @@ import {Chapter, chapterResolver} from '../Chapter/schema'
 
 import {getProjectById} from '../../../../server/db/project'
 
-export const ThinProject = new GraphQLObjectType({
-  name: 'ThinProject',
-  description: 'A "thin" project object with just the id',
-  fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: "The project's UUID"},
-  })
-})
-
 export const Project = new GraphQLObjectType({
   name: 'Project',
   description: 'A project engaged in by learners to complete some goal',
