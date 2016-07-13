@@ -4,7 +4,7 @@ import {GraphQLError} from 'graphql/error'
 import {getCycleById, getLatestCycleForChapter} from '../../../db/cycle'
 import {getPlayerById} from '../../../db/player'
 import {getModeratorById} from '../../../db/moderator'
-import {customQueryError, parseQueryError} from '../../../db/errors'
+import {customQueryError} from '../../../db/errors'
 import {handleError} from '../../../../server/graphql/models/util'
 import r from '../../../../db/connect'
 
