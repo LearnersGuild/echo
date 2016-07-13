@@ -25,5 +25,7 @@ export const Project = new GraphQLObjectType({
 })
 
 export async function projectResolver(parent /* , args, ast */) {
-  return await getProjectById(parent.projectId)
+  if (parent.projectId) {
+    return await getProjectById(parent.projectId)
+  }
 }
