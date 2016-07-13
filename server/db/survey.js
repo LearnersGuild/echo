@@ -35,6 +35,7 @@ export function getRetrospectiveSurveyForPlayer(playerId, projectId) {
   if (!projectId) {
     survey = getCurrentCycleIdAndProjectIdInStateForPlayer(playerId, REFLECTION).do(
       ids => getProjectRetroSurvey(ids('projectId'), ids('cycleId'))
+        .merge({cycleId: ids('cycleId'), projectId: ids('projectId')})
     )
   } else {
     survey = getProjectById(projectId).do(project => {

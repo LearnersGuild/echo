@@ -77,10 +77,11 @@ describe(testContext(__filename), function () {
         return this.buildSurvey()
       })
 
-      it('returns the correct survey', function () {
-        return expect(
-          getRetrospectiveSurveyForPlayer(this.teamPlayerIds[1])
-        ).to.eventually.have.property('id', this.survey.id)
+      it('returns the correct survey with projectId and cycleId added', async function () {
+        const survey = await getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
+        expect(survey).to.have.property('id', this.survey.id)
+        expect(survey).to.have.property('projectId')
+        expect(survey).to.have.property('cycleId')
       })
 
       it('excludes questions about the respondent', function () {
@@ -110,12 +111,10 @@ describe(testContext(__filename), function () {
       })
 
       it('returns the correct survey', async function () {
-        expect(
-          await getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0], this.projects[0].id)
-        ).to.deep.eq(this.surveys[0])
-        expect(
-          await getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0], this.projects[1].id)
-        ).to.deep.eq(this.surveys[1])
+        const survey0 = await getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0], this.projects[0].id)
+        expect(survey0).to.have.property('id', this.surveys[0].id)
+        const survey1 = await getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0], this.projects[1].id)
+        expect(survey1).to.have.property('id', this.surveys[1].id)
       })
 
       it('raises an error if player not working on the give project', function () {
@@ -172,7 +171,7 @@ describe(testContext(__filename), function () {
       it('includes the response', function () {
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
-            expect(result.questions[0].response.values[0]).to.have.property('subjectId', this.teamPlayerIds[0])
+            expect(result.questions[0].response.values[0]).to.have.property('subjectId', this.teamPlayerIds[1])
             expect(result.questions[0].response.values[0]).to.have.property('value', 'some value')
           })
       })

@@ -3,8 +3,9 @@ import {GraphQLObjectType, GraphQLEnumType} from 'graphql/type'
 
 import {GraphQLDateTime} from 'graphql-custom-types'
 
-import {Chapter} from '../Chapter/schema'
+import {Chapter, chapterResolver} from '../Chapter/schema'
 import {CYCLE_STATES} from '../../../../common/models/cycle'
+import {getCycleById} from '../../../../server/db/cycle'
 
 const cycleStateValues = CYCLE_STATES.reduce((reduced, state) => {
   return Object.assign(reduced, {[state]: {}})
@@ -20,13 +21,17 @@ export const Cycle = new GraphQLObjectType({
   description: 'A period of time in the game',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The chapter UUID'},
-    chapter: {type: Chapter, description: 'The chapter'},
+    chapter: {
+      type: Chapter,
+      description: 'The chapter',
+      resolve: chapterResolver,
+    },
     cycleNumber: {type: new GraphQLNonNull(GraphQLInt), description: 'Sequential cycle number'},
     startTimestamp: {type: new GraphQLNonNull(GraphQLDateTime), description: 'The start time'},
     state: {type: CycleState, description: 'What state the cycle is currently in'},
     createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
     updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},
-  })
+  }),
 })
 
 export const ThinCycle = new GraphQLObjectType({
@@ -36,3 +41,7 @@ export const ThinCycle = new GraphQLObjectType({
     id: {type: new GraphQLNonNull(GraphQLID), description: "The cycle's UUID"},
   })
 })
+
+export async function cycleResolver(parent /* , args, ast */) {
+  return await getCycleById(parent.cycleId)
+}
