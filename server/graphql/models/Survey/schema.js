@@ -28,7 +28,7 @@ const CommonSurveyQuestionFields = {
   subjectType: {type: new GraphQLNonNull(SubjectTypeEnum), description: 'The type of the subject '},
   responseType: {type: new GraphQLNonNull(ResponseTypeEnum), description: 'The expected type of the response'},
   body: {type: new GraphQLNonNull(GraphQLString), description: 'The body of the question'},
-  responseIntructions: {type: GraphQLString, description: 'Instructions for answering the question'},
+  responseInstructions: {type: GraphQLString, description: 'Instructions for answering the question'},
 }
 
 export const PlayerSubject = new GraphQLObjectType({

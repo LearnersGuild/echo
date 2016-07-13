@@ -129,12 +129,12 @@ describe(testContext(__filename), function () {
         return this.buildSurvey()
       })
 
-      it('adds a questions array with subjectIds and responseIntructions', function () {
+      it('adds a questions array with subjectIds and responseInstructions', function () {
         return getFullRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
             expect(result).to.have.property('questions').with.length(this.survey.questionRefs.length)
             result.questions.forEach(question => expect(question).to.have.property('subjectIds'))
-            result.questions.forEach(question => expect(question).to.have.property('responseIntructions'))
+            result.questions.forEach(question => expect(question).to.have.property('responseInstructions'))
           })
       })
     })
