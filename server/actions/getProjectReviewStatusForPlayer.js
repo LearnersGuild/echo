@@ -16,7 +16,10 @@ export default async function getProjectReviewStatusForPlayer(projectName, playe
       if (q.response.values.length !== 1) {
         throw new Error('Multi-Subject Project Review Survey Questions Not (Yet) Supported')
       }
-      return {questionName: q.name, response: q.response.values[0]}
+      return {
+        questionName: q.name,
+        values: q.response.values.map(({subjectId, value}) => ({subjectId, value})),
+      }
     })
 
   return {

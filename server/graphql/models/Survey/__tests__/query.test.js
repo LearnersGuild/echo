@@ -173,7 +173,7 @@ describe(testContext(__filename), function () {
             completed
             responses {
               questionName
-              response { value }
+              values { subjectId value }
             }
           }
         }`,
@@ -214,7 +214,7 @@ describe(testContext(__filename), function () {
               artifactURL: this.project.artifactURL
             },
             responses: [
-              {questionName: 'A', response: {value: '8'}}
+              {questionName: 'A', values: [{subjectId: this.project.id, value: '8'}]}
             ],
           })
         })
@@ -238,8 +238,8 @@ describe(testContext(__filename), function () {
               artifactURL: this.project.artifactURL
             },
             responses: [
-              {questionName: 'A', response: {value: '8'}},
-              {questionName: 'B', response: {value: '9'}},
+              {questionName: 'A', values: [{subjectId: this.project.id, value: '8'}]},
+              {questionName: 'B', values: [{subjectId: this.project.id, value: '9'}]},
             ],
           })
         })

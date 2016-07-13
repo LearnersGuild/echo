@@ -4,7 +4,7 @@ import {GraphQLObjectType, GraphQLEnumType, GraphQLList} from 'graphql/type'
 import {GraphQLDateTime} from 'graphql-custom-types'
 import {ThinCycle} from '../../../../server/graphql/models/Cycle/schema'
 import {Project, ThinProject} from '../../../../server/graphql/models/Project/schema'
-import {ResponseValueGroup, NamedResponse} from '../../../../server/graphql/models/Response/schema'
+import {ResponseValueGroup, NamedResponseValueGroup} from '../../../../server/graphql/models/Response/schema'
 
 export const SubjectTypeEnum = new GraphQLEnumType({
   name: 'SubjectTypeEnum',
@@ -87,6 +87,6 @@ export const ProjectReviewSurveyStatus = new GraphQLObjectType({
   fields: () => ({
     completed: {type: new GraphQLNonNull(GraphQLBoolean), description: 'True if the player has submitted responses for all the questions on the survey'},
     project: {type: Project, description: 'The project being reviewed'},
-    responses: {type: new GraphQLList(NamedResponse), description: 'The players responses'}
+    responses: {type: new GraphQLList(NamedResponseValueGroup), description: 'The players responses'}
   })
 })

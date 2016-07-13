@@ -1,8 +1,6 @@
 import {GraphQLNonNull, GraphQLString, GraphQLList, GraphQLID} from 'graphql'
 import {GraphQLObjectType, GraphQLInputObjectType} from 'graphql/type'
 
-import {GraphQLDateTime} from 'graphql-custom-types'
-
 const commonResponseValueAttributes = {
   subjectId: {
     type: new GraphQLNonNull(GraphQLID),
@@ -77,57 +75,17 @@ export const CLINamedSurveyResponse = new GraphQLInputObjectType({
   })
 })
 
-export const Response = new GraphQLObjectType({
-  name: 'Response',
-  description: 'A response to a question',
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The response\'s UUID'
-    },
-    questionId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The the UUID of the question this is a repsonse to'
-    },
-    respondentId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The the UUID of the user authoring this response'
-    },
-    surveyId: {
-      type: GraphQLID,
-      description: 'The survey (if any) this response is associated with'
-    },
-    // TODO: figure out how to support Strings/IDs/Ints and lists in value
-    value: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The value of the response'
-    },
-    subjectId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the subject of this response'
-    },
-    createdAt: {
-      type: new GraphQLNonNull(GraphQLDateTime),
-      description: 'When this record was created'
-    },
-    updatedAt: {
-      type: new GraphQLNonNull(GraphQLDateTime),
-      description: 'When this record was last updated'
-    },
-  })
-})
-
-export const NamedResponse = new GraphQLObjectType({
-  name: 'NamedResponse',
+export const NamedResponseValueGroup = new GraphQLObjectType({
+  name: 'NamedResponseValueGroup',
   description: 'A Survey Response paired with the name of the question it is a response to.',
   fields: () => ({
     questionName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the question in the survey'
     },
-    response: {
-      type: new GraphQLNonNull(Response),
-      description: 'The saved response.'
+    values: {
+      type: new GraphQLNonNull(new GraphQLList(ResponseValue)),
+      description: 'The a list of response values by subject',
     },
   })
 })
