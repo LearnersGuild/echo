@@ -2,8 +2,8 @@ import {GraphQLNonNull, GraphQLID, GraphQLString, GraphQLBoolean} from 'graphql'
 import {GraphQLObjectType, GraphQLEnumType, GraphQLList} from 'graphql/type'
 
 import {GraphQLDateTime} from 'graphql-custom-types'
-import {ThinCycle} from '../../../../server/graphql/models/Cycle/schema'
-import {Project, ThinProject} from '../../../../server/graphql/models/Project/schema'
+import {Cycle, cycleResolver} from '../../../../server/graphql/models/Cycle/schema'
+import {Project, projectResolver} from '../../../../server/graphql/models/Project/schema'
 import {ResponseValueGroup, NamedResponseValueGroup} from '../../../../server/graphql/models/Response/schema'
 
 export const SubjectTypeEnum = new GraphQLEnumType({
@@ -73,8 +73,16 @@ export const Survey = new GraphQLObjectType({
   description: 'A survey of questions used for retrospectives',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: "The survey's user UUID"},
-    project: {type: ThinProject, description: "The player's chapter"},
-    cycle: {type: ThinCycle, description: "The cycle's chapter"},
+    project: {
+      type: Project,
+      description: 'The project this survey relates to',
+      resolve: projectResolver,
+    },
+    cycle: {
+      type: Cycle,
+      description: 'The cycle this survey relates to',
+      resolve: cycleResolver,
+    },
     questions: {type: new GraphQLNonNull(new GraphQLList(SurveyQuestion)), description: 'The questions for the survey'},
     createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
     updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},

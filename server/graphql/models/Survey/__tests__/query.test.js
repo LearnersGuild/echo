@@ -89,8 +89,10 @@ describe(testContext(__filename), function () {
           `query {
             getRetrospectiveSurvey {
               id
-              cycle { id }
-              project { id }
+              cycle { id cycleNumber
+                chapter { id name }
+              }
+              project { id name }
               questions {
                 id subjectType responseType body
                 subjects { id name handle }
@@ -107,9 +109,14 @@ describe(testContext(__filename), function () {
           fields,
           undefined,
           {currentUser: this.currentUser}
-        ).then(result =>
+        ).then(result => {
           expect(result.data.getRetrospectiveSurvey.id).to.eq(this.survey.id)
-        )
+          expect(result.data.getRetrospectiveSurvey.project.name).to.eq(this.project.name)
+          expect(result.data.getRetrospectiveSurvey.cycle.id).to.eq(this.cycleId)
+          expect(result.data.getRetrospectiveSurvey.cycle.cycleNumber).to.exist
+          expect(result.data.getRetrospectiveSurvey.cycle.chapter.id).to.eq(this.project.chapterId)
+          expect(result.data.getRetrospectiveSurvey.cycle.chapter.name).to.exist
+        })
       })
 
       it('treats the question body like a template', function () {
