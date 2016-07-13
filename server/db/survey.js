@@ -107,7 +107,7 @@ function mapRefsToQuestions(survey, playerId) {
       .merge(question => ({
         subjectIds: ref('subjectIds'),
         name: ref('name').default(null),
-        responseIntructions: getResponseInstructionsByType(question('responseType')),
+        responseInstructions: getResponseInstructionsByType(question('responseType')),
         response: getResponse(playerId, survey('id'), ref),
       }))
   )
