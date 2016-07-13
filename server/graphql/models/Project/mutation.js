@@ -6,11 +6,11 @@ import {handleError} from '../../../../server/graphql/models/util'
 import {userCan} from '../../../../common/util'
 import {update as updateProject, findProjectByNameForPlayer} from '../../../db/project'
 
-import {ThinProject} from './schema'
+import {Project} from './schema'
 
 export default {
   setProjectArtifactURL: {
-    type: ThinProject,
+    type: Project,
     args: {
       projectName: {type: new GraphQLNonNull(GraphQLString)},
       url: {type: new GraphQLNonNull(GraphQLURL)},
