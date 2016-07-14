@@ -1,10 +1,9 @@
 import React, {Component, PropTypes} from 'react'
 import {push} from 'react-router-redux'
-
 import {connect} from 'react-redux'
 import socketCluster from 'socketcluster-client'
 
-import {CYCLE_STATES} from '../models/cycle'
+import {CYCLE_STATES, GOAL_SELECTION} from '../models/cycle'
 import loadCycleVotingResults, {receivedCycleVotingResults} from '../actions/loadCycleVotingResults'
 import CycleVotingResults from '../components/CycleVotingResults'
 
@@ -100,7 +99,7 @@ function mapStateToProps(state) {
     chapter = cycle ? state.chapters.chapters[cycle.chapter] : null
     candidateGoals = cycleVotingResults.candidateGoals
     percentageComplete = Math.floor(cycleVotingResults.numVotes / cycleVotingResults.numEligiblePlayers * 100)
-    isVotingStillOpen = cycle.state === 'GOAL_SELECTION'
+    isVotingStillOpen = cycle.state === GOAL_SELECTION
   }
 
   return {
