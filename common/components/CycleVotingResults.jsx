@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react'
-
 import {List, ListItem, ListSubHeader, ListDivider} from 'react-toolbox/lib/list'
 import ProgressBar from 'react-toolbox/lib/progress_bar'
 

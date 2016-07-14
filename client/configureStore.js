@@ -9,7 +9,11 @@ import rootReducer from '../common/reducers'
 
 export default function configureStore(initialState) {
   const store = createStore(rootReducer, initialState, compose(
-    applyMiddleware(routerMiddleware(browserHistory), thunk, callGraphQLAPI),
+    applyMiddleware(
+      routerMiddleware(browserHistory),
+      thunk,
+      callGraphQLAPI
+    ),
     (typeof window !== 'undefined' && typeof window.devToolsExtension !== 'undefined') ? window.devToolsExtension() : f => f
   ))
 

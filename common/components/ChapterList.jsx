@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react'
-
 import {Button} from 'react-toolbox/lib/button'
 import {CardTitle, CardText} from 'react-toolbox/lib/card'
 import Table from 'react-toolbox/lib/table'

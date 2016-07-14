@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react'
 import {Link} from 'react-router'
-
 import {CardTitle} from 'react-toolbox/lib/card'
 import {List, ListItem} from 'react-toolbox/lib/list'
 

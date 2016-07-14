@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 import React, {Component, PropTypes} from 'react'
 import moment from 'moment-timezone'
-
 import {Button} from 'react-toolbox/lib/button'
 import {CardTitle} from 'react-toolbox/lib/card'
 import Dropdown from 'react-toolbox/lib/dropdown'

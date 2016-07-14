@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-handler-names */
 import React, {Component, PropTypes} from 'react'
-
 import Dialog from 'react-toolbox/lib/dialog'
 import Input from 'react-toolbox/lib/input'
 

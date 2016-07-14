@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react'
-
 import {ListItem} from 'react-toolbox/lib/list'
 
 import {getAvatarImageURL} from '../util'
