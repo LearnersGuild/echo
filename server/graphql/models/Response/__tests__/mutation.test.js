@@ -11,6 +11,7 @@ describe(testContext(__filename), function () {
   withDBCleanup()
 
   useFixture.buildOneQuestionSurvey()
+  useFixture.buildSurvey()
 
   describe('saveRetrospectiveSurveyResponse', function () {
     beforeEach(async function () {
@@ -64,6 +65,50 @@ describe(testContext(__filename), function () {
       return expect(
         this.invokeAPI(Array(this.teamPlayerIds.length).fill(101))
       ).to.be.rejectedWith(/must be less than or equal to 100/)
+    })
+
+    describe('when the cycle is not in reflection', function () {
+      beforeEach(async function () {
+        await updateCycle({id: this.cycleId, state: COMPLETE})
+      })
+
+      it('returns an error', function () {
+        return expect(this.invokeAPI())
+          .to.be.rejectedWith(/cycle is not in the REFLECTION state/)
+      })
+    })
+  })
+
+  describe('saveRetrospectiveSurveyResponses', function () {
+    beforeEach(async function () {
+      await this.buildSurvey()
+      this.user = await factory.build('user', {id: this.teamPlayerIds[0]})
+      this.respondentId = this.teamPlayerIds[0]
+
+      this.invokeAPI = function () {
+        const responses = this.teamPlayerIds.slice(1).map(playerId => ({
+          values: [{subjectId: playerId, value: 'foo'}],
+          questionId: this.surveyQuestion.id,
+          surveyId: this.survey.id,
+          respondentId: this.respondentId,
+        }))
+        return runGraphQLMutation(
+          `mutation($responses: [SurveyResponseInput]!) {
+            saveRetrospectiveSurveyResponses(responses: $responses) {
+              createdIds
+            }
+          }`,
+          fields,
+          {responses},
+          {currentUser: this.user},
+        )
+      }
+    })
+
+    it('returns new response ids for all responses created', function () {
+      return this.invokeAPI()
+        .then(result => result.data.saveRetrospectiveSurveyResponses.createdIds)
+        .then(createdIds => expect(createdIds).have.length(this.teamPlayerIds.length - 1))
     })
 
     describe('when the cycle is not in reflection', function () {
