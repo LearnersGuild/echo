@@ -36,15 +36,16 @@ class SurveyFormInput extends React.Component {
     }
   }
 
-  propsForMultiSubjectQuestion() {
+  propsForMultiSubjectQuestion(options = {}) {
     const {question} = this.props
     const {subjects = [], response = {}} = question
     const {values} = response
 
     // convert subjects to slider input options
-    const options = subjects.reduce((result, subject) => {
+    const inputOptions = subjects.reduce((result, subject) => {
       result.set(subject.id, {
         label: subject.name,
+        sublabel: `@${subject.handle}`,
         imageUrl: subject.profileUrl,
         payload: subject,
       })
@@ -53,16 +54,16 @@ class SurveyFormInput extends React.Component {
 
     // default slider values to any previosuly submitted values
     values.forEach(responseValue => {
-      if (options.has(responseValue.subjectId)) {
-        options.get(responseValue.subjectId).value = responseValue.value
+      if (inputOptions.has(responseValue.subjectId)) {
+        inputOptions.get(responseValue.subjectId).value = responseValue.value
       }
     })
 
     return {
-      prompt: question.body,
-      hint: question.responseInstructions,
+      prompt: options.prompt || question.body,
+      hint: options.hint || question.responseInstructions,
       onChange: this.handleInputChange,
-      options: Array.from(options.values()),
+      options: Array.from(inputOptions.values()),
     }
   }
 
@@ -98,10 +99,10 @@ class SurveyFormInput extends React.Component {
         return <SurveyFormInputText {...this.propsForSingleSubjectQuestion()}/>
 
       case SURVEY_QUESTION_RESPONSE_TYPES.LIKERT_7:
-        return <SurveyFormInputLikert count={7} {...this.propsForSingleSubjectQuestion()}/>
+        return <SurveyFormInputLikert {...this.propsForSingleSubjectQuestion()}/>
 
       case SURVEY_QUESTION_RESPONSE_TYPES.RELATIVE_CONTRIBUTION:
-        return <SurveyFormInputSliderGroup maxTotal={100} {...this.propsForMultiSubjectQuestion()}/>
+        return <SurveyFormInputSliderGroup maxSum={100} {...this.propsForMultiSubjectQuestion()}/>
 
       default:
         console.error(`Invalid question response type for survey input: ${responseType}`)

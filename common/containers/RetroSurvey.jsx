@@ -17,8 +17,7 @@ class RetroSurveyContainer extends Component {
     this.handleUpdate = this.handleUpdate.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.state = {
-      title: null,
-      subtitle: null,
+      title: 'Retrospective',
       questionGroups: null,
       currentQuestionGroup: null,
     }
@@ -102,12 +101,15 @@ class RetroSurveyContainer extends Component {
   }
 
   renderCurrentQuestionGroup() {
-    const {surveys} = this.props
-    const {title, subtitle, questionGroups, currentQuestionGroup} = this.state
+    const {surveys, retro = {}} = this.props
+    const {title, questionGroups, currentQuestionGroup} = this.state
 
     if (!currentQuestionGroup) {
       return null
     }
+
+    console.log('retro:', retro)
+    const subtitle = `${retro.project ? `#${retro.project.name}` : ''}${retro.cycle ? ` (cycle ${retro.cycle.cycleNumber})` : ''}`
 
     return (
       <SurveyForm

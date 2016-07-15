@@ -1,13 +1,33 @@
-.inputContainer {
+.chipContainer {
+  height: 60px;
+  margin-bottom: 20px;
+}
+.chip {
+  width: 100%;
+  height: 100%;
+}
+.chipAvatar {
+  margin-right: 10px;
+}
+
+.sliderContainer {
+  height: 60px;
+  margin-bottom: 20px;
+}
+.slider {
+  width: 100%;
+  margin-left: 20px;
+}
+
+.percentageContainer {
   height: 60px;
   margin-bottom: 20px;
 }
 
-.subjectChip {
-  width: 100%;
-  height: 100%;
+.sumPercentageContainer {
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
-
-.slider {
-  width: 100%;
+.sumPercentage {
+  color: grey;
 }

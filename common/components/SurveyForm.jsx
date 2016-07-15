@@ -6,7 +6,10 @@
 import React, {PropTypes} from 'react'
 import {Button} from 'react-toolbox/lib/button'
 
+import {Flex} from './Layout'
 import SurveyFormInput from './SurveyFormInput'
+
+import styles from './SurveyForm.css'
 
 class SurveyForm extends React.Component {
   constructor(props) {
@@ -38,33 +41,50 @@ class SurveyForm extends React.Component {
     }
   }
 
+  renderHeader() {
+    console.log('subtitle:', this.props.subtitle)
+    return (
+      <Flex flexDirection="column" width="100%" className={styles.header}>
+        <h3>{this.props.title}</h3>
+        <h6 className={styles.headerSubtitle}>{this.props.subtitle}</h6>
+      </Flex>
+    )
+  }
+
+  renderFooter() {
+    return (
+      <Flex width="100%" justifyContent="flex-end" className={styles.footer}>
+        <Button
+          label={this.props.submitLabel || 'Submit'}
+          onMouseUp={this.handleSubmit}
+          raised
+          primary
+          />
+      </Flex>
+    )
+  }
+
+  renderBody() {
+    return (
+      <Flex width="100%" className={styles.header}>
+        {this.props.questions.map((question, i) => (
+          <SurveyFormInput
+            key={i}
+            question={question}
+            onChange={this.handleResponseChange(question)}
+            />
+        ))}
+      </Flex>
+    )
+  }
+
   render() {
     return (
-      <div>
-        <section>
-          <div>{this.props.title}</div>
-          <div>{this.props.subtitle}</div>
-        </section>
-
-        <section>
-          {this.props.questions.map((question, i) => (
-            <SurveyFormInput
-              key={i}
-              question={question}
-              onChange={this.handleResponseChange(question)}
-              />
-          ))}
-        </section>
-
-        <section>
-          <Button
-            label={this.props.submitLabel || 'Submit'}
-            onMouseUp={this.handleSubmit}
-            raised
-            primary
-            />
-        </section>
-      </div>
+      <Flex width="100%" flexDirection="column" className={styles.container}>
+        {this.renderHeader()}
+        {this.renderBody()}
+        {this.renderFooter()}
+      </Flex>
     )
   }
 }
