@@ -47,7 +47,6 @@ class RetroSurveyContainer extends Component {
   }
 
   setNextQuestionGroup() {
-    console.log('setNextQuestionGroup')
     const {questionGroups} = this.state
     const currentQuestionGroup = questionGroups.shift()
 

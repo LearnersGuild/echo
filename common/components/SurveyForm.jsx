@@ -44,6 +44,7 @@ class SurveyForm extends React.Component {
       })
 
       this.props.onSubmit(responses)
+      this.setState({questions: null})
     }
   }
 

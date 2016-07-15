@@ -14,25 +14,35 @@ class SurveyFormInputSliderGroup extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this)
   }
 
+  getTotalForNewValue(newValue, newValueIndex) {
+    newValue = parseInt(newValue, 10) || 0
+
+    return this.props.options.reduce((result, option, optionIndex) => {
+      result += newValueIndex === optionIndex ? newValue : parseInt((option.value || 0), 10)
+      return result
+    }, 0)
+  }
+
   sliderPropsForOption(option) {
-    const {maxTotal} = this.props
-
-    let currentTotal = 0
-    this.props.options.forEach(input => {
-      currentTotal += (input.value || 0)
-    })
-
     return {
       min: 0,
-      max: isNaN(maxTotal) ? null : (maxTotal - currentTotal),
+      max: this.props.maxTotal,
       step: 1,
-      value: option.value || 0,
+      value: parseInt(option.value || 0, 10),
     }
   }
 
   handleInputChange(value, index) {
-    if (this.props.options[index] && this.props.onChange) {
-      this.props.onChange(value, this.props.options[index].payload)
+    const {options, maxTotal} = this.props
+    const newValue = parseInt(value, 10)
+    const newTotal = this.getTotalForNewValue(newValue, index)
+
+    if (!isNaN(maxTotal) && newTotal > maxTotal) {
+      return
+    }
+
+    if (options[index] && this.props.onChange) {
+      this.props.onChange(value, options[index].payload)
     } else {
       console.error(`Option input not found for updated value ${value} at index ${index}`)
     }
@@ -68,15 +78,28 @@ class SurveyFormInputSliderGroup extends React.Component {
     return <Avatar icon="person"/>
   }
 
+  renderOptionPercentage(option, i) {
+    return (
+      <Flex key={i} className={styles.inputContainer} alignItems="center">
+        <h4>{`${parseInt(option.value || 0, 10)}%`}</h4>
+      </Flex>
+    )
+  }
+
   render() {
     const subjects = (
-      <Flex flexDirection="column" flex={1}>
+      <Flex flexDirection="column" flex={4}>
         {this.props.options.map((option, i) => this.renderOptionSubject(option, i))}
       </Flex>
     )
     const sliders = (
-      <Flex flexDirection="column" flex={2}>
+      <Flex flexDirection="column" flex={9}>
         {this.props.options.map((option, i) => this.renderOptionSlider(option, i))}
+      </Flex>
+    )
+    const percentages = (
+      <Flex flexDirection="column" flex={1}>
+        {this.props.options.map((option, i) => this.renderOptionPercentage(option, i))}
       </Flex>
     )
 
@@ -87,6 +110,7 @@ class SurveyFormInputSliderGroup extends React.Component {
           <Flex width="100%">
             {subjects}
             {sliders}
+            {percentages}
           </Flex>
         </div>
       </section>
