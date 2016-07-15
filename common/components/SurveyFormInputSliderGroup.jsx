@@ -66,12 +66,24 @@ class SurveyFormInputSliderGroup extends React.Component {
 
   renderOptionSubject(option, i) {
     return (
-      <Chip key={i}>
-        <Flex>
-          {this.renderSliderAvatar(option)}
-          <span>{option.label}</span>
-        </Flex>
-      </Chip>
+      <Flex key={i} className={styles.sliderItem} alignItems="center">
+        <Chip className={styles.sliderItemChild}>
+          <Flex alignItems="center" height="100%">
+            {this.renderSliderAvatar(option)}
+            <span>{option.label}</span>
+          </Flex>
+        </Chip>
+      </Flex>
+    )
+  }
+
+  renderOptionSlider(option, i) {
+    const sliderProps = this.sliderPropsForOption(option)
+    const handleChange = value => this.handleInputChange(value, i)
+    return (
+      <Flex key={i} className={styles.sliderItem} alignItems="center">
+        <Slider {...sliderProps} onChange={handleChange} className={styles.sliderItemChild}/>
+      </Flex>
     )
   }
 
@@ -82,20 +94,14 @@ class SurveyFormInputSliderGroup extends React.Component {
     return <Avatar icon="person"/>
   }
 
-  renderOptionSlider(option, i) {
-    const sliderProps = this.sliderPropsForOption(option)
-    const handleChange = value => this.handleInputChange(value, i)
-    return <Slider key={i} {...sliderProps} onChange={handleChange}/>
-  }
-
   render() {
     const subjects = (
-      <Flex flexDirection="column" flex={1} className={styles.sliderItem}>
+      <Flex flexDirection="column" flex={1}>
         {this.props.options.map((option, i) => this.renderOptionSubject(option, i))}
       </Flex>
     )
     const sliders = (
-      <Flex flexDirection="column" flex={2} className={styles.sliderItem}>
+      <Flex flexDirection="column" flex={2}>
         {this.props.options.map((option, i) => this.renderOptionSlider(option, i))}
       </Flex>
     )
