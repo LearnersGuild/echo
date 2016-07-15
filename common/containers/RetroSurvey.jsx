@@ -100,7 +100,7 @@ class RetroSurveyContainer extends Component {
         title={title || ''}
         subtitle={subtitle || ''}
         percentageComplete={percentageComplete}
-        questions={currentQuestionGroup}
+        questions={currentQuestionGroup || []}
         onChange={this.handleUpdate}
         onSubmit={this.handleSubmit}
         onClose={this.handleClose}
