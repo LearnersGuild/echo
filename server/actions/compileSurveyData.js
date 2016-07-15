@@ -62,8 +62,4 @@ query ($playerIds: [ID]!) {
     },
     {}
   ))
-  .catch(err => {
-    console.error(err, err.stack)
-    throw err
-  })
 }
