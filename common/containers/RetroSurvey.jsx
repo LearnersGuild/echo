@@ -11,7 +11,6 @@ import {groupSurveyQuestions} from '../models/survey'
 class RetroSurveyContainer extends Component {
   constructor(props) {
     super(props)
-    this.channelName = null
     this.handleClose = this.handleClose.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -37,10 +36,6 @@ class RetroSurveyContainer extends Component {
         newState.questionGroups = groupSurveyQuestions(retro.questions)
         newState.numQuestionGroups = newState.questionGroups.length // we'll modify, so capture orig. length
         newState.currentQuestionGroup = newState.questionGroups.shift()
-      }
-      if (retro.project && retro.cycle && !this.state.title) {
-        newState.title = 'Retrospective Survey'
-        newState.subtitle = `Project ${retro.project.name} (Cycle ${retro.cycle.cycleNumber})`
       }
     }
 
