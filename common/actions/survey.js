@@ -52,14 +52,10 @@ query($projectName:String) {
     }
 
     return getGraphQLFetcher(dispatch, auth)(query)
-      .then(graphQLResponse => {
-        console.log('\n\nresponse:', graphQLResponse.data.getRetrospectiveSurvey)
-
-        dispatch({
-          type: LOAD_RETRO_SURVEY_SUCCESS,
-          response: graphQLResponse.data.getRetrospectiveSurvey
-        })
-      })
+      .then(graphQLResponse => dispatch({
+        type: LOAD_RETRO_SURVEY_SUCCESS,
+        response: graphQLResponse.data.getRetrospectiveSurvey
+      }))
       .catch(err => dispatch({
         type: LOAD_RETRO_SURVEY_FAILURE,
         response: err

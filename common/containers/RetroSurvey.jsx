@@ -142,7 +142,7 @@ RetroSurveyContainer.propTypes = {
       name: PropTypes.string,
     }),
     cycle: PropTypes.shape({
-      cycleNumber: PropTypes.string,
+      cycleNumber: PropTypes.number,
     }),
     questions: PropTypes.array,
   }),

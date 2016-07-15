@@ -28,11 +28,9 @@ export function groupSurveyQuestions(questions) {
       let subject
       let subjectQuestionGroup
 
-      switch (question.responseType) {
+      switch (question.subjectType) {
         case SURVEY_QUESTION_SUBJECT_TYPES.TEAM:
-          teamQuestionGroups.set(question.id, {
-            questions: _createQuestionGroup([question])
-          })
+          teamQuestionGroups.set(question.id, [question])
           break
 
         case SURVEY_QUESTION_SUBJECT_TYPES.PLAYER:
@@ -41,33 +39,29 @@ export function groupSurveyQuestions(questions) {
           if (subject) {
             subjectQuestionGroup = subjectQuestionGroups.get(subject.id)
             if (!subjectQuestionGroup) {
-              subjectQuestionGroup = _createQuestionGroup()
+              subjectQuestionGroup = []
               subjectQuestionGroups.set(subject.id, subjectQuestionGroup)
             }
-            subjectQuestionGroup.questions.push(question)
+            subjectQuestionGroup.push(question)
           } else {
-            parseError = new Error(`Subject not found for player question ${question.id}`)
+            parseError = new Error(`Subject not found for question ${question.id}`)
           }
           break
 
         default:
-          parseError = new Error(`Invalid survey question subject type ${question.responseType}; question skipped`)
+          parseError = new Error(`Invalid survey question subject type ${question.subjectType}; question skipped`)
       }
     })
   } else {
-    parseError = new Error('Invalid questions array; cannot convert to question groups')
+    parseError = new Error('Invalid questions value; cannot convert to question groups')
   }
 
   if (parseError) {
     console.error(parseError)
   }
 
-  return Array.from(teamQuestionGroups.values()).concat(Array.from(subjectQuestionGroups.values()))
-}
-
-function _createQuestionGroup(questions) {
-  return {
-    answered: false,
-    questions: questions || []
-  }
+  const teamGroups = Array.from(teamQuestionGroups.values())
+  const subjectGroups = Array.from(subjectQuestionGroups.values())
+  const result = teamGroups.concat(subjectGroups)
+  return result
 }
