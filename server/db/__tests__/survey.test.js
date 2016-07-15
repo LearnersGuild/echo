@@ -88,7 +88,7 @@ describe(testContext(__filename), function () {
         return getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
             expect(result.questionRefs).to.have.length(this.teamPlayerIds.length - 1)
-            expect(result.questionRefs.map(ref => ref.subject)).not.to.include(this.teamPlayerIds[0])
+            expect(result.questionRefs.map(ref => ref.subjectIds)).not.to.include(this.teamPlayerIds[0])
           })
       })
     })
