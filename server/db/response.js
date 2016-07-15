@@ -7,12 +7,18 @@ export function getResponseById(id) {
   return responsesTable.get(id)
 }
 
-export function getSurveyResponsesForPlayer(respondentId, surveyId, questionId) {
-  return responsesTable.getAll([
+export function getSurveyResponsesForPlayer(respondentId, surveyId, questionId, subjectIds) {
+  const responseExpr = responsesTable.getAll([
     questionId,
     respondentId,
     surveyId
   ], {index: 'questionIdAndRespondentIdAndSurveyId'})
+
+  if (subjectIds) {
+    return responseExpr.filter(response => subjectIds.contains(response('subjectId')))
+  }
+
+  return responseExpr
 }
 
 export function getSurveyResponses(surveyId, questionId) {

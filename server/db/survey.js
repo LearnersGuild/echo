@@ -118,9 +118,10 @@ function getResponse(playerId, surveyId, questionRef) {
   const responseQuery = getSurveyResponsesForPlayer(
     playerId,
     surveyId,
-    questionRef('questionId')
+    questionRef('questionId'),
+    questionRef('subjectIds'),
   )
-  const subjectPosition = response => questionRef('subjectIds').offsetsOf(response('subjectIds'))
+  const subjectPosition = response => questionRef('subjectIds').offsetsOf(response('subjectId'))
 
   const responseValueList = responseQuery
     .orderBy(subjectPosition)
