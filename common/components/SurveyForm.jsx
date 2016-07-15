@@ -17,6 +17,7 @@ class SurveyForm extends React.Component {
     super(props)
     this.handleResponseChange = this.handleResponseChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleClose = this.handleClose.bind(this)
   }
 
   handleResponseChange(question) {
@@ -29,6 +30,12 @@ class SurveyForm extends React.Component {
         questions[updatedQuestionIndex] = Object.assign({}, question, {response: {values}})
         this.props.onChange(questions)
       }
+    }
+  }
+
+  handleClose() {
+    if (this.props.onClose) {
+      this.props.onClose()
     }
   }
 
