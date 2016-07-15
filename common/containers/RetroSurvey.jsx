@@ -84,6 +84,23 @@ class RetroSurveyContainer extends Component {
     }
   }
 
+  renderConfirmation() {
+    return (
+      <SurveyFormConfirmation
+        title={this.state.title}
+        subtitle={this.state.subtitle}
+        message={(
+          <div>
+            <div>{'You\'re all set.'}</div>
+            <div>{'Thanks for submitting feedback!'}</div>
+          </div>
+        )}
+        closeLabel="Close"
+        onClose={this.handleClose}
+        />
+    )
+  }
+
   renderCurrentQuestionGroup() {
     const {surveys} = this.props
     const {title, subtitle, questionGroups, currentQuestionGroup} = this.state
@@ -105,25 +122,8 @@ class RetroSurveyContainer extends Component {
     )
   }
 
-  renderConfirmation() {
-    return (
-      <SurveyFormConfirmation
-        title={this.state.title}
-        subtitle={this.state.subtitle}
-        message={(
-          <div>
-            <div>{'You\'re all set.'}</div>
-            <div>{'Thanks for submitting feedback!'}</div>
-          </div>
-        )}
-        closeLabel="Close"
-        onClose={this.handleClose}
-        />
-    )
-  }
-
   render() {
-    if (this.props.auth.isBusy || !this.props.auth.currentUser) {
+    if (!this.state.questionGroups || this.props.auth.isBusy) {
       return <ProgressBar mode="indeterminate"/>
     }
 
