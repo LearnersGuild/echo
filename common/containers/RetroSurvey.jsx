@@ -16,10 +16,10 @@ class RetroSurveyContainer extends Component {
     this.handleClose = this.handleClose.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.state = {
-      title: null,
-      subtitle: null,
-      questionGroups: null,
-      currentQuestionGroup: null,
+      title: '',
+      subtitle: '',
+      questionGroups: [],
+      currentQuestionGroup: [],
     }
   }
 
