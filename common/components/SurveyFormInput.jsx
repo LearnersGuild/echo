@@ -95,7 +95,7 @@ class SurveyFormInput extends React.Component {
 
     switch (responseType) {
       case SURVEY_QUESTION_RESPONSE_TYPES.TEXT:
-        return <SurveyFormInputText {...this.questionPropsSingle()}/>
+        return <SurveyFormInputText {...this.propsForSingleSubjectQuestion()}/>
 
       case SURVEY_QUESTION_RESPONSE_TYPES.LIKERT_7:
         return <SurveyFormInputLikert count={7} {...this.propsForSingleSubjectQuestion()}/>

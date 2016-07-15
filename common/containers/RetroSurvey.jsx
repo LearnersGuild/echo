@@ -14,6 +14,7 @@ class RetroSurveyContainer extends Component {
     super(props)
     this.channelName = null
     this.handleClose = this.handleClose.bind(this)
+    this.handleUpdate = this.handleUpdate.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.state = {
       title: null,
@@ -56,6 +57,10 @@ class RetroSurveyContainer extends Component {
     })
   }
 
+  handleUpdate(updatedQuestionGroup) {
+    this.setState({currentQuestionGroup: updatedQuestionGroup})
+  }
+
   handleSubmit(questionGroupResponses) {
     const {auth: {currentUser}, retro, surveyActions} = this.props
 
@@ -93,6 +98,7 @@ class RetroSurveyContainer extends Component {
         title={title || ''}
         subtitle={subtitle || ''}
         questions={currentQuestionGroup}
+        onChange={this.handleUpdate}
         onSubmit={this.handleSubmit}
         submitLabel={questionGroups ? 'Next' : 'Finish'}
         submitDisabled={Boolean(surveys.isBusy)}
