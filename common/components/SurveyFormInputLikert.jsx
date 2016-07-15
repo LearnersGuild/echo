@@ -2,16 +2,7 @@ import React, {PropTypes} from 'react'
 import {RadioGroup, RadioButton} from 'react-toolbox/lib/radio'
 
 // TODO: support variable number of agreement options
-const AGREEMENT_OPTIONS = [
-  {value: 1, label: 'strongly disagree'},
-  {value: 2, label: 'disagree'},
-  {value: 3, label: 'somewhat disagree'},
-  {value: 4, label: 'neutral agree'},
-  {value: 5, label: 'somewhat agree'},
-  {value: 6, label: 'agree'},
-  {value: 7, label: 'strongly agree'},
-  {value: 0, label: 'not enough information'},
-]
+import {LIKERT_7_AGREEMENT_OPTIONS} from '../models/survey'
 
 class SurveyFormInputLikert extends React.Component {
   constructor(props) {
@@ -21,7 +12,6 @@ class SurveyFormInputLikert extends React.Component {
 
   handleUpdate(val) {
     if (this.props.onChange) {
-      console.log('onChange')
       this.props.onChange(val)
     }
   }
@@ -30,7 +20,7 @@ class SurveyFormInputLikert extends React.Component {
     return (
       <section>
         <RadioGroup value={parseInt(this.props.value, 10)} onChange={this.handleUpdate}>
-          {AGREEMENT_OPTIONS.map((option, i) => (
+          {LIKERT_7_AGREEMENT_OPTIONS.map((option, i) => (
             <RadioButton key={i} label={option.label} value={option.value}/>
           ))}
         </RadioGroup>

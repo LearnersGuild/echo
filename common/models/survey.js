@@ -11,6 +11,17 @@ export const SURVEY_QUESTION_RESPONSE_TYPES = {
   RELATIVE_CONTRIBUTION: 'relativeContribution',
 }
 
+export const LIKERT_7_AGREEMENT_OPTIONS = [
+  {value: 1, label: 'strongly disagree'},
+  {value: 2, label: 'disagree'},
+  {value: 3, label: 'somewhat disagree'},
+  {value: 4, label: 'neutral'},
+  {value: 5, label: 'somewhat agree'},
+  {value: 6, label: 'agree'},
+  {value: 7, label: 'strongly agree'},
+  {value: 0, label: 'not enough information'},
+]
+
 export function renderQuestionBodies(surveyQuestions) {
   return surveyQuestions.map(q => {
     q.body = micromustache.render(q.body, {subject: `@${q.subjects[0].handle}`})
