@@ -14,29 +14,42 @@ class SurveyForm extends React.Component {
     this.handleResponseChange = this.handleResponseChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.state = {
-      questionResponses: new Map()
+      questions: null
     }
+  }
+
+  componentDidMount() {
+    this.setState({
+      questions: this.props.questions.reduce((result, question) => {
+        result.set(question.id, question)
+        return result
+      }, new Map())
+    })
   }
 
   handleResponseChange(question) {
     // FIXME: creates a new function on every render
-    return response => {
-      // response => {questionId, values}
-      // response.values => [{subjectId, value}]
-      const {questionResponses} = this.state
-      questionResponses.set(question.id, response)
-      this.setState({questionResponses: new Map(questionResponses)})
+    return values => {
+      // update question (and associated response.values) in local state
+      const {questions} = this.state
+      questions.set(question.id, Object.assign({}, questions.get(question.id), {response: {values}}))
+      this.setState({questions: new Map(questions)})
     }
   }
 
   handleSubmit() {
     if (this.props.onSubmit) {
-      const responses = Array.from(this.state.questionResponses.values())
+      const responses = Array.from(this.state.questions.values()).map(q => q.response)
       this.props.onSubmit(responses)
     }
   }
 
   render() {
+    const surveyQuestions = this.state.questions ? Array.from(this.state.questions.values()) : null
+    if (!surveyQuestions) {
+      return null
+    }
+
     return (
       <div>
         <section>
@@ -45,7 +58,7 @@ class SurveyForm extends React.Component {
         </section>
 
         <section>
-          {this.props.questions.map((question, i) => (
+          {surveyQuestions.map((question, i) => (
             <SurveyFormInput
               key={i}
               question={question}

@@ -1,7 +1,7 @@
 /**
  * SurveyFormInput
  * Takes a question `{subjects, response}` and returns an
- * updated response `{values [{subjectId, value}]}`.
+ * updated response values `{[{subjectId, value}]}`.
  */
 import React, {PropTypes} from 'react'
 
@@ -22,8 +22,8 @@ class SurveyFormInput extends React.Component {
   propsForSingleSubjectQuestion() {
     const {question} = this.props
     const subject = question.subjects[0]
-    const subjectResponse = subject ? (question.response.values || []).find(response => {
-      return response.subject && response.subject.id === subject.id
+    const subjectResponse = subject ? (question.response.values || []).find(responseValue => {
+      return responseValue.subjectId === subject.id
     }) : null
 
     const value = subjectResponse ? subjectResponse.value : null
@@ -52,9 +52,9 @@ class SurveyFormInput extends React.Component {
     }, new Map())
 
     // default slider values to any previosuly submitted values
-    values.forEach(res => {
-      if (res.subject && options.has(res.subject.id)) {
-        options.get(res.subject.id).value = res.value
+    values.forEach(responseValue => {
+      if (options.has(responseValue.subjectId)) {
+        options.get(responseValue.subjectId).value = responseValue.value
       }
     })
 
@@ -84,12 +84,10 @@ class SurveyFormInput extends React.Component {
     })
 
     if (this.props.onChange) {
-      this.props.onChange({
-        values: Array.from(subjectResponses.values())
-      })
-    } else {
-      this.setState({subjectResponses: new Map(subjectResponses)})
+      this.props.onChange(Array.from(subjectResponses.values()))
     }
+
+    this.setState({subjectResponses: new Map(subjectResponses)})
   }
 
   render() {
@@ -127,8 +125,8 @@ SurveyFormInput.propTypes = {
     responseInstructions: PropTypes.string,
     response: PropTypes.shape({
       values: PropTypes.arrayOf(PropTypes.shape({
-        subject: PropTypes.object.isRequired,
-        value: PropTypes.object.isRequired,
+        subjectId: PropTypes.string.isRequired,
+        value: PropTypes.any.isRequired,
       }))
     }),
   }),

@@ -7,6 +7,7 @@ import {Flex} from './Layout'
 
 import styles from './SurveyFormInputSliderGroup.css'
 
+// TODO: make a pure function
 class SurveyFormInputSliderGroup extends React.Component {
   constructor(props) {
     super(props)
