@@ -84,6 +84,14 @@ describe(testContext(__filename), function () {
         expect(survey).to.have.property('cycleId')
       })
 
+      it('returns the correct survey with projectId and cycleId added when projectId given explicitly', async function () {
+        console.log(this.project.name)
+        const survey = await getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0], this.project.id)
+        expect(survey).to.have.property('id', this.survey.id)
+        expect(survey).to.have.property('projectId')
+        expect(survey).to.have.property('cycleId')
+      })
+
       it('excludes questions about the respondent', function () {
         return getRetrospectiveSurveyForPlayer(this.teamPlayerIds[0])
           .then(result => {
