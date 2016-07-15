@@ -2,21 +2,18 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
 
+import url from 'url'
 import getAvatarImageURL from '../getAvatarImageURL'
 
 // TODO: use nock to mock gravatar API
 describe(testContext(__filename), function () {
-  it('returns false if the user has no email address', function () {
-    return expect(getAvatarImageURL({email: null})).to.eventually.not.be.ok
+  it('returns throws an exception if the user has no handle', function () {
+    expect(() => getAvatarImageURL({handle: null})).to.throw(/user has no handle/)
   })
 
-  it('returns false if the user has not uploaded an image to gravatar', function () {
-    const email = 'me.2d8dce5cf45967ad199b77507db3847e@example.com' // ensure that there's no avatar image
-    return expect(getAvatarImageURL({email})).to.eventually.not.be.ok
-  })
-
-  it('returns true if the user has uploaded an image to gravatar', function () {
-    return expect(getAvatarImageURL({email: 'accounts@learnersguild.org'}))
-      .to.eventually.equal('https://www.gravatar.com/avatar/2d8dce5cf45967ad199b77507db3847e')
+  it('returns a url', function () {
+    const urlParts = url.parse(getAvatarImageURL({handle: 'somehandle'}))
+    expect(urlParts).to.have.property('protocol')
+    expect(urlParts).to.have.property('host')
   })
 })

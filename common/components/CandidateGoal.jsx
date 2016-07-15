@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react'
 
-import Avatar from 'react-toolbox/lib/avatar'
 import {ListItem} from 'react-toolbox/lib/list'
 
 import {getAvatarImageURL} from '../util'
@@ -21,10 +20,7 @@ function rank(num) {
 export default class CandidateGoal extends Component {
   renderAvatar(currentUser, wasVotedOnByCurrentUser) {
     return wasVotedOnByCurrentUser ? (
-      <PlayerAvatar
-        key="avatar"
-        currentUser={currentUser}
-        />
+      <img src={getAvatarImageURL(currentUser, 40)}/>
     ) : (
       <span key="avatar"/>
     )
@@ -118,62 +114,5 @@ CandidateGoal.propTypes = {
       playerId: PropTypes.string.isRequired,
       goalRank: PropTypes.number.isRequired,
     })).isRequired,
-  }),
-}
-
-// This may _seem_ like it's a component that should be extracted into it's own
-// file, and at some point it might be. However, for now, it's very tightly
-// coupled to the CandidateGoal component.
-class PlayerAvatar extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      avatarImageURL: null,
-    }
-  }
-
-  componentDidMount() {
-    this.updateAvatarImageExistsState(this.props)
-  }
-
-  updateAvatarImageExistsState(props) {
-    getAvatarImageURL(props.currentUser)
-      .then(avatarImageURL => this.setState({avatarImageURL}))
-  }
-
-  componentWillReceiveProps(newProps) {
-    this.updateAvatarImageExistsState(newProps)
-  }
-
-  renderAvatarImage() {
-    return (
-      <img title="you voted for this goal" src={`${this.state.avatarImageURL}?s=40`}/>
-    )
-  }
-
-  renderInitials() {
-    const {currentUser: {name}} = this.props
-    const nameParts = name.split(/[\W]+/)
-    const initials = nameParts.length > 1 ? `${nameParts[0][0]}${nameParts[1][0]}` : `${nameParts[0][0]}${nameParts[0][1]}`
-    return (
-      <div title="you voted for this goal" className={styles.initials}>{initials.toUpperCase()}</div>
-    )
-  }
-
-  render() {
-    const {avatarImageURL} = this.state
-    return (
-      <Avatar className={styles.avatar}>
-        {avatarImageURL ? this.renderAvatarImage() : this.renderInitials()}
-      </Avatar>
-    )
-  }
-}
-
-PlayerAvatar.propTypes = {
-  currentUser: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
   }),
 }

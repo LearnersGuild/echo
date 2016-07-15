@@ -3,6 +3,8 @@ import url from 'url'
 import fetch from 'isomorphic-fetch'
 import raven from 'raven'
 import {graphql} from 'graphql'
+import {getCycleById} from '../../server/db/cycle'
+import getCycleVotingResults from '../../server/actions/getCycleVotingResults'
 
 import r from '../../db/connect'
 import {getQueue, getSocket} from '../util'
@@ -127,47 +129,13 @@ function updateVote(vote) {
 }
 
 function pushCandidateGoalsForCycle(vote) {
-  const query = `
-query($cycleId: ID) {
-  getCycleVotingResults(cycleId: $cycleId) {
-    id
-    cycle {
-      id
-      cycleNumber
-      startTimestamp
-      state
-      chapter {
-        id
-        name
-        channelName
-        timezone
-        goalRepositoryURL
-        githubTeamId
-        cycleDuration
-        cycleEpoch
-      }
-    }
-    numEligiblePlayers
-    numVotes
-    candidateGoals {
-      goal {
-        url
-        title
-      }
-      playerGoalRanks {
-        playerId
-        goalRank
-      }
-    }
-  }
-}
-  `
-  const args = {cycleId: vote.cycleId}
-  const socket = getSocket()
-
-  graphql(rootSchema, query, {currentUser: true}, args)
-    .then(graphQLResult => {
-      socket.publish(`cycleVotingResults-${vote.cycleId}`, graphQLResult.data.getCycleVotingResults)
+  return getCycleById(vote.cycleId)
+    .then(cycle => {
+      return getCycleVotingResults(cycle.chapterId, cycle.id)
+    })
+    .then(cycleVotingResults => {
+      const socket = getSocket()
+      return socket.publish(`cycleVotingResults-${vote.cycleId}`, cycleVotingResults)
     })
 }
 
@@ -182,7 +150,7 @@ async function processVote(vote) {
       validatedVote.goals = goals
     }
     await updateVote(validatedVote)
-    pushCandidateGoalsForCycle(validatedVote)
+    await pushCandidateGoalsForCycle(validatedVote)
   } catch (err) {
     console.error(err.stack)
     sentry.captureException(err)

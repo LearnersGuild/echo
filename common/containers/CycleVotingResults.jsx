@@ -24,13 +24,23 @@ class WrappedCycleVotingResults extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.unsubscribeFromCycleVotingResults(this.props.cycle)
-    this.subscribeToCycleVotingResults(nextProps.cycle)
+    this.renewSubscriptionIfNecessary(nextProps.cycle, this.props.cycle)
+  }
+
+  renewSubscriptionIfNecessary(nextCycle, currentCycle) {
+    if (!nextCycle) {
+      return
+    }
+    if (!currentCycle || (nextCycle.id !== currentCycle.id)) {
+      this.unsubscribeFromCycleVotingResults(currentCycle)
+      this.subscribeToCycleVotingResults(nextCycle)
+    }
   }
 
   subscribeToCycleVotingResults(cycle) {
     const {dispatch} = this.props
     if (cycle) {
+      console.log(`subscribing to voting results for cycle ${cycle.id} ...`)
       this.socket = socketCluster.connect()
       this.socket.on('connect', () => console.log('... socket connected'))
       this.socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))
@@ -44,10 +54,9 @@ class WrappedCycleVotingResults extends Component {
   }
 
   unsubscribeFromCycleVotingResults(cycle) {
-    if (this.socket) {
-      if (cycle) {
-        this.socket.unsubscribe(`cycleVotingResults-${cycle.id}`)
-      }
+    if (this.socket && cycle) {
+      console.log(`unsubscribing from voting results for cycle ${cycle.id} ...`)
+      this.socket.unsubscribe(`cycleVotingResults-${cycle.id}`)
     }
   }
 
