@@ -21,11 +21,7 @@ export const Cycle = new GraphQLObjectType({
   description: 'A period of time in the game',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The chapter UUID'},
-    chapter: {
-      type: Chapter,
-      description: 'The chapter',
-      resolve: chapterResolver,
-    },
+    chapter: {type: Chapter, description: 'The chapter', resolve: chapterResolver},
     cycleNumber: {type: new GraphQLNonNull(GraphQLInt), description: 'Sequential cycle number'},
     startTimestamp: {type: new GraphQLNonNull(GraphQLDateTime), description: 'The start time'},
     state: {type: CycleState, description: 'What state the cycle is currently in'},
@@ -38,7 +34,6 @@ export async function cycleResolver(parent /* , args, ast */) {
   if (parent.cycle) {
     return parent.cycle
   }
-
   if (parent.cycleId) {
     return await getCycleById(parent.cycleId)
   }

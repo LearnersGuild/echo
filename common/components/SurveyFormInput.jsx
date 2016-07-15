@@ -5,7 +5,6 @@
  */
 import React, {PropTypes} from 'react'
 
-import {getProfileUrlForUser} from '../models/user'
 import {SURVEY_QUESTION_RESPONSE_TYPES} from '../models/survey'
 import FormInputText from './SurveyFormInputText'
 import FormInputLikert from './SurveyFormInputLikert'
@@ -45,7 +44,7 @@ class SurveyFormInput extends React.Component {
     const options = subjects.reduce((result, subject) => {
       result.set(subject.id, {
         text: subject.name,
-        imageUrl: getProfileUrlForUser(subject),
+        imageUrl: subject.profileUrl,
         payload: subject,
       })
       return result
@@ -120,6 +119,7 @@ SurveyFormInput.propTypes = {
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       handle: PropTypes.string.isRequired,
+      profileUrl: PropTypes.string,
     })),
     responseType: PropTypes.string.isRequired,
     responseIntructions: PropTypes.string.isRequired,

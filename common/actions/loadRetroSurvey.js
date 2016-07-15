@@ -10,11 +10,11 @@ query {
     id,
     project {
       id,
-      name
+      name,
     },
     cycle {
       id,
-      cycleNumber
+      cycleNumber,
     },
     questions {
       id,
@@ -26,20 +26,16 @@ query {
         id,
         name,
         handle,
-        authProviderProfiles {
-          githubOAuth2 {
-            photos
-          }
-        }
+        profileUrl,
       },
       response {
         values {
           subjectId,
-          value
+          value,
         }
-      }
-    }
-  }
+      },
+    },
+  },
 }`
 
 export default function loadRetroSurvey() {

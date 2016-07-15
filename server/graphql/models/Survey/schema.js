@@ -33,7 +33,7 @@ const CommonSurveyQuestionFields = {
 
 export const PlayerSubject = new GraphQLObjectType({
   name: 'PlayerSubject',
-  description: 'A describes a player that is the subject of a question',
+  description: 'A player that is the subject of a question',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -46,6 +46,10 @@ export const PlayerSubject = new GraphQLObjectType({
     handle: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The player\'s handle'
+    },
+    profileUrl: {
+      type: GraphQLString,
+      description: 'The player\'s profile URL'
     },
   })
 })
