@@ -47,6 +47,7 @@ class RetroSurveyContainer extends Component {
   }
 
   setNextQuestionGroup() {
+    console.log('setNextQuestionGroup')
     const {questionGroups} = this.state
     const currentQuestionGroup = questionGroups.shift()
 
@@ -56,16 +57,16 @@ class RetroSurveyContainer extends Component {
     })
   }
 
-  handleSubmit(responses) {
+  handleSubmit(questionGroupResponses) {
     const {auth: {currentUser}, retro, surveyActions} = this.props
 
-    Promise.all(responses.map(response => {
+    Promise.all(questionGroupResponses.map(questionResponse => {
       return surveyActions.saveRetroSurveyResponse({
         response: {
           surveyId: retro.id,
           respondentId: currentUser.id,
-          questionId: response.questionId,
-          values: response.values,
+          questionId: questionResponse.questionId,
+          values: questionResponse.values,
         }
       })
     })).then(() => {
@@ -83,6 +84,7 @@ class RetroSurveyContainer extends Component {
     const {surveys} = this.props
     const {title, subtitle, questionGroups, currentQuestionGroup} = this.state
 
+    console.log('\ncurrentQuestionGroup:', currentQuestionGroup)
     if (!currentQuestionGroup) {
       return null
     }
@@ -92,7 +94,7 @@ class RetroSurveyContainer extends Component {
         title={title || ''}
         subtitle={subtitle || ''}
         questions={currentQuestionGroup}
-        onSubmit={this.handleSubmitQuestionGroupResonse}
+        onSubmit={this.handleSubmit}
         submitLabel={questionGroups ? 'Next' : 'Finish'}
         submitDisabled={Boolean(surveys.isBusy)}
         />

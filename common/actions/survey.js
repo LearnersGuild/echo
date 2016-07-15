@@ -79,7 +79,7 @@ mutation($response:SurveyResponseInput!) {
 }`,
     }
 
-    getGraphQLFetcher(dispatch, auth)(query)
+    return getGraphQLFetcher(dispatch, auth)(query)
       .then(graphQLResponse => dispatch({
         type: SAVE_SURVEY_RESPONSE_SUCCESS,
         response: graphQLResponse.data.saveRetrospectiveSurveyResponse

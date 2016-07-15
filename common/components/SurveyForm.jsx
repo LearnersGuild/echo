@@ -39,7 +39,10 @@ class SurveyForm extends React.Component {
 
   handleSubmit() {
     if (this.props.onSubmit) {
-      const responses = Array.from(this.state.questions.values()).map(q => q.response)
+      const responses = Array.from(this.state.questions.values()).map(q => {
+        return {questionId: q.id, values: q.response.values}
+      })
+
       this.props.onSubmit(responses)
     }
   }
