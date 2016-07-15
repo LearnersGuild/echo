@@ -3,14 +3,10 @@ import React, {Component, PropTypes} from 'react'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import ProgressBar from 'react-toolbox/lib/progress_bar'
-import {Button} from 'react-toolbox/lib/button'
 
-import {Flex} from '../components/Layout'
 import SurveyForm from '../components/SurveyForm'
 import * as SurveyActions from '../actions/survey'
 import {groupSurveyQuestions} from '../models/survey'
-
-import styles from './RetroSurvey.css'
 
 class RetroSurveyContainer extends Component {
   constructor(props) {
@@ -21,6 +17,7 @@ class RetroSurveyContainer extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
     this.state = {
       title: 'Retrospective',
+      numQuestionGroups: null,
       questionGroups: null,
       currentQuestionGroup: null,
     }
@@ -38,6 +35,7 @@ class RetroSurveyContainer extends Component {
     if (retro) {
       if (retro.questions && !this.state.questionGroups) {
         newState.questionGroups = groupSurveyQuestions(retro.questions)
+        newState.numQuestionGroups = newState.questionGroups.length // we'll modify, so capture orig. length
         newState.currentQuestionGroup = newState.questionGroups.shift()
       }
       if (retro.project && retro.cycle && !this.state.title) {
@@ -86,41 +84,25 @@ class RetroSurveyContainer extends Component {
     }
   }
 
-  renderConfirmation() {
-    return (
-      <Flex flexDirection="column" justifyContent="center" alignItems="center" width="100%">
-        <h6 className={styles.messageSection}>You're all set.</h6>
-        <h6 className={styles.messageSection}>Thanks for submitting your feedback!</h6>
-
-        <div className={styles.messageSection}>
-          <Button
-            label="Close"
-            onMouseUp={this.handleClose}
-            raised
-            primary
-            />
-        </div>
-      </Flex>
-    )
-  }
-
   renderCurrentQuestionGroup() {
     const {surveys, retro = {}} = this.props
-    const {title, questionGroups, currentQuestionGroup} = this.state
-
-    if (!currentQuestionGroup) {
-      return null
-    }
+    const {title, questionGroups, numQuestionGroups, currentQuestionGroup} = this.state
 
     const subtitle = `${retro.project ? `#${retro.project.name}` : ''}${retro.cycle ? ` (cycle ${retro.cycle.cycleNumber})` : ''}`
+    const numOriginalQuestionGroups = numQuestionGroups || 0
+    const numRemaining = numOriginalQuestionGroups - (questionGroups.length + (currentQuestionGroup ? 1 : 0))
+    const percentageComplete = numOriginalQuestionGroups ?
+      (parseInt((numRemaining / numOriginalQuestionGroups) * 100, 10)) : 0
 
     return (
       <SurveyForm
         title={title || ''}
         subtitle={subtitle || ''}
+        percentageComplete={percentageComplete}
         questions={currentQuestionGroup}
         onChange={this.handleUpdate}
         onSubmit={this.handleSubmit}
+        onClose={this.handleClose}
         submitLabel={questionGroups ? 'Next' : 'Finish'}
         submitDisabled={Boolean(surveys.isBusy)}
         />
@@ -132,7 +114,7 @@ class RetroSurveyContainer extends Component {
       return <ProgressBar mode="indeterminate"/>
     }
 
-    return this.renderCurrentQuestionGroup() || this.renderConfirmation()
+    return this.renderCurrentQuestionGroup()
   }
 }
 

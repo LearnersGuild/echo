@@ -4,7 +4,8 @@
  * array of responses `[{values [{subjectId, value}]}]`.
  */
 import React, {PropTypes} from 'react'
-import {Button} from 'react-toolbox/lib/button'
+import Button from 'react-toolbox/lib/button'
+import ProgressBar from 'react-toolbox/lib/progress_bar'
 
 import {Flex} from './Layout'
 import SurveyFormInput from './SurveyFormInput'
@@ -41,8 +42,26 @@ class SurveyForm extends React.Component {
     }
   }
 
+  renderConfirmationMessage() {
+    return (
+      <Flex flexDirection="column" justifyContent="center">
+        <h6>You're all done! Thanks for sharing your feedback.</h6>
+      </Flex>
+    )
+  }
+
+  renderProgressBar() {
+    const {percentageComplete} = this.props
+
+    return (
+      <Flex flexDirection="column" width="100%">
+        <ProgressBar mode="determinate" value={percentageComplete}/>
+        <Flex justifyContent="flex-end" width="100%">{`${percentageComplete}% complete`}</Flex>
+      </Flex>
+    )
+  }
+
   renderHeader() {
-    console.log('subtitle:', this.props.subtitle)
     return (
       <Flex flexDirection="column" width="100%" className={styles.header}>
         <h3>{this.props.title}</h3>
@@ -52,21 +71,30 @@ class SurveyForm extends React.Component {
   }
 
   renderFooter() {
+    let label
+    let onMouseUp
+    if (this.props.percentageComplete >= 100) {
+      label = this.props.closeLabel || 'Close'
+      onMouseUp = this.handleClose
+    } else {
+      label = this.props.submitLabel || 'Submit'
+      onMouseUp = this.handleSubmit
+    }
+
     return (
       <Flex width="100%" justifyContent="flex-end" className={styles.footer}>
-        <Button
-          label={this.props.submitLabel || 'Submit'}
-          onMouseUp={this.handleSubmit}
-          raised
-          primary
-          />
+        <Button label={label} onMouseUp={onMouseUp} raised primary/>
       </Flex>
     )
   }
 
   renderBody() {
+    if (this.props.percentageComplete >= 100) {
+      return this.renderConfirmationMessage()
+    }
+
     return (
-      <Flex flexDirection="column" width="100%" className={styles.header}>
+      <Flex flexDirection="column" width="100%" className={styles.body}>
         {this.props.questions.map((question, i) => (
           <div key={i} className={styles.questionContainer}>
             <SurveyFormInput
@@ -83,6 +111,7 @@ class SurveyForm extends React.Component {
     return (
       <Flex width="100%" flexDirection="column" className={styles.container}>
         {this.renderHeader()}
+        {this.renderProgressBar()}
         {this.renderBody()}
         {this.renderFooter()}
       </Flex>
@@ -94,8 +123,11 @@ SurveyForm.propTypes = {
   title: PropTypes.string,
   subtitle: PropTypes.string,
   questions: PropTypes.array.isRequired,
+  percentageComplete: PropTypes.number.isRequired,
   onSubmit: PropTypes.func,
   onChange: PropTypes.func,
+  onClose: PropTypes.func,
+  closeLabel: PropTypes.string,
   submitLabel: PropTypes.string,
   submitDisabled: PropTypes.bool,
 }
