@@ -16,8 +16,6 @@ class SurveyFormInputText extends React.Component {
   render() {
     return (
       <section>
-        <p>{this.props.prompt}</p>
-
         <Input
           type="text"
           hint={this.props.hint}
@@ -32,7 +30,6 @@ class SurveyFormInputText extends React.Component {
 }
 
 SurveyFormInputText.propTypes = {
-  prompt: PropTypes.string.isRequired,
   hint: PropTypes.string,
   value: PropTypes.any,
   onChange: PropTypes.func,

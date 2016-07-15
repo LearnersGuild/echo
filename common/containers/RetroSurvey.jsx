@@ -3,11 +3,14 @@ import React, {Component, PropTypes} from 'react'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import ProgressBar from 'react-toolbox/lib/progress_bar'
+import {Button} from 'react-toolbox/lib/button'
 
+import {Flex} from '../components/Layout'
 import SurveyForm from '../components/SurveyForm'
-import SurveyFormConfirmation from '../components/SurveyFormConfirmation'
 import * as SurveyActions from '../actions/survey'
 import {groupSurveyQuestions} from '../models/survey'
+
+import styles from './RetroSurvey.css'
 
 class RetroSurveyContainer extends Component {
   constructor(props) {
@@ -85,18 +88,19 @@ class RetroSurveyContainer extends Component {
 
   renderConfirmation() {
     return (
-      <SurveyFormConfirmation
-        title={this.state.title}
-        subtitle={this.state.subtitle}
-        message={(
-          <div>
-            <div>{'You\'re all set.'}</div>
-            <div>{'Thanks for submitting feedback!'}</div>
-          </div>
-        )}
-        closeLabel="Close"
-        onClose={this.handleClose}
-        />
+      <Flex flexDirection="column" justifyContent="center" alignItems="center" width="100%">
+        <h6 className={styles.messageSection}>You're all set.</h6>
+        <h6 className={styles.messageSection}>Thanks for submitting your feedback!</h6>
+
+        <div className={styles.messageSection}>
+          <Button
+            label="Close"
+            onMouseUp={this.handleClose}
+            raised
+            primary
+            />
+        </div>
+      </Flex>
     )
   }
 
@@ -108,7 +112,6 @@ class RetroSurveyContainer extends Component {
       return null
     }
 
-    console.log('retro:', retro)
     const subtitle = `${retro.project ? `#${retro.project.name}` : ''}${retro.cycle ? ` (cycle ${retro.cycle.cycleNumber})` : ''}`
 
     return (

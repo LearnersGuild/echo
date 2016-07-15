@@ -10,6 +10,8 @@ import SurveyFormInputText from './SurveyFormInputText'
 import SurveyFormInputLikert from './SurveyFormInputLikert'
 import SurveyFormInputSliderGroup from './SurveyFormInputSliderGroup'
 
+import styles from './SurveyFormInput.css'
+
 class SurveyFormInput extends React.Component {
   constructor(props) {
     super(props)
@@ -29,7 +31,6 @@ class SurveyFormInput extends React.Component {
     const value = subjectResponse ? subjectResponse.value : null
 
     return {
-      prompt: question.body,
       hint: question.responseInstructions,
       onChange: this.handleInputChange,
       value,
@@ -60,7 +61,6 @@ class SurveyFormInput extends React.Component {
     })
 
     return {
-      prompt: options.prompt || question.body,
       hint: options.hint || question.responseInstructions,
       onChange: this.handleInputChange,
       options: Array.from(inputOptions.values()),
@@ -92,22 +92,39 @@ class SurveyFormInput extends React.Component {
   }
 
   render() {
-    const {question: {responseType}} = this.props
+    const {question: {responseType, body, subjects}} = this.props
 
+    const firstSubject = (subjects ? subjects[0] : null) || {}
+
+    let input
+    let sectionName
     switch (responseType) {
       case SURVEY_QUESTION_RESPONSE_TYPES.TEXT:
-        return <SurveyFormInputText {...this.propsForSingleSubjectQuestion()}/>
+        input = <SurveyFormInputText {...this.propsForSingleSubjectQuestion()}/>
+        sectionName = `Feedback for ${firstSubject.handle || firstSubject.name || ''}`
+        break
 
       case SURVEY_QUESTION_RESPONSE_TYPES.LIKERT_7:
-        return <SurveyFormInputLikert {...this.propsForSingleSubjectQuestion()}/>
+        input = <SurveyFormInputLikert {...this.propsForSingleSubjectQuestion()}/>
+        sectionName = `Feedback for ${firstSubject.handle || firstSubject.name || ''}`
+        break
 
       case SURVEY_QUESTION_RESPONSE_TYPES.RELATIVE_CONTRIBUTION:
-        return <SurveyFormInputSliderGroup maxSum={100} {...this.propsForMultiSubjectQuestion()}/>
+        input = <SurveyFormInputSliderGroup maxSum={100} {...this.propsForMultiSubjectQuestion()} hint="Values must add up tp 100%."/>
+        sectionName = 'Relative Contribution'
+        break
 
       default:
-        console.error(`Invalid question response type for survey input: ${responseType}`)
         return null
     }
+
+    return (
+      <div>
+        <p className={styles.sectionName}>{sectionName || ''}</p>
+        <p className={styles.questionPrompt}>{body || ''}</p>
+        <div>{input}</div>
+      </div>
+    )
   }
 }
 

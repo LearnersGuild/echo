@@ -66,13 +66,14 @@ class SurveyForm extends React.Component {
 
   renderBody() {
     return (
-      <Flex width="100%" className={styles.header}>
+      <Flex flexDirection="column" width="100%" className={styles.header}>
         {this.props.questions.map((question, i) => (
-          <SurveyFormInput
-            key={i}
-            question={question}
-            onChange={this.handleResponseChange(question)}
-            />
+          <div key={i} className={styles.questionContainer}>
+            <SurveyFormInput
+              question={question}
+              onChange={this.handleResponseChange(question)}
+              />
+          </div>
         ))}
       </Flex>
     )

@@ -88,10 +88,7 @@ class SurveyFormInputSliderGroup extends React.Component {
   render() {
     return (
       <Flex flexDirection="column" width="100%">
-        <div>
-          <div>{this.props.prompt}</div>
-          <div>{this.props.hint}</div>
-        </div>
+        <div className={styles.hint}>{this.props.hint}</div>
 
         <div>
           <Flex width="100%">
@@ -118,7 +115,6 @@ class SurveyFormInputSliderGroup extends React.Component {
 }
 
 SurveyFormInputSliderGroup.propTypes = {
-  prompt: PropTypes.string.isRequired,
   hint: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.any,

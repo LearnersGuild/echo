@@ -29,8 +29,6 @@ class SurveyFormInputLikert extends React.Component {
   render() {
     return (
       <section>
-        <p>{this.props.prompt}</p>
-
         <RadioGroup value={parseInt(this.props.value, 10)} onChange={this.handleUpdate}>
           {AGREEMENT_OPTIONS.map((option, i) => (
             <RadioButton key={i} label={option.label} value={option.value}/>
@@ -42,7 +40,7 @@ class SurveyFormInputLikert extends React.Component {
 }
 
 SurveyFormInputLikert.propTypes = {
-  prompt: PropTypes.string.isRequired,
+  hint: PropTypes.string.isRequired,
   value: PropTypes.any,
   onChange: PropTypes.func,
 }
