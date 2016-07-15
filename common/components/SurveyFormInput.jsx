@@ -50,12 +50,10 @@ class SurveyFormInput extends React.Component {
       return responseValue.subjectId === subject.id
     }) : null
 
-    const value = subjectResponse ? subjectResponse.value : null
-
     return {
       hint: question.responseInstructions,
       onChange: this.handleInputChange,
-      value,
+      value: subjectResponse ? subjectResponse.value : null,
     }
   }
 
@@ -93,7 +91,6 @@ class SurveyFormInput extends React.Component {
     if (!subject) {
       // single-subject value; pick the first in the question
       subject = this.props.question.subjects[0]
-
       if (!subject) {
         console.error(new Error('Update failed; could not identify subject'))
         return

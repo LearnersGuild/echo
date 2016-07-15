@@ -89,20 +89,19 @@ class SurveyForm extends React.Component {
   }
 
   renderBody() {
-    if (this.props.percentageComplete >= 100) {
-      return this.renderConfirmationMessage()
-    }
-
     return (
       <Flex flexDirection="column" width="100%" className={styles.body}>
-        {this.props.questions.map((question, i) => (
-          <div key={i} className={styles.questionContainer}>
-            <SurveyFormInput
-              question={question}
-              onChange={this.handleResponseChange(question)}
-              />
-          </div>
-        ))}
+        {this.props.percentageComplete >= 100 ?
+            this.renderConfirmationMessage() :
+            this.props.questions.map((question, i) => (
+              <div key={i} className={styles.questionContainer}>
+                <SurveyFormInput
+                  question={question}
+                  onChange={this.handleResponseChange(question)}
+                  />
+              </div>
+            ))
+        }
       </Flex>
     )
   }
