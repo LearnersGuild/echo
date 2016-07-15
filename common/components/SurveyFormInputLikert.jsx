@@ -13,18 +13,32 @@ const AGREEMENT_OPTIONS = [
   {value: 0, label: 'not enough information'},
 ]
 
-function SurveyFormInputLikert(props) {
-  return (
-    <section>
-      <p>{props.prompt}</p>
+class SurveyFormInputLikert extends React.Component {
+  constructor(props) {
+    super(props)
+    this.handleUpdate = this.handleUpdate.bind(this)
+  }
 
-      <RadioGroup value={props.value} onChange={props.onChange}>
-        {AGREEMENT_OPTIONS.map((option, i) => (
-          <RadioButton key={i} label={option.label} value={option.value}/>
-        ))}
-      </RadioGroup>
-    </section>
-  )
+  handleUpdate(val) {
+    if (this.props.onChange) {
+      console.log('onChange')
+      this.props.onChange(val)
+    }
+  }
+
+  render() {
+    return (
+      <section>
+        <p>{this.props.prompt}</p>
+
+        <RadioGroup value={parseInt(this.props.value, 10)} onChange={this.handleUpdate}>
+          {AGREEMENT_OPTIONS.map((option, i) => (
+            <RadioButton key={i} label={option.label} value={option.value}/>
+          ))}
+        </RadioGroup>
+      </section>
+    )
+  }
 }
 
 SurveyFormInputLikert.propTypes = {
