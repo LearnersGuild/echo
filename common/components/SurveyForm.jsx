@@ -20,7 +20,7 @@ class SurveyForm extends React.Component {
 
   handleResponseChange(question) {
     // FIXME: creates a new function on every render
-    return function (response) {
+    return response => {
       // response => {questionId, values}
       // response.values => [{subjectId, value}]
       const {questionResponses} = this.state

@@ -11,32 +11,13 @@ class SurveyFormInputSliderGroup extends React.Component {
   constructor(props) {
     super(props)
     this.handleInputChange = this.handleInputChange.bind(this)
-    this.state = {
-      inputValues: new Map()
-    }
-  }
-
-  componentDidMount() {
-    const {inputValues} = this.state
-
-    this.setState({
-      inputValues: this.options.reduce((result, option, i) => {
-        const inputValue = {...option}
-        const previousInputValue = inputValues.get(i)
-        if (previousInputValue) {
-          inputValue.value = previousInputValue.value
-        }
-        result.set(i, inputValue)
-        return result
-      }, new Map())
-    })
   }
 
   sliderPropsForOption(option) {
     const {maxTotal} = this.props
 
     let currentTotal = 0
-    this.state.inputValues.forEach(input => {
+    this.props.options.forEach(input => {
       currentTotal += (input.value || 0)
     })
 
@@ -49,25 +30,17 @@ class SurveyFormInputSliderGroup extends React.Component {
   }
 
   handleInputChange(value, index) {
-    const inputValues = new Map(this.state.inputValues)
-    const input = inputValues.get(index)
-    if (input) {
-      inputValues.set(index, {...input, value})
-
-      if (this.props.onChange) {
-        this.props.onChange(inputValues)
-      } else {
-        this.setState({inputValues})
-      }
+    if (this.props.options[index] && this.props.onChange) {
+      this.props.onChange(value, this.props.options[index].payload)
     } else {
-      console.error(`Input not found for updated value ${value} at index ${index}`)
+      console.error(`Option input not found for updated value ${value} at index ${index}`)
     }
   }
 
   renderOptionSubject(option, i) {
     return (
-      <Flex key={i} className={styles.sliderItem} alignItems="center">
-        <Chip className={styles.sliderItemChild}>
+      <Flex key={i} className={styles.inputContainer} alignItems="center">
+        <Chip className={styles.subjectChip}>
           <Flex alignItems="center" height="100%">
             {this.renderSliderAvatar(option)}
             <span>{option.label}</span>
@@ -81,8 +54,8 @@ class SurveyFormInputSliderGroup extends React.Component {
     const sliderProps = this.sliderPropsForOption(option)
     const handleChange = value => this.handleInputChange(value, i)
     return (
-      <Flex key={i} className={styles.sliderItem} alignItems="center">
-        <Slider {...sliderProps} onChange={handleChange} className={styles.sliderItemChild}/>
+      <Flex key={i} className={styles.inputContainer} alignItems="center">
+        <Slider {...sliderProps} onChange={handleChange} className={styles.slider}/>
       </Flex>
     )
   }

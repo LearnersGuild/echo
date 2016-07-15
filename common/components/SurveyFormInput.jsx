@@ -13,6 +13,7 @@ import SurveyFormInputSliderGroup from './SurveyFormInputSliderGroup'
 class SurveyFormInput extends React.Component {
   constructor(props) {
     super(props)
+    this.handleInputChange = this.handleInputChange.bind(this)
     this.state = {
       subjectResponses: new Map()
     }
@@ -67,6 +68,7 @@ class SurveyFormInput extends React.Component {
 
   handleInputChange(newValue, subject) {
     if (!subject) {
+      // single-subject value; pick the first in the question
       subject = this.props.question.subjects[0]
 
       if (!subject) {
@@ -91,20 +93,16 @@ class SurveyFormInput extends React.Component {
   }
 
   render() {
-    console.log('\n[SurveyFormInput.render] this.props:', this.props)
     const {question: {responseType}} = this.props
 
     switch (responseType) {
       case SURVEY_QUESTION_RESPONSE_TYPES.TEXT:
-        console.log('SurveyFormInputText')
         return <SurveyFormInputText {...this.questionPropsSingle()}/>
 
       case SURVEY_QUESTION_RESPONSE_TYPES.LIKERT_7:
-        console.log('SurveyFormInputLikert')
         return <SurveyFormInputLikert count={7} {...this.propsForSingleSubjectQuestion()}/>
 
       case SURVEY_QUESTION_RESPONSE_TYPES.RELATIVE_CONTRIBUTION:
-        console.log('SurveyFormInputSliderGroup')
         return <SurveyFormInputSliderGroup maxTotal={100} {...this.propsForMultiSubjectQuestion()}/>
 
       default:
