@@ -1,20 +1,34 @@
 import React, {PropTypes} from 'react'
-import {Input} from 'react-toolbox/lib/input'
+import Input from 'react-toolbox/lib/input'
 
-function SurveyFormInputText(props) {
-  return (
-    <section>
-      <p>{props.prompt}</p>
+class SurveyFormInputText extends React.Component {
+  constructor(props) {
+    super(props)
+    this.handleChange = this.handleChange.bind(this)
+  }
 
-      <Input
-        type="text"
-        hint={props.hint}
-        value={props.value}
-        onChange={props.onChange}
-        multiline
-        />
-    </section>
-  )
+  handleChange(val) {
+    if (this.props.onChange) {
+      this.props.onChange(val)
+    }
+  }
+
+  render() {
+    return (
+      <section>
+        <p>{this.props.prompt}</p>
+
+        <Input
+          type="text"
+          hint={this.props.hint}
+          value={this.props.value}
+          onChange={this.handleChange}
+          multiline
+          floating
+          />
+      </section>
+    )
+  }
 }
 
 SurveyFormInputText.propTypes = {

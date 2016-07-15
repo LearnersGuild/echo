@@ -88,7 +88,6 @@ class RetroSurveyContainer extends Component {
     const {surveys} = this.props
     const {title, subtitle, questionGroups, currentQuestionGroup} = this.state
 
-    console.log('\ncurrentQuestionGroup:', currentQuestionGroup)
     if (!currentQuestionGroup) {
       return null
     }
