@@ -23,7 +23,7 @@ function SurveyFormConfirmation(props) {
 
 SurveyFormConfirmation.propTypes = {
   header: PropTypes.any,
-  message: PropTypes.string,
+  message: PropTypes.any,
   onClose: PropTypes.func,
   closeLabel: PropTypes.string,
   closeDisabled: PropTypes.bool,
