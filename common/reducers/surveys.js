@@ -2,13 +2,10 @@ import {
   LOAD_RETRO_SURVEY_REQUEST,
   LOAD_RETRO_SURVEY_SUCCESS,
   LOAD_RETRO_SURVEY_FAILURE,
-} from '../actions/loadRetroSurvey'
-
-import {
   SAVE_SURVEY_RESPONSE_REQUEST,
   SAVE_SURVEY_RESPONSE_SUCCESS,
   SAVE_SURVEY_RESPONSE_FAILURE,
-} from '../actions/saveRetroSurveyResponse'
+} from '../actions/survey'
 
 import {mergeEntities} from '../util'
 

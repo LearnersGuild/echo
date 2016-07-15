@@ -6,8 +6,7 @@ import ProgressBar from 'react-toolbox/lib/progress_bar'
 
 import SurveyForm from '../components/SurveyForm'
 import SurveyFormConfirmation from '../components/SurveyFormConfirmation'
-import loadRetroSurvey from '../actions/loadRetroSurvey'
-import saveRetroSurveyResponse from '../actions/saveRetroSurveyResponse'
+import * as SurveyActions from '../actions/survey'
 import {groupSurveyQuestions} from '../models/survey'
 
 class RetroSurveyContainer extends Component {
@@ -25,8 +24,8 @@ class RetroSurveyContainer extends Component {
   }
 
   componentDidMount() {
-    const {params: {projectName}} = this.props
-    loadRetroSurvey({projectName})
+    const {params: {projectName}, surveyActions} = this.props
+    surveyActions.loadRetroSurvey({projectName})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,14 +57,16 @@ class RetroSurveyContainer extends Component {
   }
 
   handleSubmit(responses) {
-    const {auth: {currentUser}, retro} = this.props
+    const {auth: {currentUser}, retro, surveyActions} = this.props
 
     Promise.all(responses.map(response => {
-      return saveRetroSurveyResponse({
-        surveyId: retro.id,
-        respondentId: currentUser.id,
-        questionId: response.questionId,
-        values: response.values,
+      return surveyActions.saveRetroSurveyResponse({
+        response: {
+          surveyId: retro.id,
+          respondentId: currentUser.id,
+          questionId: response.questionId,
+          values: response.values,
+        }
       })
     })).then(() => {
       this.setNextQuestionGroup()
@@ -146,23 +147,20 @@ RetroSurveyContainer.propTypes = {
     questions: PropTypes.array,
   }),
 
-  loadRetroSurvey: PropTypes.func.isRequired,
-  saveRetroSurveyResponse: PropTypes.func.isRequired,
+  surveyActions: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => {
-  const survey = state.surveys.retro || {}
   return {
     auth: state.auth,
     surveys: state.surveys,
-    survey,
+    retro: state.surveys.retro || {},
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    loadRetroSurvey: bindActionCreators(loadRetroSurvey, dispatch),
-    saveRetroSurveyResponse: bindActionCreators(saveRetroSurveyResponse, dispatch),
+    surveyActions: bindActionCreators(SurveyActions, dispatch),
   }
 }
 
