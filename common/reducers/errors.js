@@ -7,6 +7,7 @@ import {LOAD_CHAPTERS_FAILURE} from '../actions/loadChapters'
 import {LOAD_PLAYERS_FAILURE} from '../actions/loadPlayers'
 import {LOAD_CYCLE_VOTING_RESULTS_FAILURE} from '../actions/loadCycleVotingResults'
 import {REASSIGN_PLAYERS_TO_CHAPTER_FAILURE} from '../actions/reassignPlayersToChapter'
+import {LOAD_RETRO_SURVEY_FAILURE, SAVE_SURVEY_RESPONSE_FAILURE} from '../actions/survey'
 
 const initialState = {
   messages: [],
@@ -38,6 +39,8 @@ export function errors(state = initialState, action) {
     case LOAD_PLAYERS_FAILURE:
     case LOAD_CYCLE_VOTING_RESULTS_FAILURE:
     case REASSIGN_PLAYERS_TO_CHAPTER_FAILURE:
+    case LOAD_RETRO_SURVEY_FAILURE:
+    case SAVE_SURVEY_RESPONSE_FAILURE:
       {
         console.error(action.type, action.error)
         return Object.assign({}, state, {

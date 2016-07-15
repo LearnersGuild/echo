@@ -58,7 +58,7 @@ query($projectName:String) {
       }))
       .catch(err => dispatch({
         type: LOAD_RETRO_SURVEY_FAILURE,
-        response: err
+        error: err
       }))
   }
 }
@@ -86,7 +86,7 @@ mutation($response:SurveyResponseInput!) {
       }))
       .catch(err => dispatch({
         type: SAVE_SURVEY_RESPONSE_FAILURE,
-        response: err
+        error: err
       }))
   }
 }
