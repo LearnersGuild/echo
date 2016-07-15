@@ -21,6 +21,21 @@ class SurveyFormInput extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    const [oldQ, newQ] = [this.props.question, nextProps.question]
+
+    const oldSubjects = oldQ.subjects.map(s => s.id).sort()
+    const newSubjects = newQ.subjects.map(s => s.id).sort()
+    const subjectsChanged = !oldSubjects.every((val, i) => newSubjects[i] === val)
+    const questionChanged = oldQ.id !== newQ.id
+
+    if (questionChanged || subjectsChanged) {
+      this.setState({
+        subjectResponses: new Map()
+      })
+    }
+  }
+
   propsForSingleSubjectQuestion() {
     const {question} = this.props
     const subject = question.subjects[0]
