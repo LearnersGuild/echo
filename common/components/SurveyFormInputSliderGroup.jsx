@@ -34,15 +34,15 @@ class SurveyFormInputSliderGroup extends React.Component {
 
   handleInputChange(value, index) {
     const {options, maxSum} = this.props
-    const newValue = parseInt(value, 10)
+    let newValue = parseInt(value, 10)
     const newTotal = this.getSumWithNewValue(newValue, index)
 
     if (!isNaN(maxSum) && newTotal > maxSum) {
-      return
+      newValue = maxSum - this.getSumWithNewValue(0, index)
     }
 
     if (options[index] && this.props.onChange) {
-      this.props.onChange(value, options[index].payload)
+      this.props.onChange(newValue, options[index].payload)
     } else {
       console.error(`Option input not found for updated value ${value} at index ${index}`)
     }
