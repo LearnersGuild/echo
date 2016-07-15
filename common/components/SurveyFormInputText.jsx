@@ -19,7 +19,7 @@ class SurveyFormInputText extends React.Component {
         <Input
           type="text"
           hint={this.props.hint}
-          value={this.props.value}
+          value={this.props.value || ''}
           onChange={this.handleChange}
           multiline
           floating

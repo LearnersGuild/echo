@@ -1,5 +1,6 @@
 /* global window */
 import React, {Component, PropTypes} from 'react'
+import ReactDom from 'react-dom'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import ProgressBar from 'react-toolbox/lib/progress_bar'
@@ -70,6 +71,7 @@ class RetroSurveyContainer extends Component {
       })
     })).then(() => {
       this.setNextQuestionGroup()
+      ReactDom.findDOMNode(this).scrollIntoView()
     })
   }
 
