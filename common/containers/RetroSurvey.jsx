@@ -25,7 +25,8 @@ class RetroSurveyContainer extends Component {
   }
 
   componentDidMount() {
-    loadRetroSurvey()
+    const {params: {projectName}} = this.props
+    loadRetroSurvey({projectName})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -119,6 +120,7 @@ class RetroSurveyContainer extends Component {
 }
 
 RetroSurveyContainer.propTypes = {
+  params: PropTypes.object.isRequired,
   auth: PropTypes.shape({
     isBusy: PropTypes.bool.isRequired,
     currentUser: PropTypes.object
