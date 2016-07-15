@@ -6,9 +6,9 @@
 import React, {PropTypes} from 'react'
 
 import {SURVEY_QUESTION_RESPONSE_TYPES} from '../models/survey'
-import FormInputText from './SurveyFormInputText'
-import FormInputLikert from './SurveyFormInputLikert'
-import FormInputSliderGroup from './SurveyFormInputSliderGroup'
+import SurveyFormInputText from './SurveyFormInputText'
+import SurveyFormInputLikert from './SurveyFormInputLikert'
+import SurveyFormInputSliderGroup from './SurveyFormInputSliderGroup'
 
 class SurveyFormInput extends React.Component {
   constructor(props) {
@@ -43,7 +43,7 @@ class SurveyFormInput extends React.Component {
     // convert subjects to slider input options
     const options = subjects.reduce((result, subject) => {
       result.set(subject.id, {
-        text: subject.name,
+        label: subject.name,
         imageUrl: subject.profileUrl,
         payload: subject,
       })
@@ -92,20 +92,23 @@ class SurveyFormInput extends React.Component {
 
   render() {
     console.log('\n[SurveyFormInput.render] this.props:', this.props)
-    const {question} = this.props
+    const {question: {responseType}} = this.props
 
-    switch (question.responseType) {
+    switch (responseType) {
       case SURVEY_QUESTION_RESPONSE_TYPES.TEXT:
-        return <FormInputText {...this.questionPropsSingle()}/>
+        console.log('SurveyFormInputText')
+        return <SurveyFormInputText {...this.questionPropsSingle()}/>
 
       case SURVEY_QUESTION_RESPONSE_TYPES.LIKERT_7:
-        return <FormInputLikert count={7} {...this.propsForSingleSubjectQuestion()}/>
+        console.log('SurveyFormInputLikert')
+        return <SurveyFormInputLikert count={7} {...this.propsForSingleSubjectQuestion()}/>
 
       case SURVEY_QUESTION_RESPONSE_TYPES.RELATIVE_CONTRIBUTION:
-        return <FormInputSliderGroup maxTotal={100} {...this.propsForMultiSubjectQuestion()}/>
+        console.log('SurveyFormInputSliderGroup')
+        return <SurveyFormInputSliderGroup maxTotal={100} {...this.propsForMultiSubjectQuestion()}/>
 
       default:
-        console.error(`Invalid question response type for survey input: ${question.responseType}`)
+        console.error(`Invalid question response type for survey input: ${responseType}`)
         return null
     }
   }

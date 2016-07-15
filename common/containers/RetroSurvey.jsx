@@ -100,17 +100,16 @@ class RetroSurveyContainer extends Component {
   }
 
   renderConfirmation() {
-    const message = (
-      <div>
-        <div>{'You\'re all set.'}</div>
-        <div>{'Thanks for submitting feedback!'}</div>
-      </div>
-    )
     return (
       <SurveyFormConfirmation
         title={this.state.title}
         subtitle={this.state.subtitle}
-        message={message}
+        message={(
+          <div>
+            <div>{'You\'re all set.'}</div>
+            <div>{'Thanks for submitting feedback!'}</div>
+          </div>
+        )}
         closeLabel="Close"
         onClose={this.handleClose}
         />

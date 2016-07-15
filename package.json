@@ -76,6 +76,7 @@
     "jsdom": "^8.0.4",
     "json-loader": "^0.5.4",
     "jsonwebtoken": "^7.0.1",
+    "jsxstyle": "0.0.18",
     "juration": "0.0.1",
     "later": "^1.2.0",
     "md5": "^2.1.0",

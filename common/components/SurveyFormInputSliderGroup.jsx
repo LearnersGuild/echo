@@ -3,15 +3,20 @@ import Chip from 'react-toolbox/lib/chip'
 import Avatar from 'react-toolbox/lib/avatar'
 import Slider from 'react-toolbox/lib/slider'
 
+import {Flex} from './Layout'
+
+import styles from './SurveyFormInputSliderGroup.css'
+
 class SurveyFormInputSliderGroup extends React.Component {
   constructor(props) {
     super(props)
+    this.handleInputChange = this.handleInputChange.bind(this)
     this.state = {
       inputValues: new Map()
     }
   }
 
-  componentWillReceiveMount() {
+  componentDidMount() {
     const {inputValues} = this.state
 
     this.setState({
@@ -28,16 +33,16 @@ class SurveyFormInputSliderGroup extends React.Component {
   }
 
   sliderPropsForOption(option) {
-    const {maxTotal = 100} = this.props
+    const {maxTotal} = this.props
 
     let currentTotal = 0
-    this.inputValues.forEach(input => {
+    this.state.inputValues.forEach(input => {
       currentTotal += (input.value || 0)
     })
 
     return {
       min: 0,
-      max: maxTotal - currentTotal,
+      max: isNaN(maxTotal) ? null : (maxTotal - currentTotal),
       step: 1,
       value: option.value || 0,
     }
@@ -45,23 +50,27 @@ class SurveyFormInputSliderGroup extends React.Component {
 
   handleInputChange(value, index) {
     const inputValues = new Map(this.state.inputValues)
-    inputValues.set(index, {
-      ...this.state.inputValues.get(index),
-      value
-    })
+    const input = inputValues.get(index)
+    if (input) {
+      inputValues.set(index, {...input, value})
 
-    if (this.props.onChange) {
-      this.props.onChange(inputValues)
+      if (this.props.onChange) {
+        this.props.onChange(inputValues)
+      } else {
+        this.setState({inputValues})
+      }
     } else {
-      this.setState({inputValues})
+      console.error(`Input not found for updated value ${value} at index ${index}`)
     }
   }
 
-  renderOptionSubject(option) {
+  renderOptionSubject(option, i) {
     return (
-      <Chip>
-        {this.renderSliderAvatar(option)}
-        <span>{option.label}</span>
+      <Chip key={i}>
+        <Flex>
+          {this.renderSliderAvatar(option)}
+          <span>{option.label}</span>
+        </Flex>
       </Chip>
     )
   }
@@ -70,36 +79,35 @@ class SurveyFormInputSliderGroup extends React.Component {
     if (option.imageUrl) {
       return <Avatar><img src={option.imageUrl}/></Avatar>
     }
-
-    const initial = (option.text || '').charAt(0).toUpperCase()
-    if (initial) {
-      return <Avatar title={initial}/>
-    }
-
     return <Avatar icon="person"/>
   }
 
   renderOptionSlider(option, i) {
     const sliderProps = this.sliderPropsForOption(option)
-    const handleChange = value => this.handleChange(value, i)
-    return (
-      <Slider {...sliderProps} onChange={handleChange}/>
-    )
+    const handleChange = value => this.handleInputChange(value, i)
+    return <Slider key={i} {...sliderProps} onChange={handleChange}/>
   }
 
   render() {
-    console.log('\n[SurveyFormInputSliderGroup.render] this.props:', this.props)
+    const subjects = (
+      <Flex flexDirection="column" flex={1} className={styles.sliderItem}>
+        {this.props.options.map((option, i) => this.renderOptionSubject(option, i))}
+      </Flex>
+    )
+    const sliders = (
+      <Flex flexDirection="column" flex={2} className={styles.sliderItem}>
+        {this.props.options.map((option, i) => this.renderOptionSlider(option, i))}
+      </Flex>
+    )
+
     return (
       <section>
         <p>{this.props.prompt}</p>
-
         <div>
-          {this.props.options.map((option, i) => (
-            <div key={i}>
-              {this.renderOptionSubject(option)}
-              {this.renderOptionSlider(option, i)}
-            </div>
-          ))}
+          <Flex width="100%">
+            {subjects}
+            {sliders}
+          </Flex>
         </div>
       </section>
     )
@@ -109,7 +117,7 @@ class SurveyFormInputSliderGroup extends React.Component {
 SurveyFormInputSliderGroup.propTypes = {
   prompt: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
-    text: PropTypes.string,
+    label: PropTypes.string,
     imageUrl: PropTypes.string,
     value: PropTypes.any,
     payload: PropTypes.any,
