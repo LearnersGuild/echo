@@ -1,5 +1,6 @@
 /* global window */
 import React, {Component, PropTypes} from 'react'
+import ReactDom from 'react-dom'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import ProgressBar from 'react-toolbox/lib/progress_bar'
@@ -28,18 +29,18 @@ class RetroSurveyContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {retro} = nextProps
-    const newState = {}
+    const {retro: newRetro} = nextProps
 
-    if (retro) {
-      if (retro.questions && !this.state.questionGroups) {
-        newState.questionGroups = groupSurveyQuestions(retro.questions)
-        newState.numQuestionGroups = newState.questionGroups.length // we'll modify, so capture orig. length
-        newState.currentQuestionGroup = newState.questionGroups.shift()
+    if (newRetro) {
+      if (newRetro.questions && !this.state.questionGroups) {
+        const questionGroups = groupSurveyQuestions(newRetro.questions)
+        this.setState({
+          questionGroups,
+          numQuestionGroups: questionGroups.length, // we'll modify, so capture orig. length
+          currentQuestionGroup: questionGroups.shift(),
+        })
       }
     }
-
-    this.setState(newState)
   }
 
   setNextQuestionGroup() {
@@ -70,6 +71,7 @@ class RetroSurveyContainer extends Component {
       })
     })).then(() => {
       this.setNextQuestionGroup()
+      ReactDom.findDOMNode(this).scrollIntoView()
     })
   }
 
