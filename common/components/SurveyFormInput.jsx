@@ -110,7 +110,7 @@ class SurveyFormInput extends React.Component {
         break
 
       case SURVEY_QUESTION_RESPONSE_TYPES.RELATIVE_CONTRIBUTION:
-        input = <SurveyFormInputSliderGroup maxSum={100} {...this.propsForMultiSubjectQuestion()} hint="Values must add up tp 100%."/>
+        input = <SurveyFormInputSliderGroup maxSum={100} {...this.propsForMultiSubjectQuestion()} hint="Values must add up to 100%."/>
         sectionName = 'Relative Contribution'
         break
 
