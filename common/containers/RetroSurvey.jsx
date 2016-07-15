@@ -79,6 +79,7 @@ class RetroSurveyContainer extends Component {
   }
 
   handleClose() {
+    console.log('window.parent:', window.parent)
     if (typeof window !== 'undefined' && window.parent) {
       window.parent.postMessage('closeRetroSurvey', '*')
     }
