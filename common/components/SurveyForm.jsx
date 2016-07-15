@@ -73,17 +73,20 @@ class SurveyForm extends React.Component {
   renderFooter() {
     let label
     let onMouseUp
+    let disabled
     if (this.props.percentageComplete >= 100) {
       label = this.props.closeLabel || 'Close'
       onMouseUp = this.handleClose
+      disabled = this.props.closeDisabled
     } else {
-      label = this.props.submitLabel || 'Submit'
+      label = this.props.submitLabel || 'Next'
       onMouseUp = this.handleSubmit
+      disabled = this.props.submitDisabled
     }
 
     return (
       <Flex width="100%" justifyContent="flex-end" className={styles.footer}>
-        <Button label={label} onMouseUp={onMouseUp} raised primary/>
+        <Button label={label} onMouseUp={onMouseUp} disabled={disabled} raised primary/>
       </Flex>
     )
   }
@@ -127,6 +130,7 @@ SurveyForm.propTypes = {
   onChange: PropTypes.func,
   onClose: PropTypes.func,
   closeLabel: PropTypes.string,
+  closeDisabled: PropTypes.string,
   submitLabel: PropTypes.string,
   submitDisabled: PropTypes.bool,
 }

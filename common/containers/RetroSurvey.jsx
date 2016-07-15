@@ -79,6 +79,7 @@ class RetroSurveyContainer extends Component {
   }
 
   handleClose() {
+    console.log('window.parent:', window.parent)
     if (typeof window !== 'undefined' && window.parent) {
       window.parent.postMessage('closeRetroSurvey', '*')
     }
@@ -99,7 +100,7 @@ class RetroSurveyContainer extends Component {
         title={title || ''}
         subtitle={subtitle || ''}
         percentageComplete={percentageComplete}
-        questions={currentQuestionGroup}
+        questions={currentQuestionGroup || []}
         onChange={this.handleUpdate}
         onSubmit={this.handleSubmit}
         onClose={this.handleClose}

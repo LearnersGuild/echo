@@ -16,17 +16,17 @@ class SurveyFormInput extends React.Component {
   constructor(props) {
     super(props)
     this.handleInputChange = this.handleInputChange.bind(this)
-    this.state = {
-      subjectResponses: new Map()
-    }
+    this.state = this.initialState()
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.questionIsChanging(this.props.question, nextProps.question)) {
-      this.setState({
-        subjectResponses: new Map()
-      })
+      this.setState(this.initialState())
     }
+  }
+
+  initialState() {
+    return {subjectResponses: new Map()}
   }
 
   questionIsChanging(oldQ, newQ) {
