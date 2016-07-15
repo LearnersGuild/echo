@@ -122,7 +122,7 @@ function createPlayersOrModerators(table, users, chapter) {
   return r.table(table)
     .insert(usersToInsert, {returnChanges: 'always', conflict: 'replace'}) // overwrite old records
     .run()
-    .then(result => result.changes.map(u => u.new_val))
+    .then(result => result.changes ? result.changes.map(u => u.new_val) : [])
 }
 
 function getUsersFromIDM(userIds) {

@@ -58,7 +58,7 @@ export const SurveyQuestion = new GraphQLObjectType({
     {
       subjects: {
         type: new GraphQLNonNull(new GraphQLList(PlayerSubject)),
-        description: 'The list of ids of the persons or things this question is asking about',
+        description: 'The list of subjects this question is asking about',
       },
       response: {
         type: new GraphQLNonNull(ResponseValueGroup),

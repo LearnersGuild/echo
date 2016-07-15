@@ -48,10 +48,10 @@ export default {
 async function changeCycleState(newState, currentUser) {
   const newStateIndex = CYCLE_STATES.indexOf(newState)
   if (!userCan(currentUser, 'updateCycle')) {
-    throw new GraphQLError('You are not authorized to do that.')
+    throw new GraphQLError('You are not authorized to do that')
   }
-  if (typeof newStateIndex === 'undefined') {
-    throw new GraphQLError('Invalid cycle state given.')
+  if (newStateIndex === -1) {
+    throw new GraphQLError(`Invalid cycle state ${newState}`)
   }
   if (newStateIndex === 0) {
     throw new GraphQLError(`You cannot change the cycle state back to ${newState}`)
@@ -60,15 +60,15 @@ async function changeCycleState(newState, currentUser) {
   try {
     const moderator = await getModeratorById(currentUser.id, {mergeChapter: true})
     if (!moderator) {
-      throw new GraphQLError('You are not a moderator for the game.')
+      throw new GraphQLError('You are not a moderator for the game')
     }
     const validOriginState = CYCLE_STATES[newStateIndex - 1]
     const cycles = await getCyclesInStateForChapter(moderator.chapter.id, validOriginState)
     if (!cycles.length > 0) {
-      throw new GraphQLError(`No cycles for ${moderator.chapter.name} chapter (${moderator.chapter.id}) in ${validOriginState} state.`)
+      throw new GraphQLError(`No cycles for ${moderator.chapter.name} chapter (${moderator.chapter.id}) in ${validOriginState} state`)
     }
-    const cycle = cycles[0]
 
+    const cycle = cycles[0]
     const cycleUpdateResult = await r.table('cycles')
       .get(cycle.id)
       .update({state: newState, updatedAt: r.now()}, {returnChanges: 'always'})
@@ -79,6 +79,7 @@ async function changeCycleState(newState, currentUser) {
       delete returnedCycle.chapterId
       return returnedCycle
     }
+
     throw new GraphQLError('Could not save cycle, please try again')
   } catch (err) {
     handleError(err)
