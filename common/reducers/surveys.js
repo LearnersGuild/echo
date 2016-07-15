@@ -18,15 +18,11 @@ export function surveys(state = initialState, action) {
   switch (action.type) {
     case LOAD_RETRO_SURVEY_REQUEST:
     case SAVE_SURVEY_RESPONSE_REQUEST:
-      console.log('\naction.type:', action.type)
-      console.log('\naction.response:', action.response)
       return Object.assign({}, state, {
         isBusy: true,
       })
 
     case LOAD_RETRO_SURVEY_SUCCESS:
-      console.log('\naction.type:', action.type)
-      console.log('\naction.response:', action.response)
       return Object.assign({}, state, {
         isBusy: false,
         retro: mergeEntities(state.retro, action.response),
@@ -35,8 +31,6 @@ export function surveys(state = initialState, action) {
     case SAVE_SURVEY_RESPONSE_SUCCESS:
     case SAVE_SURVEY_RESPONSE_FAILURE:
     case LOAD_RETRO_SURVEY_FAILURE:
-      console.log('\naction.type:', action.type)
-      console.log('\naction.response:', action.response)
       return Object.assign({}, state, {
         isBusy: false,
       })
