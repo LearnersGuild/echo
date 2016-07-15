@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react'
-import {Chip, Avatar, Slider} from 'react-toolbox/lib/slider'
+import Chip from 'react-toolbox/lib/chip'
+import Avatar from 'react-toolbox/lib/avatar'
+import Slider from 'react-toolbox/lib/slider'
 
 class SurveyFormInputSliderGroup extends React.Component {
   constructor(props) {
@@ -86,6 +88,7 @@ class SurveyFormInputSliderGroup extends React.Component {
   }
 
   render() {
+    console.log('\n[SurveyFormInputSliderGroup.render] this.props:', this.props)
     return (
       <section>
         <p>{this.props.prompt}</p>

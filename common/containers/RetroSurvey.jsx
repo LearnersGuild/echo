@@ -16,10 +16,10 @@ class RetroSurveyContainer extends Component {
     this.handleClose = this.handleClose.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.state = {
-      title: '',
-      subtitle: '',
-      questionGroups: [],
-      currentQuestionGroup: [],
+      title: null,
+      subtitle: null,
+      questionGroups: null,
+      currentQuestionGroup: null,
     }
   }
 
@@ -39,7 +39,7 @@ class RetroSurveyContainer extends Component {
       }
       if (retro.project && retro.cycle && !this.state.title) {
         newState.title = 'Retrospective Survey'
-        newState.subtitle = `Project ${retro.project.name}, Cycle ${retro.cycle.cycleNumber}`
+        newState.subtitle = `Project ${retro.project.name} (Cycle ${retro.cycle.cycleNumber})`
       }
     }
 
@@ -89,11 +89,11 @@ class RetroSurveyContainer extends Component {
 
     return (
       <SurveyForm
-        title={title}
-        subtitle={subtitle}
+        title={title || ''}
+        subtitle={subtitle || ''}
         questions={currentQuestionGroup}
         onSubmit={this.handleSubmitQuestionGroupResonse}
-        submitLabel={questionGroups.length ? 'Next' : 'Finish'}
+        submitLabel={questionGroups ? 'Next' : 'Finish'}
         submitDisabled={Boolean(surveys.isBusy)}
         />
     )

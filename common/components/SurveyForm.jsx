@@ -40,8 +40,8 @@ class SurveyForm extends React.Component {
     return (
       <div>
         <section>
-          {this.props.title}
-          {this.props.subtitle}
+          <div>{this.props.title}</div>
+          <div>{this.props.subtitle}</div>
         </section>
 
         <section>

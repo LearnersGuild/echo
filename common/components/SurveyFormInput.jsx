@@ -61,7 +61,7 @@ class SurveyFormInput extends React.Component {
       prompt: question.body,
       hint: question.responseInstructions,
       onChange: this.handleInputChange,
-      options,
+      options: Array.from(options.values()),
     }
   }
 
@@ -91,6 +91,7 @@ class SurveyFormInput extends React.Component {
   }
 
   render() {
+    console.log('\n[SurveyFormInput.render] this.props:', this.props)
     const {question} = this.props
 
     switch (question.responseType) {
@@ -114,15 +115,15 @@ SurveyFormInput.propTypes = {
   onChange: PropTypes.func,
   question: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    body: PropTypes.string.isRequired,
+    body: PropTypes.string,
     subjects: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      handle: PropTypes.string.isRequired,
+      name: PropTypes.string,
+      handle: PropTypes.string,
       profileUrl: PropTypes.string,
     })),
-    responseType: PropTypes.string.isRequired,
-    responseIntructions: PropTypes.string.isRequired,
+    responseType: PropTypes.string,
+    responseInstructions: PropTypes.string,
     response: PropTypes.shape({
       values: PropTypes.arrayOf(PropTypes.shape({
         subject: PropTypes.object.isRequired,
