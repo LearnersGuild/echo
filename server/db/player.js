@@ -1,8 +1,6 @@
 import r from '../../db/connect'
 import {updateInTable} from '../../server/db/util'
 
-export const playersTable = r.table('players')
-
 export function getPlayerById(id, passedOptions = {}) {
   const options = Object.assign({
     mergeChapter: false,
@@ -23,25 +21,29 @@ export function findPlayersByIds(playerIds) {
   return r.table('players').getAll(...playerIds)
 }
 
-export function updatePlayerECCStats(playerId, stats, cycleId, projectId) {
-  const deltaECC = stats.ecc
-  const cycleProjectECC = r.row('cycleProjectECC').default({})
-  const eccAlreadyRecordedForProject = cycleProjectECC(cycleId).default({}).hasFields(projectId)
-  const previousECCForProject = cycleProjectECC(cycleId)(projectId)('ecc')
-  const newECC = r.branch(
-    eccAlreadyRecordedForProject,
-    r.row('ecc').sub(previousECCForProject).add(deltaECC),
-    r.row('ecc').add(deltaECC).default(deltaECC),
-  )
+export function savePlayerProjectStats(playerId, projectId, cycleId, newStats = {}) {
+  const playerStats = r.row('stats').default({})
+  const playerProjectStats = playerStats('projects').default({})
+  const playerProjectCycleStats = playerProjectStats(projectId).default({})('cycles').default({})
+  const playerProjectCycleECC = playerProjectCycleStats(cycleId).default({})('ecc').default(0)
 
-  const newCycleProjectECC = cycleProjectECC.merge(row => ({
-    [cycleId]: row(cycleId).default({}).merge({[projectId]: stats})
+  const mergedProjectStats = playerProjectStats.merge(projects => ({
+    [projectId]: projects(projectId).default({}).merge(project => ({
+      cycles: project('cycles').default({}).merge(cycles => ({
+        [cycleId]: cycles(cycleId).default({}).merge(newStats)
+      }))
+    }))
   }))
+
+  const currentECC = playerStats('ecc').default(0)
+  const updatedECC = currentECC.sub(playerProjectCycleECC).add(newStats.ecc || 0)
 
   return update({
     id: playerId,
-    ecc: newECC,
-    cycleProjectECC: newCycleProjectECC,
+    stats: {
+      ecc: updatedECC,
+      projects: mergedProjectStats,
+    }
   })
 }
 
@@ -82,5 +84,5 @@ export function findPlayersForChapter(chapterId, filters) {
 }
 
 export function update(record, options) {
-  return updateInTable(record, playersTable, options)
+  return updateInTable(record, r.table('players'), options)
 }

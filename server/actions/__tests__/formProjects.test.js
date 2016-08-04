@@ -162,7 +162,7 @@ async function _generatePlayers(chapterId, options = {}) {
   const numAdvanced = options.advanced || 0
   return {
     regular: await factory.createMany('player', {chapterId}, numTotal - numAdvanced),
-    advanced: await factory.createMany('player', {chapterId, ecc: TEST_ADVANCED_PLAYER_ECC}, numAdvanced)
+    advanced: await factory.createMany('player', {chapterId, stats: {ecc: TEST_ADVANCED_PLAYER_ECC}}, numAdvanced)
   }
 }
 

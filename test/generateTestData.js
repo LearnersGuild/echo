@@ -24,7 +24,7 @@ function createPlayers(users, chapters) {
       id: user.id,
       chapterId: chapterMap[user.inviteCode].id,
       active: true,
-      ecc: 0,
+      stats: {ecc: 0},
     }
   })
 

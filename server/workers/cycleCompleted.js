@@ -1,7 +1,7 @@
 import {getQueue} from '../util'
 import ChatClient from '../../server/clients/ChatClient'
 import r from '../../db/connect'
-import {updateTeamECCStats} from '../../server/actions/updateTeamECCStats'
+import {updateProjectStats} from '../../server/actions/updateProjectStats'
 import {getProjectsForChapterInCycle} from '../../server/db/project'
 
 export function start() {
@@ -14,15 +14,15 @@ export function start() {
 
 export async function processCompletedCycle(cycle, chatClient = new ChatClient()) {
   console.log(`Completing cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
-  await updateECC(cycle)
+  await updateStats(cycle)
   await sendCompletionAnnouncement(cycle, chatClient)
 }
 
-function updateECC(cycle) {
+function updateStats(cycle) {
   return getProjectsForChapterInCycle(cycle.chapterId, cycle.id)
     .then(projects =>
       Promise.all(
-        projects.map(project => updateTeamECCStats(project, cycle.id))
+        projects.map(project => updateProjectStats(project, cycle.id))
       )
     )
 }

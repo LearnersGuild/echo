@@ -51,7 +51,9 @@ function _formGoalGroups(players, playerVotes) {
   const regularPlayers = new Map()
 
   players.forEach(player => {
-    if (parseInt(player.ecc, 10) >= MIN_ADVANCED_PLAYER_ECC) {
+    const playerECC = parseInt((player.stats || {}).ecc, 10) || 0
+
+    if (playerECC >= MIN_ADVANCED_PLAYER_ECC) {
       advancedPlayers.set(player.id, player)
     } else {
       regularPlayers.set(player.id, player)

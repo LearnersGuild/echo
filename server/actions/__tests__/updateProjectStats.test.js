@@ -7,35 +7,35 @@ import {withDBCleanup, useFixture} from '../../../test/helpers'
 import {getPlayerById} from '../../../server/db/player'
 
 import {
-  calculateProjectECCStatsForPlayer,
-  updateTeamECCStats,
-} from '../updateTeamECCStats'
+  calculatePlayerProjectStats,
+  updateProjectStats,
+} from '../updateProjectStats'
 
 describe(testContext(__filename), function () {
-  describe('calculateProjectECCStatsForPlayer()', function () {
+  describe('calculatePlayerProjectStats()', function () {
     specify('when there are scores from all team members', function () {
-      expect(calculateProjectECCStatsForPlayer({teamSize: 4, relativeContributionScores: [10, 20, 20, 30]}))
+      expect(calculatePlayerProjectStats({teamSize: 4, relativeContributionScores: [10, 20, 20, 30]}))
         .to.deep.eq({ecc: 80, abc: 4, rc: 20})
     })
     specify('when there are not scores from all team members', function () {
-      expect(calculateProjectECCStatsForPlayer({teamSize: 4, relativeContributionScores: [20, 25, 30]}))
+      expect(calculatePlayerProjectStats({teamSize: 4, relativeContributionScores: [20, 25, 30]}))
         .to.deep.eq({ecc: 100, abc: 4, rc: 25})
     })
     specify('when the result is over 100', function () {
-      expect(calculateProjectECCStatsForPlayer({teamSize: 4, relativeContributionScores: [50, 50, 50, 50]}))
+      expect(calculatePlayerProjectStats({teamSize: 4, relativeContributionScores: [50, 50, 50, 50]}))
         .to.deep.eq({ecc: 200, abc: 4, rc: 50})
     })
     specify('when project length is > 1', function () {
-      expect(calculateProjectECCStatsForPlayer({teamSize: 4, relativeContributionScores: [50, 50, 50, 50], projectLength: 3}))
+      expect(calculatePlayerProjectStats({teamSize: 4, relativeContributionScores: [50, 50, 50, 50], buildCycles: 3}))
         .to.deep.eq({ecc: 600, abc: 12, rc: 50})
     })
     specify('when RC is a decimal, round', function () {
-      expect(calculateProjectECCStatsForPlayer({teamSize: 5, relativeContributionScores: [10, 10, 21, 21]}))
+      expect(calculatePlayerProjectStats({teamSize: 5, relativeContributionScores: [10, 10, 21, 21]}))
         .to.deep.eq({ecc: 80, abc: 5, rc: 16})
     })
   })
 
-  describe('updateTeamECCStats', function () {
+  describe('updateProjectStats', function () {
     withDBCleanup()
     useFixture.buildSurvey()
 
@@ -64,10 +64,10 @@ describe(testContext(__filename), function () {
 
     it('updates the players ECC based on the survey responses', async function() {
       const eccChange = 20 * this.teamPlayerIds.length
-      await updateTeamECCStats(this.project, this.cycleId)
+      await updateProjectStats(this.project, this.cycleId)
 
       const updatedPlayer = await getPlayerById(this.teamPlayerIds[0])
-      expect(updatedPlayer.ecc).to.eq(eccChange)
+      expect(updatedPlayer.stats.ecc).to.eq(eccChange)
     })
   })
 })
