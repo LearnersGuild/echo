@@ -15,7 +15,7 @@ class WrappedCycleVotingResults extends Component {
 
   componentDidMount() {
     this.constructor.fetchData(this.props.dispatch, this.props)
-    this.subscribeToCycleVotingResults(this.props.cycle)
+    this.subscribeToCycleVotingResults(this.props.cycle /* , this.props.poolId */)
   }
 
   componentWillUnmount() {
@@ -23,20 +23,20 @@ class WrappedCycleVotingResults extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.renewSubscriptionIfNecessary(nextProps.cycle, this.props.cycle)
+    this.renewSubscriptionIfNecessary(nextProps.cycle, this.props.cycle /* , this.props.poolId */)
   }
 
-  renewSubscriptionIfNecessary(nextCycle, currentCycle) {
+  renewSubscriptionIfNecessary(nextCycle, currentCycle /* , poolId */) {
     if (!nextCycle) {
       return
     }
     if (!currentCycle || (nextCycle.id !== currentCycle.id)) {
-      this.unsubscribeFromCycleVotingResults(currentCycle)
-      this.subscribeToCycleVotingResults(nextCycle)
+      this.unsubscribeFromCycleVotingResults(currentCycle /* , poolId */)
+      this.subscribeToCycleVotingResults(nextCycle /* , poolId */)
     }
   }
 
-  subscribeToCycleVotingResults(cycle) {
+  subscribeToCycleVotingResults(cycle /* , poolId */) {
     const {dispatch} = this.props
     if (cycle) {
       console.log(`subscribing to voting results for cycle ${cycle.id} ...`)
@@ -45,17 +45,17 @@ class WrappedCycleVotingResults extends Component {
       this.socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))
       this.socket.on('connectAbort', () => null)
       this.socket.on('error', error => console.warn(error.message))
-      const cycleVotingResultsChannel = this.socket.subscribe(`cycleVotingResults-${cycle.id}`)
+      const cycleVotingResultsChannel = this.socket.subscribe(`cycleVotingResults-${cycle.id}`/* + `-${poolId}` */)
       cycleVotingResultsChannel.watch(cycleVotingResults => {
         dispatch(receivedCycleVotingResults(cycleVotingResults))
       })
     }
   }
 
-  unsubscribeFromCycleVotingResults(cycle) {
+  unsubscribeFromCycleVotingResults(cycle /* , poolId */) {
     if (this.socket && cycle) {
       console.log(`unsubscribing from voting results for cycle ${cycle.id} ...`)
-      this.socket.unsubscribe(`cycleVotingResults-${cycle.id}`)
+      this.socket.unsubscribe(`cycleVotingResults-${cycle.id}`/* + `-${poolId}` */)
     }
   }
 
@@ -94,12 +94,14 @@ function mapStateToProps(state) {
   let candidateGoals
   let percentageComplete
   let isVotingStillOpen
+  // let poolId
   if (cycleVotingResults) {
     cycle = state.cycles.cycles[cycleVotingResults.cycle]
     chapter = cycle ? state.chapters.chapters[cycle.chapter] : null
     candidateGoals = cycleVotingResults.candidateGoals
     percentageComplete = Math.floor(cycleVotingResults.numVotes / cycleVotingResults.numEligiblePlayers * 100)
     isVotingStillOpen = cycle.state === GOAL_SELECTION
+    // poolId = cycleVotingResults.poolId
   }
 
   return {
@@ -110,6 +112,7 @@ function mapStateToProps(state) {
     candidateGoals,
     percentageComplete,
     isVotingStillOpen,
+    // poolId
   }
 }
 

@@ -1,7 +1,7 @@
 import {getCycleById, getLatestCycleForChapter} from '../../server/db/cycle'
 import r from '../../db/connect'
 
-export default async function getCycleVotingResults(chapterId, cycleId) {
+export default async function getCycleVotingResults(chapterId, cycleId /* , poolId */) {
   const cycle = cycleId ?
     await getCycleById(cycleId, {mergeChapter: true}) :
     await getLatestCycleForChapter(chapterId, {mergeChapter: true})
@@ -13,6 +13,9 @@ export default async function getCycleVotingResults(chapterId, cycleId) {
 
   const validVotesQuery = r.table('votes')
     .getAll(cycle.id, {index: 'cycleId'})
+    // We would have to futher filter this query to only get
+    // votes by players in the pool:
+    // .filter(vote => getPlayerIdsInPool(poolId).contains(vote('playerId')))
     .hasFields('goals')
 
   const numVotes = await validVotesQuery.count().run()
@@ -37,6 +40,7 @@ export default async function getCycleVotingResults(chapterId, cycleId) {
   return {
     id: 'cycleVotingResults',
     cycle,
+    // poolId,
     numEligiblePlayers,
     numVotes,
     candidateGoals,

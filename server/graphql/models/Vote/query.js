@@ -31,7 +31,7 @@ export default {
               )
           )
 
-        return await getCycleVotingResults(user.chapterId, cycleId)
+        return await getCycleVotingResults(user.chapterId, cycleId /* , getPoolIdForPlayer(user.id, cycleId) */)
       } catch (err) {
         handleError(err)
       }

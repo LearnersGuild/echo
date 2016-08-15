@@ -21,6 +21,13 @@ import generateProjectName from './generateProjectName'
 const MIN_ADVANCED_PLAYER_ECC = 1000
 const DEFAULT_RECOMMENDED_TEAM_SIZE = 5
 
+// export default async function formProjectsForAllPools(cycleId) {
+//   const poolIds = await getPoolIdsForCycle(cycle.id)
+//   await Promise.all(poolIds.map(
+//     poolId => formProjects(cycle.id, poolId)
+//   ))
+// }
+
 export default async function formProjects(cycleId) {
   const cycle = await getCycleById(cycleId)
 

@@ -135,7 +135,7 @@ function pushCandidateGoalsForCycle(vote) {
     })
     .then(cycleVotingResults => {
       const socket = getSocket()
-      return socket.publish(`cycleVotingResults-${vote.cycleId}`, cycleVotingResults)
+      return socket.publish(`cycleVotingResults-${vote.cycleId}`/* + `-${getPoolIdForPlayer(vote.playerId, vote.cycleId)}`*/, cycleVotingResults)
     })
 }
 
