@@ -284,7 +284,7 @@ describe(testContext(__filename), function () {
 
     scenarios.forEach(({pool, minResultScore, expectedRuntime}, i) => {
       const expectedMinutes = (expectedRuntime / 60000).toFixed(2)
-      it(`completes scenatio [${i}] in under ${expectedMinutes} minutes`, function () {
+      it(`completes scenario [${i}] in under ${expectedMinutes} minutes`, function () {
         this.timeout(expectedRuntime + minutes(1))
         const start = Date.now()
 

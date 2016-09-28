@@ -14,15 +14,18 @@ import getTeamFormationPlan from 'src/server/services/projectFormationService/ac
 
 import config from 'src/config'
 
-const MIN_ADVANCED_PLAYER_RATING = config.server.projects.advancedPlayerMinRating
-const MAX_ADVANCED_PLAYERS = config.server.projects.advancedPlayerMaxNum
+const advPlayerConfig = config.server.projects.advancedPlayer
+const proPlayerConfig = config.server.projects.proPlayer
 
-export default async function formProjects(cycleId) {
-  const pool = await _buildPool(cycleId)
-  const teamFormationPlan = getTeamFormationPlan(pool)
-  const projects = await _teamFormationPlanToProjects(teamFormationPlan, pool, cycleId)
-
+export async function formProjects(cycleId) {
+  const projects = await buildProjects(cycleId)
   return insertProjects(projects)
+}
+
+export async function buildProjects(cycleId) {
+  const votingPool = await _buildVotingPool(cycleId)
+  const teamFormationPlan = getTeamFormationPlan(votingPool)
+  return _teamFormationPlanToProjects(teamFormationPlan, votingPool)
 }
 
 async function _teamFormationPlanToProjects(teamFormationPlan, pool) {
@@ -44,9 +47,8 @@ async function _teamFormationPlanToProjects(teamFormationPlan, pool) {
   )
 }
 
-async function _buildPool(cycleId) {
+async function _buildVotingPool(cycleId) {
   const cycleVotes = await findVotesForCycle(cycleId).run()
-
   if (!cycleVotes.length) {
     throw new Error('No votes submitted for cycle')
   }
@@ -66,25 +68,23 @@ async function _getPlayersWhoVoted(cycleVotes) {
   const playerVotes = _mapVotesByPlayerId(cycleVotes)
   const votingPlayerIds = Array.from(playerVotes.keys())
   const cyclePlayers = await findPlayersByIds(votingPlayerIds).run()
-
   return mapById(cyclePlayers)
 }
 
 function _getAdvancedPlayersWithTeamLimits(players) {
-  const MIN_PRO_PLAYER_RATING = 1200
   const elo = player => parseInt(((player.stats || {}).elo || {}).rating, 10) || 0
   return players
     .map(player => [elo(player), player])
-    .filter(([elo]) => elo >= MIN_ADVANCED_PLAYER_RATING)
+    .filter(([elo]) => elo >= advPlayerConfig.minRating)
     .sort(([aElo], [bElo]) => bElo - aElo)
     .map(([elo, player]) => {
-      const isProPlayer = elo >= MIN_PRO_PLAYER_RATING
+      const isProPlayer = elo >= proPlayerConfig.minRating
       return {
         id: player.id,
-        maxTeams: (isProPlayer ? 4 : 2),
+        maxTeams: (isProPlayer ? proPlayerConfig.maxTeams : advPlayerConfig.maxTeams),
       }
     })
-    .slice(0, MAX_ADVANCED_PLAYERS)
+    .slice(0, advPlayerConfig.maxCount)
 }
 
 function _extractGoalsFromVotes(votes) {

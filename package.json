@@ -29,6 +29,7 @@
     "db:migrate:up": "npm run symlinks && npm run db:migrate:configure && ./node_modules/.bin/babel-node ./node_modules/.bin/rethink-migrate -r db up",
     "db:migrate:down": "npm run symlinks && npm run db:migrate:configure && ./node_modules/.bin/babel-node ./node_modules/.bin/rethink-migrate -r db down",
     "db:migrate:create": "./node_modules/.bin/rethink-migrate create",
+    "preview:projects": "npm run symlinks && ./node_modules/.bin/babel-node scripts/previewProjects",
     "test": "npm run symlinks && npm run lint && npm run test:run --",
     "test:cov": "npm run test:cov:run && npm run test:cov:send",
     "test:cov:run": "./node_modules/.bin/nyc --reporter=lcov npm run test:run",
