@@ -27,9 +27,13 @@ async function runReport(args) {
       .filter(row => row('cycleId').eq(cycleId))
       .concatMap(row => row('playerIds')
           .map(id => getInfo(id))
-          .merge(row => ({
-            elo: r.table('players').get(row('id'))('stats').default({elo: {rating: 0}})('elo')('rating')
-          }))
+          .merge(row => {
+            const stats = r.table('players').get(row('id'))('stats').default({elo: {rating: 0}})
+            return {
+              elo: stats('elo')('rating'),
+              xp: stats('xp').default(0),
+            }
+          })
           .merge({
             cycleNumber,
             projectName: row('projectName'),
