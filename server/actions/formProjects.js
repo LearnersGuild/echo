@@ -10,7 +10,7 @@ import {findVotesForCycle} from 'src/server/db/vote'
 import {insertProjects} from 'src/server/db/project'
 import {toArray, mapById} from 'src/server/util'
 import generateProjectName from 'src/server/actions/generateProjectName'
-import getTeamFormationPlan from 'src/server/services/projectFormationService/actions/getTeamFormationPlan'
+import {getTeamFormationPlan} from 'src/server/services/projectFormationService'
 
 import config from 'src/config'
 
@@ -23,22 +23,32 @@ export async function formProjects(cycleId) {
 }
 
 export async function buildProjects(cycleId) {
+  const cycle = await getCycleById(cycleId)
+
+  // => {goals, votes, advancedPlayers, cycleId}
   const votingPool = await _buildVotingPool(cycleId)
+
+  // => {seatCount, teams: [{playerIds, goalDescriptor, teamSize}]}
   const teamFormationPlan = getTeamFormationPlan(votingPool)
-  return _teamFormationPlanToProjects(teamFormationPlan, votingPool)
+
+  return _teamFormationPlanToProjects(cycle, votingPool, teamFormationPlan)
 }
 
-async function _teamFormationPlanToProjects(teamFormationPlan, pool) {
-  const cycle = await getCycleById(pool.cycleId)
+function _teamFormationPlanToProjects(cycle, pool, teamFormationPlan) {
+  const goals = pool.goals.reduce((result, goal) => {
+    result.set(goal.goalDescriptor, goal)
+    return result
+  }, new Map())
+
   return Promise.all(
     teamFormationPlan.teams.map(team =>
       generateProjectName().then(name => ({
         chapterId: cycle.chapterId,
         name,
-        goal: pool.goals.find(g => g.goalDescriptor === team.goalDescriptor),
+        goal: goals.get(team.goalDescriptor),
         cycleHistory: [
           {
-            cycleId: pool.cycleId,
+            cycleId: cycle.id,
             playerIds: team.playerIds,
           }
         ]
@@ -57,18 +67,16 @@ async function _buildVotingPool(cycleId) {
 
   const votes = cycleVotes.map(({goals, playerId}) => ({playerId, votes: goals.map(({url}) => url)}))
   const goalsByUrl = _extractGoalsFromVotes(cycleVotes)
-  const goals = [...goalsByUrl.values()].map(goal => {
-    return {goalDescriptor: goal.url, ...goal}
-  })
-  const advancedPlayers = _getAdvancedPlayersWithTeamLimits([...players.values()])
+  const goals = toArray(goalsByUrl).map(goal => ({goalDescriptor: goal.url, ...goal}))
+  const advancedPlayers = _getAdvancedPlayersWithTeamLimits(toArray(players))
   return {goals, votes, advancedPlayers, cycleId}
 }
 
 async function _getPlayersWhoVoted(cycleVotes) {
   const playerVotes = _mapVotesByPlayerId(cycleVotes)
   const votingPlayerIds = Array.from(playerVotes.keys())
-  const cyclePlayers = await findPlayersByIds(votingPlayerIds).run()
-  return mapById(cyclePlayers)
+  const votingPlayers = await findPlayersByIds(votingPlayerIds).run()
+  return mapById(votingPlayers)
 }
 
 function _getAdvancedPlayersWithTeamLimits(players) {

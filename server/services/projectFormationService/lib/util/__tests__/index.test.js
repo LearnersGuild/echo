@@ -6,7 +6,7 @@ import {
   range,
   shuffle,
   choose,
-} from '../util'
+} from '../index'
 
 describe(testContext(__filename), function () {
   describe('range', function () {

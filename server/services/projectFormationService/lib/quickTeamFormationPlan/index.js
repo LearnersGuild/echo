@@ -1,19 +1,20 @@
-import ObjectiveAppraiser from 'src/server/services/projectFormationService/ObjectiveAppraiser'
+import ObjectiveAppraiser from '../ObjectiveAppraiser'
 
 import {
   getNonAdvancedPlayerIds,
   getAdvancedPlayerInfo,
   getPoolSize,
-} from 'src/server/services/projectFormationService/pool'
+} from '../pool'
 
 import {
   flatten,
   repeat,
-} from 'src/server/services/projectFormationService/util'
+  unique,
+} from '../util'
 
 import createTeamSizes from './createTeamSizes'
 
-export default function getQuickTeamFormationPlan(pool) {
+export function getQuickTeamFormationPlan(pool) {
   const seatCount = getPoolSize(pool)
   const appraiser = new ObjectiveAppraiser(pool)
 
@@ -50,4 +51,10 @@ export default function getQuickTeamFormationPlan(pool) {
   })
 
   return {seatCount, teams}
+}
+
+export function getAssignedPlayerIds(teamFormationPlan) {
+  return unique(flatten(
+    teamFormationPlan.teams.map(({playerIds}) => playerIds)
+  ))
 }

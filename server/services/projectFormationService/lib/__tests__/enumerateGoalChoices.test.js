@@ -2,12 +2,12 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
-import {teamFormationPlanToString} from 'src/server/services/projectFormationService/teamFormationPlan'
+import {teamFormationPlanToString} from '../util/teamFormationPlan'
 
-import ennumerateGoalChoices from '../ennumerateGoalChoices'
+import enumerateGoalChoices from '../enumerateGoalChoices'
 
 describe(testContext(__filename), function () {
-  describe('ennumerateGoalChoices()', function () {
+  describe('enumerateGoalChoices()', function () {
     it('accepts a pruning function', function () {
       const pool = {
         votes: [
@@ -31,7 +31,7 @@ describe(testContext(__filename), function () {
       const shouldPrune = teamFormationPlan => {
         return teamFormationPlan.teams.some(({goalDescriptor}) => goalDescriptor !== 'g1')
       }
-      const results = [...ennumerateGoalChoices(pool, {}, shouldPrune)]
+      const results = [...enumerateGoalChoices(pool, {}, shouldPrune)]
 
       expect(results.map(teamFormationPlanToString).sort()).to.deep.eq([
         '(g1:2)[], (g1:2)[], (g1:2)[], (g1:2)[], (g1:2)[], (g1:2)[]',
@@ -64,7 +64,7 @@ describe(testContext(__filename), function () {
         advancedPlayers: [{id: 'A0'}, {id: 'A1'}],
       }
 
-      const result = [...ennumerateGoalChoices(pool)]
+      const result = [...enumerateGoalChoices(pool)]
 
       expect(result.map(teamFormationPlanToString).sort()).to.deep.eq([
         // 1 paid player has 1 teams

@@ -1,4 +1,4 @@
-import {unique, flatten} from 'src/server/services/projectFormationService/util'
+import {unique, flatten} from './util'
 
 const MIN_TEAM_SIZE = 2
 export const DEFAULT_TEAM_SIZE = 4

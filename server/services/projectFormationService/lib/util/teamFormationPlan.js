@@ -1,5 +1,3 @@
-import {flatten, unique} from 'src/server/services/projectFormationService/util'
-
 export function teamFormationPlanToString(plan) {
   return plan.teams.map(({goalDescriptor, teamSize, playerIds}) => {
     const playerIdPrefixes = playerIds.map(id => id.slice(0, 7))
@@ -7,10 +5,4 @@ export function teamFormationPlanToString(plan) {
 
     return `(${goalDescriptorSuffix}:${teamSize})[${playerIdPrefixes || ''}]`
   }).join(', ')
-}
-
-export function getAssignedPlayerIds(teamFormationPlan) {
-  return unique(flatten(
-    teamFormationPlan.teams.map(({playerIds}) => playerIds)
-  ))
 }

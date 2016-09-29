@@ -1,5 +1,5 @@
-import ObjectiveAppraiser from 'src/server/services/projectFormationService/ObjectiveAppraiser'
-import UnpopularGoalsNotConsideredAppraiser from 'src/server/services/projectFormationService/ObjectiveAppraiser/UnpopularGoalsNotConsideredAppraiser'
+import ObjectiveAppraiser from './ObjectiveAppraiser'
+import UnpopularGoalsNotConsideredAppraiser from './ObjectiveAppraiser/UnpopularGoalsNotConsideredAppraiser'
 
 import {
   getGoalsWithVotes,
@@ -7,11 +7,11 @@ import {
   getPoolSize,
   getAdvancedPlayerCount,
   getMinTeamSize,
-} from 'src/server/services/projectFormationService/pool'
+} from './pool'
 
-import {range} from 'src/server/services/projectFormationService/util'
+import {range} from './util'
 
-export default function ennumerateGoalChoices(pool, teamFormationPlan = {}, shouldPrune) {
+export default function enumerateGoalChoices(pool, teamFormationPlan = {}, shouldPrune) {
   const teamSizesByGoal = getTeamSizesByGoal(pool)
   const goals = getGoalsWithVotes(pool)
   const minTeamSize = getMinTeamSize(pool)

@@ -2,11 +2,11 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
-import ObjectiveAppraiser from '../ObjectiveAppraiser'
+import ObjectiveAppraiser from '../index'
 
 describe(testContext(__filename), function () {
   describe('.score()', function () {
-    // NOTE: Most edge cases should be tested in the individual objective modeule's tests
+    // NOTE: Most edge cases should be tested in the individual objective module's tests
     it('integration test', function () {
       const pool = {
         votes: [

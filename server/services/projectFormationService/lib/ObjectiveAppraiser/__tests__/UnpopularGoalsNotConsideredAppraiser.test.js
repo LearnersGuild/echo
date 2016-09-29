@@ -2,7 +2,7 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
-import {buildTestPool} from 'src/server/services/projectFormationService/__tests__/testHelpers'
+import {buildTestPool} from '../../util/helpers'
 
 import UnpopularGoalsNotConsideredAppraiser from '../UnpopularGoalsNotConsideredAppraiser'
 

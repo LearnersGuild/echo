@@ -2,11 +2,11 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
-import getProfiler from 'src/server/services/projectFormationService/profile'
-import {teamFormationPlanToString} from 'src/server/services/projectFormationService/teamFormationPlan'
-import {buildTestPool} from 'src/server/services/projectFormationService/__tests__/testHelpers'
+import Profiler from '../lib/util/Profiler'
+import {buildTestPool} from '../lib/util/helpers'
+import {teamFormationPlanToString} from '../lib/util/teamFormationPlan'
 
-import getTeamFormationPlan from '../getTeamFormationPlan'
+import {getTeamFormationPlan} from '../index'
 
 describe(testContext(__filename), function () {
   it('works when everyone votes for the same goal', function () {
@@ -208,7 +208,7 @@ describe(testContext(__filename), function () {
 
   describe.skip('performance tests', function () {
     beforeEach(function () {
-      getProfiler().reset()
+      this.profiler = new Profiler()
       console.log(new Date())
     })
 
@@ -300,7 +300,7 @@ describe(testContext(__filename), function () {
     })
 
     afterEach(function () {
-      getProfiler().report()
+      this.profiler.report()
     })
   })
 })
