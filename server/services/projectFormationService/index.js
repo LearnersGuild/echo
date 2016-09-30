@@ -1,13 +1,12 @@
-import ObjectiveAppraiser from 'src/server/services/projectFormationService/ObjectiveAppraiser'
-import logger from 'src/server/services/projectFormationService/logger'
-import {teamFormationPlanToString} from 'src/server/services/projectFormationService/teamFormationPlan'
-import {buildPool} from 'src/server/services/projectFormationService/pool'
+import ObjectiveAppraiser from './lib/ObjectiveAppraiser'
+import {buildPool} from './lib/pool'
+import {getQuickTeamFormationPlan} from './lib/quickTeamFormationPlan'
+import enumerateGoalChoices from './lib/enumerateGoalChoices'
+import enumeratePlayerAssignmentChoices from './lib/enumeratePlayerAssignmentChoices'
+import {teamFormationPlanToString} from './lib/util/teamFormationPlan'
+import {logger} from './lib/util'
 
-import getQuickTeamFormationPlan from './getQuickTeamFormationPlan'
-import ennumerateGoalChoices from './ennumerateGoalChoices'
-import ennumeratePlayerAssignmentChoices from './ennumeratePlayerAssignmentChoices'
-
-export default function getTeamFormationPlan(poolAttributes) {
+export function getTeamFormationPlan(poolAttributes) {
   const pool = buildPool(poolAttributes)
   let bestFit = {score: 0}
   let goalConfigurationsChecked = 0
@@ -46,10 +45,10 @@ export default function getTeamFormationPlan(poolAttributes) {
   bestFit.score = appraiser.score(baselinePlan)
 
   const rootTeamFormationPlan = {teams: []}
-  for (const teamFormationPlan of ennumerateGoalChoices(pool, rootTeamFormationPlan, shouldPrune, appraiser)) {
+  for (const teamFormationPlan of enumerateGoalChoices(pool, rootTeamFormationPlan, shouldPrune, appraiser)) {
     logStats('Checking Goal Configuration: [', teamFormationPlanToString(teamFormationPlan), ']')
 
-    for (const teamFormationPlan of ennumeratePlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)) {
+    for (const teamFormationPlan of enumeratePlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)) {
       const score = appraiser.score(teamFormationPlan)
       logger.trace('Checking Player Assignment Configuration: [', teamFormationPlanToString(teamFormationPlan), ']', score)
 

@@ -26,9 +26,4 @@ class Profiler {
   }
 }
 
-function singleton() {
-  const profiler = new Profiler()
-  return () => profiler
-}
-
-export default singleton()
+export default Profiler

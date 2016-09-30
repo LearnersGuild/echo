@@ -1,44 +1,43 @@
-import logger from 'src/server/services/projectFormationService/logger'
-import {teamFormationPlanToString} from 'src/server/services/projectFormationService/teamFormationPlan'
+import {teamFormationPlanToString} from './util/teamFormationPlan'
+import {
+  range,
+  shuffle,
+  repeat,
+  logger,
+} from './util'
 
 import {
   getAdvancedPlayerInfo,
   getNonAdvancedPlayerIds,
   getVotesByPlayerId,
-} from 'src/server/services/projectFormationService/pool'
+} from './pool'
 
 import {
-  range,
-  shuffle,
-  repeat,
-} from 'src/server/services/projectFormationService/util'
+  enumeratePartitionings,
+} from './partitioning'
 
-import {
-  ennumeratePartitionings,
-} from 'src/server/services/projectFormationService/actions/getTeamFormationPlan/partitioning'
-
-export default function * ennumeratePlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune) {
-  const advancedPlayerAssignmentChoices = ennumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)
+export default function * enumeratePlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune) {
+  const advancedPlayerAssignmentChoices = enumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)
   for (const teamFormationPlan of advancedPlayerAssignmentChoices) {
     logger.debug('Checking Advanced Player Assignment Choice: [', teamFormationPlanToString(teamFormationPlan), ']')
-    yield * ennumerateNonAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)
+    yield * enumerateNonAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)
   }
 }
 
-function * ennumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune) {
+function * enumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune) {
   const advancedPlayerInfo = getAdvancedPlayerInfo(pool)
   const advancedPlayerIds = advancedPlayerInfo.map(_ => _.id)
   const extraSeats = teamFormationPlan.teams.length - advancedPlayerIds.length
 
   let strategy
   if (advancedPlayerIds.length + extraSeats < 8) {
-    strategy = ennumeratePlayerAssignmentChoicesFromList
+    strategy = enumeratePlayerAssignmentChoicesFromList
   } else {
-    strategy = ennumerateRandomHeuristicPlayerAssignentsFromList
+    strategy = enumerateRandomHeuristicPlayerAssignentsFromList
   }
-  logger.trace(`Using the ${strategy.name} strategy for ennumerating advanced player assignments.`)
+  logger.trace(`Using the ${strategy.name} strategy for enumerating advanced player assignments.`)
 
-  for (const extraPlayerIds of ennumerateExtraSeatAssignmentChoices(advancedPlayerInfo, extraSeats)) {
+  for (const extraPlayerIds of enumerateExtraSeatAssignmentChoices(advancedPlayerInfo, extraSeats)) {
     logger.trace('Choosing the following advanced players to fill the extra seats', extraPlayerIds)
     yield * strategy({
       pool,
@@ -50,7 +49,7 @@ function * ennumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, sh
   }
 }
 
-export function * ennumerateExtraSeatAssignmentChoices(list, count, choice = []) {
+export function * enumerateExtraSeatAssignmentChoices(list, count, choice = []) {
   if (count === 0) {
     yield choice
     return
@@ -62,13 +61,13 @@ export function * ennumerateExtraSeatAssignmentChoices(list, count, choice = [])
   }
 
   for (let i = 0; i < head.maxTeams && i <= count; i++) {
-    yield * ennumerateExtraSeatAssignmentChoices(rest, count - i, choice.concat(repeat(i, head.id)))
+    yield * enumerateExtraSeatAssignmentChoices(rest, count - i, choice.concat(repeat(i, head.id)))
   }
 }
 
-function * ennumerateNonAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune) {
+function * enumerateNonAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune) {
   const playerIdsToAssign = getNonAdvancedPlayerIds(pool)
-  yield * ennumerateRandomHeuristicPlayerAssignentsFromList({
+  yield * enumerateRandomHeuristicPlayerAssignentsFromList({
     pool,
     teamFormationPlan,
     playerIdsToAssign,
@@ -77,7 +76,7 @@ function * ennumerateNonAdvancedPlayerAssignmentChoices(pool, teamFormationPlan,
   })
 }
 
-function * ennumerateRandomHeuristicPlayerAssignentsFromList({pool, teamFormationPlan, playerIdsToAssign, shouldPrune, maxPerTeam, count = 50}) {
+function * enumerateRandomHeuristicPlayerAssignentsFromList({pool, teamFormationPlan, playerIdsToAssign, shouldPrune, maxPerTeam, count = 50}) {
   const shufflingsSeen = new Set()
 
   for (let i = 0; i < count; i++) {
@@ -98,7 +97,7 @@ function * ennumerateRandomHeuristicPlayerAssignentsFromList({pool, teamFormatio
   }
 }
 
-function * ennumeratePlayerAssignmentChoicesFromList({teamFormationPlan, playerIdsToAssign, shouldPrune, maxPerTeam}) {
+function * enumeratePlayerAssignmentChoicesFromList({teamFormationPlan, playerIdsToAssign, shouldPrune, maxPerTeam}) {
   const totalSeatsByGoal = new Map()
   teamFormationPlan.teams.forEach(({goalDescriptor, teamSize}) => {
     const countedSeatsForGoal = totalSeatsByGoal.get(goalDescriptor) || 0
@@ -107,7 +106,7 @@ function * ennumeratePlayerAssignmentChoicesFromList({teamFormationPlan, playerI
 
   const goalDescriptors = Array.from(totalSeatsByGoal.keys())
   const goalPartitionSizes = Array.from(totalSeatsByGoal.values())
-  const goalPartitionings = ennumeratePartitionings(
+  const goalPartitionings = enumeratePartitionings(
     playerIdsToAssign,
     goalPartitionSizes,
     genShouldPrunePartitioningByGoal(shouldPrune, teamFormationPlan, goalDescriptors, maxPerTeam),

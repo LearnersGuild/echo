@@ -1,4 +1,4 @@
-import {getAdvancedPlayerInfo} from 'src/server/services/projectFormationService/pool'
+import {getAdvancedPlayerInfo} from '../pool'
 
 export default class AdvancedPlayersTeamCountDoesNotExceedMaxAppraiser {
   constructor(pool) {

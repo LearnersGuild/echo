@@ -1,4 +1,4 @@
-import {range, flatten, repeat} from 'src/server/services/projectFormationService/util'
+import {range, flatten, repeat} from './index'
 
 export function buildTestPool(opts) {
   const {

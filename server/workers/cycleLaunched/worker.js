@@ -2,7 +2,7 @@ import raven from 'raven'
 
 import config from 'src/config'
 import r from 'src/db/connect'
-import formProjects from 'src/server/actions/formProjects'
+import {formProjects} from 'src/server/actions/formProjects'
 import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 import {findModeratorsForChapter} from 'src/server/db/moderator'
 import {getTeamPlayerIds, getProjectsForChapterInCycle} from 'src/server/db/project'

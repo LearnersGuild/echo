@@ -7,7 +7,7 @@ import factory from 'src/test/factories'
 import {findProjects} from 'src/server/db/project'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
 
-import formProjects from 'src/server/actions/formProjects'
+import {formProjects} from 'src/server/actions/formProjects'
 
 const RECOMMENDED_TEAM_SIZE = 4
 const TEST_ADVANCED_PLAYER_ELO = 1500

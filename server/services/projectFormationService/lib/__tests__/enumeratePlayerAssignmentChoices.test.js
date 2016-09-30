@@ -6,16 +6,14 @@ import {
   getNonAdvancedPlayerCount,
   getAdvancedPlayerCount,
   getNonAdvancedPlayerIds,
-} from 'src/server/services/projectFormationService/pool'
+} from '../pool'
+import {choose} from '../util'
+import {teamFormationPlanToString} from '../util/teamFormationPlan'
 
-import {choose} from 'src/server/services/projectFormationService/util'
-
-import {teamFormationPlanToString} from 'src/server/services/projectFormationService/teamFormationPlan'
-
-import ennumeratePlayerAssignmentChoices, {
+import enumeratePlayerAssignmentChoices, {
   heuristicPlayerAssignment,
-  ennumerateExtraSeatAssignmentChoices,
-} from '../ennumeratePlayerAssignmentChoices'
+  enumerateExtraSeatAssignmentChoices,
+} from '../enumeratePlayerAssignmentChoices'
 
 describe(testContext(__filename), function () {
   const pool = {
@@ -44,7 +42,7 @@ describe(testContext(__filename), function () {
   }
 
   it('returns the expected number of plans', function () {
-    const result = [...ennumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
+    const result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
 
     const nonAdvancedPlayerCount = getNonAdvancedPlayerCount(pool)
     const advancedPlayerCount = getAdvancedPlayerCount(pool)
@@ -58,7 +56,7 @@ describe(testContext(__filename), function () {
   })
 
   it('returns the expected plans', function () {
-    const result = [...ennumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
+    const result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
 
     expect(result.map(teamFormationPlanToString).sort()).to.have.deep.eq([
       '(g1:2)[A0,p0], (g2:2)[A1,p1], (g3:2)[A2,p2]',
@@ -109,7 +107,7 @@ describe(testContext(__filename), function () {
       ]
     }
 
-    const result = [...ennumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
+    const result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
     result.forEach(newPlan => {
       expect(newPlan.teams[0]).to.have('playerIds').with.length(2)
       expect(newPlan.teams[1]).to.have('playerIds').with.length(4)
@@ -117,7 +115,7 @@ describe(testContext(__filename), function () {
   })
 
   it('returns plans with the same goal selections as in root plan', function () {
-    const result = [...ennumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
+    const result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
 
     result.forEach(newPlan =>
       expect(
@@ -135,7 +133,7 @@ describe(testContext(__filename), function () {
       const prune = g1Team && g1Team.playerIds.some(id => id.match(/[02468]/))
       return prune
     }
-    const result = [...ennumeratePlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)]
+    const result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune)]
     const oddAdvancedPlayerCount = 2
     const oddNonAdvancedPlayerCount = 2
 
@@ -172,7 +170,7 @@ describe(testContext(__filename), function () {
 
     let result
     beforeEach(function () {
-      result = [...ennumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
+      result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
     })
 
     it('returns the expected number of plans', function () {
@@ -198,12 +196,12 @@ describe(testContext(__filename), function () {
     })
   })
 
-  describe('ennumerateExtraSeatAssignmentChoices()', function () {
+  describe('enumerateExtraSeatAssignmentChoices()', function () {
     const pretty = choices => Array.from(choices).map(choice => choice.join(',')).sort()
 
     it('works', function () {
       const advancedPlayerInfo = [{id: 'A0', maxTeams: 1}, {id: 'A1', maxTeams: 2}, {id: 'A2', maxTeams: 3}, {id: 'A3', maxTeams: 4}]
-      const result = ennumerateExtraSeatAssignmentChoices(advancedPlayerInfo, 3)
+      const result = enumerateExtraSeatAssignmentChoices(advancedPlayerInfo, 3)
       expect(pretty(result)).to.deep.eq(pretty([
           ['A1', 'A2', 'A2'],
           ['A1', 'A2', 'A3'],
