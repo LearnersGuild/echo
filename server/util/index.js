@@ -135,21 +135,6 @@ export function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-export function shuffle(arr) {
-  const shuffled = toArray(arr)
-
-  let j
-  let x
-  for (let i = shuffled.length; i; i--) {
-    j = Math.floor(Math.random() * i)
-    x = shuffled[i - 1]
-    shuffled[i - 1] = shuffled[j]
-    shuffled[j] = x
-  }
-
-  return shuffled
-}
-
 export function mapById(arr) {
   return arr.reduce((result, el) => {
     result.set(el.id, el)
@@ -162,6 +147,69 @@ export function safePushInt(arr, num) {
   if (!isNaN(value)) {
     arr.push(value)
   }
+}
+
+export function unique(array) {
+  return Array.from(new Set(array))
+}
+
+export function flatten(potentialArray) {
+  if (!Array.isArray(potentialArray)) {
+    return potentialArray
+  }
+  return potentialArray.reduce((result, next) => result.concat(flatten(next)), [])
+}
+
+export function range(start, length) {
+  return Array.from(Array(length), (x, i) => i + start)
+}
+
+export function repeat(length, element) {
+  return Array.from(Array(length), () => element)
+}
+
+// https://en.wikipedia.org/wiki/Combination
+export function choose(n, k) {
+  if (k === 0) {
+    return 1
+  }
+  return (n * choose(n - 1, k - 1)) / k
+}
+
+export const factorial = (function () {
+  const f = []
+  return function factorial(n) {
+    if (n === 0 || n === 1) {
+      return 1
+    }
+
+    if (f[n] > 0) {
+      return f[n]
+    }
+
+    f[n] = n * factorial(n - 1)
+
+    return f[n]
+  }
+})()
+
+export function shuffle(array) {
+  const result = toArray(array)
+
+  // While there remain elements to shuffle...
+  let currentIndex = result.length
+  while (currentIndex !== 0) {
+    // Pick a remaining element...
+    const randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex -= 1
+
+    // And swap it with the current element.
+    const temporaryValue = result[currentIndex]
+    result[currentIndex] = result[randomIndex]
+    result[randomIndex] = temporaryValue
+  }
+
+  return result
 }
 
 export function loadJSON(filePath, validateItem = item => item) {

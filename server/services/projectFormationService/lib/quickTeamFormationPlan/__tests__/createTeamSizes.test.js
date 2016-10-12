@@ -3,7 +3,7 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import {assert} from 'chai'
 
-import createTeamSizes from 'src/server/util/createTeamSizes'
+import createTeamSizes from '../createTeamSizes'
 
 describe(testContext(__filename), function () {
   context('createTeamSizes()', function () {

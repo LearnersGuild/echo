@@ -36,17 +36,10 @@ describe(testContext(__filename), function () {
       })
     })
 
-    context('lots of players who didn\'t vote', function () {
-      _itFormsProjectsAsExpected({
-        players: {total: 30, advanced: 3},
-        votes: {min: 27, popular: [3]}, // 3 equally popular
-      })
-    })
-
     context('all votes equally popular', function () {
       _itFormsProjectsAsExpected({
-        players: {total: 24, advanced: 4},
-        votes: {min: 20, popular: [10]}, // 10 equally popular
+        players: {total: 11, advanced: 4},
+        votes: {min: 15, popular: [10]}, // 10 equally popular
       })
     })
   })

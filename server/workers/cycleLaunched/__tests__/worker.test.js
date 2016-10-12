@@ -4,7 +4,7 @@
 import factory from 'src/test/factories'
 import {withDBCleanup} from 'src/test/helpers'
 
-import {processCycleLaunch} from 'src/server/workers/cycleLaunched'
+import {processCycleLaunch} from 'src/server/workers/cycleLaunched/worker'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
