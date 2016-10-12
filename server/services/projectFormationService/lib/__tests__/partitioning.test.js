@@ -45,6 +45,14 @@ describe(testContext(__filename), function () {
     expect(result).to.have.length(choose(n, k1) / 2)
   })
 
+  it('handles empty partitions', function () {
+    const result = [...enumeratePartitionings(['A', 'B'], [0, 1, 1])]
+    expect(_partitioningsToStrings(result).sort()).to.deep.eq(_partitioningsToStrings([
+      [[], ['A'], ['B']],
+      [[], ['B'], ['A']],
+    ]).sort())
+  })
+
   describe('enumerateSubsets()', function () {
     it('returns all subsets for 4 choose 3', function () {
       expect([...enumerateSubsets(['A', 'B', 'C', 'D'], 3)]).to.deep.eq([

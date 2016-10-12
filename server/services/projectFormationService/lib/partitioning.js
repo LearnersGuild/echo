@@ -13,7 +13,7 @@ export function * enumeratePartitionings(list, partitionSizes, shouldPrunePartit
     }
   }
 
-  if (!thisPartitionSize) {
+  if (typeof thisPartitionSize === 'undefined') {
     yield partitioning
     return
   }

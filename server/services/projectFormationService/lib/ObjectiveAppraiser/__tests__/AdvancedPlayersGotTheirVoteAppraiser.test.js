@@ -143,4 +143,41 @@ describe(testContext(__filename), function () {
 
     expect(score).to.eq(0.85)
   })
+
+  it('works when some teams do not need an advanced player', function () {
+    const newPool = {
+      ...pool,
+      goals: pool.goals.map(goal => {
+        if (goal.goalDescriptor === ADVANCED_PLAYER_2_1ST_CHOICE) {
+          return {...goal, noAdvancedPlayer: true}
+        }
+        return goal
+      })
+    }
+    const teamFormationPlan = {
+      seatCount: 10,
+      teams: [
+        {
+          goalDescriptor: ADVANCED_PLAYER_1_1ST_CHOICE,
+          teamSize: 4,
+          playerIds: [ADVANCED_PLAYER_1, 'p1', 'p2', 'p3'],
+        },
+        {
+          goalDescriptor: ADVANCED_PLAYER_1_1ST_CHOICE,
+          teamSize: 4,
+          playerIds: [],
+        },
+        {
+          goalDescriptor: ADVANCED_PLAYER_2_1ST_CHOICE,
+          teamSize: 3,
+          playerIds: [],
+        },
+      ]
+    }
+
+    const appriaser = new AdvancedPlayersGotTheirVoteAppraiser(newPool)
+    const score = appriaser.score(teamFormationPlan)
+
+    expect(score).to.eq(0.5)
+  })
 })
