@@ -1,5 +1,6 @@
 import {
   getAdvancedPlayerIds,
+  needsAdvancedPlayer,
 } from '../pool'
 
 import PlayersGotTheirVoteAppraiser from './PlayersGotTheirVoteAppraiser'
@@ -14,7 +15,8 @@ export default class AdvancedPlayersGotTheirVoteAppraiser extends PlayersGotThei
 
     teamFormationPlan.teams.forEach(team => {
       const hasAdvancedPlayer = team.playerIds.some(id => this.playerIds.has(id))
-      result.set(team.goalDescriptor, hasAdvancedPlayer ? 0 : 1)
+      const stillNeedsAdvancedPlayer = !hasAdvancedPlayer && needsAdvancedPlayer(team.goalDescriptor, this.pool)
+      result.set(team.goalDescriptor, stillNeedsAdvancedPlayer ? 1 : 0)
     })
 
     return result

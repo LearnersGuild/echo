@@ -11,11 +11,10 @@ export function buildPool(attributes) {
     ...attributes,
   }
 
-  pool.goals
-    .filter(goal => !('teamSize' in goal))
-    .forEach(goal => {
-      goal.teamSize = DEFAULT_TEAM_SIZE
-    })
+  pool.goals.forEach(goal => {
+    goal.teamSize = goal.teamSize || DEFAULT_TEAM_SIZE
+    goal.noAdvancedPlayer = goal.noAdvancedPlayer || goal.teamSize === 2
+  })
 
   return pool
 }
@@ -99,4 +98,9 @@ export function getTeamSizesByGoal(pool) {
   return pool.goals.reduce((result, goal) => {
     return {[goal.goalDescriptor]: goal.teamSize, ...result}
   }, {})
+}
+
+export function needsAdvancedPlayer(goalDescriptor, pool) {
+  const goal = pool.goals.find(_ => _.goalDescriptor === goalDescriptor)
+  return !goal.noAdvancedPlayer
 }
