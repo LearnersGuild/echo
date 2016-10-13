@@ -1,4 +1,8 @@
-import {unique, flatten} from './util'
+import {
+  unique,
+  flatten,
+  sum,
+} from './util'
 
 export const MIN_TEAM_SIZE = 2
 export const DEFAULT_TEAM_SIZE = 4
@@ -71,6 +75,10 @@ export function getNonAdvancedPlayerIds(pool) {
 
 export function getAdvancedPlayerInfo(pool) {
   return pool.advancedPlayers
+}
+
+export function getTotalAdvancedPlayerMaxTeams(pool) {
+  return sum(getAdvancedPlayerInfo(pool).map(_ => _.maxTeams || 1))
 }
 
 export function getAdvancedPlayerIds(pool) {

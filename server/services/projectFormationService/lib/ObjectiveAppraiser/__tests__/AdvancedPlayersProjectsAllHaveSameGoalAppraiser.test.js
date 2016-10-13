@@ -10,6 +10,7 @@ describe(testContext(__filename), function () {
       {goalDescriptor: 'g1', teamSize: 3},
       {goalDescriptor: 'g2', teamSize: 3},
       {goalDescriptor: 'g3', teamSize: 3},
+      {goalDescriptor: 'g4', teamSize: 3},
     ],
     advancedPlayers: [{id: 'A1'}, {id: 'A2'}]
   }
@@ -58,6 +59,31 @@ describe(testContext(__filename), function () {
     const score = appraiser.score(teamFormationPlan)
 
     expect(score).to.eq(0)
+  })
+
+  it('ignores goals that do not need an advanced player', function () {
+    const pool = {
+      goals: [
+        {goalDescriptor: 'g1', teamSize: 3},
+        {goalDescriptor: 'g2', teamSize: 3},
+        {goalDescriptor: 'g3', teamSize: 3, noAdvancedPlayer: true},
+        {goalDescriptor: 'g4', teamSize: 3},
+      ],
+      advancedPlayers: [{id: 'A1'}, {id: 'A2'}]
+    }
+    const teamFormationPlan = {
+      teams: [
+        {goalDescriptor: 'g1', playerIds: ['A1', 'p1', 'p2']},
+        {goalDescriptor: 'g1', playerIds: ['A1', 'p3', 'p4']},
+        {goalDescriptor: 'g3', playerIds: ['p5', 'p6']},
+        {goalDescriptor: 'g4', playerIds: ['A2', 'p7', 'p8']},
+      ]
+    }
+
+    const appraiser = new AdvancedPlayersProjectsAllHaveSameGoalAppraiser(pool)
+    const score = appraiser.score(teamFormationPlan)
+
+    expect(score).to.eq(1)
   })
 
   context('teams are not complete', function () {

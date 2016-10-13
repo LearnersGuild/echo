@@ -7,7 +7,10 @@ import {
   getPoolSize,
   getAdvancedPlayerCount,
   getMinTeamSize,
+  needsAdvancedPlayer,
+  getTotalAdvancedPlayerMaxTeams,
 } from './pool'
+import {teamFormationPlanToString} from './teamFormationPlan'
 
 import {range} from './util'
 
@@ -35,23 +38,17 @@ export default function enumerateGoalChoices(pool, teamFormationPlan = {}, shoul
     return result.concat(options)
   }, [])
 
-  const optionSizes = goalAndSizeOptions.map(_ => _.teamSize).sort()
-  const smallestGoalSizeOption = optionSizes[0]
-  const largestGoalSizeOption = optionSizes[optionSizes.length - 1]
-
-  const poolSize = getPoolSize(pool)
   const advancedPlayerCount = getAdvancedPlayerCount(pool)
 
   const extraSeatScenarios = getValidExtraSeatCounts({
-    poolSize,
-    smallestGoalSizeOption,
-    largestGoalSizeOption,
+    pool,
+    goalAndSizeOptions,
     advancedPlayerCount,
   })
 
   return goalChoiceGenerator(teamFormationPlan, {
     goalAndSizeOptions,
-    poolSize,
+    pool,
     advancedPlayerCount,
     extraSeatScenarios,
     shouldPrune,
@@ -59,7 +56,7 @@ export default function enumerateGoalChoices(pool, teamFormationPlan = {}, shoul
   })
 }
 
-function getValidExtraSeatCounts({poolSize, smallestGoalSizeOption, largestGoalSizeOption, advancedPlayerCount}) {
+function getValidExtraSeatCounts({pool, advancedPlayerCount, goalAndSizeOptions}) {
   // When advanced players are on multiple teams it creates
   // a scenario where we need extra seats on the teams since
   // one player is using multiple seats.
@@ -68,21 +65,39 @@ function getValidExtraSeatCounts({poolSize, smallestGoalSizeOption, largestGoalS
   // there are a limited muber of valid extra seat configurations.
   // This method returns a list of those configurations represented by the
   // number of additional seats.
+  const poolSize = getPoolSize(pool)
+  const totalAdvancedPlayerMaxTeams = getTotalAdvancedPlayerMaxTeams(pool) - advancedPlayerCount
+  const allOptionsHaveAdvancedPlayer = goalAndSizeOptions.every(team => needsAdvancedPlayer(team.goalDescriptor, pool))
+  const sortedOptionsWithAdvancedPlayers = goalAndSizeOptions
+    .slice(0)
+    .filter(team => needsAdvancedPlayer(team.goalDescriptor, pool))
+    .sort((a, b) => a.teamSize - b.teamSize)
+  const smallestGoalSizeOption = sortedOptionsWithAdvancedPlayers[0]
+  const largestGoalSizeOption = sortedOptionsWithAdvancedPlayers[sortedOptionsWithAdvancedPlayers.length - 1]
 
   const nonAdvancedPlayerCount = poolSize - advancedPlayerCount
 
-  const nonAdvancedSeatsOnLargestGoalSizeOption = largestGoalSizeOption - 1
-  const minTeams = Math.floor(nonAdvancedPlayerCount / nonAdvancedSeatsOnLargestGoalSizeOption)
-  const minExtraSeats = Math.max(0, minTeams - advancedPlayerCount)
+  let minExtraSeats
+  if (allOptionsHaveAdvancedPlayer) {
+    const nonAdvancedSeatsOnLargestGoalSizeOption = largestGoalSizeOption.teamSize - 1
+    const minTeams = Math.floor(nonAdvancedPlayerCount / nonAdvancedSeatsOnLargestGoalSizeOption)
+    minExtraSeats = Math.max(0, minTeams - advancedPlayerCount)
+  } else {
+    minExtraSeats = 0
+  }
 
-  const nonAdvancedSeatsOnSmallestGoalSizeOption = smallestGoalSizeOption - 1
+  const nonAdvancedSeatsOnSmallestGoalSizeOption = smallestGoalSizeOption.teamSize - 1
   const maxTeams = Math.floor(nonAdvancedPlayerCount / nonAdvancedSeatsOnSmallestGoalSizeOption)
-  const maxExtraSeats = Math.max(0, maxTeams - advancedPlayerCount)
+  const maxExtraSeats = Math.min(
+    totalAdvancedPlayerMaxTeams,
+    Math.max(0, maxTeams - advancedPlayerCount)
+  )
 
-  return range(minExtraSeats, maxExtraSeats + 1)
+  return range(minExtraSeats, (maxExtraSeats - minExtraSeats + 1))
 }
 
-function * goalChoiceGenerator(teamFormationPlan, {goalAndSizeOptions, poolSize, advancedPlayerCount, extraSeatScenarios, shouldPrune, appraiser}) {
+function * goalChoiceGenerator(teamFormationPlan, {goalAndSizeOptions, pool, advancedPlayerCount, extraSeatScenarios, shouldPrune, appraiser}) {
+  const poolSize = getPoolSize(pool)
   const teamOptions = goalAndSizeOptions.map(option => ({playerIds: [], ...option}))
   const nodeStack = teamOptions.map(option => ({
     ...teamFormationPlan,
@@ -109,10 +124,11 @@ function * goalChoiceGenerator(teamFormationPlan, {goalAndSizeOptions, poolSize,
     delete currentNode._score
 
     const currentTeams = currentNode.teams
+    const currentTeamsNeedingAdvancedPlayers = currentTeams.filter(team => needsAdvancedPlayer(team.goalDescriptor, pool))
     const currentSeatCount = currentTeams.reduce((sum, team) => sum + team.teamSize, 0)
     const targetSeatCount = currentNode.seatCount
     for (const extraSeatCount of extraSeatScenarios) {
-      if ((currentSeatCount === (targetSeatCount + extraSeatCount)) && (currentTeams.length === (advancedPlayerCount + extraSeatCount))) {
+      if ((currentSeatCount === (targetSeatCount + extraSeatCount)) && (currentTeamsNeedingAdvancedPlayers.length === (advancedPlayerCount + extraSeatCount))) {
         yield {...currentNode, seatCount: currentSeatCount}
         continue OUTER
       }

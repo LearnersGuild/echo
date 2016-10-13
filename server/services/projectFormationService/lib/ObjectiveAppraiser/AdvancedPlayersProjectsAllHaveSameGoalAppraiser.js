@@ -1,4 +1,7 @@
-import {getAdvancedPlayerIds} from '../pool'
+import {
+  getAdvancedPlayerIds,
+  needsAdvancedPlayer,
+} from '../pool'
 
 export default class AdvancedPlayersProjectsAllHaveSameGoalObjective {
   constructor(pool) {
@@ -14,8 +17,9 @@ export default class AdvancedPlayersProjectsAllHaveSameGoalObjective {
     const assignedAdvancedPlayers = new Set()
     const goalsWithAnAdvancedPlayer = new Set()
     const goals = new Set()
+    const teamsNeedingAnAdvanedPlayer = teamFormationPlan.teams.filter(team => needsAdvancedPlayer(team.goalDescriptor, this.pool))
 
-    for (const team of teamFormationPlan.teams) {
+    for (const team of teamsNeedingAnAdvanedPlayer) {
       goals.add(team.goalDescriptor)
 
       for (const id of team.playerIds) {
