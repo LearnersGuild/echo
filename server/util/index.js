@@ -212,6 +212,13 @@ export function shuffle(array) {
   return result
 }
 
+export function segment(array, n) {
+  const length = array.length
+  array = array.slice(0)
+  const segmentSize = Math.ceil(length / n)
+  return range(0, n).map(() => array.splice(0, segmentSize))
+}
+
 export function loadJSON(filePath, validateItem = item => item) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', (err, data) => {
