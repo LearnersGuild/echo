@@ -176,6 +176,23 @@ export function choose(n, k) {
   return (n * choose(n - 1, k - 1)) / k
 }
 
+export const factorial = (function () {
+  const f = []
+  return function factorial(n) {
+    if (n === 0 || n === 1) {
+      return 1
+    }
+
+    if (f[n] > 0) {
+      return f[n]
+    }
+
+    f[n] = n * factorial(n - 1)
+
+    return f[n]
+  }
+})()
+
 export function shuffle(array) {
   const result = toArray(array)
 
@@ -193,6 +210,13 @@ export function shuffle(array) {
   }
 
   return result
+}
+
+export function segment(array, n) {
+  const length = array.length
+  array = array.slice(0)
+  const segmentSize = Math.ceil(length / n)
+  return range(0, n).map(() => array.splice(0, segmentSize))
 }
 
 export function loadJSON(filePath, validateItem = item => item) {

@@ -8,7 +8,7 @@ import {getCycleById} from 'src/server/db/cycle'
 import {findPlayersByIds} from 'src/server/db/player'
 import {findVotesForCycle} from 'src/server/db/vote'
 import {insertProjects} from 'src/server/db/project'
-import {toArray, mapById} from 'src/server/util'
+import {toArray, mapById, sum, flatten} from 'src/server/util'
 import {getTeamFormationPlan} from 'src/server/services/projectFormationService'
 import generateProject from 'src/server/actions/generateProject'
 
@@ -28,10 +28,49 @@ export async function buildProjects(cycleId) {
   // => {goals, votes, advancedPlayers, cycleId}
   const votingPool = await _buildVotingPool(cycleId)
 
-  // => {seatCount, teams: [{playerIds, goalDescriptor, teamSize}]}
-  const teamFormationPlan = getTeamFormationPlan(votingPool)
+  // => [
+  //   {seatCount, teams: [{playerIds, goalDescriptor, teamSize}]},
+  //   {seatCount, teams: [{playerIds, goalDescriptor, teamSize}]},
+  // ]
+  const plans = _splitPool(votingPool).map(getTeamFormationPlan)
+  const teamFormationPlan = _mergePlans(plans)
 
   return _teamFormationPlanToProjects(cycle, votingPool, teamFormationPlan)
+}
+
+function _splitPool(pool) {
+  const pools = [{}, {}]
+
+  const voteCount = pool.votes.length
+  const votesPerPool = Math.ceil(voteCount / 2)
+  pools[0].votes = pool.votes.slice(0, votesPerPool)
+  pools[1].votes = pool.votes.slice(votesPerPool)
+
+  pools.forEach(p => {
+    const poolGoalDescriptors = p.votes.reduce((result, vote) => {
+      vote.votes.forEach(goal => result.add(goal))
+      return result
+    }, new Set())
+    p.goals = pool.goals.filter(_ => poolGoalDescriptors.has(_.goalDescriptor))
+
+    const poolPlayers = p.votes.reduce((result, vote) => {
+      result.add(vote.playerId)
+      return result
+    }, new Set())
+    p.advancedPlayers = pool.advancedPlayers.filter(_ => poolPlayers.has(_.id))
+  })
+
+  return pools
+}
+
+function _mergePlans(plans) {
+  const result = {
+    seatCount: sum(plans.map(_ => _.seatCount)),
+    teams: flatten(plans.map(_ => _.teams)),
+    score: plans.map(_ => _.score),
+  }
+
+  return result
 }
 
 function _teamFormationPlanToProjects(cycle, pool, teamFormationPlan) {

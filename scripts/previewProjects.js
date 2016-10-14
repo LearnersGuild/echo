@@ -1,4 +1,5 @@
 /* eslint-disable import/imports-first */
+import parseArgs from 'minimist'
 
 // FIXME: replace globals with central (non-global) config
 global.__SERVER__ = true
@@ -10,10 +11,6 @@ const {finish} = require('./util')
 
 const LOG_PREFIX = `[${__filename.split('js')[0]}]`
 
-// TODO: accept as command line args
-const CHAPTER_NAME = 'Oakland'
-const CYCLE_NUMBER = 15
-
 const startedAt = new Date()
 console.log('startedAt:', startedAt)
 run()
@@ -21,6 +18,8 @@ run()
   .catch(err => finish(err, {startedAt}))
 
 async function run() {
+  const {CHAPTER_NAME, CYCLE_NUMBER} = _parseCLIArgs(process.argv.slice(2))
+
   console.log(LOG_PREFIX, `Arranging projects for cyle ${CYCLE_NUMBER}`)
 
   const chapters = await r.table('chapters').filter({name: CHAPTER_NAME})
@@ -45,6 +44,15 @@ async function run() {
   _logProjectsByPlayer(players)
 
   console.log(`TOTAL PLAYERS VOTED: ${players.length}`)
+}
+
+function _parseCLIArgs(argv) {
+  const args = parseArgs(argv)
+  if (args._.length !== 2) {
+    throw new Error('Usage: npm run preview:projects CHAPTER_NAME CYCLE_NUMBER')
+  }
+  const [CHAPTER_NAME, CYCLE_NUMBER] = args._
+  return {CHAPTER_NAME, CYCLE_NUMBER}
 }
 
 async function _expandProjectData(projects) {

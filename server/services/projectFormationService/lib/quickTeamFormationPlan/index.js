@@ -4,6 +4,8 @@ import {
   getNonAdvancedPlayerIds,
   getAdvancedPlayerInfo,
   getPoolSize,
+  needsAdvancedPlayer,
+  getAdvancedPlayerIds,
 } from '../pool'
 
 import {
@@ -24,11 +26,22 @@ export function getQuickTeamFormationPlan(pool) {
   .map(_ => _.goal)
 
   const highestScoringGoal = goalsByScore[0]
-  const nonAdvancedPlayerIds = getNonAdvancedPlayerIds(pool).slice()
-  const advancedPlayerInfo = getAdvancedPlayerInfo(pool)
-  const advancedPlayerCount = advancedPlayerInfo.length
 
-  const teamSizes = createTeamSizes(highestScoringGoal.teamSize, nonAdvancedPlayerIds.length, advancedPlayerInfo.length)
+  const teams = getTeamsForGoal(pool, highestScoringGoal)
+
+  return {seatCount, teams}
+}
+
+function getTeamsForGoal(pool, goal) {
+  const advancedPlayerInfo = getAdvancedPlayerInfo(pool)
+  const advancedPlayerIsNeeded = needsAdvancedPlayer(goal.goalDescriptor, pool)
+  let nonAdvancedPlayerIds = getNonAdvancedPlayerIds(pool).slice()
+  let advancedPlayerCount = advancedPlayerInfo.length
+  if (!advancedPlayerIsNeeded) {
+    nonAdvancedPlayerIds = nonAdvancedPlayerIds.concat(getAdvancedPlayerIds(pool))
+    advancedPlayerCount = 0
+  }
+  const teamSizes = createTeamSizes(goal.teamSize, nonAdvancedPlayerIds.length, advancedPlayerCount)
 
   const advancedPlayersNeeded = teamSizes.reduce((sum, _) => sum + _.advanced, 0)
   const extraSeats = advancedPlayersNeeded - advancedPlayerCount
@@ -44,10 +57,10 @@ export function getQuickTeamFormationPlan(pool) {
     playerIds.push(...advancedPlayerIds.splice(0, advanced))
     return {
       playerIds,
-      goalDescriptor: highestScoringGoal.goalDescriptor,
+      goalDescriptor: goal.goalDescriptor,
       teamSize: regular + advanced,
     }
   })
 
-  return {seatCount, teams}
+  return teams
 }

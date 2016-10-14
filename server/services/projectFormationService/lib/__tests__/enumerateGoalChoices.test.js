@@ -25,7 +25,7 @@ describe(testContext(__filename), function () {
           {goalDescriptor: 'g2', teamSize: 3},
           {goalDescriptor: 'g3', teamSize: 3},
         ],
-        advancedPlayers: [{id: 'A0'}, {id: 'A1'}],
+        advancedPlayers: [{id: 'A0', maxTeams: 10}, {id: 'A1', maxTeams: 10}],
       }
 
       const shouldPrune = teamFormationPlan => {
@@ -61,7 +61,7 @@ describe(testContext(__filename), function () {
           {goalDescriptor: 'g2', teamSize: 4},
           {goalDescriptor: 'g3', teamSize: 4},
         ],
-        advancedPlayers: [{id: 'A0'}, {id: 'A1'}],
+        advancedPlayers: [{id: 'A0', maxTeams: 10}, {id: 'A1', maxTeams: 10}],
       }
 
       const result = [...enumerateGoalChoices(pool)]
@@ -91,6 +91,40 @@ describe(testContext(__filename), function () {
         // seatCount: 10, minTeams: 4
         //
         // --> no valid configurations; minTeamSize * minTeams > seatCount
+      ].sort())
+    })
+
+    it('handles goals that do not need advanced players', function () {
+      const pool = {
+        votes: [
+          {playerId: 'A0', votes: ['g1', 'g2']},
+          {playerId: 'p0', votes: ['g1', 'g2']},
+          {playerId: 'p1', votes: ['g1', 'g2']},
+          {playerId: 'p2', votes: ['g1', 'g2']},
+          {playerId: 'p3', votes: ['g2', 'g1']},
+          {playerId: 'p4', votes: ['g2', 'g1']},
+        ],
+        goals: [
+          {goalDescriptor: 'g1', teamSize: 3},
+          {goalDescriptor: 'g2', teamSize: 2, noAdvancedPlayer: true},
+        ],
+        advancedPlayers: [{id: 'A0', maxTeams: 10}],
+      }
+
+      const result = [...enumerateGoalChoices(pool)]
+
+      expect(result.map(teamFormationPlanToString).sort()).to.deep.eq([
+        '(g1:2)[], (g1:2)[], (g1:2)[], (g1:2)[], (g1:2)[]',
+        '(g1:2)[], (g1:2)[], (g1:2)[], (g1:3)[]',
+        '(g1:2)[], (g1:2)[], (g1:2)[], (g2:2)[]',
+        '(g1:2)[], (g1:2)[], (g1:4)[]',
+        '(g1:2)[], (g1:3)[], (g1:3)[]',
+        '(g1:2)[], (g1:2)[], (g2:3)[]',
+        '(g1:2)[], (g1:3)[], (g2:2)[]',
+        '(g1:2)[], (g2:2)[], (g2:2)[]',
+        '(g1:3)[], (g1:4)[]',
+        '(g1:3)[], (g2:3)[]',
+        '(g1:4)[], (g2:2)[]',
       ].sort())
     })
   })

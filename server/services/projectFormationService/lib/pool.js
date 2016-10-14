@@ -1,6 +1,10 @@
-import {unique, flatten} from './util'
+import {
+  unique,
+  flatten,
+  sum,
+} from './util'
 
-const MIN_TEAM_SIZE = 2
+export const MIN_TEAM_SIZE = 2
 export const DEFAULT_TEAM_SIZE = 4
 
 export function buildPool(attributes) {
@@ -11,11 +15,10 @@ export function buildPool(attributes) {
     ...attributes,
   }
 
-  pool.goals
-    .filter(goal => !('teamSize' in goal))
-    .forEach(goal => {
-      goal.teamSize = DEFAULT_TEAM_SIZE
-    })
+  pool.goals.forEach(goal => {
+    goal.teamSize = goal.teamSize || DEFAULT_TEAM_SIZE
+    goal.noAdvancedPlayer = goal.noAdvancedPlayer || goal.teamSize === 2
+  })
 
   return pool
 }
@@ -74,6 +77,10 @@ export function getAdvancedPlayerInfo(pool) {
   return pool.advancedPlayers
 }
 
+export function getTotalAdvancedPlayerMaxTeams(pool) {
+  return sum(getAdvancedPlayerInfo(pool).map(_ => _.maxTeams || 1))
+}
+
 export function getAdvancedPlayerIds(pool) {
   return pool.advancedPlayers.map(_ => _.id)
 }
@@ -99,4 +106,9 @@ export function getTeamSizesByGoal(pool) {
   return pool.goals.reduce((result, goal) => {
     return {[goal.goalDescriptor]: goal.teamSize, ...result}
   }, {})
+}
+
+export function needsAdvancedPlayer(goalDescriptor, pool) {
+  const goal = pool.goals.find(_ => _.goalDescriptor === goalDescriptor)
+  return !goal.noAdvancedPlayer
 }

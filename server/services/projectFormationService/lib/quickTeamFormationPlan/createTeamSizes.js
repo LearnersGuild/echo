@@ -1,24 +1,29 @@
+import {MIN_TEAM_SIZE} from '../pool'
+
 export default function createTeamSizes(recTeamSize, numRegularPlayers, numAdvancedPlayers) {
-  const numPerfectRegularPlayers = recTeamSize - 1 // leave room for exactly 1 advanced player
+  const needsAdvancedPlayer = numAdvancedPlayers !== 0
+  const advancedPlayersPerTeam = needsAdvancedPlayer ? 1 : 0
+  const numPerfectRegularPlayers = recTeamSize - advancedPlayersPerTeam
   const numPerfectTeams = Math.floor(numRegularPlayers / numPerfectRegularPlayers)
 
   // form as many perfect teams as possible
-  const teamSizes = new Array(numPerfectTeams).fill(null).map(() => ({regular: numPerfectRegularPlayers, advanced: 1}))
+  const teamSizes = new Array(numPerfectTeams).fill(null)
+    .map(() => ({regular: numPerfectRegularPlayers, advanced: advancedPlayersPerTeam}))
 
   // any regular or advanced players "left over"?
   const remainingRegularPlayers = (numRegularPlayers % numPerfectRegularPlayers) || 0
   const remainingAdvancedPlayers = Math.max(numAdvancedPlayers - teamSizes.length, 0)
   const totalRemaining = remainingRegularPlayers + remainingAdvancedPlayers
-  const maxRemaining = remainingAdvancedPlayers ? totalRemaining : (remainingRegularPlayers + 1)
+  const maxRemaining = remainingAdvancedPlayers ? totalRemaining : (remainingRegularPlayers + advancedPlayersPerTeam)
 
   if (totalRemaining) {
     const remainingTeamSize = {regular: remainingRegularPlayers, advanced: remainingAdvancedPlayers}
-    const minTeamSize = recTeamSize - 1
+    const minTeamSize = Math.max(MIN_TEAM_SIZE, recTeamSize - 1)
     const maxTeamSize = recTeamSize + 1
 
     if (maxRemaining >= minTeamSize && maxRemaining <= maxTeamSize) {
       if (!remainingAdvancedPlayers) {
-        remainingTeamSize.advanced = 1
+        remainingTeamSize.advanced = advancedPlayersPerTeam
       }
       teamSizes.push(remainingTeamSize)
     } else if (totalRemaining <= teamSizes.length) {
@@ -36,7 +41,7 @@ export default function createTeamSizes(recTeamSize, numRegularPlayers, numAdvan
       // that we can take 1 spot from the regular players of some them and
       // add those to the leftover spots to make 1 more team
       if (!remainingTeamSize.advanced) {
-        remainingTeamSize.advanced = 1 // ensure that at least 1 advanced player is pulled onto this team
+        remainingTeamSize.advanced = advancedPlayersPerTeam
       }
       for (let i = 0; (remainingTeamSize.regular + remainingTeamSize.advanced) < minTeamSize; i++) {
         teamSizes[i].regular--

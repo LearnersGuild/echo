@@ -1,3 +1,4 @@
+import {buildPool} from '../lib/pool'
 import {range, flatten, repeat} from '../lib/util'
 
 export function buildTestPool(opts) {
@@ -5,19 +6,15 @@ export function buildTestPool(opts) {
     playerCount,
     advancedPlayerCount,
     goalCount,
-    teamSize,
-    advancedPlayerMaxTeams,
-    voteDistributionPercentages,
-  } = {
-    teamSize: 4,
-    advancedPlayerMaxTeams: [3],
-    voteDistributionPercentages: [0.2, 0.2, 0.1],
-    ...opts,
-  }
+    teamSize = 4,
+    teamSizes = [],
+    advancedPlayerMaxTeams = [3],
+    voteDistributionPercentages = [0.2, 0.2, 0.1],
+  } = opts
 
   const goals = range(0, goalCount).map(i => ({
     goalDescriptor: `g${i}`,
-    teamSize,
+    teamSize: teamSizes[i] || teamSize,
   }))
   const voteDistribution = buildVoteDistribution(playerCount + advancedPlayerCount, goals, voteDistributionPercentages)
   const advancedPlayers = range(0, advancedPlayerCount).map(i => ({id: `A${i}`, maxTeams: advancedPlayerMaxTeams[i % advancedPlayerMaxTeams.length]}))
@@ -29,7 +26,7 @@ export function buildTestPool(opts) {
     votes: voteDistribution[i],
   }))
 
-  return {votes, goals, advancedPlayers}
+  return buildPool({votes, goals, advancedPlayers})
 }
 
 function buildVoteDistribution(voteCount, goals, percentages) {

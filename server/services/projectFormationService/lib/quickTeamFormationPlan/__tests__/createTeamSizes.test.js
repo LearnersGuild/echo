@@ -73,6 +73,16 @@ describe(testContext(__filename), function () {
         },
 
         {
+          message: 'team without advanced players',
+          input: {recommended: 2, regular: 7, advanced: 0},
+          expected: [
+            {regular: 3, advanced: 0},
+            {regular: 2, advanced: 0},
+            {regular: 2, advanced: 0},
+          ]
+        },
+
+        {
           message: 'a wonky team',
           input: {recommended: 4, regular: 1, advanced: 1},
           expected: [{regular: 1, advanced: 1}]

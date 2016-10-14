@@ -4,12 +4,14 @@ import {
   shuffle,
   repeat,
   logger,
+  factorial,
 } from './util'
 
 import {
   getAdvancedPlayerInfo,
   getNonAdvancedPlayerIds,
   getVotesByPlayerId,
+  needsAdvancedPlayer,
 } from './pool'
 
 import {
@@ -27,7 +29,8 @@ export default function * enumeratePlayerAssignmentChoices(pool, teamFormationPl
 function * enumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, shouldPrune) {
   const advancedPlayerInfo = getAdvancedPlayerInfo(pool)
   const advancedPlayerIds = advancedPlayerInfo.map(_ => _.id)
-  const extraSeats = teamFormationPlan.teams.length - advancedPlayerIds.length
+  const teamsNeedingAdvancedPlayer = teamFormationPlan.teams.filter(team => needsAdvancedPlayer(team.goalDescriptor, pool))
+  const extraSeats = teamsNeedingAdvancedPlayer.length - advancedPlayerIds.length
 
   let strategy
   if (advancedPlayerIds.length + extraSeats < 8) {
@@ -44,7 +47,7 @@ function * enumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, sho
       teamFormationPlan,
       playerIdsToAssign: advancedPlayerIds.concat(extraPlayerIds),
       shouldPrune,
-      maxPerTeam: 1,
+      getCountToAssign: team => needsAdvancedPlayer(team.goalDescriptor, pool) ? 1 : 0,
     })
   }
 }
@@ -72,22 +75,30 @@ function * enumerateNonAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, 
     teamFormationPlan,
     playerIdsToAssign,
     shouldPrune,
-    maxPerTeam: -1
+    getCountToAssign: team => needsAdvancedPlayer(team.goalDescriptor, pool) ? team.teamSize - 1 : team.teamSize,
   })
 }
 
-function * enumerateRandomHeuristicPlayerAssignentsFromList({pool, teamFormationPlan, playerIdsToAssign, shouldPrune, maxPerTeam, count = 50}) {
+function * enumerateRandomHeuristicPlayerAssignentsFromList({pool, teamFormationPlan, playerIdsToAssign, shouldPrune, getCountToAssign, count = 50}) {
   const shufflingsSeen = new Set()
+  const resultsSeen = new Set()
+  const maxShufflings = Math.min(count, factorial(playerIdsToAssign.length))
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < maxShufflings; i++) {
     const shuffledPlayerIds = shuffle(playerIdsToAssign)
     const shufflingKey = shuffledPlayerIds.toString()
     if (shufflingsSeen.has(shufflingKey)) {
+      i--
       continue
     }
     shufflingsSeen.add(shufflingKey)
 
-    const result = heuristicPlayerAssignment(pool, teamFormationPlan, shuffledPlayerIds, maxPerTeam)
+    const result = heuristicPlayerAssignment(pool, teamFormationPlan, shuffledPlayerIds, getCountToAssign)
+    const resultKey = teamFormationPlanToString(result)
+    if (resultsSeen.has(resultKey)) {
+      continue
+    }
+    resultsSeen.add(resultKey)
 
     if (shouldPrune && shouldPrune(result)) {
       continue
@@ -97,11 +108,11 @@ function * enumerateRandomHeuristicPlayerAssignentsFromList({pool, teamFormation
   }
 }
 
-function * enumeratePlayerAssignmentChoicesFromList({teamFormationPlan, playerIdsToAssign, shouldPrune, maxPerTeam}) {
+function * enumeratePlayerAssignmentChoicesFromList({teamFormationPlan, playerIdsToAssign, shouldPrune, getCountToAssign}) {
   const totalSeatsByGoal = new Map()
-  teamFormationPlan.teams.forEach(({goalDescriptor, teamSize}) => {
-    const countedSeatsForGoal = totalSeatsByGoal.get(goalDescriptor) || 0
-    totalSeatsByGoal.set(goalDescriptor, countedSeatsForGoal + (maxPerTeam ? maxPerTeam : teamSize - 1))
+  teamFormationPlan.teams.forEach(team => {
+    const countedSeatsForGoal = totalSeatsByGoal.get(team.goalDescriptor) || 0
+    totalSeatsByGoal.set(team.goalDescriptor, countedSeatsForGoal + getCountToAssign(team))
   })
 
   const goalDescriptors = Array.from(totalSeatsByGoal.keys())
@@ -109,11 +120,11 @@ function * enumeratePlayerAssignmentChoicesFromList({teamFormationPlan, playerId
   const goalPartitionings = enumeratePartitionings(
     playerIdsToAssign,
     goalPartitionSizes,
-    genShouldPrunePartitioningByGoal(shouldPrune, teamFormationPlan, goalDescriptors, maxPerTeam),
+    genShouldPrunePartitioningByGoal(shouldPrune, teamFormationPlan, goalDescriptors, getCountToAssign),
   )
 
   for (const goalPartitioning of goalPartitionings) {
-    const teamPartitioning = goalPartitioningToTeamPartitioning(goalPartitioning, teamFormationPlan, goalDescriptors, maxPerTeam)
+    const teamPartitioning = goalPartitioningToTeamPartitioning(goalPartitioning, teamFormationPlan, goalDescriptors, getCountToAssign)
 
     const teams = teamFormationPlan.teams.map((team, i) => {
       const currentPlayerIds = team.playerIds || []
@@ -125,12 +136,12 @@ function * enumeratePlayerAssignmentChoicesFromList({teamFormationPlan, playerId
   }
 }
 
-function genShouldPrunePartitioningByGoal(shouldPrunePlan, teamFormationPlan, goalDescriptors, maxPerTeam) {
+function genShouldPrunePartitioningByGoal(shouldPrunePlan, teamFormationPlan, goalDescriptors, getCountToAssign) {
   return partitioning => {
     if (!shouldPrunePlan) {
       return false
     }
-    const partitioningByTeam = goalPartitioningToTeamPartitioning(partitioning, teamFormationPlan, goalDescriptors, maxPerTeam)
+    const partitioningByTeam = goalPartitioningToTeamPartitioning(partitioning, teamFormationPlan, goalDescriptors, getCountToAssign)
     const teams = teamFormationPlan.teams.map((team, i) => ({
       ...team,
       playerIds: (team.playerIds || []).concat(partitioningByTeam[i]),
@@ -140,12 +151,12 @@ function genShouldPrunePartitioningByGoal(shouldPrunePlan, teamFormationPlan, go
   }
 }
 
-function goalPartitioningToTeamPartitioning(playerPartitioningByGoal, teamFormationPlan, goalDescriptors, maxPerTeam) {
+function goalPartitioningToTeamPartitioning(playerPartitioningByGoal, teamFormationPlan, goalDescriptors, getCountToAssign) {
   const teams = teamFormationPlan.teams
   const playerIdsByGoal = getPlayerIdsByGoal(playerPartitioningByGoal, goalDescriptors)
-  return teams.map(({goalDescriptor, teamSize}) => {
-    const unusedIds = playerIdsByGoal[goalDescriptor] || []
-    const playerIds = unusedIds.splice(0, maxPerTeam ? maxPerTeam : teamSize - 1)
+  return teams.map(team => {
+    const unusedIds = playerIdsByGoal[team.goalDescriptor] || []
+    const playerIds = unusedIds.splice(0, getCountToAssign(team))
 
     return playerIds
   })
@@ -161,7 +172,7 @@ function getPlayerIdsByGoal(playerPartitioning, goalDescriptors) {
   return playerIdsForGoal
 }
 
-export function heuristicPlayerAssignment(pool, teamFormationPlan, playerIdsToAssign, maxPerTeam) {
+export function heuristicPlayerAssignment(pool, teamFormationPlan, playerIdsToAssign, getCountToAssign) {
   const votesByPlayerId = getVotesByPlayerId(pool)
   const votes = playerIdsToAssign.map(playerId => ({playerId, votes: votesByPlayerId[playerId]}))
 
@@ -171,10 +182,8 @@ export function heuristicPlayerAssignment(pool, teamFormationPlan, playerIdsToAs
     const currentPlayerIds = team.playerIds || []
 
     let numPlayersToAssign
-    if (maxPerTeam && maxPerTeam < 0) {
-      numPlayersToAssign = team.teamSize + maxPerTeam
-    } else if (maxPerTeam) {
-      numPlayersToAssign = maxPerTeam
+    if (getCountToAssign) {
+      numPlayersToAssign = getCountToAssign(team)
     } else {
       numPlayersToAssign = team.teamSize - currentPlayerIds.length
     }
@@ -190,13 +199,13 @@ export function heuristicPlayerAssignment(pool, teamFormationPlan, playerIdsToAs
       return undefined
     }).filter(_ => _ !== undefined)
     remainingSpotsPerTeam.push(numPlayersToAssign - newPlayerIds.length)
-    return {...team, playerIds: currentPlayerIds.concat(newPlayerIds)}
+    return {...team, playerIds: currentPlayerIds.concat(newPlayerIds).sort()}
   })
 
   // Fill remaining spots
   teamsWithPlayers = teamsWithPlayers.map((team, i) => {
     const newPlayerIds = votes.splice(0, remainingSpotsPerTeam[i]).map(_ => _.playerId)
-    return {...team, playerIds: team.playerIds.concat(newPlayerIds)}
+    return {...team, playerIds: team.playerIds.concat(newPlayerIds).sort()}
   })
 
   return {...teamFormationPlan, teams: teamsWithPlayers}

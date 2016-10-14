@@ -83,6 +83,43 @@ describe(testContext(__filename), function () {
     })
   })
 
+  it('works when some teams do not need an advanced player', function () {
+    const newPool = {
+      ...pool,
+      goals: pool.goals.map(goal => {
+        if (goal.goalDescriptor === REGULAR_PLAYER_1ST_CHOICE) {
+          return {...goal, noAdvancedPlayer: true}
+        }
+        return goal
+      })
+    }
+    const teamFormationPlan = {
+      seatCount: 10,
+      teams: [
+        {
+          goalDescriptor: REGULAR_PLAYER_2ND_CHOICE,
+          teamSize: 4,
+          playerIds: [ADVANCED_PLAYER_1],
+        },
+        {
+          goalDescriptor: REGULAR_PLAYER_2ND_CHOICE,
+          teamSize: 3,
+          playerIds: [ADVANCED_PLAYER_2],
+        },
+        {
+          goalDescriptor: REGULAR_PLAYER_1ST_CHOICE,
+          teamSize: 3,
+          playerIds: [],
+        },
+      ]
+    }
+
+    const appriaser = new NonAdvancedPlayersGotTheirVoteAppraiser(newPool)
+    const score = appriaser.score(teamFormationPlan)
+
+    expect(score).to.eq((3 + 5 * SECOND_CHOICE_VALUE) / 8)
+  })
+
   it('works when extra seats are in play', function () {
     const pool = {
       votes: [

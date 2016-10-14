@@ -16,6 +16,10 @@ export default class PlayersGotTheirVoteAppraiser {
     const {playerIds} = this
     const playerCount = playerIds.size
 
+    if (playerCount === 0) {
+      return 1
+    }
+
     const unassignedPlayerIds = new Set(playerIds)
     const playersConsidered = new Set()
     const playerIdFilter = playerId => playerIds.has(playerId) && !playersConsidered.has(playerId)
@@ -60,7 +64,7 @@ export default class PlayersGotTheirVoteAppraiser {
   countPlayersWhoGotTheirVote(playerIds, goalDescriptor) {
     const result = [0, 0]
     playerIds.forEach(playerId => {
-      const votes = this.votesByPlayerId[playerId]
+      const votes = this.votesByPlayerId[playerId] || []
       result[0] += Number(votes[0] === goalDescriptor)
       result[1] += Number(votes[1] === goalDescriptor)
     })

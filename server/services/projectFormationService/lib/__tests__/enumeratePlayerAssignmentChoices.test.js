@@ -58,7 +58,7 @@ describe(testContext(__filename), function () {
   it('returns the expected plans', function () {
     const result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
 
-    expect(result.map(teamFormationPlanToString).sort()).to.have.deep.eq([
+    expect(result.map(teamFormationPlanToString).sort()).to.deep.eq([
       '(g1:2)[A0,p0], (g2:2)[A1,p1], (g3:2)[A2,p2]',
       '(g1:2)[A0,p0], (g2:2)[A1,p2], (g3:2)[A2,p1]',
       '(g1:2)[A0,p0], (g2:2)[A2,p1], (g3:2)[A1,p2]',
@@ -141,6 +141,83 @@ describe(testContext(__filename), function () {
       choose(oddAdvancedPlayerCount, 1) *
       choose(oddNonAdvancedPlayerCount, 1)
     )
+  })
+
+  describe('when there are goals not requiring an advanced player', function () {
+    const pool = {
+      votes: [
+        {playerId: 'p1', votes: ['g1', 'g2']},
+        {playerId: 'p0', votes: ['g1', 'g2']},
+
+        {playerId: 'A0', votes: ['g1', 'g2']},
+        {playerId: 'p2', votes: ['g1', 'g2']},
+
+        {playerId: 'A1', votes: ['g1', 'g2']},
+        {playerId: 'p3', votes: ['g1', 'g2']},
+      ],
+      goals: [
+        {goalDescriptor: 'g1', teamSize: 2, noAdvancedPlayer: true},
+        {goalDescriptor: 'g2', teamSize: 2},
+        {goalDescriptor: 'g3', teamSize: 2},
+      ],
+      advancedPlayers: [{id: 'A0', maxTeams: 3}, {id: 'A1', maxTeams: 3}],
+    }
+    const teamFormationPlan = {
+      seatCount: 6,
+      teams: [
+        {goalDescriptor: 'g1', teamSize: 2},
+        {goalDescriptor: 'g2', teamSize: 2},
+        {goalDescriptor: 'g3', teamSize: 2},
+      ]
+    }
+
+    let result
+    beforeEach(function () {
+      result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
+    })
+
+    it('returns the expected number of plans', function () {
+      const nonAdvancedPlayerCount = getNonAdvancedPlayerCount(pool)
+      const advancedPlayerCount = getAdvancedPlayerCount(pool)
+
+      expect(result).to.have.length(
+        choose(advancedPlayerCount, 1) * // pick an advanced player for the first team team that needs one
+        choose(advancedPlayerCount - 1, 1) * // pick an advanced player for the other team hat needs one
+        choose(nonAdvancedPlayerCount, 2) * // pick players for the first team
+        choose(nonAdvancedPlayerCount - 2, 1)  // pick a remaining player for the second team (leaving only one left for the third)
+      )
+    })
+
+    it('returns the expected plans', function () {
+      const result = [...enumeratePlayerAssignmentChoices(pool, teamFormationPlan)]
+
+      expect(result.map(teamFormationPlanToString).sort()).to.deep.eq([
+        '(g1:2)[p0,p1], (g2:2)[A0,p2], (g3:2)[A1,p3]',
+        '(g1:2)[p0,p1], (g2:2)[A0,p3], (g3:2)[A1,p2]',
+        '(g1:2)[p0,p1], (g2:2)[A1,p2], (g3:2)[A0,p3]',
+        '(g1:2)[p0,p1], (g2:2)[A1,p3], (g3:2)[A0,p2]',
+        '(g1:2)[p0,p2], (g2:2)[A0,p1], (g3:2)[A1,p3]',
+        '(g1:2)[p0,p2], (g2:2)[A0,p3], (g3:2)[A1,p1]',
+        '(g1:2)[p0,p2], (g2:2)[A1,p1], (g3:2)[A0,p3]',
+        '(g1:2)[p0,p2], (g2:2)[A1,p3], (g3:2)[A0,p1]',
+        '(g1:2)[p0,p3], (g2:2)[A0,p2], (g3:2)[A1,p1]',
+        '(g1:2)[p0,p3], (g2:2)[A0,p1], (g3:2)[A1,p2]',
+        '(g1:2)[p0,p3], (g2:2)[A1,p2], (g3:2)[A0,p1]',
+        '(g1:2)[p0,p3], (g2:2)[A1,p1], (g3:2)[A0,p2]',
+        '(g1:2)[p1,p2], (g2:2)[A0,p0], (g3:2)[A1,p3]',
+        '(g1:2)[p1,p2], (g2:2)[A0,p3], (g3:2)[A1,p0]',
+        '(g1:2)[p1,p2], (g2:2)[A1,p0], (g3:2)[A0,p3]',
+        '(g1:2)[p1,p2], (g2:2)[A1,p3], (g3:2)[A0,p0]',
+        '(g1:2)[p1,p3], (g2:2)[A0,p2], (g3:2)[A1,p0]',
+        '(g1:2)[p1,p3], (g2:2)[A0,p0], (g3:2)[A1,p2]',
+        '(g1:2)[p1,p3], (g2:2)[A1,p2], (g3:2)[A0,p0]',
+        '(g1:2)[p1,p3], (g2:2)[A1,p0], (g3:2)[A0,p2]',
+        '(g1:2)[p2,p3], (g2:2)[A0,p0], (g3:2)[A1,p1]',
+        '(g1:2)[p2,p3], (g2:2)[A0,p1], (g3:2)[A1,p0]',
+        '(g1:2)[p2,p3], (g2:2)[A1,p0], (g3:2)[A0,p1]',
+        '(g1:2)[p2,p3], (g2:2)[A1,p1], (g3:2)[A0,p0]',
+      ].sort())
+    })
   })
 
   describe('when there are extra seats', function () {
