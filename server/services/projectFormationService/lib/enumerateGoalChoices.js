@@ -10,7 +10,6 @@ import {
   needsAdvancedPlayer,
   getTotalAdvancedPlayerMaxTeams,
 } from './pool'
-import {teamFormationPlanToString} from './teamFormationPlan'
 
 import {range} from './util'
 
@@ -67,7 +66,12 @@ function getValidExtraSeatCounts({pool, advancedPlayerCount, goalAndSizeOptions}
   // number of additional seats.
   const poolSize = getPoolSize(pool)
   const totalAdvancedPlayerMaxTeams = getTotalAdvancedPlayerMaxTeams(pool) - advancedPlayerCount
-  const allOptionsHaveAdvancedPlayer = goalAndSizeOptions.every(team => needsAdvancedPlayer(team.goalDescriptor, pool))
+  const optionsNeedingAnAdvancedPlayer = goalAndSizeOptions.filter(team => needsAdvancedPlayer(team.goalDescriptor, pool))
+
+  if (optionsNeedingAnAdvancedPlayer.length === 0) {
+    return [0]
+  }
+
   const sortedOptionsWithAdvancedPlayers = goalAndSizeOptions
     .slice(0)
     .filter(team => needsAdvancedPlayer(team.goalDescriptor, pool))
@@ -78,7 +82,7 @@ function getValidExtraSeatCounts({pool, advancedPlayerCount, goalAndSizeOptions}
   const nonAdvancedPlayerCount = poolSize - advancedPlayerCount
 
   let minExtraSeats
-  if (allOptionsHaveAdvancedPlayer) {
+  if (optionsNeedingAnAdvancedPlayer.length === goalAndSizeOptions.length) {
     const nonAdvancedSeatsOnLargestGoalSizeOption = largestGoalSizeOption.teamSize - 1
     const minTeams = Math.floor(nonAdvancedPlayerCount / nonAdvancedSeatsOnLargestGoalSizeOption)
     minExtraSeats = Math.max(0, minTeams - advancedPlayerCount)

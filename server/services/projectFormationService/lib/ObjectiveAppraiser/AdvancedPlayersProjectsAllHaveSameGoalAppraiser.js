@@ -12,6 +12,9 @@ export default class AdvancedPlayersProjectsAllHaveSameGoalObjective {
   }
 
   score(teamFormationPlan) {
+    if (this.advancedPlayerCount === 0) {
+      return 1
+    }
     const goalsByAdvancedPlayer = {}
     const advancedPlayersWithMultipleGoals = new Set()
     const assignedAdvancedPlayers = new Set()

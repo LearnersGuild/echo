@@ -27,12 +27,12 @@ export function getQuickTeamFormationPlan(pool) {
 
   const highestScoringGoal = goalsByScore[0]
 
-  const teams = getTeamsdForGoal(pool, highestScoringGoal)
+  const teams = getTeamsForGoal(pool, highestScoringGoal)
 
   return {seatCount, teams}
 }
 
-function getTeamsdForGoal(pool, goal) {
+function getTeamsForGoal(pool, goal) {
   const advancedPlayerInfo = getAdvancedPlayerInfo(pool)
   const advancedPlayerIsNeeded = needsAdvancedPlayer(goal.goalDescriptor, pool)
   let nonAdvancedPlayerIds = getNonAdvancedPlayerIds(pool).slice()

@@ -20,6 +20,9 @@ export default class AdvancedPlayersTeamCountDoesNotExceedMaxAppraiser {
   }
 
   score(teamFormationPlan) {
+    if (this.advancedPlayerCount === 0) {
+      return 1
+    }
     const projectCountByAdvancedPlayer = {}
 
     teamFormationPlan.teams.forEach(team => {
