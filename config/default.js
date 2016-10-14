@@ -56,7 +56,7 @@ module.exports = {
         maxTeams: process.env.PRO_PLAYER_MAX_TEAMS || 4,
       },
       advancedPlayer: {
-        minElo: process.env.ADVANCED_PLAYER_MIN_ELO || 1001,
+        minElo: process.env.ADVANCED_PLAYER_MIN_ELO || 1200, // 1001,
         minXp: process.env.ADVANCED_PLAYER_MIN_XP || 101,
         maxTeams: process.env.ADVANCED_PLAYER_MAX_TEAMS || 2,
         maxCount: process.env.ADVANCED_PLAYER_MAX_COUNT || 8,
