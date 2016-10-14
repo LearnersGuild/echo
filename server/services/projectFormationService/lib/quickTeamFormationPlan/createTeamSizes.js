@@ -3,7 +3,7 @@ import {MIN_TEAM_SIZE} from '../pool'
 export default function createTeamSizes(recTeamSize, numRegularPlayers, numAdvancedPlayers) {
   const needsAdvancedPlayer = numAdvancedPlayers !== 0
   const advancedPlayersPerTeam = needsAdvancedPlayer ? 1 : 0
-  const numPerfectRegularPlayers = recTeamSize - advancedPlayersPerTeam // leave room for exactly 1 advanced player
+  const numPerfectRegularPlayers = recTeamSize - advancedPlayersPerTeam
   const numPerfectTeams = Math.floor(numRegularPlayers / numPerfectRegularPlayers)
 
   // form as many perfect teams as possible
@@ -41,7 +41,7 @@ export default function createTeamSizes(recTeamSize, numRegularPlayers, numAdvan
       // that we can take 1 spot from the regular players of some them and
       // add those to the leftover spots to make 1 more team
       if (!remainingTeamSize.advanced) {
-        remainingTeamSize.advanced = needsAdvancedPlayer ? 1 : 0 // ensure that at least 1 advanced player is pulled onto this team
+        remainingTeamSize.advanced = advancedPlayersPerTeam
       }
       for (let i = 0; (remainingTeamSize.regular + remainingTeamSize.advanced) < minTeamSize; i++) {
         teamSizes[i].regular--

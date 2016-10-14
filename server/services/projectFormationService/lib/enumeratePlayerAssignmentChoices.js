@@ -82,9 +82,9 @@ function * enumerateNonAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, 
 function * enumerateRandomHeuristicPlayerAssignentsFromList({pool, teamFormationPlan, playerIdsToAssign, shouldPrune, getCountToAssign, count = 50}) {
   const shufflingsSeen = new Set()
   const resultsSeen = new Set()
-  const maxShufflings = factorial(playerIdsToAssign.length)
+  const maxShufflings = Math.min(count, factorial(playerIdsToAssign.length))
 
-  for (let i = 0; i < Math.min(count, maxShufflings); i++) {
+  for (let i = 0; i < maxShufflings; i++) {
     const shuffledPlayerIds = shuffle(playerIdsToAssign)
     const shufflingKey = shuffledPlayerIds.toString()
     if (shufflingsSeen.has(shufflingKey)) {
