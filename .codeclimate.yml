@@ -11,14 +11,7 @@ engines:
       - python
       - php
   eslint:
-    enabled: true
-    checks:
-      global-require:
-        enabled: false
-      comma-dangle:
-        enabled: false
-      semi:
-        enabled: false
+    enabled: false
   fixme:
     enabled: true
 ratings:

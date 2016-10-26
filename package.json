@@ -174,6 +174,10 @@
   "xo": {
     "extends": "xo-react",
     "rules": {
+      "complexity": [
+        1,
+        8
+      ],
       "no-unused-vars": [
         2,
         {
