@@ -135,7 +135,7 @@ function * goalChoiceGenerator(teamFormationPlan, {goalAndSizeOptions, pool, adv
       const expectedAdvancedPlayerSeatCount = advancedPlayerCount + extraSeatCount
       const teamCountIsValid = extraSeatCount > 0 ?
         currentTeamsNeedingAdvancedPlayers.length === expectedAdvancedPlayerSeatCount :
-        currentTeamsNeedingAdvancedPlayers.length <= expectedAdvancedPlayerSeatCount
+        currentTeamsNeedingAdvancedPlayers.length <= advancedPlayerCount
 
       if (seatCountIsValid && teamCountIsValid) {
         yield {...currentNode, seatCount: currentSeatCount}
