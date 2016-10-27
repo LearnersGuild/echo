@@ -265,7 +265,7 @@ describe(testContext(__filename), function () {
           teamSize: 4,
           goalCount: 5,
         }),
-        expectedRuntime: minutes(0.25),
+        expectedRuntime: minutes(0.33),
         minResultScore: 0.95,
       },
       // 2
@@ -289,7 +289,7 @@ describe(testContext(__filename), function () {
           teamSize: 4,
           goalCount: 5,
         }),
-        expectedRuntime: minutes(0.25),
+        expectedRuntime: minutes(0.33),
         minResultScore: 0.95,
       },
       // 5
@@ -301,7 +301,7 @@ describe(testContext(__filename), function () {
           teamSize: 4,
           goalCount: 5,
         }),
-        expectedRuntime: minutes(0.40),
+        expectedRuntime: minutes(0.50),
         minResultScore: 0.85,
       },
       // 6
@@ -323,6 +323,7 @@ describe(testContext(__filename), function () {
           playerCount: 20,
           teamSizes: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
           goalCount: 12,
+          noAdvancedPlayer: true,
         }),
         expectedRuntime: minutes(5),
         minResultScore: 0.95,
