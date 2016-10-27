@@ -350,7 +350,7 @@ describe(testContext(__filename), function () {
   describe('enumerateAdvancedSeatAssignmentChoices()', function () {
     const pretty = choices => Array.from(choices).map(choice => choice.join(',')).sort()
 
-    it('works there are more seats than players', function () {
+    it('works when there are more seats than players', function () {
       const advancedPlayerInfo = [{id: 'A0', maxTeams: 1}, {id: 'A1', maxTeams: 2}, {id: 'A2', maxTeams: 3}, {id: 'A3', maxTeams: 4}]
       const result = enumerateAdvancedSeatAssignmentChoices(advancedPlayerInfo, 7)
       expect(pretty(result)).to.deep.eq(pretty([
@@ -363,16 +363,14 @@ describe(testContext(__filename), function () {
       ]))
     })
 
-    it('works there are fewer seats than players', function () {
+    it('works when there are fewer seats than players', function () {
       const advancedPlayerInfo = [{id: 'A0', maxTeams: 1}, {id: 'A1', maxTeams: 2}, {id: 'A2', maxTeams: 3}, {id: 'A3', maxTeams: 4}]
       const result = enumerateAdvancedSeatAssignmentChoices(advancedPlayerInfo, 3)
       expect(pretty(result)).to.deep.eq(pretty([
-          ['A1', 'A2', 'A2'],
           ['A1', 'A2', 'A3'],
-          ['A1', 'A3', 'A3'],
-          ['A2', 'A2', 'A3'],
-          ['A2', 'A3', 'A3'],
-          ['A3', 'A3', 'A3'],
+          ['A0', 'A2', 'A3'],
+          ['A0', 'A1', 'A3'],
+          ['A0', 'A1', 'A2'],
       ]))
     })
   })

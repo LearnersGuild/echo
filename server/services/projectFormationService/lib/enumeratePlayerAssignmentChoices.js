@@ -52,27 +52,33 @@ function * enumerateAdvancedPlayerAssignmentChoices(pool, teamFormationPlan, sho
   }
 }
 
-export function enumerateAdvancedSeatAssignmentChoices(list, count) {
-  if (count < list.length) {
-    return _enumerateAdvancedSeatAssignmentChoices(list, count)
+export function * enumerateAdvancedSeatAssignmentChoices(advancedPlayers, count) {
+  if (count < advancedPlayers.length) {
+    yield * _enumerateAdvancedSeatAssignmentChoices(advancedPlayers, count)
   }
 
-  return _enumerateAdvancedSeatAssignmentChoices(list, count - list.length, list.map(_ => _.id))
+  const advancedPlayerIds = advancedPlayers.map(_ => _.id)
+  const getMaxTeams = player => player.maxTeams - 1
+  const remainder = count - advancedPlayers.length
+  for (const extraIds of _enumerateAdvancedSeatAssignmentChoices(advancedPlayers, remainder, getMaxTeams)) {
+    yield advancedPlayerIds.concat(extraIds)
+  }
 }
 
-function * _enumerateAdvancedSeatAssignmentChoices(list, count, choice = []) {
+function * _enumerateAdvancedSeatAssignmentChoices(advancedPlayers, count, getMaxTeams = _ => 1, choice = []) {
   if (count === 0) {
     yield choice
     return
   }
 
-  const [head, ...rest] = list
+  const [head, ...rest] = advancedPlayers
   if (!head) {
     return
   }
 
-  for (let i = 0; i < head.maxTeams && i <= count; i++) {
-    yield * _enumerateAdvancedSeatAssignmentChoices(rest, count - i, choice.concat(repeat(i, head.id)))
+  const maxTeams = getMaxTeams(head)
+  for (let i = 0; i <= maxTeams && i <= count; i++) {
+    yield * _enumerateAdvancedSeatAssignmentChoices(rest, count - i, getMaxTeams, choice.concat(repeat(i, head.id)))
   }
 }
 

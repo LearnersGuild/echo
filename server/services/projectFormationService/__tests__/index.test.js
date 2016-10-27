@@ -130,7 +130,6 @@ describe(testContext(__filename), function () {
     const teamFormationPlan = getTeamFormationPlan(pool)
     const {teams} = teamFormationPlan
 
-    console.log(teamFormationPlanToString(teamFormationPlan))
     expect(teams).to.have.length(3)
 
     const normalGoalTeams = teams.filter(_ => _.goalDescriptor === 'normalGoal')
@@ -205,7 +204,6 @@ describe(testContext(__filename), function () {
   })
 
   it('will put multiple advanced players on a team if needed', function () {
-    // TODO: make this pass
     const pool = {
       votes: [
         {playerId: 'A0', votes: ['g1', 'g2']},
@@ -226,12 +224,12 @@ describe(testContext(__filename), function () {
       ],
       advancedPlayers: [{id: 'A0', maxTeams: 3}, {id: 'A1', maxTeams: 1}, {id: 'A2', maxTeams: 1}],
     }
-    const {teams} = getTeamFormationPlan(pool)
+    const plan = getTeamFormationPlan(pool)
 
-    expect(teams).to.have.length(2)
+    expect(plan.teams).to.have.length(2)
 
-    const [team1] = teams.filter(_ => _.goalDescriptor === 'g1')
-    const [team2] = teams.filter(_ => _.goalDescriptor === 'g2')
+    const [team1] = plan.teams.filter(_ => _.goalDescriptor === 'g1')
+    const [team2] = plan.teams.filter(_ => _.goalDescriptor === 'g2')
 
     expect(team1, 'one team is formed with goal g1').to.be.ok
     expect(team2, 'one team is formed with goal g2').to.be.ok

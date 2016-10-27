@@ -125,6 +125,33 @@ describe(testContext(__filename), function () {
         '(g1:3)[], (g1:4)[]',
         '(g1:3)[], (g2:3)[]',
         '(g1:4)[], (g2:2)[]',
+        '(g2:2)[], (g2:2)[], (g2:2)[]',
+        '(g2:3)[], (g2:3)[]',
+      ].sort())
+    })
+
+    it('handles cases where there are more advanced players than can be used', function () {
+      const pool = {
+        votes: [
+          {playerId: 'A0', votes: ['g1', 'g2']},
+          {playerId: 'A1', votes: ['g1', 'g2']},
+          {playerId: 'p0', votes: ['g1', 'g2']},
+          {playerId: 'p1', votes: ['g1', 'g2']},
+          {playerId: 'p2', votes: ['g1', 'g2']},
+          {playerId: 'p3', votes: ['g1', 'g2']},
+        ],
+        goals: [
+          {goalDescriptor: 'g1', teamSize: 5},
+          {goalDescriptor: 'g2', teamSize: 5},
+        ],
+        advancedPlayers: [{id: 'A0', maxTeams: 10}, {id: 'A1', maxTeams: 10}],
+      }
+
+      const result = [...enumerateGoalChoices(pool)]
+
+      expect(result.map(teamFormationPlanToString).sort()).to.deep.eq([
+        '(g1:6)[]',
+        '(g2:6)[]',
       ].sort())
     })
   })
