@@ -204,7 +204,7 @@ describe(testContext(__filename), function () {
     expect(() => getTeamFormationPlan(pool)).to.throw()
   })
 
-  it.skip('will put multiple advanced players on a team if needed', function () {
+  it('will put multiple advanced players on a team if needed', function () {
     // TODO: make this pass
     const pool = {
       votes: [
