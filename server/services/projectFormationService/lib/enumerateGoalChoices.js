@@ -11,7 +11,7 @@ import {
   getTotalAdvancedPlayerMaxTeams,
 } from './pool'
 
-import {range} from './util'
+import {range, sum} from './util'
 
 export default function enumerateGoalChoices(pool, teamFormationPlan = {}, shouldPrune, appraiser = new ObjectiveAppraiser(pool)) {
   const teamSizesByGoal = getTeamSizesByGoal(pool)
@@ -129,11 +129,13 @@ function * goalChoiceGenerator(teamFormationPlan, {goalAndSizeOptions, pool, adv
 
     const currentTeams = currentNode.teams
     const currentTeamsNeedingAdvancedPlayers = currentTeams.filter(team => needsAdvancedPlayer(team.goalDescriptor, pool))
-    const currentSeatCount = currentTeams.reduce((sum, team) => sum + team.teamSize, 0)
+    const currentSeatCount = sum(currentTeams.map(_ => _.teamSize))
     for (const extraSeatCount of extraSeatScenarios) {
       const seatCountIsValid = currentSeatCount === (poolSize + extraSeatCount)
       const expectedAdvancedPlayerSeatCount = advancedPlayerCount + extraSeatCount
-      const teamCountIsValid = currentTeamsNeedingAdvancedPlayers.length === expectedAdvancedPlayerSeatCount
+      const teamCountIsValid = extraSeatCount > 0 ?
+        currentTeamsNeedingAdvancedPlayers.length === expectedAdvancedPlayerSeatCount :
+        currentTeamsNeedingAdvancedPlayers.length <= advancedPlayerCount
 
       if (seatCountIsValid && teamCountIsValid) {
         yield {...currentNode, seatCount: currentSeatCount}
