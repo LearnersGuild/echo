@@ -4,10 +4,10 @@ import {findPlayersByIds} from 'src/server/db/player'
 import {findVotesForCycle} from 'src/server/db/vote'
 import {insertProjects, findProjects} from 'src/server/db/project'
 import {toArray, mapById, sum, flatten} from 'src/server/util'
-import logger from 'src/server/util/logger'
 import {getTeamFormationPlan} from 'src/server/services/projectFormationService'
 import getLatestFeedbackStats from 'src/server/actions/getLatestFeedbackStats'
 import generateProject from 'src/server/actions/generateProject'
+import splitPoolByLevels from 'src/server/actions/splitPoolByLevels'
 
 export async function formProjectsIfNoneExist(cycleId) {
   const projectsCount = await findProjects({cycleId}).count()
@@ -32,47 +32,11 @@ export async function buildProjects(cycleId) {
   //   {seatCount, teams: [{playerIds, goalDescriptor, teamSize}]},
   //   {seatCount, teams: [{playerIds, goalDescriptor, teamSize}]},
   // ]
-  const pools = await _splitPool(votingPool)
+  const pools = await splitPoolByLevels(votingPool)
   const plans = pools.map(getTeamFormationPlan)
   const teamFormationPlan = _mergePlans(plans)
 
   return _teamFormationPlanToProjects(cycle, votingPool, teamFormationPlan)
-}
-
-async function _splitPool(pool) {
-  const pools = [{}, {}, {}]
-
-  const voteCount = pool.votes.length
-  const votesPerPool = Math.ceil(voteCount / 3)
-  const votesSortedByElo = await _sortVotesByElo(pool.votes)
-  pools[0].votes = votesSortedByElo.slice(0, votesPerPool)
-  pools[1].votes = votesSortedByElo.slice(votesPerPool, votesPerPool * 2)
-  pools[2].votes = votesSortedByElo.slice(votesPerPool * 2)
-
-  pools.forEach((p, i) => {
-    const poolGoalDescriptors = p.votes.reduce((result, vote) => {
-      vote.votes.forEach(goal => result.add(goal))
-      return result
-    }, new Set())
-    p.goals = pool.goals.filter(_ => poolGoalDescriptors.has(_.goalDescriptor))
-
-    const poolPlayers = p.votes.reduce((result, vote) => {
-      result.add(vote.playerId)
-      return result
-    }, new Set())
-    logger.log(`Pool ${i}:`, poolPlayers)
-
-    p.playerFeedback = pool.playerFeedback
-  })
-
-  return pools
-}
-
-async function _sortVotesByElo(votes) {
-  const players = await findPlayersByIds(votes.map(_ => _.playerId))
-  const playersById = mapById(players)
-  const getElo = vote => _playerElo(playersById.get(vote.playerId))
-  return votes.slice().sort((a, b) => getElo(a) - getElo(b))
 }
 
 function _mergePlans(plans) {
@@ -169,8 +133,4 @@ function _mapVotesByPlayerId(votes) {
     })
     return result
   }, new Map())
-}
-
-function _playerElo(player) {
-  return parseInt(((player.stats || {}).elo || {}).rating, 10) || 0
 }
