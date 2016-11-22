@@ -16,22 +16,22 @@ describe(testContext(__filename), function () {
   describe('formProjects()', function () {
     context('all goals equally popular', function () {
       _itFormsProjectsAsExpected({
-        players: 15,
-        votes: {distribution: [5, 5, 5]},
+        players: 6,
+        votes: {distribution: [3, 3]},
       })
     })
 
     context('one goal gets all votes', function () {
       _itFormsProjectsAsExpected({
-        players: 15,
-        votes: {distribution: [15]},
+        players: 6,
+        votes: {distribution: [6]},
       })
     })
 
     context('every goal gets one vote', function () {
       _itFormsProjectsAsExpected({
-        players: 15,
-        votes: {distribution: [...repeat(15, 1)]},
+        players: 6,
+        votes: {distribution: [...repeat(6, 1)]},
       })
     })
   })
@@ -41,8 +41,8 @@ describe(testContext(__filename), function () {
 
     it('creates projects only once for a given cycle', async function () {
       const {cycle} = await _generateTestData({
-        players: 15,
-        votes: {distribution: [15]},
+        players: 6,
+        votes: {distribution: [6]},
       })
       await formProjectsIfNoneExist(cycle.id)
       const findFilter = {cycleId: cycle.id}
@@ -81,17 +81,18 @@ function _itFormsProjectsAsExpected(options) {
 
 async function _generateTestData(options = {}) {
   const cycle = await factory.create('cycle', {state: GOAL_SELECTION})
+  const pool = await factory.create('pool', {cycleId: cycle.id})
   const players = await factory.createMany('player', {chapterId: cycle.chapterId}, options.players)
-  const votes = await _generateVotes(cycle.id, players, options.votes)
+  const votes = await _generateVotes(pool.id, players, options.votes)
 
   return {cycle, players, votes}
 }
 
-function _generateVotes(cycleId, players, options) {
+function _generateVotes(poolId, players, options) {
   const voteData = _createGoalVotes(options)
 
   const votes = voteData.map((goalIds, i) => ({
-    cycleId,
+    poolId,
     playerId: players[i].id,
     goals: goalIds.map(goalId => ({
       url: `http://ex.co/${goalId}`,

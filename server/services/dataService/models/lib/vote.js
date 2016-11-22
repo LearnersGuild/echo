@@ -35,7 +35,7 @@ export default {
       .default(new Date()),
   },
   associate: (Vote, models) => {
-    Vote.belongsTo(models.Cycle, 'cycle', 'cycleId', 'id', {init: false})
+    Vote.belongsTo(models.Pool, 'pool', 'poolId', 'id', {init: false})
     Vote.belongsTo(models.Player, 'player', 'playerId', 'id', {init: false})
   },
 }

@@ -7,6 +7,7 @@ import {GOAL_SELECTION} from 'src/common/models/cycle'
 import {getPlayerById} from 'src/server/db/player'
 import {saveVote} from 'src/server/db/vote'
 import {getCyclesInStateForChapter} from 'src/server/db/cycle'
+import {getPoolByCycleIdAndPlayerId} from 'src/server/db/pool'
 import {handleError} from 'src/server/graphql/models/util'
 import {Vote} from './schema'
 
@@ -41,11 +42,12 @@ export default {
         }
 
         const cycle = cycles[0]
+        const pool = await getPoolByCycleIdAndPlayerId(cycle.id, player.id)
 
         // see if the player has already voted to determine whether to insert
         // or update
         const playerVotes = await r.table('votes')
-          .getAll([player.id, cycle.id], {index: 'playerIdAndCycleId'})
+          .getAll([player.id, pool.id], {index: 'playerIdAndPoolId'})
           .run()
 
         const playerVote = playerVotes.length > 0 ?
@@ -54,7 +56,7 @@ export default {
             pendingValidation: true,
           }) : {
             playerId: player.id,
-            cycleId: cycle.id,
+            poolId: pool.id,
             notYetValidatedGoalDescriptors: goalDescriptors,
             pendingValidation: true,
           }
@@ -64,7 +66,7 @@ export default {
         if (result.replaced || result.inserted) {
           const returnedVote = Object.assign({}, result.changes[0].new_val, {player, cycle})
           delete returnedVote.playerId
-          delete returnedVote.cycleId
+          delete returnedVote.poolId
           return returnedVote
         }
         throw new GraphQLError('Could not save vote.')

@@ -26,7 +26,7 @@ export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASE_URL
     return fetch(`${baseUrl}/graphql`, options)
       .then(resp => {
         if (!resp.ok) {
-          console.error('GraphQL ERROR:', resp.statusText)
+          resp.text().then(txt => console.error('GraphQL ERROR:', resp.statusText, txt))
           if (throwErrors) {
             throw new Error(`GraphQL ERROR: ${resp.statusText}`)
           }

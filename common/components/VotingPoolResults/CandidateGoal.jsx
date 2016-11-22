@@ -25,7 +25,7 @@ function rank(num) {
 export default class CandidateGoal extends Component {
   renderAvatar(currentUser, wasVotedOnByCurrentUser) {
     return wasVotedOnByCurrentUser ? (
-      <Avatar className={styles.avatar}>
+      <Avatar key="avatar" className={styles.avatar}>
         <img src={getAvatarImageURL(currentUser, 40)}/>
       </Avatar>
     ) : (

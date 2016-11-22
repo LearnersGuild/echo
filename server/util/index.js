@@ -78,13 +78,6 @@ export function unique(array) {
   return Array.from(new Set(array))
 }
 
-export function flatten(potentialArray) {
-  if (!Array.isArray(potentialArray)) {
-    return potentialArray
-  }
-  return potentialArray.reduce((result, next) => result.concat(flatten(next)), [])
-}
-
 export function range(start, length) {
   return Array.from(Array(length), (x, i) => i + start)
 }
@@ -117,6 +110,24 @@ export const factorial = (function () {
     return f[n]
   }
 })()
+
+export function sortByAttr(list, attr) {
+  return list.sort(attrCompareFn(attr))
+}
+
+export function attrCompareFn(attr) {
+  return (a, b) => {
+    if (a[attr] < b[attr]) {
+      return -1
+    }
+
+    if (a[attr] > b[attr]) {
+      return 1
+    }
+
+    return 0
+  }
+}
 
 export function shuffle(array) {
   const result = toArray(array)

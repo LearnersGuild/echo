@@ -1,15 +1,16 @@
-import {graphql} from 'graphql'
+import Promise from 'bluebird'
 
 import {connect} from 'src/db'
 import {processJobs} from 'src/server/util/queue'
 import {getSocket} from 'src/server/util/socket'
 import {getCycleById} from 'src/server/db/cycle'
+import {getChapterById} from 'src/server/db/chapter'
+import {getPoolById} from 'src/server/db/pool'
 import fetchGoalInfo from 'src/server/actions/fetchGoalInfo'
 import getCycleVotingResults from 'src/server/actions/getCycleVotingResults'
-import rootSchema from 'src/server/graphql/rootSchema'
 
 const PREFIX_NOTIFY_USER = 'notifyUser-'
-const PREFIX_CYCLE_NOTING_RESULTS = 'cycleVotingResults-'
+const PREFIX_CYCLE_VOTING_RESULTS = 'cycleVotingResults-'
 
 const r = connect()
 
@@ -30,28 +31,14 @@ async function processVote(vote) {
   await pushCandidateGoalsForCycle(validatedVote)
 }
 
-function fetchGoalsInfo(vote) {
-  // get the cycle (which has a nested chapter) so that we have access to
-  // the goalRepositoryURL, pass in that goalRepositoryURL to fetchGoalInfo
-  const query = `
-query($id: ID!) {
-  getCycleById(id: $id) {
-    id
-    chapter {
-      goalRepositoryURL
-    }
-  }
-}
-  `
-  const args = {id: vote.cycleId}
-
-  return graphql(rootSchema, query, {currentUser: true}, args)
-    .then(graphQLResult => {
-      const {goalRepositoryURL} = graphQLResult.data.getCycleById.chapter
-      const promises = vote.notYetValidatedGoalDescriptors
-        .map(goalDescriptor => fetchGoalInfo(goalRepositoryURL, goalDescriptor))
-      return Promise.all(promises)
-    })
+async function fetchGoalsInfo(vote) {
+  const poolExpr = getPoolById(vote.poolId)
+  const cycleExpr = getCycleById(poolExpr('cycleId'))
+  const chapterExpr = getChapterById(cycleExpr('chapterId'))
+  const goalRepositoryURL = await chapterExpr('goalRepositoryURL')
+  return Promise.map(vote.notYetValidatedGoalDescriptors,
+    goalDescriptor => fetchGoalInfo(goalRepositoryURL, goalDescriptor)
+  )
 }
 
 function formatGoals(prefix, goals) {
@@ -89,13 +76,10 @@ function updateVote(vote) {
     .run()
 }
 
-function pushCandidateGoalsForCycle(vote) {
-  return getCycleById(vote.cycleId)
-    .then(cycle => {
-      return getCycleVotingResults(cycle.chapterId, cycle.id)
-    })
-    .then(cycleVotingResults => {
-      const socket = getSocket()
-      return socket.publish(`${PREFIX_CYCLE_NOTING_RESULTS}${vote.cycleId}`, cycleVotingResults)
-    })
+async function pushCandidateGoalsForCycle(vote) {
+  const pool = await getPoolById(vote.poolId)
+  const cycle = await getCycleById(pool.cycleId)
+  const cycleVotingResults = await getCycleVotingResults(cycle.chapterId, cycle.id)
+  const socket = getSocket()
+  return socket.publish(`${PREFIX_CYCLE_VOTING_RESULTS}${cycle.id}`, cycleVotingResults)
 }

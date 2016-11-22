@@ -20,6 +20,10 @@
   color: #757575;
 }
 
+.votingPoolResults {
+  display: block
+}
+
 .userGrid * {
   /*
    * make sure that, as the goals are animated to slide-down, they do so

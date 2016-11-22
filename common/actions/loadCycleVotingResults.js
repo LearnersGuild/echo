@@ -1,6 +1,9 @@
 import {normalize, Schema} from 'normalizr'
 
-import {getGraphQLFetcher, getPlayerIdsFromCandidateGoals} from 'src/common/util'
+import {
+  flatten,
+  getGraphQLFetcher,
+} from 'src/common/util'
 import loadUsers from './loadUsers'
 
 export const LOAD_CYCLE_VOTING_RESULTS_REQUEST = 'LOAD_CYCLE_VOTING_RESULTS_REQUEST'
@@ -49,16 +52,23 @@ query {
         cycleEpoch
       }
     }
-    numEligiblePlayers
-    numVotes
-    candidateGoals {
-  		goal {
-  			url
-        title
+    pools {
+      id
+      name
+      voterPlayerIds
+      users {
+        id
       }
-      playerGoalRanks {
-        playerId
-        goalRank
+      votingIsStillOpen
+      candidateGoals {
+        goal {
+          url
+          title
+        }
+        playerGoalRanks {
+          playerId
+          goalRank
+        }
       }
     }
   }
@@ -76,16 +86,26 @@ query {
 
 function loadUsersForCycleVotingResults(dispatch, getState) {
   return () => {
-    const {cycleVotingResults} = getState().cycleVotingResults.cycleVotingResults
-    const playerIds = getPlayerIdsFromCandidateGoals(cycleVotingResults.candidateGoals)
-    return dispatch(loadUsers(playerIds))
+    // we'll only load users from IDM that haven't already been loaded, because
+    // it's unlikely that their names, handles, and avatars have changed since
+    // the last load, and those are the attributes we use in the voting results
+    const {
+      cycleVotingResults: {cycleVotingResults: {CURRENT: cycleVotingResults}},
+      users: {users},
+    } = getState()
+    const playerIds = flatten(cycleVotingResults.pools.map(_ => _.users.map(_ => _.id)))
+    const userIdsToLoad = playerIds.filter(playerId => !users[playerId])
+    if (userIdsToLoad.length === 0) {
+      return
+    }
+    return dispatch(loadUsers(userIdsToLoad))
   }
 }
 
 export function receivedCycleVotingResults(cycleVotingResults) {
   return (dispatch, getState) => {
-    return dispatch(receivedCycleVotingResultsWithoutLoadingUsers(cycleVotingResults))
-      .then(loadUsersForCycleVotingResults(dispatch, getState))
+    dispatch(receivedCycleVotingResultsWithoutLoadingUsers(cycleVotingResults))
+    return loadUsersForCycleVotingResults(dispatch, getState)()
   }
 }
 

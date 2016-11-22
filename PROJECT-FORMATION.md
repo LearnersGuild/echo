@@ -16,30 +16,17 @@ Here are the steps:
 
 ### Loading Production Data
 
-First things first, you need to download a recent backup (from compose.io) for both the [`idm_production`][idm-backups] and [`game_production`][game-backups] databases.
+You can use the [resyncdb script](https://github.com/LearnersGuild/bin/blob/master/resyncdb) to get a copy of the production data locally.
 
-First make sure you have the Python RethinkDB drivers installed:
-
-```
-$ sudo pip install rethinkdb
-```
-
-Once you've downloaded the files, you'll need to extract (read: `tar xvf`) them into a folder on your local machine, and then import the directory, e.g.:
-
-```
-# idm
-$ tar xvf lg-idm_YYYY-MM-DD_HH-MM-SS_utc_daily.tar
-$ rethinkdb import -d rethinkdb_dump_YYYY-MM-DDTHH:MM:SS
-
-# game
-$ tar xvf lg-game_YYYY-MM-DD_HH-MM-SS_utc_daily.tar
-$ rethinkdb import -d rethinkdb_dump_YYYY-MM-DDTHH:MM:SS
+```bash
+./resyncdb -v lg-game game_prod_copy
+./resyncdb -v lg-idm idm_prod_copy
 ```
 
 
 ### (Re-)start Your Services and Workers
 
-After you've modified your idm `.env.development` RETHINKDB_URL with `idm_production`:
+After you've modified your idm `.env.development` RETHINKDB_URL with `idm_prod_copy`:
 
 ```
 # idm
@@ -47,7 +34,7 @@ $ cd ~/dev/learnersguild/idm
 $ npm start
 ```
 
-After you've modified your game `.env.development` RETHINKDB_URL with `game_production`:
+After you've modified your game `.env.development` RETHINKDB_URL with `game_prod_copy`:
 
 ```
 # game
@@ -67,21 +54,25 @@ $ npm run workers:cycleLaunched
 First, you need to determine _which_ recent cycle from the production data you'd like to use. **You need to choose a cycle that has a full set of associated player votes with it.** You can get a sense of which cycle might be good to use for testing with something like the following query:
 
 ```
-r.db('game_production')
+r.db('game_prod_copy')
   .table('cycles')
   .orderBy(r.desc('cycleNumber'))
   .map(row => ({
     cycleId: row('id'),
     chapterId: row('chapterId'),
     cycleNumber: row('cycleNumber'),
-    numVotes: r.db('game_production').table('votes')
-      .filter({cycleId: row('id')})
+    numVotes: r.db('game_prod_copy').table('votes')
+      .filter(
+        vote => r.db('game_prod_copy').table('pools').get(vote('poolId'))('cycleId').eq(row('id'))
+      )
       .count(),
-    voteTimestampCutoff: r.db('game_production').table('votes')
-      .filter({cycleId: row('id')})
+    voteTimestampCutoff: r.db('game_prod_copy').table('votes')
+      .eqJoin('poolId', r.db('game_prod_copy').table('pools'))
+      .filter(join => join('right')('cycleId').eq(row('id')))
+      .map(row => row('left'))
       .orderBy(r.desc('updatedAt'))
       .nth(0)('updatedAt')
-	}))
+        }))
 ```
 
 #### Delete Irrelevant Cycles and Votes
@@ -91,7 +82,7 @@ Now you should delete any newer cycles and any votes associated with the newer c
 ##### Cycles
 
 ```
-r.db('game_production')
+r.db('game_prod_copy')
   .table('cycles')
   .filter(row => row('cycleNumber').gt(<CYCLE_NUMBER_FOR_TESTING>))
   .delete()
@@ -100,7 +91,7 @@ r.db('game_production')
 ##### Votes
 
 ```
-r.db('game_production')
+r.db('game_prod_copy')
   .table('votes')
   .filter(row => row('createdAt').gt(<VOTE_TIMESTAMP_CUTOFF_FROM_PREVIOUS_QUERY>))
   .delete()
@@ -111,13 +102,13 @@ r.db('game_production')
 Now you need to prepare the current cycle by putting it into the `GOAL_SELECTION` state and deleting any previously-created projects associated with it:
 
 ```
-r.db('game_production').table('cycles')
+r.db('game_prod_copy').table('cycles')
   .filter({chapterId: '<CHAPTER_ID_FOR_TEST_CYCLE>'})
   .filter(p => p('cycleNumber').eq(<CYCLE_NUMBER_FOR_TESTING>)).nth(0)
   .do(cycle => r.and(
-    r.db('game_production').table('cycles').get(cycle('id')).update({state: 'GOAL_SELECTION'})
+    r.db('game_prod_copy').table('cycles').get(cycle('id')).update({state: 'GOAL_SELECTION'})
     ,
-    r.db('game_production').table('projects')
+    r.db('game_prod_copy').table('projects')
       .filter({chapterId: '<CHAPTER_ID_FOR_TEST_CYCLE>'})
       .filter(p => p('cycleId').eq(cycle('id'))
   )
@@ -130,7 +121,7 @@ r.db('game_production').table('cycles')
 First, you'll need to find your user ID from the IDM database:
 
 ```
-r.db('idm_production')
+r.db('idm_prod_copy')
   .table('users')
   .filter({handle: 'jeffreywescott'})
 	.pluck('id', 'handle', 'name')
@@ -141,7 +132,7 @@ Then, you need to ensure that there is a row in both the `players` and `moderato
 ##### Player
 
 ```
-r.db('game_production')
+r.db('game_prod_copy')
   .table('players')
   .get('<YOUR_USER_ID_FROM_IDM>')
   .replace(row => row.without('chapterId').merge({chapterId: '<CHAPTER_ID_FOR_TEST_CYCLE>'}))
@@ -150,7 +141,7 @@ r.db('game_production')
 ##### Moderator
 
 ```
-r.db('game_production')
+r.db('game_prod_copy')
   .table('moderators')
   .get('<YOUR_USER_ID_FROM_IDM>')
   .replace(row => row.without('chapterId').merge({chapterId: '<CHAPTER_ID_FOR_TEST_CYCLE>'}))

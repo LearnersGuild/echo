@@ -4,6 +4,7 @@
 import {connect} from 'src/db'
 import factory from 'src/test/factories'
 import {withDBCleanup, runGraphQLMutation} from 'src/test/helpers'
+import {addPlayerIdsToPool} from 'src/server/db/pool'
 import fields from 'src/server/graphql/models/Vote/mutation'
 
 const r = connect()
@@ -15,7 +16,9 @@ describe(testContext(__filename), function () {
     beforeEach(async function () {
       this.chapter = await factory.create('chapter')
       this.cycle = await factory.create('cycle', {chapterId: this.chapter.id, state: 'GOAL_SELECTION'})
+      this.pool = await factory.create('pool', {cycleId: this.cycle.id})
       this.player = await factory.create('player', {chapterId: this.chapter.id})
+      await addPlayerIdsToPool(this.pool.id, [this.player.id])
 
       this.voteGoals = [
         '1',
@@ -43,7 +46,7 @@ describe(testContext(__filename), function () {
       return r.table('votes').limit(1).run().then(votes => {
         const vote = votes[0]
 
-        expect(vote.cycleId).to.equal(this.cycle.id)
+        expect(vote.poolId).to.equal(this.pool.id)
         expect(vote.playerId).to.equal(this.player.id)
         expect(vote.notYetValidatedGoalDescriptors).to.deep.equal(this.voteGoals)
       })
@@ -71,7 +74,7 @@ describe(testContext(__filename), function () {
       beforeEach(async function () {
         this.initialVote = await factory.create('vote', {
           playerId: this.player.id,
-          cycleId: this.cycle.id,
+          poolId: this.pool.id,
         })
       })
 

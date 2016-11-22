@@ -1,4 +1,4 @@
-import {GraphQLString, GraphQLInt, GraphQLNonNull, GraphQLID} from 'graphql'
+import {GraphQLString, GraphQLInt, GraphQLNonNull, GraphQLID, GraphQLBoolean} from 'graphql'
 import {GraphQLObjectType, GraphQLList} from 'graphql/type'
 import {GraphQLDateTime, GraphQLURL} from 'graphql-custom-types'
 
@@ -45,14 +45,25 @@ export const CandidateGoal = new GraphQLObjectType({
   })
 })
 
+export const VotingPoolResults = new GraphQLObjectType({
+  name: 'VotingPoolResults',
+  description: 'Results on goal voting for a pool',
+  fields: () => ({
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The pool id'},
+    name: {type: new GraphQLNonNull(GraphQLString), description: 'The pool name'},
+    candidateGoals: {type: new GraphQLList(CandidateGoal), description: 'The candidate goals for the given pool'},
+    users: {type: new GraphQLList(User), description: 'A list of all players in this pool'},
+    voterPlayerIds: {type: new GraphQLList(GraphQLID), description: 'The playerId os all players who have voted in this pool'},
+    votingIsStillOpen: {type: GraphQLBoolean, description: 'True is votes are still being accepted for this pool'},
+  })
+})
+
 export const CycleVotingResults = new GraphQLObjectType({
   name: 'CycleVotingResults',
   description: 'Results on goal voting for a given cycle',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLString), description: 'The voting results id'},
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The id for these results, currently just the string CURRENT'},
     cycle: {type: Cycle, description: 'The cycle'},
-    numEligiblePlayers: {type: new GraphQLNonNull(GraphQLInt), description: 'The number of players who are eligible to vote'},
-    numVotes: {type: new GraphQLNonNull(GraphQLInt), description: 'The number of players who have voted'},
-    candidateGoals: {type: new GraphQLList(CandidateGoal), description: 'The candidate goals for the given cycle'},
+    pools: {type: new GraphQLList(VotingPoolResults), description: 'The voting results for each pool in the given cycle'},
   })
 })

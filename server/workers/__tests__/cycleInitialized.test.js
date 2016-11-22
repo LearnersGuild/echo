@@ -3,6 +3,7 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import factory from 'src/test/factories'
 import {withDBCleanup} from 'src/test/helpers'
+import {findPoolsByCycleId} from 'src/server/db/pool'
 
 import {
   processNewCycle,
@@ -37,6 +38,18 @@ describe(testContext(__filename), function () {
           expect(msg).to.match(/Voting is now open for cycle 2/)
           expect(msg).to.match(/goal library.*https:\/\/example\.com.*vote --help/)
         })
+      })
+
+      it('will not recreate pools if they already exist', async function () {
+        const poolCountExpr = findPoolsByCycleId(this.cycle.id).count()
+
+        await processNewCycle(this.cycle, this.chatClientStub)
+        const poolCountAfterFirstRun = await poolCountExpr
+
+        await processNewCycle(this.cycle, this.chatClientStub)
+        const poolCountAfterSecondRun = await poolCountExpr
+
+        expect(poolCountAfterSecondRun).to.eq(poolCountAfterFirstRun)
       })
     })
   })

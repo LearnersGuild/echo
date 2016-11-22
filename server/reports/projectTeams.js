@@ -1,4 +1,6 @@
 import {connect} from 'src/db'
+import {findVotesForCycle} from 'src/server/db/vote'
+import {getPoolByCycleIdAndPlayerId} from 'src/server/db/pool'
 import {lookupChapterId, lookupCycleId, writeCSV, getPlayerInfoByIds, parseCycleReportArgs} from './util'
 
 const r = connect()
@@ -25,13 +27,8 @@ async function runReport(args) {
       .filter(row => row('cycleId').eq(cycleId))
       .concatMap(row => row('playerIds')
           .map(id => getInfo(id))
-          .merge(row => {
-            const stats = r.table('players').get(row('id'))('stats').default({elo: {rating: 0}})
-            return {
-              elo: stats('elo')('rating'),
-              xp: stats('xp').default(0),
-            }
-          })
+          .merge(_mergeStats)
+          .merge(_mergePoolName(cycleId))
           .merge({
             cycleNumber,
             projectName: row('projectName'),
@@ -41,7 +38,7 @@ async function runReport(args) {
           })
       )
       .merge(row => {
-        const goals = r.table('votes').filter({playerId: row('id'), cycleId}).nth(0).default({goals: [{url: ''}, {url: ''}]})('goals')
+        const goals = findVotesForCycle(cycleId, {playerId: row('id')}).nth(0).default({goals: [{url: ''}, {url: ''}]})('goals')
         return {
           firstVote: goals.nth(0)('url').split('/').nth(-1),
           secondVote: goals.nth(1)('url').split('/').nth(-1),
@@ -59,4 +56,18 @@ async function runReport(args) {
   })
 
   return await query
+}
+
+function _mergePoolName(cycleId) {
+  return row => ({
+    poolName: getPoolByCycleIdAndPlayerId(cycleId, row('id'))('name')
+  })
+}
+
+function _mergeStats(row) {
+  const stats = r.table('players').get(row('id'))('stats').default({elo: {rating: 0}})
+  return {
+    elo: stats('elo')('rating'),
+    xp: stats('xp').default(0),
+  }
 }

@@ -17,6 +17,7 @@ describe(testContext(__filename), function () {
           chapterId: this.chapter.id,
           cycleNumber: 3,
         })
+        this.pool = await factory.create('pool', {cycleId: this.cycle.id})
       })
 
       it('begins the process but throws an error when no votes have been submitted', function () {

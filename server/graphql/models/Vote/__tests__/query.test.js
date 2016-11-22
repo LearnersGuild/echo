@@ -1,21 +1,35 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
+import Promise from 'bluebird'
 import factory from 'src/test/factories'
 import {withDBCleanup, runGraphQLQuery} from 'src/test/helpers'
+import {addPlayerIdsToPool} from 'src/server/db/pool'
 import fields from 'src/server/graphql/models/Vote/query'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
 
   describe('getCycleVotingResults', function () {
-    beforeEach('set up users', async function () {
-      this.currentUser = await factory.build('user')
+    beforeEach(async function () {
       this.chapter = await factory.create('chapter')
       this.cycle = await factory.create('cycle', {chapterId: this.chapter.id})
-      this.player = await factory.create('player', {id: this.currentUser.id})
+      this.pools = await factory.createMany('pool', {cycleId: this.cycle.id}, 2)
+
+      this.poolVoters = this.pools.map(_ => [])
+      this.poolPlayers = []
+      this.players = []
+      /* eslint-disable babel/no-await-in-loop */
+      for (const pool of this.pools) {
+        const players = await factory.createMany('player', {chapterId: this.chapter.id}, 3)
+        await addPlayerIdsToPool(pool.id, players.map(_ => _.id))
+        this.poolPlayers.push(players)
+        this.players.push(...players)
+      }
+      /* eslint-enable babel/no-await-in-loop */
+
+      this.currentUser = await factory.build('user', {id: this.players[0].id})
       this.moderator = await factory.create('moderator', {id: this.currentUser.id})
-      this.eligiblePlayers = await factory.createMany('player', {chapterId: this.chapter.id}, 3)
     })
 
     const getCycleVotingResults = function (currentUser = this.currentUser) {
@@ -24,13 +38,21 @@ describe(testContext(__filename), function () {
           getCycleVotingResults(
             cycleId: $cycleId
           )
-          { id,
-            cycle {id},
-            numEligiblePlayers,
-            numVotes,
-            candidateGoals {
-              goal {url},
-              playerGoalRanks { playerId, goalRank }
+          {
+            cycle {
+              id,
+              state
+            },
+            pools {
+              id,
+              name,
+              users { id },
+              voterPlayerIds,
+              candidateGoals {
+                goal {url},
+                playerGoalRanks { playerId, goalRank }
+              },
+              votingIsStillOpen,
             }
           }
         }`,
@@ -41,42 +63,63 @@ describe(testContext(__filename), function () {
     }
 
     describe('when there are votes', function () {
-      const firstPlaceGoalNumber = 1
-      const secondPlaceGoalNumber = 2
-      const thirdPlaceGoalNumber = 3
-
-      const goalNumberVotes = [
-        [firstPlaceGoalNumber, secondPlaceGoalNumber],
-        [firstPlaceGoalNumber, secondPlaceGoalNumber],
-        [firstPlaceGoalNumber, thirdPlaceGoalNumber],
+      const voteDataForPools = [
+        {
+          firstPlaceGoalNumber: 1,
+          secondPlaceGoalNumber: 2,
+          thirdPlaceGoalNumber: 3,
+          goalNumberVotes: [
+            [1, 2],
+            [1, 2],
+            [1, 3],
+          ]
+        },
+        {
+          firstPlaceGoalNumber: 101,
+          secondPlaceGoalNumber: 102,
+          thirdPlaceGoalNumber: 103,
+          goalNumberVotes: [
+            [101, 102],
+            [101, 102],
+            [101, 103],
+          ]
+        }
       ]
 
       beforeEach('create some votes', async function () {
-        this.votes = await Promise.all(
-          goalNumberVotes.map(([goal1, goal2], i) => {
+        await Promise.map(this.pools, async (pool, i) => {
+          await Promise.map(this.poolPlayers[i], (player, j) => {
+            const [goal1, goal2] = voteDataForPools[i].goalNumberVotes[j]
             return factory.create('vote', {
-              playerId: this.eligiblePlayers[i].id,
-              cycleId: this.cycle.id,
+              playerId: player.id,
+              poolId: pool.id,
               goals: [
                 {url: `${this.chapter.goalRepositoryURL}/issues/${goal1}`},
                 {url: `${this.chapter.goalRepositoryURL}/issues/${goal2}`},
               ],
             })
           })
-        )
+          this.poolVoters[i] = this.poolPlayers[i].slice()
+        })
       })
 
       const assertValidCycleVotingResults = function (result) {
         const response = result.data.getCycleVotingResults
-        expect(response.numEligiblePlayers).to.equal(this.eligiblePlayers.length)
-        expect(response.numVotes).to.equal(3)
         expect(response.cycle.id).to.equal(this.cycle.id)
-        expect(response.candidateGoals[0].goal.url.endsWith(`/${firstPlaceGoalNumber}`)).to.be.true
-        expect(response.candidateGoals[1].goal.url.endsWith(`/${secondPlaceGoalNumber}`)).to.be.true
-        expect(response.candidateGoals[2].goal.url.endsWith(`/${thirdPlaceGoalNumber}`)).to.be.true
-        expect(response.candidateGoals[0].playerGoalRanks.length).to.equal(3)
-        expect(response.candidateGoals[1].playerGoalRanks.length).to.equal(2)
-        expect(response.candidateGoals[2].playerGoalRanks.length).to.equal(1)
+        expect(response.cycle.state).to.equal(this.cycle.state)
+        this.pools.forEach((pool, i) => {
+          const responsePool = response.pools.find(({name}) => name === pool.name)
+          expect(responsePool.name).to.equal(pool.name)
+          expect(responsePool.votingIsStillOpen).to.be.true
+          expect(responsePool.users.map(_ => _.id).sort(), 'players').to.deep.equal(this.poolPlayers[i].map(_ => _.id).sort())
+          expect(responsePool.voterPlayerIds.sort(), 'voterPlayerIds').to.deep.equal(this.poolVoters[i].map(_ => _.id).sort())
+          expect(responsePool.candidateGoals[0].goal.url).to.match(new RegExp(`/${voteDataForPools[i].firstPlaceGoalNumber}$`))
+          expect(responsePool.candidateGoals[1].goal.url).to.match(new RegExp(`/${voteDataForPools[i].secondPlaceGoalNumber}$`))
+          expect(responsePool.candidateGoals[2].goal.url).to.match(new RegExp(`/${voteDataForPools[i].thirdPlaceGoalNumber}$`))
+          expect(responsePool.candidateGoals[0].playerGoalRanks.length).to.equal(3)
+          expect(responsePool.candidateGoals[1].playerGoalRanks.length).to.equal(2)
+          expect(responsePool.candidateGoals[2].playerGoalRanks.length).to.equal(1)
+        })
       }
 
       it('returns results', function () {
@@ -98,15 +141,13 @@ describe(testContext(__filename), function () {
       })
 
       describe('when there are votes that never validated', function () {
-        beforeEach('create an invalid vote', function () {
-          return factory.create('player', {chapterId: this.chapter.id})
-            .then(eligiblePlayer => {
-              this.eligiblePlayers.push(eligiblePlayer)
-              factory.create('invalid vote', {
-                playerId: eligiblePlayer.id,
-                cycleId: this.cycle.id,
-              })
-            })
+        beforeEach('create an invalid vote', async function () {
+          const poolId = this.pools[0].id
+          const player = await factory.create('player', {chapterId: this.chapter.id})
+          this.poolPlayers[0].push(player)
+          this.players.push(player)
+          await addPlayerIdsToPool(poolId, [player.id])
+          await factory.create('invalid vote', {playerId: player.id, poolId})
         })
 
         it('ignores pending votes', function () {
@@ -119,14 +160,15 @@ describe(testContext(__filename), function () {
         beforeEach('create some ineligible votes', async function () {
           const chapter = await factory.create('chapter')
           const cycle = await factory.create('cycle', {chapterId: chapter.id})
+          const pool = await factory.create('pool', {cycleId: cycle.id})
           const player = await factory.create('player', {chapterId: chapter.id})
 
           await factory.create('vote', {
             playerId: player.id,
-            cycleId: cycle.id,
+            poolId: pool.id,
             goals: [
-              {url: `${this.chapter.goalRepositoryURL}/issues/${thirdPlaceGoalNumber}`},
-              {url: `${this.chapter.goalRepositoryURL}/issues/${secondPlaceGoalNumber}`},
+              {url: `${this.chapter.goalRepositoryURL}/issues/98`},
+              {url: `${this.chapter.goalRepositoryURL}/issues/99`},
             ],
           })
         })

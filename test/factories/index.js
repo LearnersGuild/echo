@@ -10,6 +10,7 @@ import voteFactoryDefine from './vote'
 import projectFactoryDefine from './project'
 import surveyFactoryDefine from './survey'
 import surveyBlueprintFactoryDefine from './surveyBlueprint'
+import poolFactoryDefine from './pool'
 import statFactoryDefine from './stat'
 import questionFactoryDefine from './question'
 import responseFactoryDefine from './response'
@@ -28,6 +29,7 @@ voteFactoryDefine(factory)
 projectFactoryDefine(factory)
 surveyFactoryDefine(factory)
 surveyBlueprintFactoryDefine(factory)
+poolFactoryDefine(factory)
 statFactoryDefine(factory)
 questionFactoryDefine(factory)
 responseFactoryDefine(factory)

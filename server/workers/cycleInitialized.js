@@ -1,6 +1,8 @@
 import {connect} from 'src/db'
 import ChatClient from 'src/server/clients/ChatClient'
 import {processJobs} from 'src/server/util/queue'
+import {findPoolsByCycleId} from 'src/server/db/pool'
+import createPoolsForCycle from 'src/server/actions/createPoolsForCycle'
 
 const r = connect()
 
@@ -10,7 +12,15 @@ export function start() {
 
 export async function processNewCycle(cycle, chatClient = new ChatClient()) {
   console.log(`Initializing cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
+  await ensurePoolsForCycle(cycle)
   await sendVotingAnnouncement(cycle, chatClient)
+}
+
+async function ensurePoolsForCycle(cycle) {
+  const poolsExist = await findPoolsByCycleId(cycle.id).count().gt(0)
+  if (!poolsExist) {
+    await createPoolsForCycle(cycle)
+  }
 }
 
 function sendVotingAnnouncement(cycle, chatClient) {

@@ -3,9 +3,6 @@ import {push} from 'react-router-redux'
 import {connect} from 'react-redux'
 import socketCluster from 'socketcluster-client'
 
-import {getPlayerIdsFromCandidateGoals} from 'src/common/util'
-import {GOAL_SELECTION} from 'src/common/models/cycle'
-import loadAllPlayersAndCorrespondingUsers from 'src/common/actions/loadAllPlayersAndCorrespondingUsers'
 import loadCycleVotingResults, {receivedCycleVotingResults} from 'src/common/actions/loadCycleVotingResults'
 import CycleVotingResults, {cycleVotingResultsPropType} from 'src/common/components/CycleVotingResults'
 
@@ -17,54 +14,53 @@ class WrappedCycleVotingResults extends Component {
 
   componentDidMount() {
     this.constructor.fetchData(this.props.dispatch, this.props)
-    this.subscribeToCycleVotingResults(this.props.cycle)
+    this.subscribeToCycleVotingResults(this.currentCycleId())
   }
 
   componentWillUnmount() {
-    this.unsubscribeFromCycleVotingResults(this.props.cycle)
+    this.unsubscribeFromCycleVotingResults(this.currentCycleId())
   }
 
   componentWillReceiveProps(nextProps) {
-    this.renewSubscriptionIfNecessary(nextProps.cycle, this.props.cycle)
-  }
+    const newCycleId = nextProps.cycle && nextProps.cycle.id
+    const oldCycleId = this.currentCycleId()
 
-  renewSubscriptionIfNecessary(nextCycle, currentCycle) {
-    if (!nextCycle) {
-      return
-    }
-    if (!currentCycle || (nextCycle.id !== currentCycle.id)) {
-      this.unsubscribeFromCycleVotingResults(currentCycle)
-      this.subscribeToCycleVotingResults(nextCycle)
+    if (!newCycleId) {
+      this.unsubscribeFromCycleVotingResults(oldCycleId)
+    } else if (oldCycleId !== newCycleId) {
+      this.subscribeToCycleVotingResults(newCycleId)
     }
   }
 
-  subscribeToCycleVotingResults(cycle) {
+  currentCycleId() {
+    return this.props.cycle && this.props.cycle.id
+  }
+
+  subscribeToCycleVotingResults(cycleId) {
     const {dispatch} = this.props
-    if (cycle) {
-      console.log(`subscribing to voting results for cycle ${cycle.id} ...`)
+    if (cycleId) {
+      console.log(`subscribing to voting results for cycle ${cycleId} ...`)
       this.socket = socketCluster.connect()
       this.socket.on('connect', () => console.log('... socket connected'))
       this.socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))
       this.socket.on('connectAbort', () => null)
       this.socket.on('error', error => console.warn(error.message))
-      const cycleVotingResultsChannel = this.socket.subscribe(`cycleVotingResults-${cycle.id}`)
+      const cycleVotingResultsChannel = this.socket.subscribe(`cycleVotingResults-${cycleId}`)
       cycleVotingResultsChannel.watch(cycleVotingResults => {
         dispatch(receivedCycleVotingResults(cycleVotingResults))
       })
     }
   }
 
-  unsubscribeFromCycleVotingResults(cycle) {
-    if (this.socket && cycle) {
-      console.log(`unsubscribing from voting results for cycle ${cycle.id} ...`)
-      this.socket.unsubscribe(`cycleVotingResults-${cycle.id}`)
+  unsubscribeFromCycleVotingResults(cycleId) {
+    if (this.socket && cycleId) {
+      console.log(`unsubscribing from voting results for cycle ${cycleId} ...`)
+      this.socket.unwatch(`cycleVotingResults-${cycleId}`)
+      this.socket.unsubscribe(`cycleVotingResults-${cycleId}`)
     }
   }
 
   static fetchData(dispatch) {
-    // FIXME: don't load all players and users -- backend should send all
-    // playerIds in each pool along with results
-    dispatch(loadAllPlayersAndCorrespondingUsers())
     dispatch(loadCycleVotingResults())
   }
 
@@ -85,37 +81,11 @@ WrappedCycleVotingResults.propTypes = Object.assign({}, cycleVotingResultsPropTy
   dispatch: PropTypes.func.isRequired,
 })
 
-// FIXME: remove this once the shape of the incoming data from the server looks
-// more like what we want
-function _defaultVotingPoolProps(players, users, cycleVotingResults, cycle, chapter) {
-  let isVotingStillOpen
-  let candidateGoals = []
-  let usersInPool = []
-  let voterPlayerIds = []
-  if (cycleVotingResults) {
-    candidateGoals = cycleVotingResults.candidateGoals
-    isVotingStillOpen = cycle && cycle.state === GOAL_SELECTION
-    if (chapter && Object.keys(players.players).length > 0 && Object.keys(users.users).length > 0) {
-      // FIXME: don't use chapter, use pool (once backend is ready)
-      usersInPool = Object.keys(players.players)
-        .map(playerId => players.players[playerId])
-        .filter(player => player.chapter === chapter.id)
-        .map(player => users.users[player.id])
-        .filter(user => Boolean(user))
-
-      if (candidateGoals.length > 0) {
-        voterPlayerIds = getPlayerIdsFromCandidateGoals(candidateGoals)
-      }
-    }
-  }
-
-  return {
-    name: 'Default',
-    candidateGoals,
-    users: usersInPool,
-    voterPlayerIds,
-    isVotingStillOpen,
-  }
+function addUserDataToPools(pools, allUsers) {
+  pools.forEach(pool => {
+    const userDatas = pool.users.map(({id}) => allUsers[id]).filter(user => Boolean(user))
+    pool.users = userDatas
+  })
 }
 
 function mapStateToProps(state) {
@@ -123,18 +93,20 @@ function mapStateToProps(state) {
     auth: {currentUser},
     cycles,
     chapters,
-    players,
     users,
     cycleVotingResults: cvResults,
   } = state
-  const isBusy = cycles.isBusy || chapters.isBusy || cvResults.isBusy
+  const isBusy = cycles.isBusy || chapters.isBusy || cvResults.isBusy || users.isBusy
   // this part of the state is a singleton, which is why this looks weird
-  const cycleVotingResults = cvResults.cycleVotingResults.cycleVotingResults
+  const cycleVotingResults = cvResults.cycleVotingResults.CURRENT
   let cycle
   let chapter
-  if (cycleVotingResults) {
+  let pools = []
+  if (!isBusy) {
     cycle = cycles.cycles[cycleVotingResults.cycle]
     chapter = cycle ? chapters.chapters[cycle.chapter] : null
+    pools = cycleVotingResults.pools.map(pool => ({...pool})) // deep copy so we don't mutate state
+    addUserDataToPools(pools, users.users)
   }
 
   return {
@@ -142,7 +114,7 @@ function mapStateToProps(state) {
     isBusy,
     chapter,
     cycle,
-    pools: [_defaultVotingPoolProps(players, users, cycleVotingResults, cycle, chapter)]
+    pools,
   }
 }
 

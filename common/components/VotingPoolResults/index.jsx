@@ -14,12 +14,12 @@ import voterGridTheme from './voterGridTheme.css'
 
 export default class VotingPoolResults extends Component {
   renderVotingOpenOrClosed() {
-    const {pool: {isVotingStillOpen}} = this.props
-    return typeof isVotingStillOpen !== 'undefined' ? (
+    const {pool: {votingIsStillOpen}} = this.props
+    return typeof votingIsStillOpen !== 'undefined' ? (
       <span>
         <span>  Voting is </span>
-        <strong className={isVotingStillOpen ? styles.open : styles.closed}>
-          {isVotingStillOpen ? 'still open' : 'closed'}.
+        <strong className={votingIsStillOpen ? styles.open : styles.closed}>
+          {votingIsStillOpen ? 'still open' : 'closed'}.
         </strong>
       </span>
     ) : ''
@@ -146,7 +146,7 @@ export default class VotingPoolResults extends Component {
     }
 
     return (
-      <List>
+      <List className={styles.votingPoolResults}>
         {this.renderTitle()}
         {this.renderProgress()}
         {this.renderUserGridAndGoals()}
@@ -165,7 +165,7 @@ export const poolPropType = PropTypes.shape({
     avatarUrl: PropTypes.string.isRequired,
   })).isRequired,
   voterPlayerIds: PropTypes.array.isRequired,
-  isVotingStillOpen: PropTypes.bool,
+  votingIsStillOpen: PropTypes.bool,
 })
 
 VotingPoolResults.propTypes = {

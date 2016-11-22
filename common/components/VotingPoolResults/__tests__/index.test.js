@@ -33,7 +33,7 @@ describe(testContext(__filename), function () {
           candidateGoals,
           users,
           voterPlayerIds,
-          isVotingStillOpen: true,
+          votingIsStillOpen: true,
         },
         isBusy: false,
         isOnlyPool: true,
@@ -99,7 +99,7 @@ describe(testContext(__filename), function () {
 
     it('does not renders voting open / closed status unless it is available', function () {
       const props = this.getProps()
-      delete props.pool.isVotingStillOpen
+      delete props.pool.votingIsStillOpen
       const root = shallow(React.createElement(VotingPoolResults, props))
 
       expect(root.html()).to.not.match(/Voting\sis.*(open|closed)/)

@@ -7,10 +7,10 @@ const LOG_LEVEL = process.env.NODE_ENV === 'development' ? DEBUG :
                   LOG
 
 export default {
-  error: (...args) => should(ERROR) && console.log('[projectFormationService] ERROR>', ...args),
-  log:   (...args) => should(LOG)   && console.log('[projectFormationService] LOG>'  , ...args),
-  debug: (...args) => should(DEBUG) && console.log('[projectFormationService] DEBUG>', ...args),
-  trace: (...args) => should(TRACE) && console.log('[projectFormationService] TRACE>', ...args),
+  error: (...args) => should(ERROR) && console.log('ERROR>', ...args),
+  log:   (...args) => should(LOG)   && console.log('LOG>'  , ...args),
+  debug: (...args) => should(DEBUG) && console.log('DEBUG>', ...args),
+  trace: (...args) => should(TRACE) && console.log('TRACE>', ...args),
 }
 
 function should(lvl) {

@@ -1,6 +1,5 @@
 export {
   choose,
-  flatten,
   range,
   repeat,
   shuffle,
@@ -9,5 +8,9 @@ export {
   factorial,
   segment,
 } from 'src/server/util'
+
+export {
+  flatten,
+} from 'src/common/util'
 
 export const logger = require('src/server/util/logger')
