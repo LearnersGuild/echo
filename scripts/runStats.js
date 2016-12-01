@@ -5,7 +5,7 @@ global.__SERVER__ = true
 
 const Promise = require('bluebird')
 
-const updateProjectCycleStats = require('src/server/actions/updateProjectStats')
+const updatePlayerStatsForProject = require('src/server/actions/updatePlayerStatsForProject')
 const {connect} = require('src/db')
 const {checkForWriteErrors} = require('src/server/db/util')
 const {findPlayers, getPlayerById} = require('src/server/db/player')
@@ -119,6 +119,6 @@ async function updateChapterCycleStats(chapter, cycle) {
   return Promise.each(cycleProjects, project => {
     console.log(LOG_PREFIX, `Updating stats for project ${project.name} (${project.id})`)
 
-    return updateProjectCycleStats(project, cycle.id)
+    return updatePlayerStatsForProject(project)
   })
 }

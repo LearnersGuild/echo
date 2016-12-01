@@ -4,6 +4,7 @@
 import factory from 'src/test/factories'
 import {withDBCleanup, useFixture, mockIdmUsersById} from 'src/test/helpers'
 import {update as updateSurvey} from 'src/server/db/survey'
+import {getProjectById} from 'src/server/db/project'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 import {
@@ -151,6 +152,17 @@ describe(testContext(__filename), function () {
               expect(msg).to.match(/reviewed by 1 player./)
             })
           })
+        })
+
+        it('updates the project stats', async function () {
+          expect(this.project).to.not.have.property('stats')
+          const event = {
+            respondentId: this.project.playerIds[0],
+            surveyId: this.survey.id,
+          }
+          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          const project = await getProjectById(this.project.id)
+          expect(project).to.have.property('stats')
         })
 
         it('sends a message to the project and chapter chatrooms ONLY once each', async function () {

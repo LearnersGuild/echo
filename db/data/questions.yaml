@@ -134,12 +134,14 @@
   id: 2c335ce5-ed0b-4068-92c8-56666fb7fdad
   body: How would you rate the quality of this project on a scale of 0-100%?
   responseType: percentage
+  statId: 837609de-cf2b-4be3-aff2-a7fc2d5ba616
   subjectType: project
   active: true
 -
   id: 65cad3c5-e9e9-4284-999b-3a72c481c55e
   body: What percentage of this project has been completed?
   responseType: percentage
+  statId: ee45be2e-669b-4373-8013-5a7cfb97c102
   subjectType: project
   active: true
 -

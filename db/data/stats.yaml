@@ -68,3 +68,9 @@
 -
   id: 8d93d767-d0a1-48a4-848c-8663b7f997f1
   descriptor: frictionReduction
+-
+  id: 837609de-cf2b-4be3-aff2-a7fc2d5ba616
+  descriptor: projectQuality
+-
+  id: ee45be2e-669b-4373-8013-5a7cfb97c102
+  descriptor: projectCompleteness

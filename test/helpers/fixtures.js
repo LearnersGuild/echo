@@ -30,7 +30,7 @@ export const useFixture = {
   },
   buildSurvey() {
     beforeEach(function () {
-      this.buildSurvey = async function (questionRefs) {
+      this.buildSurvey = async function (questionRefs, type = 'retrospective') {
         this.project = await factory.create('project')
         this.cycleId = this.project.cycleId
         if (!questionRefs) {
@@ -48,7 +48,7 @@ export const useFixture = {
         })
         await updateProject({
           id: this.project.id,
-          retrospectiveSurveyId: this.survey.id,
+          [`${type}SurveyId`]: this.survey.id,
         })
         this.project = await getProjectById(this.project.id)
         return this.survey

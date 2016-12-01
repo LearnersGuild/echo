@@ -56,7 +56,7 @@ export async function saveResponsesForSurveyQuestion(newResponses) {
   return responseIds
 }
 
-function insert(responses) {
+export function insert(responses) {
   return insertAllIntoTable(responses, responsesTable)
 }
 
