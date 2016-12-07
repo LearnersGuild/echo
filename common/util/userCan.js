@@ -56,6 +56,11 @@ const CAPABILITY_ROLES = {
     'player',
     'moderator',
   ],
+  viewProject: [
+    'backoffice',
+    'moderator',
+    'player',
+  ],
 
   saveResponse: [
     'player',
