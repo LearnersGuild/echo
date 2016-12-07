@@ -7,3 +7,6 @@
 - service: herokudeployment
   command: heroku run --app lg-game 'npm run db:migrate -- up'
   tag: master
+- service: herokudeployment
+  command: heroku run --app lg-game 'npm run stats'
+  tag: master
