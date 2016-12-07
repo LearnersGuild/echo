@@ -1,5 +1,5 @@
 import config from 'src/config'
-import mergeUsers from 'src/actions/mergeUsers'
+import mergeUsers from 'src/server/actions/mergeUsers'
 import {graphQLFetcher} from 'src/server/util/graphql'
 
 export default function getUser(identifier, options) {
@@ -10,6 +10,6 @@ export default function getUser(identifier, options) {
     query: `query ($identifier: String!) {getUser(identifier: $identifier) {${queryFields}}}`,
     variables: {identifier},
   })
-  .then(result => mergeUsers([result.data.getUser]))
+  .then(result => (result.data.getUser ? mergeUsers([result.data.getUser]) : []))
   .then(users => users[0])
 }
