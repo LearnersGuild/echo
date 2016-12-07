@@ -1,7 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 
 import {CreatedIdList, SurveyResponseInput} from 'src/server/graphql/schemas'
-import {resolveInputSurveyResponses} from 'src/server/graphql/resolvers'
+import {resolveSaveSurveyResponses} from 'src/server/graphql/resolvers'
 
 export default {
   type: CreatedIdList,
@@ -12,6 +12,6 @@ export default {
     }
   },
   resolve(source, {response}, ast) {
-    return resolveInputSurveyResponses(source, {responses: [response]}, ast)
+    return resolveSaveSurveyResponses(source, {responses: [response]}, ast)
   }
 }

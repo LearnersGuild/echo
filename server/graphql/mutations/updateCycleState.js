@@ -1,14 +1,12 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {GraphQLError} from 'graphql/error'
 
-import {connect} from 'src/db'
 import {userCan} from 'src/common/util'
 import {CYCLE_STATES} from 'src/common/models/cycle'
 import {getModeratorById} from 'src/server/db/moderator'
 import {getCyclesInStateForChapter} from 'src/server/db/cycle'
+import updateCycleState from 'src/server/actions/updateCycleState'
 import {Cycle} from 'src/server/graphql/schemas'
-
-const r = connect()
 
 export default {
   type: Cycle,
@@ -42,17 +40,5 @@ async function changeCycleState(newState, currentUser) {
     throw new GraphQLError(`No cycles for ${moderator.chapter.name} chapter (${moderator.chapter.id}) in ${validOriginState} state`)
   }
 
-  const cycle = cycles[0]
-  const cycleUpdateResult = await r.table('cycles')
-    .get(cycle.id)
-    .update({state: newState, updatedAt: r.now()}, {returnChanges: 'always'})
-    .run()
-
-  if (cycleUpdateResult.replaced) {
-    const returnedCycle = Object.assign({}, cycleUpdateResult.changes[0].new_val, {chapter: cycle.chapter})
-    delete returnedCycle.chapterId
-    return returnedCycle
-  }
-
-  throw new GraphQLError('Could not save cycle, please try again')
+  return updateCycleState(cycles[0], newState)
 }
