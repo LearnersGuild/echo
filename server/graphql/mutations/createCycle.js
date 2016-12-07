@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql/error'
 
 import {userCan} from 'src/common/util'
 import {getModeratorById} from 'src/server/db/moderator'
-import {createNextCycleForChapter} from 'src/server/db/cycle'
+import createNextCycleForChapter from 'src/server/actions/createNextCycleForChapter'
 import {Cycle} from 'src/server/graphql/schemas'
 
 export default {

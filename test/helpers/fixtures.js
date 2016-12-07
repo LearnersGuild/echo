@@ -123,6 +123,29 @@ export const useFixture = {
       }
     })
   },
+  createChapterWithCycles() {
+    before('define createChapterWithCycles helper', function () {
+      this.createChapterWithCycles = (cycleAttrs = {}) => {
+        const now = new Date()
+        return factory.create('chapter')
+          .then(chapter => {
+            this.chapter = chapter
+            const overwriteObjs = Array.from(Array(4).keys()).map(i => {
+              const startTimestamp = new Date(now)
+              startTimestamp.setDate(startTimestamp.getDate() + (i * 7))
+              return Object.assign({}, {
+                chapterId: chapter.id,
+                startTimestamp,
+              }, cycleAttrs)
+            })
+            return factory.createMany('cycle', overwriteObjs)
+              .then(cycles => {
+                this.cycles = cycles
+              })
+          })
+      }
+    })
+  },
   nockIDMGetUsersById(users) {
     this.apiScope = nock(config.server.idm.baseURL)
       .post('/graphql')
