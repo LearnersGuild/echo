@@ -11,7 +11,7 @@ import assertPlayersCurrentCycleInState from 'src/server/actions/assertPlayersCu
 import {BadInputError} from 'src/server/errors'
 import {handleError} from 'src/server/graphql/util'
 
-export async function resolveCycleChapter(cycle) {
+export async function resolveChapter(cycle) {
   if (cycle.chapter) {
     return cycle.chapter
   }
@@ -20,16 +20,7 @@ export async function resolveCycleChapter(cycle) {
   }
 }
 
-export async function resolveProjectChapter(project) {
-  if (project.chapter) {
-    return project.chapter
-  }
-  if (project.chapterId) {
-    return await getChapterById(project.chapterId)
-  }
-}
-
-export async function resolveProjectCycle(project) {
+export async function resolveCycle(project) {
   if (project.cycle) {
     return project.cycle
   }
@@ -38,7 +29,7 @@ export async function resolveProjectCycle(project) {
   }
 }
 
-export async function resolveSurveyProject(parent) {
+export async function resolveProject(parent) {
   if (parent.project) {
     return parent.project
   }
@@ -99,4 +90,19 @@ async function _buildResponsesFromNamedResponses(namedResponses, projectName, re
       values: [{subjectId: subjectIds[0], value: responseParams[0]}]
     }
   })
+}
+
+export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
+  if (user.id !== currentUser.id && !userCan(currentUser, 'viewUserStats')) {
+    return null
+  }
+  if (user.stats && 'rating' in user.stats) {
+    return user.stats
+  }
+
+  const userStats = user.stats || {}
+  return {
+    rating: (userStats.elo || {}).rating,
+    xp: userStats.xp,
+  }
 }
