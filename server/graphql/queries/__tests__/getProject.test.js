@@ -6,7 +6,7 @@ import {withDBCleanup, runGraphQLQuery} from 'src/test/helpers'
 
 import fields from '../index'
 
-const QUERY = 'query($identifier: String!) { getProject(identifier: $identifier) { id chapter { id } cycle { id } } }'
+const QUERY = 'query($identifier: String!) { getProject(identifier: $identifier) { id chapter { id } cycle { id } goal { number title level url } stats { hours completeness quality} } }'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
