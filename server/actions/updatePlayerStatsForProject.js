@@ -35,6 +35,7 @@ import {
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {groupResponsesBySubject} from 'src/server/util/survey'
 import getPlayerInfo from 'src/server/actions/getPlayerInfo'
+import {Project} from 'src/server/services/dataService'
 
 const INITIAL_RATINGS = {
   DEFAULT: 1000,
@@ -82,6 +83,8 @@ export default async function updatePlayerStatsForProject(project) {
       }
     })
   })
+
+  await _updateProjectHours(project, teamHours)
 
   // pro players stats are calculated somewhat differently than regular players
   const proPlayerIds = await _getProPlayerIds(playerIds)
@@ -340,4 +343,8 @@ function _kFactor(numMatches) {
   return (numMatches || 0) < 20 ?
     K_FACTORS.BEGINNER :
     K_FACTORS.DEFAULT
+}
+
+function _updateProjectHours(project, hours) {
+  return Project.get(project.id).update({stats: {hours}})
 }
