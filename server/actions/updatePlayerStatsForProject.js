@@ -34,8 +34,8 @@ import {
 } from 'src/server/util/stats'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {groupResponsesBySubject} from 'src/server/util/survey'
-import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 import {Project} from 'src/server/services/dataService'
+import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 
 const INITIAL_RATINGS = {
   DEFAULT: 1000,
