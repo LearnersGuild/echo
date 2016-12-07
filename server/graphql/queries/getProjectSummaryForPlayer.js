@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql/error'
 
 import {getLatestCycleForChapter} from 'src/server/db/cycle'
 import {getUserById} from 'src/server/db/user'
-import {getProjectsForPlayer, findProjects} from 'src/server/db/project'
+import {findProjectsForUser, findProjects} from 'src/server/db/project'
 import {ProjectsSummary} from 'src/server/graphql/schemas'
 
 export default {
@@ -16,7 +16,7 @@ export default {
     const cycle = await getLatestCycleForChapter(user.chapter.id)
 
     const numActiveProjectsForCycle = await findProjects({chapterId: user.chapter.id, cycleId: cycle.id}).count()
-    const numTotalProjectsForPlayer = await getProjectsForPlayer(user.id).count()
+    const numTotalProjectsForPlayer = await findProjectsForUser(user.id).count()
 
     return {numActiveProjectsForCycle, numTotalProjectsForPlayer}
   },
