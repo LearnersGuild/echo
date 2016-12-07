@@ -34,6 +34,7 @@ import {
 } from 'src/server/util/stats'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {groupResponsesBySubject} from 'src/server/util/survey'
+import {Project} from 'src/server/services/dataService'
 
 const INITIAL_RATINGS = {
   DEFAULT: 1000,
@@ -81,6 +82,8 @@ export default async function updatePlayerStatsForProject(project) {
       }
     })
   })
+
+  await _updateProjectHours(project, teamHours)
 
   // compute stats for each team member based on (retro) survey responses
   const playerProjectStats = new Map()
@@ -323,4 +326,8 @@ function _kFactor(numMatches) {
   return (numMatches || 0) < 20 ?
     K_FACTORS.BEGINNER :
     K_FACTORS.DEFAULT
+}
+
+function _updateProjectHours(project, hours) {
+  return Project.get(project.id).update({stats: {hours}})
 }

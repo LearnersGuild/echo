@@ -21,10 +21,6 @@ export default function projectModel(thinky) {
         .min(1)
         .allowNull(false),
 
-      goal: object()
-        .allowNull(false)
-        .allowExtra(true),
-
       playerIds: array()
         .allowNull(false),
 
@@ -33,6 +29,13 @@ export default function projectModel(thinky) {
 
       retrospectiveSurveyId: string()
         .uuid(4),
+
+      goal: object()
+        .allowNull(false)
+        .allowExtra(true),
+
+      stats: object()
+        .allowExtra(true),
 
       createdAt: date()
         .allowNull(false)
