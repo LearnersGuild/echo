@@ -17,6 +17,7 @@ player.define({chapter})
 export default {
   chapter,
   chapters,
+  cycle,
   cycleVotingResults,
   player,
   players,

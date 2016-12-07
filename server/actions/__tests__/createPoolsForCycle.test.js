@@ -21,7 +21,7 @@ describe(testContext(__filename), function () {
   })
 
   describe('createPoolsForCycle()', function () {
-    it('creates pools based on levels', async function() {
+    it('creates pools based on levels', async function () {
       const lvl1Players = await this.createLvl1Players(6)
       const lvl2Players = await this.createLvl2Players(6)
       const lvl4Players = await this.createLvl4Players(6)
@@ -47,7 +47,7 @@ describe(testContext(__filename), function () {
       expect(ids(playersInPool[pools[2].id])).to.deep.eq(ids(lvl4Players))
     })
 
-    it('splits large levels into multiple pools', async function() {
+    it('splits large levels into multiple pools', async function () {
       const lvl1Players = await this.createLvl1Players(17)
       const lvl2Players = await this.createLvl2Players(6)
 

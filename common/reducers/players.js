@@ -14,7 +14,7 @@ const initialState = {
   isBusy: false,
 }
 
-export function players(state = initialState, action) {
+export default function players(state = initialState, action) {
   switch (action.type) {
     case FIND_PLAYERS_REQUEST:
     case REASSIGN_PLAYERS_TO_CHAPTER_REQUEST:

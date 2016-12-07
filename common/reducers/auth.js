@@ -6,7 +6,7 @@ const initialState = {
   isBusy: false,
 }
 
-export function auth(state = initialState, action) {
+export default function auth(state = initialState, action) {
   switch (action.type) {
     case UPDATE_JWT:
       return Object.assign({}, state, {

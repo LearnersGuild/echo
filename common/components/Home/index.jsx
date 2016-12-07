@@ -29,7 +29,7 @@ export default class Home extends Component {
       )
     }
     listItems.push(
-      <a key={listItems.length} target="_blank" href={process.env.GRAPHIQL_BASE_URL}>
+      <a key={listItems.length} target="_blank" href={process.env.GRAPHIQL_BASE_URL} rel="noopener noreferrer">
         <ListItem
           caption="Explore API"
           leftIcon="flash_on"

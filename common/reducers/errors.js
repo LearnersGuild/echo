@@ -29,7 +29,7 @@ function removeMessage(state, index) {
   return messages
 }
 
-export function errors(state = initialState, action) {
+export default function errors(state = initialState, action) {
   switch (action.type) {
     case DISMISS_ERROR:
       return Object.assign({}, state, {
