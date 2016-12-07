@@ -20,6 +20,16 @@ export function getProjectByName(name) {
     .default(customQueryError('No project found with that name'))
 }
 
+export function getProject(identifier) {
+  const identifierLower = String(identifier).toLowerCase()
+  return table.filter(row => r.or(
+    row('id').eq(identifier),
+    row('name').downcase().eq(identifierLower)
+  ))
+  .nth(0)
+  .default(null)
+}
+
 export function getProjectsForChapter(chapterId) {
   return table.getAll(chapterId, {index: 'chapterId'})
 }

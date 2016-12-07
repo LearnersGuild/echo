@@ -20,6 +20,10 @@ export function getModeratorById(id, passedOptions = {}) {
   )
 }
 
+export function findModeratorsByIds(ids) {
+  return table.getAll(...ids)
+}
+
 export function findModeratorsForChapter(chapterId, filters) {
   const moderators = table.getAll(chapterId, {index: 'chapterId'})
   return filters ? moderators.filter(filters) : moderators

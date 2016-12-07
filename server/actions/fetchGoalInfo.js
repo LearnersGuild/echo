@@ -36,7 +36,7 @@ export default function fetchGoalInfo(goalRepositoryURL, goalDescriptor) {
     .then(githubIssue => (githubIssue ? {
       url: githubIssue.html_url,
       title: githubIssue.title,
-      teamSize: _getTeamSizeFromLabels(githubIssue.labels.map(label => label.name)),
+      teamSize: _getTeamSizeFromLabels((githubIssue.labels || []).map(label => label.name)),
       githubIssue,
     } : null))
 }
