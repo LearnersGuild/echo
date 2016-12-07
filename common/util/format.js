@@ -34,3 +34,16 @@ export function phoneNumberAsE164(str, countryCode = 'US') {
   const phoneNumber = phoneUtil.parse(phoneDigits, countryCode)
   return phoneUtil.format(phoneNumber, PhoneNumberFormat.E164)
 }
+
+/**
+ * works similarly to the typical keymirror that accepts an object and
+ * returns a copy with the (string) value of each key set as the value of each
+ * key, but accepts an array of strings and returns an object where each string
+ * becomes a mirrored key/value.
+ */
+export function keymirror(arr) {
+  return arr.reduce((result, val) => {
+    result[val] = val
+    return result
+  }, {})
+}

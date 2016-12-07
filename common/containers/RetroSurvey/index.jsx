@@ -9,7 +9,6 @@
  *   - submitted survey data persistence
  */
 import React, {Component, PropTypes} from 'react'
-import ReactDom from 'react-dom'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import ProgressBar from 'react-toolbox/lib/progress_bar'
@@ -19,7 +18,6 @@ import {
   formFieldsForQuestionGroup,
   questionResponsesForFormFields,
 } from 'src/common/util/survey'
-
 import * as SurveyActions from 'src/common/actions/survey'
 import SurveyForm from 'src/common/components/SurveyForm'
 import SurveyConfirmation from 'src/common/components/SurveyConfirmation'
@@ -94,7 +92,7 @@ class RetroSurveyContainer extends Component {
       currentSurveyFields: nextSurveyFields,
     })
 
-    ReactDom.findDOMNode(this).scrollIntoView()
+    this.node.scrollIntoView()
   }
 
   handleSubmit(surveyFormFields) {
@@ -126,7 +124,13 @@ class RetroSurveyContainer extends Component {
       <Flex flexDirection="column" width="100%" className={styles.header}>
         <div className={styles.headerTitle}>{this.state.title}</div>
         <h6 className={styles.headerSubtitle}>{subtitle}</h6>
-        <div className={styles.playbookLink}>See the <a href={process.env.PLAYBOOK_URL} target="_blank">Playbook</a> for more info.</div>
+        <div className={styles.playbookLink}>
+          {'See the'}
+          <a href={process.env.PLAYBOOK_URL} target="_blank" rel="noopener noreferrer">
+            {' Playbook '}
+          </a>
+          {'for more info.'}
+        </div>
       </Flex>
     )
   }

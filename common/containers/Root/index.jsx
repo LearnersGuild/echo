@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unassigned-import */
 import React, {Component, PropTypes} from 'react'
 import {connect, Provider} from 'react-redux'
 
@@ -17,13 +18,8 @@ export class Root extends Component {
 }
 
 Root.propTypes = {
-  auth: PropTypes.shape({
-    isBusy: PropTypes.bool.isRequired,
-    currentUser: PropTypes.object,
-  }).isRequired,
   store: PropTypes.object.isRequired,
   children: PropTypes.any,
-  dispatch: PropTypes.func,
 }
 
 function mapStateToProps(state) {

@@ -24,7 +24,7 @@ const initialState = {
   isBusy: false,
 }
 
-export function chapters(state = initialState, action) {
+export default function chapters(state = initialState, action) {
   switch (action.type) {
     case GET_CHAPTER_REQUEST:
     case FIND_CHAPTERS_REQUEST:

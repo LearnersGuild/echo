@@ -2,6 +2,7 @@
 import fetch from 'isomorphic-fetch'
 
 import {updateJWT} from 'src/common/actions/auth'
+import handleGraphQLError from 'src/common/util/handleGraphQLError'
 
 let APP_BASE_URL = ''
 if (__SERVER__) {
@@ -46,13 +47,6 @@ export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASE_URL
 
         return graphQLResponse
       })
-      .catch(err => {
-        if (err && err.errors && err.errors.length > 0) {
-          if (throwErrors) {
-            throw new Error(err.errors[0].message)
-          }
-        }
-        console.error('GraphQL ERROR:', err)
-      })
+      .catch(err => handleGraphQLError(err, {throwErrors}))
   }
 }

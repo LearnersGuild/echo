@@ -1,4 +1,3 @@
-
 import {
   GET_CYCLE_VOTING_RESULTS_SUCCESS,
   RECEIVED_CYCLE_VOTING_RESULTS,
@@ -11,7 +10,7 @@ const initialState = {
   isBusy: false,
 }
 
-export function cycles(state = initialState, action) {
+export default function cycles(state = initialState, action) {
   switch (action.type) {
     case GET_CYCLE_VOTING_RESULTS_SUCCESS:
     case RECEIVED_CYCLE_VOTING_RESULTS:

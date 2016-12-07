@@ -1,4 +1,3 @@
-/* eslint babel/new-cap: [2, {"capIsNewExceptions": ["Router"]}] */
 import express from 'express'
 
 import {userCan} from 'src/common/util'

@@ -17,7 +17,7 @@ const initialState = {
   retro: {},
 }
 
-export function surveys(state = initialState, action) {
+export default function surveys(state = initialState, action) {
   switch (action.type) {
     case GET_RETRO_SURVEY_REQUEST:
       return Object.assign({}, state, {

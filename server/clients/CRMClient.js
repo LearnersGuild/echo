@@ -47,7 +47,7 @@ export function notifyContactSignedUp(email) {
       return fetch(crmURL(`/contacts/v1/contact/vid/${contact.vid}/profile`), {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application.json'
         },
         body: playerSignedUpBody,

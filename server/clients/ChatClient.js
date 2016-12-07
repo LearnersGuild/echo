@@ -89,7 +89,7 @@ export default class ChatClient {
     return this.authHeaders()
       .then(authHeaders => {
         const headers = Object.assign({}, authHeaders, {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         })
         const optionsWithHeaders = Object.assign({}, options, {headers})

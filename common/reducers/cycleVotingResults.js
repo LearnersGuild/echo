@@ -12,7 +12,7 @@ const initialState = {
   isBusy: false,
 }
 
-export function cycleVotingResults(state = initialState, action) {
+export default function cycleVotingResults(state = initialState, action) {
   switch (action.type) {
     case GET_CYCLE_VOTING_RESULTS_REQUEST:
       return Object.assign({}, state, {

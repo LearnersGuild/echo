@@ -5,10 +5,10 @@ const r = connect()
 const now = new Date()
 
 export default function define(factory) {
+  /* eslint-disable object-shorthand, brace-style */
   factory.define('chapter', r.table('chapters'), {
     id: cb => cb(null, faker.random.uuid()),
     name: factory.sequence(n => `Test Chapter ${n}`),
-    /* eslint-disable babel/object-shorthand, brace-style */
     channelName: function (cb) { cb(null, faker.helpers.slugify(this.name).toLowerCase()) },
     timezone: 'America/Los_Angeles',
     goalRepositoryURL: cb => cb(null, 'https://github.com/GuildCraftsTesting/web-development-js-testing'),

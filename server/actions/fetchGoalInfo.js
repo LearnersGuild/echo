@@ -47,8 +47,8 @@ function githubIssueURL(goalRepositoryURL, goalDescriptor) {
   const goalURLParts = url.parse(goalDescriptor)
   if (goalURLParts.protocol) {
     // see: http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
-    const escapedGoalRepositoryURL = goalRepositoryURL.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
-    const issueURLRegex = new RegExp(`^${escapedGoalRepositoryURL}\/issues\/\\d+$`)
+    const escapedGoalRepositoryURL = goalRepositoryURL.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&')
+    const issueURLRegex = new RegExp(`^${escapedGoalRepositoryURL}/issues/\\d+$`)
     if (goalDescriptor.match(issueURLRegex)) {
       return `https://api.github.com/repos${goalURLParts.path}`
     }

@@ -11,7 +11,7 @@ const initialState = {
   isBusy: false,
 }
 
-export function users(state = initialState, action) {
+export default function users(state = initialState, action) {
   switch (action.type) {
     case FIND_USERS_REQUEST:
       return Object.assign({}, state, {
