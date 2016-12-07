@@ -8,6 +8,16 @@ export function getChapterById(chapterId) {
   return chaptersTable.get(chapterId)
 }
 
+export function getChapter(identifier) {
+  const identifierLower = String(identifier).toLowerCase()
+  return chaptersTable.filter(row => r.or(
+    row('id').eq(identifier),
+    row('name').downcase().eq(identifierLower)
+  ))
+  .nth(0)
+  .default(null)
+}
+
 export function findChapters() {
   return chaptersTable
 }

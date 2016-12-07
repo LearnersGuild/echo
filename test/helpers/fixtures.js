@@ -132,4 +132,25 @@ export const useFixture = {
         },
       })
   },
+  nockClean() {
+    nock.cleanAll()
+    this.apiScope = null
+  },
+  nockIDMfindUsers(users) {
+    this.apiScope = nock(config.server.idm.baseURL)
+      .post('/graphql')
+      .reply(200, {
+        data: {
+          findUsers: users,
+        },
+      })
+  },
+  nockfetchGoalInfo(goalNumber) {
+    this.apiScope = nock('https://api.github.com')
+      .get(`/repos/GuildCraftsTesting/web-development-js-testing/issues/${goalNumber}`)
+      .reply(200, {
+        number: goalNumber,
+        labels: [],
+      })
+  },
 }

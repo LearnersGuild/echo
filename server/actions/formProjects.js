@@ -9,7 +9,7 @@ import {toArray, mapById, sum} from 'src/server/util'
 import {flatten} from 'src/common/util'
 import {getTeamFormationPlan, NoValidPlanFoundError} from 'src/server/services/projectFormationService'
 import getLatestFeedbackStats from 'src/server/actions/getLatestFeedbackStats'
-import generateProject from 'src/server/actions/generateProject'
+import generateProjectName from 'src/server/actions/generateProjectName'
 
 export async function formProjectsIfNoneExist(cycleId, handleNonFatalError) {
   const projectsCount = await findProjects({cycleId}).count()
@@ -82,16 +82,13 @@ function _teamFormationPlanToProjects(cycle, goals, teamFormationPlan) {
     return result
   }, new Map())
 
-  return Promise.all(
-    teamFormationPlan.teams.map(team =>
-      generateProject({
-        chapterId: cycle.chapterId,
-        cycleId: cycle.id,
-        goal: goalsByDescriptor.get(team.goalDescriptor),
-        playerIds: team.playerIds,
-      })
-    )
-  )
+  return Promise.mapSeries(teamFormationPlan.teams, async team => ({
+    name: await generateProjectName(),
+    chapterId: cycle.chapterId,
+    cycleId: cycle.id,
+    playerIds: team.playerIds,
+    goal: goalsByDescriptor.get(team.goalDescriptor),
+  }))
 }
 
 async function _buildVotingPools(cycleId) {
