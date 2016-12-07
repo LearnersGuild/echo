@@ -11,7 +11,7 @@ const QUERY = 'query($identifier: String!) { getProject(identifier: $identifier)
 describe(testContext(__filename), function () {
   withDBCleanup()
 
-  describe('findProjects', function () {
+  describe('getProject', function () {
     beforeEach('Create current user', async function () {
       this.currentUser = await factory.build('user')
     })
