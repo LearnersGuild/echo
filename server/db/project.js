@@ -32,8 +32,8 @@ export function getProjectsForChapter(chapterId) {
   return table.getAll(chapterId, {index: 'chapterId'})
 }
 
-export function getProjectsForPlayer(playerId) {
-  return findProjects(project => (project('playerIds').contains(playerId)))
+export function findProjectsForUser(userId) {
+  return findProjects(project => (project('playerIds').contains(userId)))
 }
 
 export function findProjectsByIds(projectIds) {
