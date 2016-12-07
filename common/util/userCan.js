@@ -61,6 +61,10 @@ const CAPABILITY_ROLES = {
     'moderator',
     'player',
   ],
+  viewProjectSummary: [
+    'backoffice',
+    'moderator',
+  ],
 
   listUsers: [
     'backoffice',
@@ -71,6 +75,10 @@ const CAPABILITY_ROLES = {
     'backoffice',
     'moderator',
     'player',
+  ],
+  viewUserSummary: [
+    'backoffice',
+    'moderator',
   ],
 
   saveResponse: [

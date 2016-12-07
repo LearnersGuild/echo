@@ -64,14 +64,14 @@ describe(testContext(__filename), function () {
       )
     })
 
-    it('updates goal and users when a valid projectIdentifier is specified', async function () {
+    it('updates goal and users when a valid project identifier is specified', async function () {
       const newProject = await factory.create('project', {chapterId: this.chapter.id, cycleId: this.cycle.id})
       const newPlayers = await factory.createMany('player', {chapterId: this.chapter.id}, 4)
       const newGoalNumber = 2
 
       useFixture.nockClean()
-      useFixture.nockIDMfindUsers(newPlayers)
-      useFixture.nockfetchGoalInfo(newGoalNumber)
+      useFixture.nockIDMFindUsers(newPlayers)
+      useFixture.nockFetchGoalInfo(newGoalNumber)
 
       const importedProject = await importProject({
         ...this.importData,

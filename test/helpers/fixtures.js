@@ -177,7 +177,7 @@ export const useFixture = {
         },
       })
   },
-  nockfetchGoalInfo(goalNumber) {
+  nockFetchGoalInfo(goalNumber) {
     this.apiScope = nock('https://api.github.com')
       .get(`/repos/GuildCraftsTesting/web-development-js-testing/issues/${goalNumber}`)
       .reply(200, {
