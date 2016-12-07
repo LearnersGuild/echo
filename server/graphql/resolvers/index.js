@@ -92,7 +92,7 @@ export function resolveProjectStats(project) {
   return {
     hours: null,
     completeness: null,
-    quaity: null,
+    quality: null,
   }
 }
 

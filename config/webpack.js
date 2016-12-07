@@ -25,6 +25,7 @@ if (config.app.minify) {
   entry.vendor = [
     'google-libphonenumber',
     'juration',
+    'keyMirror',
     'moment-timezone',
     'raven-js',
     'react',

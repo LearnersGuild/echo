@@ -51,6 +51,7 @@ describe(testContext(__filename), function () {
     it('creates a new project a projectIdentifier is not specified', async function () {
       useFixture.nockIDMFindUsers(this.users)
       useFixture.nockFetchGoalInfo(this.goalNumber, {times: 2})
+
       const importedProject = await importProject(this.importData)
 
       expect(importedProject.goal.githubIssue.number).to.eq(this.goalNumber)

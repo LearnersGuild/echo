@@ -1,4 +1,4 @@
-import {UPDATE_JWT} from 'src/common/actions/updateJWT'
+import {UPDATE_JWT} from 'src/common/actions/types'
 
 const initialState = {
   currentUser: null,

@@ -1,8 +1,8 @@
 
 import {
-  LOAD_CYCLE_VOTING_RESULTS_SUCCESS,
+  GET_CYCLE_VOTING_RESULTS_SUCCESS,
   RECEIVED_CYCLE_VOTING_RESULTS,
-} from 'src/common/actions/loadCycleVotingResults'
+} from 'src/common/actions/types'
 
 import {mergeEntities} from 'src/common/util'
 
@@ -13,7 +13,7 @@ const initialState = {
 
 export function cycles(state = initialState, action) {
   switch (action.type) {
-    case LOAD_CYCLE_VOTING_RESULTS_SUCCESS:
+    case GET_CYCLE_VOTING_RESULTS_SUCCESS:
     case RECEIVED_CYCLE_VOTING_RESULTS:
       {
         const cycles = mergeEntities(state.cycles, action.response.entities.cycles)

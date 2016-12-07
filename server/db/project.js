@@ -1,11 +1,10 @@
 import {connect} from 'src/db'
-
 import {REFLECTION, PRACTICE} from 'src/common/models/cycle'
-import {customQueryError} from './errors'
-import {insertAllIntoTable, updateInTable} from './util'
 import {getLatestCycleForChapter} from './cycle'
 import {getSurveyById} from './survey'
 import {getSurveyResponsesForPlayer} from './response'
+import {customQueryError} from './errors'
+import {insertAllIntoTable, updateInTable} from './util'
 
 const r = connect()
 export const table = r.table('projects')

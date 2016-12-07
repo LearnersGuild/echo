@@ -2,11 +2,9 @@ import React, {Component, PropTypes} from 'react'
 import {reduxForm, reset} from 'redux-form'
 import moment from 'moment-timezone'
 
-import createOrUpdateChapter from 'src/common/actions/createOrUpdateChapter'
-import addInviteCodeToChapter from 'src/common/actions/addInviteCodeToChapter'
-import loadChapter from 'src/common/actions/loadChapter'
 import ChapterFormComponent from 'src/common/components/ChapterForm'
 import {chapterSchema, validationErrorToReduxFormErrors} from 'src/common/validations'
+import {getChapter, saveChapter, addInviteCodeToChapter} from 'src/common/actions/chapter'
 
 function asyncValidate(values) {
   return new Promise((resolve, reject) => {
@@ -16,10 +14,9 @@ function asyncValidate(values) {
   })
 }
 
-function saveChapter(dispatch) {
+function handleSubmitForm(dispatch) {
   return chapterInfo => {
-    console.log('saving chapter ...')
-    dispatch(createOrUpdateChapter(chapterInfo))
+    dispatch(saveChapter(chapterInfo))
   }
 }
 
@@ -40,7 +37,7 @@ class WrappedChapterForm extends Component {
   static fetchData(dispatch, props) {
     const {params: {id}} = props
     if (id) {
-      dispatch(loadChapter(id))
+      dispatch(getChapter(id))
     }
   }
 
@@ -80,6 +77,6 @@ export default reduxForm({
     showCreateInviteCode: true,
   }
 }, dispatch => ({
-  onSubmit: saveChapter(dispatch),
+  onSubmit: handleSubmitForm(dispatch),
   onCreateInviteCode: createAndAddInviteCode(dispatch),
 }))(WrappedChapterForm)
