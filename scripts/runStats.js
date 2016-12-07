@@ -80,9 +80,7 @@ async function run() {
 function setPlayerStats(player, stats) {
   console.log(LOG_PREFIX, `Setting stats for player ${player.id}`)
 
-  return Player.get(player.id)
-    .update({stats})
-    .run()
+  return Player.get(player.id).update({stats})
 }
 
 async function updateChapterStats(chapter) {

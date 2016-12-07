@@ -18,9 +18,11 @@ const modelDefinitions = Object.values(autoloader.load(__dirname)).reduce((resul
 
 // initiate models
 const models = {}
+const modelDefs = {}
 modelDefinitions.forEach(getModel => {
   if (typeof getModel === 'function') {
-    const {name, table, schema, pk} = getModel(thinky) || {}
+    const modelDefinition = getModel(thinky) || {}
+    const {name, table, schema, pk} = modelDefinition
     const options = {
       pk: pk || 'id',
       table: config.server.rethinkdb.tableCreation,
@@ -30,14 +32,15 @@ modelDefinitions.forEach(getModel => {
     models[name].docOn('saving', function () {
       this.updatedAt = thinky.r.now() // set updatedAt on every save
     })
+    modelDefs[name] = modelDefinition
   }
 })
 
-// set model associations
-modelDefinitions.forEach(modelConfig => {
-  if (typeof modelConfig.associate === 'function') {
-    const {name, associate} = modelConfig
-    associate(models[name], models)
+// set model associations after all models have been instantiated
+Object.values(modelDefs).forEach(modelDef => {
+  if (typeof modelDef.associate === 'function') {
+    const model = models[modelDef.name]
+    modelDef.associate(model, models)
   }
 })
 

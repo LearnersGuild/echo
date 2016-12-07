@@ -210,7 +210,7 @@ describe(testContext(__filename), function () {
 
     describe('when the review is in progress', function () {
       beforeEach(function () {
-        const responses = [{questionName: 'A', responseParams: ['8']}]
+        const responses = [{questionName: 'completeness', responseParams: ['8']}]
         const projectName = this.project.name
         return resolveSaveProjectReviewCLISurveyResponses(
           null,
@@ -228,7 +228,7 @@ describe(testContext(__filename), function () {
               artifactURL: this.project.artifactURL
             },
             responses: [
-              {questionName: 'A', values: [{subjectId: this.project.id, value: '8'}]}
+              {questionName: 'completeness', values: [{subjectId: this.project.id, value: '8'}]}
             ],
           })
         })
@@ -238,8 +238,8 @@ describe(testContext(__filename), function () {
     describe('when player has completed the review', function () {
       beforeEach(function () {
         const responses = [
-          {questionName: 'A', responseParams: ['8']},
-          {questionName: 'B', responseParams: ['9']},
+          {questionName: 'completeness', responseParams: ['8']},
+          {questionName: 'quality', responseParams: ['9']},
         ]
         const projectName = this.project.name
         return resolveSaveProjectReviewCLISurveyResponses(
@@ -258,8 +258,8 @@ describe(testContext(__filename), function () {
               artifactURL: this.project.artifactURL
             },
             responses: [
-              {questionName: 'A', values: [{subjectId: this.project.id, value: '8'}]},
-              {questionName: 'B', values: [{subjectId: this.project.id, value: '9'}]},
+              {questionName: 'completeness', values: [{subjectId: this.project.id, value: '8'}]},
+              {questionName: 'quality', values: [{subjectId: this.project.id, value: '9'}]},
             ],
           })
         })
