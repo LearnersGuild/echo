@@ -7,7 +7,7 @@ import nock from 'nock'
 import {connect} from 'src/db'
 import factory from 'src/test/factories'
 import {withDBCleanup, runGraphQLQuery, useFixture, mockIdmUsersById} from 'src/test/helpers'
-import saveProjectReviewCLISurveyResponsesForPlayer from 'src/server/actions/saveProjectReviewCLISurveyResponsesForPlayer'
+import saveSurveyResponses from 'src/server/actions/saveSurveyResponses'
 
 import fields from '../index'
 
@@ -210,9 +210,11 @@ describe(testContext(__filename), function () {
 
     describe('when the review is in progress', function () {
       beforeEach(function () {
-        return saveProjectReviewCLISurveyResponsesForPlayer(this.currentUser.id, this.project.name, [
-          {questionName: 'A', responseParams: ['8']},
-        ])
+        return saveSurveyResponses({
+          respondentId: this.currentUser.id,
+          responses: [{questionName: 'A', responseParams: ['8']}],
+          projectName: this.project.name,
+        })
       })
 
       it('returns the status showing the review in progress', function () {
@@ -233,10 +235,14 @@ describe(testContext(__filename), function () {
 
     describe('when player has completed the review', function () {
       beforeEach(function () {
-        return saveProjectReviewCLISurveyResponsesForPlayer(this.currentUser.id, this.project.name, [
-          {questionName: 'A', responseParams: ['8']},
-          {questionName: 'B', responseParams: ['9']},
-        ])
+        return saveSurveyResponses({
+          respondentId: this.currentUser.id,
+          responses: [
+            {questionName: 'A', responseParams: ['8']},
+            {questionName: 'B', responseParams: ['9']},
+          ],
+          projectName: this.project.name,
+        })
       })
 
       it('returns the status showing the completed review', function () {
