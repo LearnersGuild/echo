@@ -1,8 +1,13 @@
+import {GraphQLError} from 'graphql/error'
+
+import {userCan} from 'src/common/util'
+import {REFLECTION} from 'src/common/models/cycle'
 import {getChapterById} from 'src/server/db/chapter'
 import {getCycleById} from 'src/server/db/cycle'
 import {getProjectById} from 'src/server/db/project'
-
-export {default as resolveSaveSurveyResponses} from './resolveSaveSurveyResponses'
+import saveSurveyResponses from 'src/server/actions/saveSurveyResponses'
+import assertPlayersCurrentCycleInState from 'src/server/actions/assertPlayersCurrentCycleInState'
+import {handleError} from 'src/server/graphql/util'
 
 export async function resolveCycleChapter(cycle) {
   if (cycle.chapter) {
@@ -38,4 +43,17 @@ export async function resolveSurveyProject(parent) {
   if (parent.projectId) {
     return await getProjectById(parent.projectId)
   }
+}
+
+export async function resolveSaveSurveyResponses(source, {responses, projectName}, {rootValue: {currentUser}}) {
+  if (!currentUser || !userCan(currentUser, 'saveResponse')) {
+    throw new GraphQLError('You are not authorized to do that.')
+  }
+
+  await assertPlayersCurrentCycleInState(currentUser, REFLECTION)
+
+  const createdIds = await saveSurveyResponses({respondentId: currentUser.id, responses, projectName})
+    .catch(err => handleError(err, 'Failed to save responses'))
+
+  return {createdIds}
 }

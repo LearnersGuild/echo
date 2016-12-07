@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 /* global expect, testContext */
-/* eslint-disable prefer-arrow-callback, no-unused-expressions */
+/* eslint-disable prefer-arrow-callback */
 import {connect} from 'src/db'
-import factory from 'src/test/factories'
 import {withDBCleanup, useFixture, expectArraysToContainTheSameElements} from 'src/test/helpers'
+import factory from 'src/test/factories'
 
-import saveProjectReviewCLISurveyResponsesForPlayer from 'src/server/actions/saveProjectReviewCLISurveyResponsesForPlayer'
+import {resolveSaveSurveyResponses} from '../index'
 
 const r = connect()
 
@@ -21,10 +21,11 @@ describe(testContext(__filename), function () {
 
   describe('answering one at a time', function () {
     it('saves the responses with the right attributes', async function () {
-      const [returnedResponseId1] = await saveProjectReviewCLISurveyResponsesForPlayer(
-        this.currentUser.id, this.project.name, [{questionName: 'A', responseParams: ['80']}])
-      const [returnedResponseId2] = await saveProjectReviewCLISurveyResponsesForPlayer(
-        this.currentUser.id, this.project.name, [{questionName: 'B', responseParams: ['75']}])
+      const args1 = {responses: [{questionName: 'A', responseParams: ['80']}], projectName: this.project.name}
+      const args2 = {responses: [{questionName: 'B', responseParams: ['75']}], projectName: this.project.name}
+      const ast = {rootValue: {currentUser: this.currentUser}}
+      const {createdIds: [returnedResponseId1]} = await resolveSaveSurveyResponses(null, args1, ast)
+      const {createdIds: [returnedResponseId2]} = await resolveSaveSurveyResponses(null, args2, ast)
 
       const responses = await r.table('responses').run()
       expect(responses.length).to.eq(2)
@@ -46,16 +47,17 @@ describe(testContext(__filename), function () {
 
   describe('answering all questions at once', function () {
     it('saves the responses with the right attributes', async function () {
-      const returnedIds = await saveProjectReviewCLISurveyResponsesForPlayer(
-        this.currentUser.id, this.project.name, [
-          {questionName: 'A', responseParams: ['80']},
-          {questionName: 'B', responseParams: ['75']},
-        ]
-      )
+      const responseData = [
+        {questionName: 'A', responseParams: ['80']},
+        {questionName: 'B', responseParams: ['75']},
+      ]
+      const args = {responses: responseData, projectName: this.project.name}
+      const ast = {rootValue: {currentUser: this.currentUser}}
+      const {createdIds} = await resolveSaveSurveyResponses(null, args, ast)
 
       const responses = await r.table('responses').run()
       expect(responses.length).to.eq(2)
-      expectArraysToContainTheSameElements(returnedIds, responses.map(({id}) => id))
+      expectArraysToContainTheSameElements(createdIds, responses.map(({id}) => id))
       expect(responses.find(response => response.questionId === this.questionA.id))
         .to.have.property('value', 80)
       expect(responses.find(response => response.questionId === this.questionB.id))
