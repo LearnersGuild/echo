@@ -38,15 +38,41 @@ export async function resolveProject(parent) {
   }
 }
 
+export function resolveProjectGoal(project) {
+  if (!project.goal) {
+    return null
+  }
+  const {githubIssue} = project.goal
+  if (!githubIssue) {
+    return project.goal
+  }
+  return {
+    number: githubIssue.number,
+    url: githubIssue.url,
+    title: githubIssue.title,
+  }
+}
+
+export function resolveProjectStats(project) {
+  if (project.stats) {
+    return project.stats
+  }
+  return {
+    hours: null,
+    completeness: null,
+    quaity: null,
+  }
+}
+
 export async function resolveSaveSurveyResponses(source, {responses}, {rootValue: {currentUser}}) {
-  _assertUserAuthroized(currentUser, 'saveResponse')
+  _assertUserAuthorized(currentUser, 'saveResponse')
   await assertPlayersCurrentCycleInState(currentUser, REFLECTION)
 
   return await _validateAndSaveResponses(responses, currentUser)
 }
 
 export async function resolveSaveProjectReviewCLISurveyResponses(source, {responses: namedResponses, projectName}, {rootValue: {currentUser}}) {
-  _assertUserAuthroized(currentUser, 'saveResponse')
+  _assertUserAuthorized(currentUser, 'saveResponse')
   await assertPlayersCurrentCycleInState(currentUser, REFLECTION)
 
   const responses = await _buildResponsesFromNamedResponses(namedResponses, projectName, currentUser.id)
@@ -54,9 +80,18 @@ export async function resolveSaveProjectReviewCLISurveyResponses(source, {respon
   return await _validateAndSaveResponses(responses, currentUser)
 }
 
-function _assertUserAuthroized(user, action) {
-  if (!user || !userCan(user, action)) {
-    throw new GraphQLError('You are not authorized to do that.')
+export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
+  if (user.id !== currentUser.id && !userCan(currentUser, 'viewUserStats')) {
+    return null
+  }
+  if (user.stats && 'rating' in user.stats) {
+    return user.stats
+  }
+
+  const userStats = user.stats || {}
+  return {
+    rating: (userStats.elo || {}).rating,
+    xp: userStats.xp,
   }
 }
 
@@ -92,17 +127,8 @@ async function _buildResponsesFromNamedResponses(namedResponses, projectName, re
   })
 }
 
-export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
-  if (user.id !== currentUser.id && !userCan(currentUser, 'viewUserStats')) {
-    return null
-  }
-  if (user.stats && 'rating' in user.stats) {
-    return user.stats
-  }
-
-  const userStats = user.stats || {}
-  return {
-    rating: (userStats.elo || {}).rating,
-    xp: userStats.xp,
+function _assertUserAuthorized(user, action) {
+  if (!user || !userCan(user, action)) {
+    throw new GraphQLError('You are not authorized to do that.')
   }
 }
