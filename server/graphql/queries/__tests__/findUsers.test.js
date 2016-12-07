@@ -22,7 +22,7 @@ describe(testContext(__filename), function () {
     })
 
     it('returns correct users for identifiers', async function () {
-      useFixture.nockIDMfindUsers(this.users)
+      useFixture.nockIDMFindUsers(this.users)
       const player = this.players[0]
       const result = await runGraphQLQuery(
         query,
@@ -37,7 +37,7 @@ describe(testContext(__filename), function () {
     })
 
     it('returns all users if no identifiers specified', async function () {
-      useFixture.nockIDMfindUsers(this.users)
+      useFixture.nockIDMFindUsers(this.users)
       const result = await runGraphQLQuery(
         query,
         fields,
@@ -49,7 +49,7 @@ describe(testContext(__filename), function () {
     })
 
     it('returns no users if no matching identifiers specified', async function () {
-      useFixture.nockIDMfindUsers([])
+      useFixture.nockIDMFindUsers([])
       const result = await runGraphQLQuery(
         query,
         fields,
