@@ -28,8 +28,8 @@ describe(testContext(__filename), function () {
   })
 
   describe('importProject()', function () {
-    it('throws an error if chapterIdentifier is invalid', async function () {
-      useFixture.nockIDMfindUsers(this.users)
+    it('throws an error if chapter identifier is invalid', async function () {
+      useFixture.nockIDMFindUsers(this.users)
 
       let importError
       try {
@@ -41,8 +41,8 @@ describe(testContext(__filename), function () {
       return expect(importError.message).to.match(/Chapter not found/)
     })
 
-    it('throws an error if cycleIdentifier is invalid', async function () {
-      useFixture.nockIDMfindUsers(this.users)
+    it('throws an error if cycle identifier is invalid', async function () {
+      useFixture.nockIDMFindUsers(this.users)
 
       let importError
       try {
@@ -55,8 +55,8 @@ describe(testContext(__filename), function () {
     })
 
     it('throws an error if user identifiers list is invalid when importing a new project', async function () {
-      useFixture.nockIDMfindUsers(this.users)
-      useFixture.nockfetchGoalInfo(this.importData.goalIdentifier)
+      useFixture.nockIDMFindUsers(this.users)
+      useFixture.nockFetchGoalInfo(this.importData.goalIdentifier)
 
       let importError
       try {
@@ -68,9 +68,9 @@ describe(testContext(__filename), function () {
       return expect(importError.message).to.match(/must specify at least one user/)
     })
 
-    it('creates a new project a projectIdentifier is not specified', async function () {
-      useFixture.nockIDMfindUsers(this.users)
-      useFixture.nockfetchGoalInfo(this.importData.goalIdentifier)
+    it('creates a new project when project identifier is not specified', async function () {
+      useFixture.nockIDMFindUsers(this.users)
+      useFixture.nockFetchGoalInfo(this.importData.goalIdentifier)
 
       const importedProject = await importProject(this.importData)
 
@@ -83,14 +83,14 @@ describe(testContext(__filename), function () {
       })
     })
 
-    it('updates goal and users when a valid projectIdentifier is specified', async function () {
+    it('updates goal and users when a valid project identifier is specified', async function () {
       const newProject = await factory.create('project', {chapterId: this.chapter.id, cycleId: this.cycle.id})
       const newPlayers = await factory.createMany('player', {chapterId: this.chapter.id}, 4)
       const newGoalNumber = 2
 
       useFixture.nockClean()
-      useFixture.nockIDMfindUsers(newPlayers)
-      useFixture.nockfetchGoalInfo(newGoalNumber)
+      useFixture.nockIDMFindUsers(newPlayers)
+      useFixture.nockFetchGoalInfo(newGoalNumber)
 
       const importedProject = await importProject({
         ...this.importData,
