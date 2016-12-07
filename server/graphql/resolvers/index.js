@@ -36,6 +36,32 @@ export async function resolveProject(parent) {
   }
 }
 
+export function resolveProjectGoal(project) {
+  if (!project.goal) {
+    return null
+  }
+  const {githubIssue} = project.goal
+  if (!githubIssue) {
+    return project.goal
+  }
+  return {
+    number: githubIssue.number,
+    url: githubIssue.url,
+    title: githubIssue.title,
+  }
+}
+
+export function resolveProjectStats(project) {
+  if (project.stats) {
+    return project.stats
+  }
+  return {
+    hours: null,
+    completeness: null,
+    quaity: null,
+  }
+}
+
 export async function resolveSaveSurveyResponses(source, {responses, projectName}, {rootValue: {currentUser}}) {
   if (!currentUser || !userCan(currentUser, 'saveResponse')) {
     throw new GraphQLError('You are not authorized to do that.')
