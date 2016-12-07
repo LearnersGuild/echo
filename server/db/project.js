@@ -38,6 +38,10 @@ export function getProjectsForPlayer(playerId) {
   return findProjects(project => (project('playerIds').contains(playerId)))
 }
 
+export function findProjectsByIds(projectIds) {
+  return table.getAll(...projectIds)
+}
+
 export function findProjects(filter) {
   return filter ? table.filter(filter) : table
 }

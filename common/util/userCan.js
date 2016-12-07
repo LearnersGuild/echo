@@ -47,6 +47,11 @@ const CAPABILITY_ROLES = {
     'moderator',
   ],
 
+  listProjects: [
+    'backoffice',
+    'moderator',
+    'player',
+  ],
   updateProject: [
     'player',
     'moderator',
