@@ -1299,7 +1299,8 @@
       "dependencies": {
         "object-assign": {
           "version": "4.1.0",
-          "from": "object-assign@>=4.1.0 <5.0.0"
+          "from": "object-assign@4.1.0",
+          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.0.tgz"
         }
       }
     },
@@ -2988,6 +2989,11 @@
           "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz"
         }
       }
+    },
+    "google-libphonenumber": {
+      "version": "2.0.6",
+      "from": "google-libphonenumber@latest",
+      "resolved": "https://registry.npmjs.org/google-libphonenumber/-/google-libphonenumber-2.0.6.tgz"
     },
     "got": {
       "version": "5.6.0",
@@ -6580,7 +6586,8 @@
     },
     "rethinkdb-changefeed-reconnect": {
       "version": "0.3.1",
-      "from": "rethinkdb-changefeed-reconnect@latest"
+      "from": "rethinkdb-changefeed-reconnect@0.3.1",
+      "resolved": "https://registry.npmjs.org/rethinkdb-changefeed-reconnect/-/rethinkdb-changefeed-reconnect-0.3.1.tgz"
     },
     "rethinkdbdash": {
       "version": "2.3.25",

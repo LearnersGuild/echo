@@ -62,6 +62,12 @@ const CAPABILITY_ROLES = {
     'player',
   ],
 
+  listUsers: [
+    'backoffice',
+    'moderator',
+    'player',
+  ],
+
   saveResponse: [
     'player',
     'moderator',
@@ -78,9 +84,11 @@ const CAPABILITY_ROLES = {
     'player',
     'backoffice',
   ],
+
   runReports: [
     'backoffice'
   ],
+
   monitorJobQueues: [
     'backoffice',
   ],
