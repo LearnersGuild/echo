@@ -37,11 +37,7 @@ describe(testContext(__filename), function () {
       expect(response1).to.have.property('questionId', this.questionA.id)
       expect(response2).to.have.property('value', 75)
       expect(response2).to.have.property('questionId', this.questionB.id)
-      responses.forEach(response => {
-        expect(response).to.have.property('surveyId', this.survey.id)
-        expect(response).to.have.property('respondentId', this.currentUser.id)
-        expect(response.subjectId).to.eq(this.project.id)
-      })
+      responses.forEach(response => checkResponse(response, this.survey, this.currentUser, this.project))
     })
   })
 
@@ -62,11 +58,13 @@ describe(testContext(__filename), function () {
         .to.have.property('value', 80)
       expect(responses.find(response => response.questionId === this.questionB.id))
         .to.have.property('value', 75)
-      responses.forEach(response => {
-        expect(response).to.have.property('surveyId', this.survey.id)
-        expect(response).to.have.property('respondentId', this.currentUser.id)
-        expect(response.subjectId).to.eq(this.project.id)
-      })
+      responses.forEach(response => checkResponse(response, this.survey, this.currentUser, this.project))
     })
   })
 })
+
+function checkResponse(response, survey, respondent, subject) {
+  expect(response).to.have.property('surveyId', survey.id)
+  expect(response).to.have.property('respondentId', respondent.id)
+  expect(response.subjectId).to.eq(subject.id)
+}
