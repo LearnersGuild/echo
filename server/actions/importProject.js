@@ -4,9 +4,10 @@ import findUsers from 'src/server/actions/findUsers'
 import fetchGoalInfo from 'src/server/actions/fetchGoalInfo'
 import generateProjectName from 'src/server/actions/generateProjectName'
 import initializeProjectChannel from 'src/server/actions/initializeProjectChannel'
-import {Cycle, Project} from 'src/server/services/dataService'
+import {Project} from 'src/server/services/dataService'
 import {getChapter} from 'src/server/db/chapter'
 import {getProject} from 'src/server/db/project'
+import {getCycleForChapter} from 'src/server/db/cycle'
 
 export default async function importProject(data = {}, options = {}) {
   const {chapter, cycle, project, goal, users} = await _parseProjectInput(data)
@@ -68,9 +69,7 @@ async function _parseProjectInput(data) {
     throw new Error(`Users not found for identifiers: ${notFoundIds.join(', ')}`)
   }
 
-  const cycleNumber = parseInt(cycleIdentifier, 10) // TODO: support cycle ID
-  const cycles = await Cycle.filter({chapterId: chapter.id, cycleNumber}).run()
-  const cycle = cycles[0]
+  const cycle = await getCycleForChapter(chapter.id, cycleIdentifier)
   if (!cycle) {
     throw new Error(`Cycle not found for identifier ${cycleIdentifier} in chapter ${chapterIdentifier}`)
   }

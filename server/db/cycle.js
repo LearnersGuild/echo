@@ -18,6 +18,19 @@ export function getCycleById(cycleId, passedOptions = {}) {
     cycle
 }
 
+export function getCycleForChapter(chapterId, cycleIdentifier) {
+  const cycleNumber = parseInt(cycleIdentifier, 10)
+  return cyclesTable.filter(row => r.and(
+    row('chapterId').eq(chapterId),
+    r.or(
+      row('id').eq(cycleIdentifier),
+      row('cycleNumber').eq(cycleNumber)
+    )
+  ))
+  .nth(0)
+  .default(null)
+}
+
 export function findCycles(filter = {}) {
   return cyclesTable.filter(filter)
 }
