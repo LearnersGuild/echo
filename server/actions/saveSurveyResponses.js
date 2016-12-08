@@ -3,6 +3,7 @@ import {GraphQLError} from 'graphql/error'
 
 import {findActiveProjectReviewSurvey, getProjectByName} from 'src/server/db/project'
 import saveSurveyResponse from 'src/server/actions/saveSurveyResponse'
+import {flatten} from 'src/common/util'
 
 export default async function saveSurveyResponses({respondentId, responses, projectName}) {
   let project
@@ -34,5 +35,5 @@ export default async function saveSurveyResponses({respondentId, responses, proj
     return saveSurveyResponse(surveyResponse)
   })
 
-  return createdIdLists.reduce((a, b) => a.concat(b), [])
+  return flatten(createdIdLists)
 }

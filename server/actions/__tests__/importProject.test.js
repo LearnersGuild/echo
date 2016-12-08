@@ -26,61 +26,42 @@ describe(testContext(__filename), function () {
       goalIdentifier: this.goalNumber,
     }
   })
+  beforeEach(function () {
+    useFixture.nockIDMfindUsers(this.users)
+    useFixture.nockfetchGoalInfo(this.goalNumber)
+  })
+  afterEach(function () {
+    useFixture.nockClean()
+  })
 
   describe('importProject()', function () {
-    it('throws an error if chapterIdentifier is invalid', async function () {
-      useFixture.nockIDMfindUsers(this.users)
-
-      let importError
-      try {
-        await importProject({...this.importData, chapterIdentifier: 'fake.chapter.id'})
-      } catch (err) {
-        importError = err
-      }
-
-      return expect(importError.message).to.match(/Chapter not found/)
+    it('throws an error if chapterIdentifier is invalid', function () {
+      const result = importProject({...this.importData, chapterIdentifier: 'fake.chapter.id'})
+      expect(result).to.be.rejectedWith(/Chapter not found/)
     })
 
-    it('throws an error if cycleIdentifier is invalid', async function () {
-      useFixture.nockIDMfindUsers(this.users)
-
-      let importError
-      try {
-        await importProject({...this.importData, cycleIdentifier: 10101010})
-      } catch (err) {
-        importError = err
-      }
-
-      return expect(importError.message).to.match(/Cycle not found/)
+    it('throws an error if cycleIdentifier is invalid', function () {
+      const result = importProject({...this.importData, cycleIdentifier: 10101010})
+      expect(result).to.be.rejectedWith(/Cycle not found/)
     })
 
-    it('throws an error if user identifiers list is invalid when importing a new project', async function () {
-      useFixture.nockIDMfindUsers(this.users)
-      useFixture.nockfetchGoalInfo(this.importData.goalIdentifier)
-
-      let importError
-      try {
-        await importProject({...this.importData, userIdentifiers: null})
-      } catch (err) {
-        importError = err
-      }
-
-      return expect(importError.message).to.match(/must specify at least one user/)
+    it('throws an error if user identifiers list is invalid when importing a new project', function () {
+      const result = importProject({...this.importData, userIdentifiers: null})
+      expect(result).to.be.rejectedWith(/must specify at least one user/)
     })
 
     it('creates a new project a projectIdentifier is not specified', async function () {
-      useFixture.nockIDMfindUsers(this.users)
-      useFixture.nockfetchGoalInfo(this.importData.goalIdentifier)
-
+      useFixture.nockfetchGoalInfo(this.goalNumber)
       const importedProject = await importProject(this.importData)
 
       expect(importedProject.goal.githubIssue.number).to.eq(this.goalNumber)
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
-      expect(importedProject.playerIds.length).to.eq(this.players.length)
-      importedProject.playerIds.forEach(playerId => {
-        expect(this.players.find(p => p.id === playerId))
-      })
+      expect(
+        importedProject.playerIds.sort()
+      ).to.deep.eq(
+        this.players.map(p => p.id).sort()
+      )
     })
 
     it('updates goal and users when a valid projectIdentifier is specified', async function () {

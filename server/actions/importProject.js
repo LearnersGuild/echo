@@ -29,11 +29,7 @@ export default async function importProject(data = {}, options = {}) {
     savedProject = await Project.get(project.id).update(projectValues)
   } else {
     projectValues.name = data.projectName || await generateProjectName()
-    savedProject = new Project(projectValues).save()
-  }
-
-  if (!savedProject) {
-    throw new Error('Project import failed')
+    savedProject = await new Project(projectValues).save()
   }
 
   logger.debug(`Project imported: #${savedProject.name} (${savedProject.id})`)
