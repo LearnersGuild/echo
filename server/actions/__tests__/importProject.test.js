@@ -27,8 +27,8 @@ describe(testContext(__filename), function () {
     }
   })
   beforeEach(function () {
-    useFixture.nockIDMfindUsers(this.users)
-    useFixture.nockfetchGoalInfo(this.goalNumber)
+    useFixture.nockIDMFindUsers(this.users)
+    useFixture.nockFetchGoalInfo(this.goalNumber)
   })
   afterEach(function () {
     useFixture.nockClean()
@@ -51,7 +51,7 @@ describe(testContext(__filename), function () {
     })
 
     it('creates a new project a projectIdentifier is not specified', async function () {
-      useFixture.nockfetchGoalInfo(this.goalNumber)
+      useFixture.nockFetchGoalInfo(this.goalNumber)
       const importedProject = await importProject(this.importData)
 
       expect(importedProject.goal.githubIssue.number).to.eq(this.goalNumber)

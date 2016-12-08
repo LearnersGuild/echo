@@ -1,6 +1,8 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
+import Promise from 'bluebird'
+
 import factory from 'src/test/factories'
 import {withDBCleanup, runGraphQLQuery, useFixture} from 'src/test/helpers'
 
@@ -36,6 +38,9 @@ describe(testContext(__filename), function () {
     this.currentUser = await factory.build('user', {roles: ['moderator']})
     this.users = await factory.buildMany('user', 3)
     this.project = await factory.create('project', {playerIds: this.users.map(u => u.id)})
+    await Promise.each(this.users, user => (
+      factory.create('player', {id: user.id})
+    ))
   })
 
   it('returns correct summary for project identifier', async function () {
