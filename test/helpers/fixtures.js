@@ -146,9 +146,10 @@ export const useFixture = {
       }
     })
   },
-  nockIDMGetUsersById(users) {
+  nockIDMGetUsersById(users, {times = 1} = {}) {
     this.apiScope = nock(config.server.idm.baseURL)
       .post('/graphql')
+      .times(times)
       .reply(200, {
         data: {
           getUsersByIds: users,
@@ -159,18 +160,20 @@ export const useFixture = {
     nock.cleanAll()
     this.apiScope = null
   },
-  nockIDMfindUsers(users) {
+  nockIDMfindUsers(users, {times = 1} = {}) {
     this.apiScope = nock(config.server.idm.baseURL)
       .post('/graphql')
+      .times(times)
       .reply(200, {
         data: {
           findUsers: users,
         },
       })
   },
-  nockfetchGoalInfo(goalNumber) {
+  nockfetchGoalInfo(goalNumber, {times = 1} = {}) {
     this.apiScope = nock('https://api.github.com')
       .get(`/repos/GuildCraftsTesting/web-development-js-testing/issues/${goalNumber}`)
+      .times(times)
       .reply(200, {
         number: goalNumber,
         labels: [],

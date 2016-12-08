@@ -27,10 +27,6 @@ describe(testContext(__filename), function () {
     }
   })
   beforeEach(function () {
-    useFixture.nockIDMfindUsers(this.users)
-    useFixture.nockfetchGoalInfo(this.goalNumber)
-  })
-  afterEach(function () {
     useFixture.nockClean()
   })
 
@@ -51,7 +47,9 @@ describe(testContext(__filename), function () {
     })
 
     it('creates a new project a projectIdentifier is not specified', async function () {
-      useFixture.nockfetchGoalInfo(this.goalNumber)
+      useFixture.nockIDMfindUsers(this.users)
+      useFixture.nockfetchGoalInfo(this.goalNumber, {times: 2})
+
       const importedProject = await importProject(this.importData)
 
       expect(importedProject.goal.githubIssue.number).to.eq(this.goalNumber)
@@ -69,7 +67,6 @@ describe(testContext(__filename), function () {
       const newPlayers = await factory.createMany('player', {chapterId: this.chapter.id}, 4)
       const newGoalNumber = 2
 
-      useFixture.nockClean()
       useFixture.nockIDMfindUsers(newPlayers)
       useFixture.nockfetchGoalInfo(newGoalNumber)
 
