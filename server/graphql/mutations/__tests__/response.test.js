@@ -124,7 +124,7 @@ describe(testContext(__filename), function () {
     })
   })
 
-  describe('saveProjectReviewResponses', function () {
+  describe('saveProjectReviewCLISurveyResponses', function () {
     useFixture.createProjectReviewSurvey()
 
     beforeEach(async function () {

@@ -6,7 +6,6 @@ import {recordSurveyCompletedBy} from 'src/server/db/survey'
 import {
   findProjectByNameForPlayer,
   findProjectBySurveyId,
-  findActiveProjectReviewSurvey,
   findProjectsAndReviewResponsesForPlayer,
   getProjectByName,
   getProjectsForPlayer,
@@ -97,26 +96,6 @@ describe(testContext(__filename), function () {
       await factory.create('project', {name: 'projectName'})
       const promise = getProjectByName('anotherName')
       await expect(promise).to.eventually.be.rejectedWith('No project found')
-    })
-  })
-
-  describe('findActiveProjectReviewSurvey()', function () {
-    it('finds the right survey', async function () {
-      const projectWithoutSurvey = await factory.create('project')
-      const survey = await factory.create('survey')
-      const updatedProject = {
-        id: projectWithoutSurvey.id,
-        projectReviewSurveyId: survey.id,
-      }
-      const {changes: [{new_val: project}]} = await updateProject(updatedProject, {returnChanges: true})
-      const result = await findActiveProjectReviewSurvey(project)
-      expect(result.id).to.eq(survey.id)
-    })
-
-    it('resolves to undefined when no project found', async function () {
-      const project = await factory.create('project')
-      const result = await findActiveProjectReviewSurvey(project)
-      expect(result).to.be.undefined
     })
   })
 

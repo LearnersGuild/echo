@@ -2,7 +2,7 @@ import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {GraphQLList} from 'graphql/type'
 
 import {CreatedIdList, CLINamedSurveyResponse} from 'src/server/graphql/schemas'
-import {resolveSaveSurveyResponses} from 'src/server/graphql/resolvers'
+import {resolveSaveProjectReviewCLISurveyResponses} from 'src/server/graphql/resolvers'
 
 export default {
   type: CreatedIdList,
@@ -17,6 +17,6 @@ export default {
     },
   },
   async resolve(source, {responses, projectName}, ast) {
-    return await resolveSaveSurveyResponses(source, {responses, projectName}, ast)
+    return await resolveSaveProjectReviewCLISurveyResponses(source, {responses, projectName}, ast)
   }
 }
