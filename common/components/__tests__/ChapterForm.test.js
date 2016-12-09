@@ -57,7 +57,6 @@ describe(testContext(__filename), function () {
         dateOfBirth: null,
         timezone: null,
       },
-      isBusy: false,
     }
 
     this.getProps = customProps => {
@@ -65,7 +64,6 @@ describe(testContext(__filename), function () {
         handleSubmit: () => null,
         submitting: false,
         submitFailed: false,
-        isBusy: false,
         formType: 'update',
         showCreateInviteCode: false,
         onSaveInviteCode: () => null,
@@ -142,14 +140,6 @@ describe(testContext(__filename), function () {
   })
 
   describe('rendering', function () {
-    it('displays progress bar if isBusy', function () {
-      const props = this.getProps({isBusy: true})
-      const root = shallow(React.createElement(ChapterForm, props))
-      const progressBars = root.find('ThemedProgressBar')
-
-      expect(progressBars.length).to.equal(1)
-    })
-
     it('displays not found message if formType is "notfound"', function () {
       const props = this.getProps({formType: 'notfound'})
       const root = shallow(React.createElement(ChapterForm, props))

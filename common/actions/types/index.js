@@ -6,6 +6,10 @@ export default keyMirror({
   AUTHORIZATION_ERROR: null,
   DISMISS_ERROR: null,
 
+  FETCH_DATA_REQUEST: null,
+  FETCH_DATA_FAILURE: null,
+  FETCH_DATA_SUCCESS: null,
+
   GET_CHAPTER_REQUEST: null,
   GET_CHAPTER_SUCCESS: null,
   GET_CHAPTER_FAILURE: null,

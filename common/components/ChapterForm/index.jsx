@@ -6,7 +6,6 @@ import {Button} from 'react-toolbox/lib/button'
 import {CardTitle} from 'react-toolbox/lib/card'
 import Input from 'react-toolbox/lib/input'
 import Dropdown from 'react-toolbox/lib/dropdown'
-import ProgressBar from 'react-toolbox/lib/progress_bar'
 
 import InviteCodeForm from 'src/common/containers/InviteCodeForm'
 import NotFound from 'src/common/components/NotFound'
@@ -112,7 +111,6 @@ class ChapterForm extends Component {
       handleSubmit,
       submitting,
       onSaveChapter,
-      isBusy,
       formType,
       inviteCodes,
       showCreateInviteCode,
@@ -121,9 +119,6 @@ class ChapterForm extends Component {
       formValues,
     } = this.props
 
-    if (isBusy) {
-      return <ProgressBar/>
-    }
     if (formType === FORM_TYPES.NOT_FOUND) {
       return <NotFound/>
     }
@@ -228,7 +223,7 @@ class ChapterForm extends Component {
             <Button
               type="submit"
               label="Save"
-              disabled={pristine || invalid || submitting || isBusy}
+              disabled={pristine || invalid || submitting}
               primary
               raised
               />
@@ -247,7 +242,6 @@ ChapterForm.propTypes = {
   invalid: PropTypes.bool.isRequired,
   submitting: PropTypes.bool.isRequired,
   pristine: PropTypes.bool.isRequired,
-  isBusy: PropTypes.bool.isRequired,
   formType: PropTypes.oneOf(Object.values(FORM_TYPES)).isRequired,
   inviteCodes: PropTypes.array.isRequired,
   showCreateInviteCode: PropTypes.bool.isRequired,

@@ -1,12 +1,11 @@
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
 
-import ProgressBar from 'react-toolbox/lib/progress_bar'
-
+import LoadingIndicator from 'src/common/components/LoadingIndicator'
 import PlayerListComponent from 'src/common/components/PlayerList'
 import {findPlayers, reassignPlayersToChapter} from 'src/common/actions/user'
 import {findChapters} from 'src/common/actions/chapter'
-import {userCan} from 'src/common/util'
+import {userCan, toSortedArray} from 'src/common/util'
 
 class PlayerList extends Component {
   constructor(props) {
@@ -30,8 +29,9 @@ class PlayerList extends Component {
 
   render() {
     const {playersById, users, chapters, isBusy, currentUser} = this.props
-    if (isBusy) {
-      return <ProgressBar/>
+
+    if (users.length === 0 && isBusy) {
+      return <LoadingIndicator/>
     }
 
     return (
@@ -55,23 +55,10 @@ PlayerList.propTypes = {
   dispatch: PropTypes.func.isRequired,
 }
 
-function stateObjectToSortedArray(obj, attr) {
-  return Object.keys(obj)
-    .map(id => obj[id])
-    .sort((a, b) => {
-      if (a[attr] < b[attr]) {
-        return -1
-      } else if (a[attr] === b[attr]) {
-        return 0
-      }
-      return 1
-    })
-}
-
 function mapStateToProps(state) {
   const {players, chapters, users} = state
-  const userList = stateObjectToSortedArray(users.users, 'handle')
-  const chapterList = stateObjectToSortedArray(chapters.chapters, 'name')
+  const userList = toSortedArray(users.users, 'handle')
+  const chapterList = toSortedArray(chapters.chapters, 'name')
 
   return {
     currentUser: state.auth.currentUser,

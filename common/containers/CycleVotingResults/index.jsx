@@ -73,11 +73,16 @@ class WrappedCycleVotingResults extends Component {
   }
 
   render() {
+    if (!this.props.cycle && this.props.isBusy) {
+      return null
+    }
     return <CycleVotingResults onClose={this.handleClose} {...this.props}/>
   }
 }
 
 WrappedCycleVotingResults.propTypes = Object.assign({}, cycleVotingResultsPropType, {
+  isBusy: PropTypes.bool,
+  cycle: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
 })
 

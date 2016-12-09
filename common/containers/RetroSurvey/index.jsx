@@ -21,6 +21,7 @@ import {
 import * as SurveyActions from 'src/common/actions/survey'
 import SurveyForm from 'src/common/components/SurveyForm'
 import SurveyConfirmation from 'src/common/components/SurveyConfirmation'
+import LoadingIndicator from 'src/common/components/LoadingIndicator'
 import {Flex} from 'src/common/components/Layout'
 
 import styles from './index.css'
@@ -187,7 +188,7 @@ class RetroSurveyContainer extends Component {
   render() {
     if (!this.state.questionGroups) {
       return this.props.surveys.isBusy ?
-        <ProgressBar mode="indeterminate"/> : this.renderErrorMessage()
+        <LoadingIndicator/> : this.renderErrorMessage()
     }
 
     return (

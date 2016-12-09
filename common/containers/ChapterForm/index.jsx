@@ -23,11 +23,16 @@ class WrappedChapterForm extends Component {
   }
 
   render() {
+    if (!this.props.chapter && this.props.isBusy) {
+      return null
+    }
     return <ChapterFormComponent {...this.props}/>
   }
 }
 
 WrappedChapterForm.propTypes = {
+  isBusy: PropTypes.bool,
+  chapter: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
 }
 
@@ -57,7 +62,7 @@ function handleSaveInviteCode(dispatch) {
 
 function mapStateToProps(state, props) {
   const {id} = props.params
-  const {chapters, isBusy} = state.chapters
+  const {chapters} = state.chapters
 
   const chapter = chapters[id]
   const inviteCodes = chapter && chapter.inviteCodes
@@ -68,13 +73,14 @@ function mapStateToProps(state, props) {
   const initialValues = Object.assign({}, {id, timezone, cycleEpochDate, cycleEpochTime}, chapter)
 
   let formType = chapter ? FORM_TYPES.UPDATE : FORM_TYPES.CREATE
-  if (id && !chapter && !isBusy) {
+  if (id && !chapter && !chapters.isBusy) {
     formType = FORM_TYPES.NOT_FOUND
   }
 
   return {
+    isBusy: chapters.isBusy,
+    chapter,
     initialValues,
-    isBusy,
     formType,
     inviteCodes: sortedInviteCodes,
     formValues: getFormValues(FORM_NAME)(state) || {},
