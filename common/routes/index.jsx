@@ -11,6 +11,7 @@ import App from 'src/common/containers/App'
 import ChapterForm from 'src/common/containers/ChapterForm'
 import ChapterList from 'src/common/containers/ChapterList'
 import UserList from 'src/common/containers/UserList'
+import UserDetail from 'src/common/containers/UserDetail'
 import RetroSurvey from 'src/common/containers/RetroSurvey'
 import CycleVotingResults from 'src/common/containers/CycleVotingResults'
 import Blank from 'src/common/components/Blank'
@@ -53,6 +54,7 @@ const routes = store => {
       </Route>
       <Route path="/users" component={Blank}>
         <IndexRoute component={userCanVisit('listUsers', store)(UserList)}/>
+        <Route path=":identifier" component={userCanVisit('viewUser', store)(UserDetail)}/>
       </Route>
       <Route path="/retro" component={Blank}>
         <IndexRoute component={userCanVisit('saveResponse', store)(RetroSurvey)}/>

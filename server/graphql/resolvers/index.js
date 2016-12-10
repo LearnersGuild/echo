@@ -138,7 +138,10 @@ export async function resolveUserProjectSummaries(userSummary) {
   }
 
   const projects = await findProjectsForUser(user.id)
-  return Promise.map(projects, async project => {
+  const sortedProjects = projects.sort((a, b) => (a.createdAt - b.createdAt))
+  .reverse()
+
+  return Promise.map(sortedProjects, async project => {
     const summary = await getUserProjectSummary(user, project)
     return {project, ...summary}
   })
@@ -186,7 +189,7 @@ export function extractUserProjectStats(user, project) {
     challenge: projectStats.challenge,
     culture: projectStats.cc,
     technical: projectStats.th,
-    teamPlay: projectStats.teamPlay,
+    teamPlay: projectStats.tp,
     receptiveness: projectStats.receptiveness,
     focus: projectStats.resultsFocus,
     leadership: projectStats.flexibleLeadership,

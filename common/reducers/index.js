@@ -10,6 +10,7 @@ import cycles from './cycles'
 import cycleVotingResults from './cycleVotingResults'
 import players from './players'
 import users from './users'
+import userSummaries from './userSummaries'
 import surveys from './surveys'
 
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   cycleVotingResults,
   players,
   users,
+  userSummaries,
   surveys,
 })
 

@@ -1,0 +1,22 @@
+@import "node_modules/react-toolbox/lib/_colors";
+
+.userProjectSummary {
+  font-size: 1.3rem;
+  line-height: 2rem;
+  padding: 20px 0;
+  border-bottom: 1px solid $palette-grey-300;
+  min-width: 400px;
+}
+
+.summary {
+  .column {
+    margin-right: 10px;
+  }
+}
+
+.review {
+  font-size: 1.4rem;
+  margin-top: 20px;
+  color: $palette-grey-500;
+  font-style: italic;
+}

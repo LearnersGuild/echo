@@ -1,0 +1,18 @@
+@import "node_modules/react-toolbox/lib/_colors";
+
+.tabs.fixed {
+  width: 100%;
+
+  .label {
+    color: $palette-grey-500;
+  }
+
+  .navigation {
+    box-shadow: none;
+    border-bottom: 1px solid $palette-grey-200;
+  }
+
+  .pointer {
+    height: 0;
+  }
+}

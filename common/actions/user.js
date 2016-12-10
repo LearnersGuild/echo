@@ -51,6 +51,23 @@ export function findPlayers(options = {}) {
   }
 }
 
+export function getUserSummary(identifier) {
+  return {
+    types: [
+      types.GET_USER_SUMMARY_REQUEST,
+      types.GET_USER_SUMMARY_SUCCESS,
+      types.GET_USER_SUMMARY_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      const query = queries.getUserSummary(identifier)
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.getUserSummary)
+    },
+    payload: {},
+  }
+}
+
 export function reassignPlayersToChapter(playerIds, chapterId) {
   return {
     types: [

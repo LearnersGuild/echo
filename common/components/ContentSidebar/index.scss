@@ -1,0 +1,23 @@
+@import "node_modules/react-toolbox/lib/_colors";
+
+.sidebar{
+  width: 250px;
+  padding-right: 20px;
+  font-size: 1.3rem;
+  line-height: 1.5em;
+}
+.header,
+.image {
+  width: 100%;
+  margin-bottom: 5px;
+}
+.image {
+  border-radius: 5%;
+}
+.title {
+  margin: 5px 0;
+}
+.subtitle {
+  color: $palette-grey-500;
+  margin-bottom: 5px;
+}

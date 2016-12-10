@@ -7,6 +7,7 @@ export default {
   getChapterById: require('./getChapterById'),
   getCycleVotingResults: require('./getCycleVotingResults'),
   getRetrospectiveSurvey: require('./getRetrospectiveSurvey'),
+  getUserSummary: require('./getUserSummary'),
   reassignPlayersToChapter: require('./reassignPlayersToChapter'),
   saveRetrospectiveSurveyResponses: require('./saveRetrospectiveSurveyResponses'),
 }
