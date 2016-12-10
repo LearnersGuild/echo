@@ -1,0 +1,25 @@
+/* nav bar */
+.appBar {
+  padding: 0;
+}
+.menu {
+  margin-top: 50px;
+  margin-right: -25px;
+}
+.menuItem {
+  width: 100%;
+}
+.avatar {
+  border-radius: 10%;
+}
+
+/* progress bar */
+.indeterminate {
+  margin-top: -4px;
+  z-index: 1000;
+  background-color: rgba(0,0,0,0);
+}
+.buffer,
+.value {
+  height: 3px;
+}

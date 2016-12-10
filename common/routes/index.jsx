@@ -1,17 +1,16 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["UserAuthWrapper"]}] */
 /* global __CLIENT__ window */
 import React from 'react'
-import {Route, IndexRoute} from 'react-router'
+import {Route, IndexRoute, IndexRedirect} from 'react-router'
 import {UserAuthWrapper as userAuthWrapper} from 'redux-auth-wrapper'
 import {push} from 'react-router-redux'
 
 import {userCan} from 'src/common/util'
-import {authorizationError} from 'src/common/actions/error'
+import {authorizationError} from 'src/common/actions/app'
 import App from 'src/common/containers/App'
-import Home from 'src/common/containers/Home'
 import ChapterForm from 'src/common/containers/ChapterForm'
 import ChapterList from 'src/common/containers/ChapterList'
-import PlayerList from 'src/common/containers/PlayerList'
+import UserList from 'src/common/containers/UserList'
 import RetroSurvey from 'src/common/containers/RetroSurvey'
 import CycleVotingResults from 'src/common/containers/CycleVotingResults'
 import Blank from 'src/common/components/Blank'
@@ -46,14 +45,14 @@ const userCanVisit = (capability, store) => {
 const routes = store => {
   return (
     <Route path="/" component={userIsAuthenticated(App)}>
-      <IndexRoute component={userIsAuthenticated(Home)}/>
+      <IndexRedirect to="/chapters"/>
       <Route path="/chapters" component={Blank}>
         <IndexRoute component={userCanVisit('listChapters', store)(ChapterList)}/>
         <Route path="new" component={userCanVisit('createChapter', store)(ChapterForm)}/>
         <Route path=":id" component={userCanVisit('updateChapter', store)(ChapterForm)}/>
       </Route>
-      <Route path="/players" component={Blank}>
-        <IndexRoute component={userCanVisit('listPlayers', store)(PlayerList)}/>
+      <Route path="/users" component={Blank}>
+        <IndexRoute component={userCanVisit('listUsers', store)(UserList)}/>
       </Route>
       <Route path="/retro" component={Blank}>
         <IndexRoute component={userCanVisit('saveResponse', store)(RetroSurvey)}/>

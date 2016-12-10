@@ -1,1 +1,1 @@
-export {Flex} from 'jsxstyle'
+export {default as Flex} from './Flex'

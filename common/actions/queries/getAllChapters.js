@@ -7,11 +7,17 @@ export default function findChapters() {
           id
           name
           channelName
-          timezone
-          goalRepositoryURL
-          cycleDuration
           cycleEpoch
+          cycleDuration
+          goalRepositoryURL
           inviteCodes
+          activeProjectCount
+          activePlayerCount
+          latestCycle {
+            id
+            cycleNumber
+            state
+          }
         }
       }
     `,

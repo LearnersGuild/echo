@@ -15,7 +15,7 @@ import getUser from 'src/server/actions/getUser'
 import {Chapter, Cycle, Project, Survey} from 'src/server/services/dataService'
 import {handleError} from 'src/server/graphql/util'
 import {BadInputError} from 'src/server/errors'
-import {mapById} from 'src/server/util'
+import {mapById, roundDecimal} from 'src/server/util'
 
 export async function resolveGetUser(source, {identifier}, {rootValue: {currentUser}}) {
   if (!userCan(currentUser, 'viewUser')) {
@@ -49,11 +49,11 @@ export function resolveChapterActiveProjectCount(chapter) {
     ) : chapter.activeProjectCount
 }
 
-export function resolveChapterActivePlayerCount(chapter) {
+export async function resolveChapterActivePlayerCount(chapter) {
   return isNaN(chapter.activePlayerCount) ?
-    _safeResolveAsync(
-      findActivePlayersInChapter(chapter.id, {count: true})
-    ) : chapter.activePlayerCount
+    (await _safeResolveAsync(
+      findActivePlayersInChapter(chapter.id)
+    ) || []).length : chapter.activePlayerCount
 }
 
 export function resolveCycle(parent) {
@@ -218,7 +218,7 @@ export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
   const userStats = user.stats || {}
   return {
     rating: (userStats.elo || {}).rating,
-    xp: userStats.xp,
+    xp: roundDecimal(userStats.xp) || 0,
   }
 }
 

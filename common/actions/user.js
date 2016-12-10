@@ -14,9 +14,9 @@ export function findUsers(ids) {
     ],
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {
-      const query = queries.getUsersByIds(ids)
-      return getGraphQLFetcher(dispatch, getState().auth, process.env.IDM_BASE_URL)(query)
-        .then(graphQLResponse => graphQLResponse.data.getUsersByIds)
+      const query = queries.findUsers(ids)
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.findUsers)
         .then(users => normalize(users, schemas.users))
     },
     payload: {},

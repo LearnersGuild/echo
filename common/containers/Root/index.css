@@ -3,11 +3,8 @@
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons); /* needed for react-toolbox */
 
 /* Global CSS. */
-html {
-  font-size: 62.5%;
-}
 html, body {
   height: 100%;
-  overflow-y: scroll; /* has to be scroll, not auto */
+  overflow: hidden;
   -webkit-overflow-scrolling: touch;
 }

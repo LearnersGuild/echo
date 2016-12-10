@@ -1,0 +1,10 @@
+/* react-toolbox doc styles
+ * (shamelessly copied from https://github.com/react-toolbox/react-toolbox/tree/dev/docs) */
+@import "node_modules/react-toolbox/lib/_colors"; // Import minimal colors
+
+$color-primary: $palette-indigo-500;
+$color-primary-dark: $palette-indigo-700;
+$color-primary-light: $palette-indigo-500;
+$color-accent: $palette-pink-a200;
+$color-accent-dark: $palette-pink-700;
+$color-primary-contrast: $color-dark-contrast;

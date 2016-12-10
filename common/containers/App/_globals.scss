@@ -1,0 +1,14 @@
+/* react-toolbox doc styles
+ * (shamelessly copied from https://github.com/react-toolbox/react-toolbox/tree/dev/docs) */
+@import "node_modules/react-toolbox/lib/_colors";
+@import "node_modules/react-toolbox/lib/_globals";
+@import "node_modules/react-toolbox/lib/_mixins";
+@import "./_theme";
+
+$unit: 1rem;
+$color-primary-dark: $color-primary-dark;
+$color-primary-light: $color-primary-light;
+$color-primary-contrast: $color-primary-contrast;
+$color-accent: $color-accent;
+$color-divider: $color-divider;
+$color-content: #fafafa;

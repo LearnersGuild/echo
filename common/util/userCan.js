@@ -76,6 +76,10 @@ const CAPABILITY_ROLES = {
     'moderator',
     'player',
   ],
+  viewUserStats: [
+    'backoffice',
+    'moderator',
+  ],
   viewUserSummary: [
     'backoffice',
     'moderator',

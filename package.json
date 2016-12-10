@@ -100,7 +100,6 @@
     "jsdom": "^8.0.4",
     "json-loader": "^0.5.4",
     "jsonwebtoken": "^7.0.1",
-    "jsxstyle": "^1.0.2",
     "juration": "0.0.1",
     "keymirror": "^0.1.1",
     "later": "^1.2.0",

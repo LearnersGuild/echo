@@ -16,6 +16,6 @@ export default {
       throw new GraphQLError('You are not authorized to do that.')
     }
 
-    return await findUsers(identifiers)
+    return await findUsers(identifiers, {skipNoMatch: true})
   }
 }

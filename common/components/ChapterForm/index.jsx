@@ -3,11 +3,11 @@ import React, {Component, PropTypes} from 'react'
 import moment from 'moment-timezone'
 import {Field} from 'redux-form'
 import {Button} from 'react-toolbox/lib/button'
-import {CardTitle} from 'react-toolbox/lib/card'
 import Input from 'react-toolbox/lib/input'
 import Dropdown from 'react-toolbox/lib/dropdown'
 
 import InviteCodeForm from 'src/common/containers/InviteCodeForm'
+import ContentHeader from 'src/common/components/ContentHeader'
 import NotFound from 'src/common/components/NotFound'
 import {Flex} from 'src/common/components/Layout'
 import {FORM_TYPES, renderInput, renderDatePicker, renderTimePicker} from 'src/common/util/form'
@@ -150,9 +150,13 @@ class ChapterForm extends Component {
       )
     }
 
+    const title = formType === FORM_TYPES.CREATE ?
+      'Create Chapter' :
+      `Edit Chapter: ${formValues.name}`
+
     return (
       <div>
-        <CardTitle title={`${formType === FORM_TYPES.CREATE ? 'Create' : 'Edit'} Chapter`}/>
+        <ContentHeader title={title}/>
         <form id="chapter" onSubmit={handleSubmit(onSaveChapter)}>
           <Field name="id" type="hidden" component="hidden"/>
           <Field

@@ -30,7 +30,6 @@ export function toSortedArray(obj, attr, options = {}) {
   }
   const arr = Array.isArray(obj) ? obj : Object.values(obj)
   const sorted = arr.sort((a, b) => {
-    console.log('a[attr]:', typeof a[attr], a[attr])
     if (typeof a[attr] === 'string') {
       return a[attr].localeCompare(b[attr])
     }

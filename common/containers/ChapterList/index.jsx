@@ -14,19 +14,19 @@ class ChapterList extends Component {
 
   constructor(props) {
     super(props)
-    this.handleCreateChapter = this.handleCreateChapter.bind(this)
-    this.handleEditChapter = this.handleEditChapter.bind(this)
+    this.handleClickCreate = this.handleClickCreate.bind(this)
+    this.handleSelectRow = this.handleSelectRow.bind(this)
   }
 
   componentDidMount() {
-    this.constructor.fetchData(this.props.dispatch, this.props)
+    this.constructor.fetchData(this.props.dispatch)
   }
 
-  handleCreateChapter() {
+  handleClickCreate() {
     this.props.dispatch(push('/chapters/new'))
   }
 
-  handleEditChapter(row) {
+  handleSelectRow(row) {
     this.props.dispatch(push(`/chapters/${this.props.chapters[row].id}`))
   }
 
@@ -39,11 +39,11 @@ class ChapterList extends Component {
 
     return (
       <ChapterListComponent
-        selectable={userCan(currentUser, 'updateChapter')}
-        showCreateButton={userCan(currentUser, 'createChapter')}
+        allowCreate={userCan(currentUser, 'createChapter')}
+        allowSelect={userCan(currentUser, 'updateChapter')}
         chapters={chapters}
-        onCreateChapter={this.handleCreateChapter}
-        onEditChapter={this.handleEditChapter}
+        onClickCreate={this.handleClickCreate}
+        onSelectRow={this.handleSelectRow}
         />
     )
   }
