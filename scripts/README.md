@@ -11,20 +11,20 @@ Create a JSON file containing the project data you want to import. It should con
 Example - updating an existing project:
 ```js
 [{
-  chapterName: 'Oakland',
-  cycleNumber: 14,
-  projectName: 'boiling-pademelon',
-  playerHandles: ['superawsm', 'malookwhaticando']
+  "chapterName": 'Oakland',
+  "cycleNumber": 14,
+  "projectName": 'boiling-pademelon',
+  "playerHandles": ["superawsm", "malookwhaticando"]
 }]
 ```
 
 Example - creating a NEW project:
 ```js
 [{
-  chapterName: 'Oakland',
-  cycleNumber: 14,
-  goalNumber: 86,
-  playerHandles: ['superawsm', 'malookwhaticando']
+  "chapterName": 'Oakland',
+  "cycleNumber": 14,
+  "goalNumber": 86,
+  "playerHandles": ["superawsm", "malookwhaticando"]
 }]
 ```
 

@@ -2,44 +2,19 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
-import {connect} from 'src/db'
-import {GOAL_SELECTION, COMPLETE} from 'src/common/models/cycle'
+import {GOAL_SELECTION} from 'src/common/models/cycle'
 import {
   getCycleById,
   findCycles,
   getCyclesInStateForChapter,
   getLatestCycleForChapter,
-  createNextCycleForChapter,
 } from 'src/server/db/cycle'
-import {withDBCleanup} from 'src/test/helpers'
+import {withDBCleanup, useFixture} from 'src/test/helpers'
 import factory from 'src/test/factories'
-
-const r = connect()
 
 describe(testContext(__filename), function () {
   withDBCleanup()
-
-  before('define createChapterWithCycles helper', function () {
-    this.createChapterWithCycles = (cycleAttrs = {}) => {
-      const now = new Date()
-      return factory.create('chapter')
-        .then(chapter => {
-          this.chapter = chapter
-          const overwriteObjs = Array.from(Array(4).keys()).map(i => {
-            const startTimestamp = new Date(now)
-            startTimestamp.setDate(startTimestamp.getDate() + (i * 7))
-            return Object.assign({}, {
-              chapterId: chapter.id,
-              startTimestamp,
-            }, cycleAttrs)
-          })
-          return factory.createMany('cycle', overwriteObjs)
-            .then(cycles => {
-              this.cycles = cycles
-            })
-        })
-    }
-  })
+  useFixture.createChapterWithCycles()
 
   describe('getCycleById', function () {
     beforeEach(function () {
@@ -101,54 +76,6 @@ describe(testContext(__filename), function () {
           expect(cycles.length).to.equal(4)
           expect(cycles[0].startTimestamp).to.be.above(cycles[1].startTimestamp)
         })
-    })
-  })
-
-  describe('createNextCycleForChapter', function () {
-    beforeEach(function () {
-      return this.createChapterWithCycles()
-    })
-
-    function _itCreatesANewCycle() {
-      it('creates a new cycle for this chapter', async function () {
-        const beginTimestamp = Date.now()
-        const cycle = await createNextCycleForChapter(this.chapter.id)
-        expect(cycle.state).to.equal(GOAL_SELECTION)
-        expect(cycle.chapterId).to.equal(this.chapter.id)
-        expect(cycle.cycleNumber).to.equal(
-          this.cycles.length ?
-            this.cycles[this.cycles.length - 1].cycleNumber + 1 :
-            1
-        )
-        expect(cycle.startTimestamp.getTime()).to.gt(beginTimestamp)
-        expect(cycle.createdAt.getTime()).to.gt(beginTimestamp)
-        expect(cycle.updatedAt.getTime()).to.gt(beginTimestamp)
-      })
-    }
-
-    _itCreatesANewCycle()
-
-    it('moves the previous cycle to COMPLETE', async function () {
-      const beginTimestamp = Date.now()
-      let previousCycle = this.cycles[this.cycles.length - 1]
-      expect(previousCycle.state).to.not.eq(COMPLETE)
-      expect(previousCycle.endTimestamp).to.not.exist
-      expect(previousCycle.updatedAt.getTime()).to.not.gt(beginTimestamp)
-
-      await createNextCycleForChapter(this.chapter.id)
-
-      previousCycle = await getCycleById(previousCycle.id)
-      expect(previousCycle.state).to.eq(COMPLETE)
-      expect(previousCycle.endTimestamp.getTime()).to.gt(beginTimestamp)
-      expect(previousCycle.updatedAt.getTime()).to.gt(beginTimestamp)
-    })
-
-    describe('when there are no prior cycles', function () {
-      beforeEach(function () {
-        this.cycles = []
-        return r.table('cycles').delete()
-      })
-      _itCreatesANewCycle()
     })
   })
 

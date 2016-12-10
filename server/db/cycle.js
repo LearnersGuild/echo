@@ -1,5 +1,4 @@
 import {connect} from 'src/db'
-import {CYCLE_STATES, COMPLETE} from 'src/common/models/cycle'
 import {insertIntoTable, updateInTable} from 'src/server/db/util'
 
 import {customQueryError} from './errors'
@@ -17,6 +16,19 @@ export function getCycleById(cycleId, passedOptions = {}) {
       .merge({chapter: r.table('chapters').get(r.row('chapterId'))})
       .without('chapterId') :
     cycle
+}
+
+export function getCycleForChapter(chapterId, cycleIdentifier) {
+  const cycleNumber = parseInt(cycleIdentifier, 10)
+  return cyclesTable.filter(row => r.and(
+    row('chapterId').eq(chapterId),
+    r.or(
+      row('id').eq(cycleIdentifier),
+      row('cycleNumber').eq(cycleNumber)
+    )
+  ))
+  .nth(0)
+  .default(null)
 }
 
 export function findCycles(filter = {}) {
@@ -54,36 +66,6 @@ export function getCyclesForChapter(chapterId) {
   return cyclesTable
     .between([chapterId, r.minval], [chapterId, r.maxval], {index: 'chapterIdAndState'})
     .orderBy(r.desc('cycleNumber'))
-}
-
-export async function createNextCycleForChapter(chapterId) {
-  const latestCycle = await completeLatestCycle(chapterId)
-  const newCycleNumber = (latestCycle && latestCycle.cycleNumber + 1) || 1
-
-  const result = await insert({
-    chapterId,
-    startTimestamp: r.now(),
-    cycleNumber: newCycleNumber,
-    state: CYCLE_STATES[0]
-  }, {returnChanges: true})
-
-  return result.changes[0].new_val
-}
-
-async function completeLatestCycle(chapterId) {
-  const latestCycle = await getCyclesForChapter(chapterId).nth(0).default(null)
-
-  if (!latestCycle) {
-    return
-  }
-
-  const result = await update({
-    id: latestCycle.id,
-    endTimestamp: r.now(),
-    state: COMPLETE
-  }, {returnChanges: true})
-
-  return result.changes[0].new_val
 }
 
 export function update(cycle, options) {

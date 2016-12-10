@@ -26,9 +26,16 @@ export default function define(factory) {
       })
     },
     goal: factory.sequence(n => {
+      const url = `http://example.com/repo/issue/${n}`
+      const title = `Goal #${n}`
       return {
-        url: `http://example.com/repo/issue/${n}`,
-        title: `Goal #${n}`,
+        url,
+        title,
+        githubIssue: {
+          url,
+          title,
+          number: n,
+        },
       }
     }),
     artifactURL: factory.sequence(n => `http://artifact.example.com/${n}`),

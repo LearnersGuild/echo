@@ -10,6 +10,7 @@ export default function define(factory) {
     emails: cb => cb(null, [faker.internet.exampleEmail(), faker.internet.exampleEmail()]),
     handle: cb => cb(null, `${faker.random.word()}${faker.random.number({max: 100})}`.toLowerCase()),
     avatarUrl: cb => cb(null, faker.image.imageUrl()),
+    profileUrl: cb => cb(null, 'http://me.com'),
     name: cb => cb(null, faker.name.findName()),
     phone: cb => cb(null, faker.phone.phoneNumber('(###) ###-####')),
     dateOfBirth: cb => cb(null, faker.date.past(21).toISOString().slice(0, 10)),
