@@ -2,7 +2,7 @@ import {GraphQLNonNull, GraphQLID} from 'graphql'
 import {GraphQLObjectType, GraphQLList} from 'graphql/type'
 import {GraphQLDateTime} from 'graphql-custom-types'
 
-import {resolveSurveyProject} from 'src/server/graphql/resolvers'
+import {resolveProject} from 'src/server/graphql/resolvers'
 
 export default new GraphQLObjectType({
   name: 'Survey',
@@ -15,7 +15,7 @@ export default new GraphQLObjectType({
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
       updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},
       questions: {type: new GraphQLNonNull(new GraphQLList(SurveyQuestion)), description: 'The questions for the survey'},
-      project: {type: Project, description: 'The project this survey relates to', resolve: resolveSurveyProject},
+      project: {type: Project, description: 'The project this survey relates to', resolve: resolveProject},
     }
   },
 })

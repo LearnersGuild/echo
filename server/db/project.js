@@ -1,7 +1,9 @@
 import {connect} from 'src/db'
 
+import {REFLECTION, PRACTICE} from 'src/common/models/cycle'
 import {customQueryError} from './errors'
 import {insertAllIntoTable, updateInTable} from './util'
+import {getLatestCycleForChapter} from './cycle'
 import {getSurveyById} from './survey'
 import {getSurveyResponsesForPlayer} from './response'
 
@@ -32,8 +34,12 @@ export function getProjectsForChapter(chapterId) {
   return table.getAll(chapterId, {index: 'chapterId'})
 }
 
-export function getProjectsForPlayer(playerId) {
-  return findProjects(project => (project('playerIds').contains(playerId)))
+export function findProjectsForUser(userId) {
+  return findProjects(project => (project('playerIds').contains(userId)))
+}
+
+export function findProjectsByIds(projectIds) {
+  return table.getAll(...projectIds)
 }
 
 export function findProjects(filter) {
@@ -106,4 +112,16 @@ export function findProjectsAndReviewResponsesForPlayer(chapterId, cycleId, play
         )
     }))
     .orderBy('name')
+}
+
+export async function findActiveProjectsForChapter(chapterId, options = {}) {
+  const latestCycle = await getLatestCycleForChapter(chapterId, {default: null})
+  if (!latestCycle) {
+    return
+  }
+  if (latestCycle.state !== PRACTICE && latestCycle.state !== REFLECTION) {
+    return options.count ? 0 : []
+  }
+  const activeProjects = table.filter({chapterId, cycleId: latestCycle.id})
+  return options.count ? activeProjects.count() : activeProjects
 }

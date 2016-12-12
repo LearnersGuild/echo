@@ -8,7 +8,7 @@ import {
   findProjectBySurveyId,
   findProjectsAndReviewResponsesForPlayer,
   getProjectByName,
-  getProjectsForPlayer,
+  findProjectsForUser,
   updateProject,
   findProjectByPlayerIdAndCycleId,
 } from 'src/server/db/project'
@@ -123,7 +123,7 @@ describe(testContext(__filename), function () {
     })
   })
 
-  describe('getProjectsForPlayer()', function () {
+  describe('findProjectsForUser()', function () {
     useFixture.setCurrentCycleAndUserForProject()
     beforeEach(async function () {
       this.chapter = await factory.create('chapter')
@@ -133,13 +133,13 @@ describe(testContext(__filename), function () {
     })
 
     it('returns the projects for the given player', async function () {
-      const projectIds = (await getProjectsForPlayer(this.currentUser.id))
+      const projectIds = (await findProjectsForUser(this.currentUser.id))
         .map(p => p.id)
       return expect(projectIds).to.deep.equal([this.userProject.id])
     })
 
     it('does not return projects with which the player is not involved', async function () {
-      const projectIds = (await getProjectsForPlayer(this.currentUser.id))
+      const projectIds = (await findProjectsForUser(this.currentUser.id))
         .map(p => p.id)
       return expect(projectIds).to.not.contain(this.otherProject.id)
     })
