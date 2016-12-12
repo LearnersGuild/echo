@@ -21,6 +21,7 @@ export default class UserList extends Component {
       const {stats} = user
       const row = Object.assign({}, user, {
         chapterName: (user.chapter || {}).name,
+        active: user.active ? 'Yes' : 'No',
       })
       if (stats) {
         Object.assign(row, {

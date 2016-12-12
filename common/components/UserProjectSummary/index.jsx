@@ -32,11 +32,11 @@ export default class UserProjectSummary extends Component {
         </Flex>
         <Flex fill>
           <Flex className={styles.column} column>
+            <div>{'XP'}</div>
+            <div>{'Rating'}</div>
             <div>{'Contribution'}</div>
             <div>{'Culture'}</div>
             <div>{'Technical'}</div>
-            <div>{'Rating'}</div>
-            <div>{'XP'}</div>
           </Flex>
           <Flex className={styles.column} column>
             <div>{(userStats.contribution || {}).estimated || blank}</div>
