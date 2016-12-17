@@ -1,40 +1,34 @@
 /* eslint-disable react/jsx-handler-names */
 import React, {Component, PropTypes} from 'react'
 import moment from 'moment-timezone'
+import {Field} from 'redux-form'
 import {Button} from 'react-toolbox/lib/button'
-import {CardTitle} from 'react-toolbox/lib/card'
-import Dropdown from 'react-toolbox/lib/dropdown'
-import DatePicker from 'react-toolbox/lib/date_picker'
-import TimePicker from 'react-toolbox/lib/time_picker'
 import Input from 'react-toolbox/lib/input'
-import ProgressBar from 'react-toolbox/lib/progress_bar'
+import Dropdown from 'react-toolbox/lib/dropdown'
 
 import InviteCodeForm from 'src/common/containers/InviteCodeForm'
+import ContentHeader from 'src/common/components/ContentHeader'
 import NotFound from 'src/common/components/NotFound'
-import {domOnlyProps} from 'src/common/util'
+import {Flex} from 'src/common/components/Layout'
+import {FORM_TYPES, renderInput, renderDatePicker, renderTimePicker} from 'src/common/util/form'
+import {slugify} from 'src/common/util'
 
-import styles from './index.css'
-
-// blatantly stolen from: https://gist.github.com/mathewbyrne/1280286
-function slugify(text) {
-  return text.toString().toLowerCase()
-    .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-    .replace(/^-+/, '')             // Trim - from start of text
-    .replace(/-+$/, '')             // Trim - from end of text
-}
+import styles from './index.scss'
+import theme from './theme.scss'
 
 class ChapterForm extends Component {
   constructor() {
     super()
     this.state = {inviteCodeDialogActive: false}
-    this.handleChangeName = this.handleChangeName.bind(this)
     this.showInviteCodeDialog = this.showInviteCodeDialog.bind(this)
     this.hideInviteCodeDialog = this.hideInviteCodeDialog.bind(this)
-    this.createInviteCode = this.createInviteCode.bind(this)
-    this.handleCycleEpochDateChange = this.handleCycleEpochDateChange.bind(this)
-    this.handleCycleEpochTimeChange = this.handleCycleEpochTimeChange.bind(this)
+    this.handleSaveInviteCode = this.handleSaveInviteCode.bind(this)
+    this.handleChangeName = this.handleChangeName.bind(this)
+    this.handleChangeTimezone = this.handleChangeTimezone.bind(this)
+    this.handleChangeCycleEpochDate = this.handleChangeCycleEpochDate.bind(this)
+    this.handleChangeCycleEpochTime = this.handleChangeCycleEpochTime.bind(this)
+    this.handleParseCycleEpochDate = this.handleParseCycleEpochDate.bind(this)
+    this.handleParseCycleEpochTime = this.handleParseCycleEpochTime.bind(this)
     this.generateTimezoneDropdownValues()
   }
 
@@ -56,13 +50,6 @@ class ChapterForm extends Component {
     })
   }
 
-  handleChangeName(val) {
-    const {fields: {name, channelName}} = this.props
-    const nameSlug = slugify(val || '')
-    name.onChange(val)
-    channelName.onChange(nameSlug)
-  }
-
   showInviteCodeDialog(e) {
     e.preventDefault()
     this.setState({inviteCodeDialogActive: true})
@@ -73,153 +60,178 @@ class ChapterForm extends Component {
     this.setState({inviteCodeDialogActive: false})
   }
 
-  createInviteCode(inviteCodeFormData) {
+  handleSaveInviteCode(inviteCodeFormData) {
     this.setState({inviteCodeDialogActive: false})
-    const {onCreateInviteCode} = this.props
-    onCreateInviteCode(inviteCodeFormData)
+    this.props.onSaveInviteCode(inviteCodeFormData)
+  }
+
+  handleChangeName(value) {
+    const nameSlug = slugify(value || '')
+    this.props.change('name', value)
+    this.props.change('channelName', nameSlug)
+  }
+
+  handleChangeTimezone(value) {
+    this.props.change('timezone', value)
+  }
+
+  handleChangeCycleEpochDate(value) {
+    this.props.change('cycleEpochDate', value ? new Date(value) : new Date())
+  }
+
+  handleChangeCycleEpochTime(value) {
+    this.props.change('cycleEpochTime', value ? new Date(value) : new Date())
+  }
+
+  handleParseCycleEpochDate(value) {
+    return moment(value, 'D MMMM YYYY').toDate()
+  }
+
+  handleParseCycleEpochTime(value) {
+    return moment(value, 'h:mm a').toDate()
   }
 
   renderInviteCodeDialog() {
-    const {fields: {id}, showCreateInviteCode} = this.props
+    const {formValues = {}, showCreateInviteCode} = this.props
     if (!showCreateInviteCode) {
       return ''
     }
     return (
       <InviteCodeForm
-        chapterId={id.value}
+        chapterId={formValues.id}
         isActive={this.state.inviteCodeDialogActive}
         onCancel={this.hideInviteCodeDialog}
-        onCreate={this.createInviteCode}
+        onSave={this.handleSaveInviteCode}
         />
     )
   }
 
-  handleCycleEpochDateChange(date) {
-    const {
-      fields: {cycleEpochDate}
-    } = this.props
-
-    cycleEpochDate.onChange(date.toISOString())
-  }
-
-  handleCycleEpochTimeChange(time) {
-    const {
-      fields: {cycleEpochTime}
-    } = this.props
-
-    cycleEpochTime.onChange(time.toISOString())
-  }
-
   render() {
     const {
-      fields: {id, name, timezone, channelName, goalRepositoryURL, cycleDuration, cycleEpochDate, cycleEpochTime},
       handleSubmit,
       submitting,
-      errors,
-      buttonLabel,
-      isBusy,
+      onSaveChapter,
       formType,
       inviteCodes,
       showCreateInviteCode,
+      invalid,
+      pristine,
+      formValues,
     } = this.props
 
-    if (isBusy) {
-      return <ProgressBar/>
-    }
-    if (formType === 'notfound') {
+    if (formType === FORM_TYPES.NOT_FOUND) {
       return <NotFound/>
     }
 
-    const createInviteCodeButton = showCreateInviteCode && formType === 'update' ? (
-      <Button
-        className={styles.button}
-        icon="add"
-        label="Create Invite Code"
-        accent
-        raised
-        onClick={this.showInviteCodeDialog}
-        />
+    let inviteCodeField
+    let createInviteCodeButton
+    if (showCreateInviteCode && formType === FORM_TYPES.UPDATE) {
+      inviteCodeField = (
+        <Input
+          type="text"
+          icon="mail_outline"
+          label="Invite Codes"
+          value={inviteCodes.join('\n')}
+          theme={theme}
+          multiline
+          disabled
+          />
+      )
 
-    ) : ''
+      createInviteCodeButton = (
+        <Button
+          className={styles.inviteButton}
+          icon="add"
+          label="Create Invite Code"
+          accent
+          raised
+          onClick={this.showInviteCodeDialog}
+          />
+      )
+    }
 
-    // react-toolbox DatePicker and TimePicker require a Date objects for their
-    // value attribute, but redux-form expects strings
-    const cycleEpochDateValue = cycleEpochDate.value ? new Date(cycleEpochDate.value) : new Date()
-    const cycleEpochTimeValue = cycleEpochTime.value ? new Date(cycleEpochTime.value) : new Date()
+    const title = formType === FORM_TYPES.CREATE ?
+      'Create Chapter' :
+      `Edit Chapter: ${formValues.name}`
 
     return (
       <div>
-        <CardTitle title={`${formType === 'new' ? 'Create' : 'Edit'} Chapter`}/>
-        <form id="chapter" onSubmit={handleSubmit}>
-          <Input
-            type="hidden"
-            {...domOnlyProps(id)}
-            />
-          <Input
+        <ContentHeader title={title}/>
+        <form id="chapter" onSubmit={handleSubmit(onSaveChapter)}>
+          <Field name="id" type="hidden" component="hidden"/>
+          <Field
+            name="name"
+            type="text"
             icon="title"
-            type="text"
             label="Name"
-            {...domOnlyProps(name)}
+            component={renderInput}
             onChange={this.handleChangeName}
-            error={name.dirty ? name.error : null}
+            required
             />
-          <Input
-            icon="chat"
+          <Field
+            name="channelName"
             type="text"
-            disabled
+            icon="chat"
             label="Chat Channel Name"
-            {...domOnlyProps(channelName)}
+            component={renderInput}
+            disabled
+            required
             />
           <Dropdown
             icon="flag"
             label="Timezone"
             source={this.timezones}
-            {...domOnlyProps(timezone)}
-            error={timezone.dirty ? timezone.error : null}
+            value={formValues.timezone}
+            onChange={this.handleChangeTimezone}
+            required
             />
-          <Input
-            icon="link"
+          <Field
+            name="goalRepositoryURL"
             type="text"
-            label="Goal Repository (URL)"
-            {...domOnlyProps(goalRepositoryURL)}
+            icon="link"
+            label="Goal Repository URL"
+            hint="https://github.com/GuildCrafts/awesome-stuffs"
+            component={renderInput}
+            required
             />
-          <Input
-            icon="av_timer"
+          <Field
+            name="cycleDuration"
             type="tel"
-            label="Cycle Duration (e.g., '1 week', '3 hours', etc.)"
-            {...domOnlyProps(cycleDuration)}
-            error={cycleDuration.dirty ? cycleDuration.error : null}
+            icon="av_timer"
+            label="Cycle Duration"
+            hint="e.g., '1 week', '3 hours', etc."
+            component={renderInput}
+            required
             />
-          <DatePicker
+          <Field
+            name="cycleEpochDate"
             icon="today"
             label="Cycle Epoch Date"
-            value={cycleEpochDateValue}
-            onChange={this.handleCycleEpochDateChange}
-            error={cycleEpochDate.dirty ? cycleEpochDate.error : null}
+            component={renderDatePicker}
+            parse={this.handleParseCycleEpochDate}
+            onChange={this.handleChangeCycleEpochDate}
+            required
             />
-          <TimePicker
+          <Field
+            name="cycleEpochTime"
             icon="watch_later"
             label="Cycle Epoch Time"
-            format="ampm"
-            value={cycleEpochTimeValue}
-            onChange={this.handleCycleEpochTimeChange}
-            error={cycleEpochTime.dirty ? cycleEpochTime.error : null}
+            component={renderTimePicker}
+            parse={this.handleParseCycleEpochTime}
+            onChange={this.handleChangeCycleEpochTime}
+            required
             />
-          <Input
-            icon=""
-            disabled
-            multiline
-            label="Invite Codes"
-            value={(inviteCodes && inviteCodes.join(', ')) || ''}
-            />
-          <Button
-            label={buttonLabel || 'Save'}
-            primary
-            raised
-            disabled={submitting || isBusy || Object.keys(errors).length > 0}
-            type="submit"
-            />
-          {createInviteCodeButton}
+          {inviteCodeField}
+          <Flex justifyContent="flex-end">
+            {createInviteCodeButton}
+            <Button
+              type="submit"
+              label="Save"
+              disabled={pristine || invalid || submitting}
+              primary
+              raised
+              />
+          </Flex>
         </form>
         {this.renderInviteCodeDialog()}
       </div>
@@ -228,16 +240,17 @@ class ChapterForm extends Component {
 }
 
 ChapterForm.propTypes = {
-  errors: PropTypes.object.isRequired,
-  fields: PropTypes.object.isRequired,
+  formValues: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  change: PropTypes.func.isRequired,
+  invalid: PropTypes.bool.isRequired,
   submitting: PropTypes.bool.isRequired,
-  buttonLabel: PropTypes.string,
-  isBusy: PropTypes.bool.isRequired,
-  formType: PropTypes.oneOf(['new', 'update', 'notfound']).isRequired,
-  inviteCodes: PropTypes.array,
+  pristine: PropTypes.bool.isRequired,
+  formType: PropTypes.oneOf(Object.values(FORM_TYPES)).isRequired,
+  inviteCodes: PropTypes.array.isRequired,
   showCreateInviteCode: PropTypes.bool.isRequired,
-  onCreateInviteCode: PropTypes.func.isRequired,
+  onSaveChapter: PropTypes.func.isRequired,
+  onSaveInviteCode: PropTypes.func.isRequired,
 }
 
 export default ChapterForm

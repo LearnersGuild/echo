@@ -26,7 +26,7 @@ export default function configureApp(app) {
       watcher.on('all', (operation, path) => {
         console.log(`${operation} ${path} -- clearing  module cache from server`)
         Object.keys(require.cache).forEach(id => {
-          if (/[\/\\]server[\/\\]/.test(id)) {
+          if (/[/\\]server[/\\]/.test(id)) {
             delete require.cache[id]
           }
         })
@@ -37,7 +37,7 @@ export default function configureApp(app) {
     compiler.plugin('done', () => {
       console.log('webpack compilation finished -- clearing /client/ and /common/ module cache from server')
       Object.keys(require.cache).forEach(id => {
-        if (/[\/\\](client|common)[\/\\]/.test(id)) {
+        if (/[/\\](client|common)[/\\]/.test(id)) {
           delete require.cache[id]
         }
       })

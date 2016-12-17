@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import yup from 'yup'
 
 import {VALID_ROLES} from 'src/common/util/userCan'

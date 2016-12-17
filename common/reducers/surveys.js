@@ -1,7 +1,7 @@
 import {
-  LOAD_RETRO_SURVEY_REQUEST,
-  LOAD_RETRO_SURVEY_SUCCESS,
-  LOAD_RETRO_SURVEY_FAILURE,
+  GET_RETRO_SURVEY_REQUEST,
+  GET_RETRO_SURVEY_SUCCESS,
+  GET_RETRO_SURVEY_FAILURE,
   SURVEY_PARSE_FAILURE,
   SAVE_SURVEY_RESPONSES_REQUEST,
   SAVE_SURVEY_RESPONSES_SUCCESS,
@@ -17,9 +17,9 @@ const initialState = {
   retro: {},
 }
 
-export function surveys(state = initialState, action) {
+export default function surveys(state = initialState, action) {
   switch (action.type) {
-    case LOAD_RETRO_SURVEY_REQUEST:
+    case GET_RETRO_SURVEY_REQUEST:
       return Object.assign({}, state, {
         isBusy: true,
       })
@@ -30,7 +30,7 @@ export function surveys(state = initialState, action) {
         groupIndex: action.groupIndex,
       })
 
-    case LOAD_RETRO_SURVEY_SUCCESS:
+    case GET_RETRO_SURVEY_SUCCESS:
       return Object.assign({}, state, {
         isBusy: false,
         error: null,
@@ -38,13 +38,12 @@ export function surveys(state = initialState, action) {
       })
 
     case SAVE_SURVEY_RESPONSES_SUCCESS:
-      // TODO: handle response value
       return Object.assign({}, state, {
         isBusy: false,
         error: null,
       })
 
-    case LOAD_RETRO_SURVEY_FAILURE:
+    case GET_RETRO_SURVEY_FAILURE:
     case SURVEY_PARSE_FAILURE:
     case SAVE_SURVEY_RESPONSES_FAILURE:
       return Object.assign({}, state, {

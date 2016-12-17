@@ -1,5 +1,5 @@
 import config from 'src/config'
-import {graphQLFetcher} from 'src/server/util/graphql'
+import graphQLFetcher from 'src/server/util/graphql'
 
 export default function getPlayerInfo(playerIds) {
   return graphQLFetcher(config.server.idm.baseURL)({

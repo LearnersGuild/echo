@@ -31,7 +31,6 @@ describe(testContext(__filename), function () {
           voterPlayerIds: [],
           votingIsStillOpen: false,
         }],
-        isBusy: false,
         onClose: () => null,
       }
       return customProps ? Object.assign({}, baseProps, customProps) : baseProps
@@ -60,13 +59,6 @@ describe(testContext(__filename), function () {
   })
 
   describe('rendering', function () {
-    it('displays progress bar if isBusy', function () {
-      const root = shallow(React.createElement(CycleVotingResults, this.getProps({isBusy: true})))
-      const progressBars = root.find('ThemedProgressBar')
-
-      expect(progressBars.length).to.equal(1)
-    })
-
     it('lets the user know there are no results when that is the case', function () {
       const props = this.getProps({cycle: null})
       const root = shallow(React.createElement(CycleVotingResults, props))

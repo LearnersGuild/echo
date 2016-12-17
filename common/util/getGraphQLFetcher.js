@@ -1,7 +1,9 @@
 /* global __SERVER__ */
 import fetch from 'isomorphic-fetch'
 
-import {updateJWT} from 'src/common/actions/updateJWT'
+import {updateJWT} from 'src/common/actions/auth'
+import {fetchDataRequest, fetchDataSuccess, fetchDataFailure} from 'src/common/actions/app'
+import handleGraphQLError from 'src/common/util/handleGraphQLError'
 
 let APP_BASE_URL = ''
 if (__SERVER__) {
@@ -9,6 +11,8 @@ if (__SERVER__) {
 }
 
 export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASE_URL, throwErrors = true) {
+  dispatch(fetchDataRequest())
+
   return graphQLParams => {
     const options = {
       method: 'post',
@@ -41,18 +45,13 @@ export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASE_URL
       })
       .then(graphQLResponse => {
         if (graphQLResponse.errors) {
+          dispatch(fetchDataFailure(graphQLResponse.errors[0].message))
           throw graphQLResponse
         }
 
+        dispatch(fetchDataSuccess())
         return graphQLResponse
       })
-      .catch(err => {
-        if (err && err.errors && err.errors.length > 0) {
-          if (throwErrors) {
-            throw new Error(err.errors[0].message)
-          }
-        }
-        console.error('GraphQL ERROR:', err)
-      })
+      .catch(err => handleGraphQLError(err, {throwErrors}))
   }
 }

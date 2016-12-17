@@ -14,97 +14,87 @@ describe(testContext(__filename), function () {
     this.getProps = customProps => {
       const baseProps = {
         chapters,
-        selectable: false,
-        onEditChapter: () => null,
-        onCreateChapter: () => null,
-        showCreateButton: false,
+        onSelectRow: () => null,
+        onClickCreate: () => null,
+        allowSelect: false,
+        allowCreate: false,
       }
       return customProps ? Object.assign({}, baseProps, customProps) : baseProps
     }
   })
 
   describe('interactions', function () {
-    it('onCreateChapter is invoked when button is clicked', function () {
+    it('onClickCreate is invoked when create button is clicked', function () {
       let clicked = false
-
       const props = this.getProps({
-        showCreateButton: true,
-        onCreateChapter: () => {
+        allowCreate: true,
+        onClickCreate: () => {
           clicked = true
         },
       })
 
       const root = mount(React.createElement(ChapterList, props))
-      const button = root.findWhere(node => {
-        return node.name() === 'Button'
-      }).first()
-
-      button.simulate('click')
-
-      expect(clicked).to.equal(true)
-    })
-
-    it('onEditChapter is invoked when row is selected', function () {
-      let clicked = false
-
-      const props = this.getProps({
-        selectable: true,
-        onEditChapter: () => {
-          clicked = true
-        },
-      })
-
-      const root = mount(React.createElement(ChapterList, props))
-
-      root.find('Table')
-        .children()
-        .find('input')
+      root.find('button')
         .first()
         .simulate('click')
 
       expect(clicked).to.equal(true)
     })
-  })
 
-  describe('rendering', function () {
-    it('renders create button if showCreateButton is true', function () {
-      const root = mount(React.createElement(ChapterList, this.getProps({showCreateButton: true})))
-      const buttons = root.findWhere(node => {
-        return node.name() === 'Button'
+    it('onSelectRow is invoked when row is selected is allowSelect is true', function () {
+      let clicked = false
+      const props = this.getProps({
+        allowSelect: true,
+        onSelectRow: () => {
+          clicked = true
+        },
       })
 
+      const root = mount(React.createElement(ChapterList, props))
+      root.find('Table')
+        .children()
+        .find('td')
+        .first()
+        .simulate('click')
+
+      expect(clicked).to.equal(true)
+    })
+
+    it('onSelectRow is invoked when row is selected is allowSelect is false', function () {
+      let clicked = false
+      const props = this.getProps({
+        onSelectRow: () => {
+          clicked = true
+        },
+      })
+
+      const root = mount(React.createElement(ChapterList, props))
+      root.find('Table')
+        .children()
+        .find('td')
+        .first()
+        .simulate('click')
+
+      expect(clicked).to.equal(false)
+    })
+  })
+
+  describe('rendering:', function () {
+    it('renders create button if allowCreate is true', function () {
+      const root = mount(React.createElement(ChapterList, this.getProps({allowCreate: true})))
+      const buttons = root.find('button')
       expect(buttons.length).to.equal(1)
     })
 
-    it('does not render create button if showCreateButton is false', function () {
-      const root = mount(React.createElement(ChapterList, this.getProps({showCreateButton: false})))
-      const buttons = root.findWhere(node => {
-        return node.name() === 'Button'
-      })
-
+    it('does not render create button if allowCreate is false', function () {
+      const root = mount(React.createElement(ChapterList, this.getProps({allowCreate: false})))
+      const buttons = root.find('button')
       expect(buttons.length).to.equal(0)
     })
 
     it('renders "no chapters" message if there are no chapters.', function () {
       const root = shallow(React.createElement(ChapterList, this.getProps({chapters: []})))
-
       expect(root.html()).to.match(/no chapters/i)
-    })
-
-    it('is selectable if selectable is true', function () {
-      const props = this.getProps({selectable: true})
-      const root = mount(React.createElement(ChapterList, props))
-      const checkboxes = root.find('Checkbox')
-
-      expect(checkboxes.length).to.be.at.least(props.chapters.length)
-    })
-
-    it('is not selectable if selectable is false', function () {
-      const props = this.getProps({selectable: false})
-      const root = shallow(React.createElement(ChapterList, props))
-      const checkboxes = root.find('Checkbox')
-
-      expect(checkboxes.length).to.equal(0)
     })
   })
 })

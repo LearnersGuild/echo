@@ -1,0 +1,121 @@
+/* react-toolbox doc styles */
+@import "./_globals";
+@import "./_config";
+
+/* App Container */
+.app {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: $palette-grey-700;
+}
+.container {
+  max-width: 1200px;
+  width: 100%;
+  height: 100%;
+  padding: 0 2.4rem;
+}
+
+/* Navigation Bar */
+/* begin shameless copy from https://github.com/react-toolbox/react-toolbox/tree/dev/docs) */
+.appbar {
+  width: 100%;
+  z-index: $z-index-higher;
+  display: flex;
+  min-height: $appbar-height;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  box-shadow: $appbar-shadow;
+  background-color: $color-white;
+  border-bottom: 3px solid $palette-grey-200;
+}
+.logo {
+  width: $appbar-logo-size;
+  height: $appbar-logo-size;
+  fill: $color-primary-contrast;
+}
+.navigation {
+  flex-grow: 1;
+  text-align: right;
+  margin-right: 10px;
+  > ul {
+    list-style: none;
+    > li {
+      display: inline-block;
+      > a {
+        @include typo-menu;
+        position: relative;
+        display: inline-block;
+        padding: 0 1.5 * $unit;
+        margin-right: $unit;
+        line-height: $appbar-height;
+        color: $palette-grey-700;
+        &.active:after {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          display: block;
+          width: 100%;
+          height: .3 * $unit;
+          content: '';
+          background-color: $color-primary-dark;
+        }
+      }
+    }
+  }
+}
+/* end shameless copy */
+.navBar {
+  height: 100%;
+  min-width: 370px;
+}
+.navBarLeft {
+  height: 44px;
+  width: 44px;
+  border-radius: 50%;
+  border: 1px solid $palette-grey-700;
+}
+.navBarTitle {
+  color: $palette-grey-700;
+}
+.menuItem,
+.menuItem a {
+  font-size: .9em;
+  color: $palette-grey-700;
+}
+.menuItem {
+  width: 100%;
+}
+.menuItemIcon {
+  width: 24px;
+  margin-right: 10px;
+}
+.loading {
+  width: 100%;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+
+  .container {
+    overflow: scroll;
+  }
+  
+  .content {
+    margin-bottom: 20px;
+  }
+}
+
+/* Footer */
+.footer {
+  width: 100%;
+}

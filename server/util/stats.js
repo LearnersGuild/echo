@@ -144,3 +144,12 @@ function _validatePlayer(player) {
     throw new Error('Invalid player kFactor')
   }
 }
+
+export function findValueForReponseQuestionStat(responseArr, statDescriptor) {
+  if (!Array.isArray(responseArr) || !statDescriptor) {
+    return
+  }
+  return (responseArr.find(response => (
+    ((response.question || {}).stat || {}).descriptor === statDescriptor
+  )) || {}).value
+}

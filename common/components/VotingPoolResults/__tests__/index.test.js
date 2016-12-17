@@ -35,7 +35,6 @@ describe(testContext(__filename), function () {
           voterPlayerIds,
           votingIsStillOpen: true,
         },
-        isBusy: false,
         isOnlyPool: true,
         isCurrent: true,
         isCollapsed: false,
@@ -72,13 +71,6 @@ describe(testContext(__filename), function () {
       const root = shallow(React.createElement(VotingPoolResults, props))
 
       expect(root.html()).to.contain(props.pool.name)
-    })
-
-    it('displays progress bar if isBusy', function () {
-      const root = shallow(React.createElement(VotingPoolResults, this.getProps({isBusy: true})))
-      const progressBars = root.find('ThemedProgressBar')
-
-      expect(progressBars.length).to.equal(1)
     })
 
     it('lets the user know if no one has yet voted', function () {

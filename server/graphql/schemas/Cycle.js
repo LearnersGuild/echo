@@ -2,7 +2,7 @@ import {GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql'
 import {GraphQLObjectType} from 'graphql/type'
 import {GraphQLDateTime} from 'graphql-custom-types'
 
-import {resolveCycleChapter} from 'src/server/graphql/resolvers'
+import {resolveChapter} from 'src/server/graphql/resolvers'
 
 export default new GraphQLObjectType({
   name: 'Cycle',
@@ -18,7 +18,7 @@ export default new GraphQLObjectType({
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'The time when the cycle created'},
       updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'The time when the cycle was last updated'},
       state: {type: CycleState, description: 'What state the cycle is currently in'},
-      chapter: {type: Chapter, description: 'The chapter', resolve: resolveCycleChapter},
+      chapter: {type: Chapter, description: 'The chapter', resolve: resolveChapter},
     }
   },
 })

@@ -134,8 +134,8 @@ describe(testContext(__filename), function () {
 
       this.invokeAPI = function (projectName = this.project.name, responses) {
         responses = responses || [
-          {questionName: 'A', responseParams: ['80']},
-          {questionName: 'B', responseParams: ['75']},
+          {questionName: 'completeness', responseParams: ['80']},
+          {questionName: 'quality', responseParams: ['75']},
         ]
         return runGraphQLMutation(
           `mutation($projectName: String!, $responses: [CLINamedSurveyResponse]!) {
@@ -158,7 +158,7 @@ describe(testContext(__filename), function () {
 
     it('returns helpful error messages for invalid values', function () {
       return expect(
-        this.invokeAPI(this.project.name, [{questionName: 'A', responseParams: ['101']}])
+        this.invokeAPI(this.project.name, [{questionName: 'completeness', responseParams: ['101']}])
       ).to.be.rejectedWith(/must be less than or equal to 100/)
     })
 
