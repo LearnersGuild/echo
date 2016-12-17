@@ -1,9 +1,9 @@
 import {
-  LOAD_CYCLE_VOTING_RESULTS_REQUEST,
-  LOAD_CYCLE_VOTING_RESULTS_SUCCESS,
-  LOAD_CYCLE_VOTING_RESULTS_FAILURE,
+  GET_CYCLE_VOTING_RESULTS_REQUEST,
+  GET_CYCLE_VOTING_RESULTS_SUCCESS,
+  GET_CYCLE_VOTING_RESULTS_FAILURE,
   RECEIVED_CYCLE_VOTING_RESULTS,
-} from 'src/common/actions/loadCycleVotingResults'
+} from 'src/common/actions/types'
 
 import {mergeEntities} from 'src/common/util'
 
@@ -12,13 +12,13 @@ const initialState = {
   isBusy: false,
 }
 
-export function cycleVotingResults(state = initialState, action) {
+export default function cycleVotingResults(state = initialState, action) {
   switch (action.type) {
-    case LOAD_CYCLE_VOTING_RESULTS_REQUEST:
+    case GET_CYCLE_VOTING_RESULTS_REQUEST:
       return Object.assign({}, state, {
         isBusy: true,
       })
-    case LOAD_CYCLE_VOTING_RESULTS_SUCCESS:
+    case GET_CYCLE_VOTING_RESULTS_SUCCESS:
     case RECEIVED_CYCLE_VOTING_RESULTS:
       {
         const cycleVotingResults = mergeEntities(state.cycleVotingResults, action.response.entities.cycleVotingResults)
@@ -27,7 +27,7 @@ export function cycleVotingResults(state = initialState, action) {
           cycleVotingResults,
         })
       }
-    case LOAD_CYCLE_VOTING_RESULTS_FAILURE:
+    case GET_CYCLE_VOTING_RESULTS_FAILURE:
       return Object.assign({}, state, {
         isBusy: false,
       })

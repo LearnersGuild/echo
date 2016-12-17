@@ -85,7 +85,7 @@ export default class CandidateGoal extends Component {
     const itemContent = (
       <span className={styles.goalTitle}>
         <span className={styles.goalNumber}>{goalNumber}:</span>
-        <a target="_blank" href={candidateGoal.goal.url} title={candidateGoal.goal.title}> {candidateGoal.goal.title}</a>
+        <a target="_blank" href={candidateGoal.goal.url} title={candidateGoal.goal.title} rel="noopener noreferrer"> {candidateGoal.goal.title}</a>
       </span>
     )
 

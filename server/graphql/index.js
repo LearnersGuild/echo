@@ -1,4 +1,3 @@
-/* eslint babel/new-cap: [2, {"capIsNewExceptions": ["Router"]}] */
 import raven from 'raven'
 import express from 'express'
 import graphqlHTTP from 'express-graphql'

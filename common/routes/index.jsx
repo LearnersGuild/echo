@@ -5,7 +5,7 @@ import {Route, IndexRoute} from 'react-router'
 import {UserAuthWrapper as userAuthWrapper} from 'redux-auth-wrapper'
 import {push} from 'react-router-redux'
 
-import authorizationError from '../actions/authorizationError'
+import {authorizationError} from '../actions/error'
 import App from '../containers/App'
 import BlankLayout from '../containers/BlankLayout'
 import CardLayout from '../components/CardLayout'

@@ -53,7 +53,7 @@ class SurveyFormInputSliderGroup extends React.Component {
     return (
       <Chip className={styles.chipContainer}>
         <Flex className={styles.chipContent} alignItems="center">
-          <a className={styles.chipLabel} title={option.tooltip} href={option.url || ''} target="_blank">
+          <a className={styles.chipLabel} title={option.tooltip} href={option.url || ''} target="_blank" rel="noopener noreferrer">
             {option.label}
           </a>
         </Flex>

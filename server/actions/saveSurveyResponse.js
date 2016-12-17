@@ -119,8 +119,8 @@ function assertValidResponseValues(values, type, options) {
 
   return Promise.all(
     values.map(value => validator(value, options))
-  ).catch(e => {
-    throw new BadInputError(`Invalid ${type} response. ${e}`)
+  ).catch(err => {
+    throw new BadInputError(`Invalid ${type} response. ${err}`)
   })
 }
 

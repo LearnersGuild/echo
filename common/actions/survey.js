@@ -1,110 +1,43 @@
 import {getGraphQLFetcher} from 'src/common/util'
+import types from './types'
+import queries from './queries'
 
-export const LOAD_RETRO_SURVEY_REQUEST = 'LOAD_RETRO_SURVEY_REQUEST'
-export const LOAD_RETRO_SURVEY_SUCCESS = 'LOAD_RETRO_SURVEY_SUCCESS'
-export const LOAD_RETRO_SURVEY_FAILURE = 'LOAD_RETRO_SURVEY_FAILURE'
-
-export const SURVEY_PARSE_FAILURE = 'SURVEY_PARSE_FAILURE'
-
-export const SAVE_SURVEY_RESPONSES_REQUEST = 'SAVE_SURVEY_RESPONSES_REQUEST'
-export const SAVE_SURVEY_RESPONSES_SUCCESS = 'SAVE_SURVEY_RESPONSES_SUCCESS'
-export const SAVE_SURVEY_RESPONSES_FAILURE = 'SAVE_SURVEY_RESPONSES_FAILURE'
-
-export function fetchRetroSurvey(filters) {
+export function getRetroSurvey(filters) {
   return function (dispatch, getState) {
-    dispatch({type: LOAD_RETRO_SURVEY_REQUEST})
+    dispatch({type: types.GET_RETRO_SURVEY_REQUEST})
 
-    const {auth} = getState()
-
-    const query = {
-      variables: filters,
-
-      query: `
-query($projectName:String) {
-  getRetrospectiveSurvey(projectName:$projectName) {
-    id,
-    project {
-      id,
-      name,
-      chapter {
-        id,
-        name,
-      },
-      cycle {
-        id,
-        cycleNumber,
-      },
-    },
-    questions {
-      id,
-      body,
-      responseType,
-      responseInstructions,
-      subjectType,
-      subjects {
-        id,
-        name,
-        handle,
-        profileUrl,
-        avatarUrl,
-      },
-      response {
-        values {
-          subjectId,
-          value,
-        }
-      },
-    },
-  },
-}`,
-    }
-
-    return getGraphQLFetcher(dispatch, auth)(query)
+    const query = queries.getRetrospectiveSurvey(filters)
+    return getGraphQLFetcher(dispatch, getState().auth)(query)
       .then(graphQLResponse => dispatch({
-        type: LOAD_RETRO_SURVEY_SUCCESS,
+        type: types.GET_RETRO_SURVEY_SUCCESS,
         response: graphQLResponse.data.getRetrospectiveSurvey
       }))
       .catch(err => dispatch({
-        type: LOAD_RETRO_SURVEY_FAILURE,
-        error: err
+        type: types.GET_RETRO_SURVEY_FAILURE,
+        error: err,
       }))
   }
 }
 
 export function saveRetroSurveyResponses(responses, {groupIndex}) {
   return function (dispatch, getState) {
-    dispatch({type: SAVE_SURVEY_RESPONSES_REQUEST, groupIndex})
+    dispatch({type: types.SAVE_SURVEY_RESPONSES_REQUEST, groupIndex})
 
-    const {auth} = getState()
-
-    const query = {
-      variables: {responses},
-
-      query: `
-mutation($responses:[SurveyResponseInput]!) {
-  saveRetrospectiveSurveyResponses(responses:$responses) {
-    createdIds
-  }
-}`,
-    }
-
-    return getGraphQLFetcher(dispatch, auth)(query)
+    const query = queries.saveRetrospectiveSurveyResponses(responses)
+    return getGraphQLFetcher(dispatch, getState().auth)(query)
       .then(graphQLResponse => dispatch({
-        type: SAVE_SURVEY_RESPONSES_SUCCESS,
+        type: types.SAVE_SURVEY_RESPONSES_SUCCESS,
         response: graphQLResponse.data.saveRetrospectiveSurveyResponse,
       }))
       .catch(err => dispatch({
-        type: SAVE_SURVEY_RESPONSES_FAILURE,
-        error: err
+        type: types.SAVE_SURVEY_RESPONSES_FAILURE,
+        error: err,
       }))
   }
 }
 
 export function surveyParseFailure(error) {
   return function (dispatch) {
-    dispatch({
-      type: SURVEY_PARSE_FAILURE,
-      error,
-    })
+    dispatch({type: types.SURVEY_PARSE_FAILURE, error})
   }
 }

@@ -3,7 +3,7 @@ import moment from 'moment-timezone'
 const DIFF_UNITS = 'minutes'
 
 export function finish(error, options) {
-  /* eslint-disable xo/no-process-exit */
+  /* eslint-disable unicorn/no-process-exit */
   if (error) {
     console.log('Script error', error)
     console.log(error.stack)

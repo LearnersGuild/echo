@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import {connect} from 'react-redux'
 
-import dismissError from 'src/common/actions/dismissError'
+import {dismissError} from 'src/common/actions/error'
 import Error from 'src/common/components/Error'
 
 export function renderErrors({dispatch, errors}) {

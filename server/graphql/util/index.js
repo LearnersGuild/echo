@@ -2,6 +2,8 @@ import {GraphQLError} from 'graphql/error'
 
 import {parseQueryError} from 'src/server/db/errors'
 
+export {default as GraphQLPhoneNumber} from './GraphQLPhoneNumber'
+
 export function handleError(unparsedError, defaultMsg) {
   const err = parseQueryError(unparsedError)
   if (err.name === 'BadInputError' || err.name === 'LGCustomQueryError') {

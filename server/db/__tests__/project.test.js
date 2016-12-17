@@ -2,18 +2,23 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import saveSurveyResponse from 'src/server/actions/saveSurveyResponse'
+import {Cycle} from 'src/server/services/dataService'
+import {PRACTICE, REFLECTION, COMPLETE} from 'src/common/models/cycle'
 import {recordSurveyCompletedBy} from 'src/server/db/survey'
+import {withDBCleanup, useFixture} from 'src/test/helpers'
+import {expectArraysToContainTheSameElements} from 'src/test/helpers/expectations'
+import factory from 'src/test/factories'
+
 import {
   findProjectByNameForPlayer,
   findProjectBySurveyId,
   findProjectsAndReviewResponsesForPlayer,
   getProjectByName,
-  getProjectsForPlayer,
+  findProjectsForUser,
   updateProject,
   findProjectByPlayerIdAndCycleId,
-} from 'src/server/db/project'
-import {withDBCleanup, useFixture} from 'src/test/helpers'
-import factory from 'src/test/factories'
+  findActiveProjectsForChapter,
+} from '../project'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
@@ -123,7 +128,7 @@ describe(testContext(__filename), function () {
     })
   })
 
-  describe('getProjectsForPlayer()', function () {
+  describe('findProjectsForUser()', function () {
     useFixture.setCurrentCycleAndUserForProject()
     beforeEach(async function () {
       this.chapter = await factory.create('chapter')
@@ -133,13 +138,13 @@ describe(testContext(__filename), function () {
     })
 
     it('returns the projects for the given player', async function () {
-      const projectIds = (await getProjectsForPlayer(this.currentUser.id))
+      const projectIds = (await findProjectsForUser(this.currentUser.id))
         .map(p => p.id)
       return expect(projectIds).to.deep.equal([this.userProject.id])
     })
 
     it('does not return projects with which the player is not involved', async function () {
-      const projectIds = (await getProjectsForPlayer(this.currentUser.id))
+      const projectIds = (await findProjectsForUser(this.currentUser.id))
         .map(p => p.id)
       return expect(projectIds).to.not.contain(this.otherProject.id)
     })
@@ -214,6 +219,47 @@ describe(testContext(__filename), function () {
 
         expect(returnedProjects.length).to.equal(0)
       })
+    })
+  })
+
+  describe('findActiveProjectsForChapter', function () {
+    beforeEach('set up chapter, cycle, project', async function () {
+      this.chapter = await factory.create('chapter')
+      this.cycle = await factory.create('cycle', {chapterId: this.chapter.id})
+      this.projects = await factory.createMany('project', {
+        chapterId: this.chapter.id,
+        cycleId: this.cycle.id,
+      }, 3)
+    })
+
+    it('retrieves projects in the latest cycle if in PRACTICE state', async function () {
+      await Cycle.get(this.cycle.id).update({state: PRACTICE})
+      const activeProjects = await findActiveProjectsForChapter(this.chapter.id)
+      expectArraysToContainTheSameElements(
+        activeProjects.map(p => p.id),
+        this.projects.map(p => p.id),
+      )
+    })
+
+    it('retrieves projects in the latest cycle if in REFLECTION state', async function () {
+      await Cycle.get(this.cycle.id).update({state: REFLECTION})
+      const activeProjects = await findActiveProjectsForChapter(this.chapter.id)
+      expectArraysToContainTheSameElements(
+        activeProjects.map(p => p.id),
+        this.projects.map(p => p.id),
+      )
+    })
+
+    it('does not retrieve projects in the latest cycle if in COMPLETE state', async function () {
+      await Cycle.get(this.cycle.id).update({state: COMPLETE})
+      const activeProjects = await findActiveProjectsForChapter(this.chapter.id)
+      expect(activeProjects.length).to.eq(0)
+    })
+
+    it('returns count if specified', async function () {
+      await Cycle.get(this.cycle.id).update({state: PRACTICE})
+      const activeProjectCount = await findActiveProjectsForChapter(this.chapter.id, {count: true})
+      expect(activeProjectCount).to.eq(this.projects.length)
     })
   })
 })

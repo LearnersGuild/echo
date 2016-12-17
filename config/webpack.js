@@ -23,7 +23,9 @@ if (config.app.hotReload) {
 /** vendor entry points */
 if (config.app.minify) {
   entry.vendor = [
+    'google-libphonenumber',
     'juration',
+    'keymirror',
     'moment-timezone',
     'raven-js',
     'react',
@@ -43,6 +45,7 @@ const output = {
   filename: '[name].js',
   chunkFilename: 'app_[name]_[chunkhash].js',
   path: path.join(ROOT_DIR, 'dist'),
+  publicPath: '/',
 }
 
 /** source maps */
@@ -69,8 +72,8 @@ const plugins = [
       GRAPHIQL_BASE_URL: JSON.stringify(config.server.graphiql.baseURL),
       PLAYBOOK_URL: JSON.stringify(config.app.playbookURL),
     },
-    '__CLIENT__': true,
-    '__SERVER__': false,
+    __CLIENT__: true,
+    __SERVER__: false,
   }),
 ]
 if (config.app.hotReload) {
@@ -180,6 +183,10 @@ const loaders = [
   },
 ]
 
+const noParse = [
+  /node_modules\/google-libphonenumber\/dist/,
+]
+
 module.exports = {
   entry,
   output,
@@ -187,7 +194,7 @@ module.exports = {
   resolve,
   plugins,
   context: ROOT_DIR,
-  module: {loaders},
+  module: {loaders, noParse},
   postcss: [autoprefixer],
   sassResources: './config/sass-resources.scss',
   sassLoader: {data: `@import "${path.resolve(__dirname, '..', 'common', 'theme.scss')}";`},

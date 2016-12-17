@@ -74,7 +74,7 @@ export default class CycleVotingResults extends Component {
         <ListSubHeader caption={title}/>
         <ListDivider/>
         {poolList}
-        <a href={goalLibraryURL} target="_blank">
+        <a href={goalLibraryURL} target="_blank" rel="noopener noreferrer">
           <ListItem leftIcon="book" caption="View Goal Library"/>
         </a>
         <a onClick={onClose} className={styles.clickLink}>
