@@ -23,6 +23,7 @@ if (config.app.hotReload) {
 /** vendor entry points */
 if (config.app.minify) {
   entry.vendor = [
+    'google-libphonenumber',
     'juration',
     'moment-timezone',
     'raven-js',
@@ -180,6 +181,10 @@ const loaders = [
   },
 ]
 
+const noParse = [
+  /node_modules\/google-libphonenumber\/dist/,
+]
+
 module.exports = {
   entry,
   output,
@@ -187,7 +192,7 @@ module.exports = {
   resolve,
   plugins,
   context: ROOT_DIR,
-  module: {loaders},
+  module: {loaders, noParse},
   postcss: [autoprefixer],
   sassResources: './config/sass-resources.scss',
   sassLoader: {data: `@import "${path.resolve(__dirname, '..', 'common', 'theme.scss')}";`},

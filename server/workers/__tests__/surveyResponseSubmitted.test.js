@@ -131,7 +131,7 @@ describe(testContext(__filename), function () {
 
       describe('when the survey has been completed', function () {
         beforeEach(function () {
-          const overwriteObjs = [this.questionA, this.questionB].map((question, i) => ({
+          const overwriteObjs = [this.questionCompleteness, this.questionQuality].map((question, i) => ({
             questionId: question.id,
             surveyId: this.survey.id,
             subjectId: this.project.id,
