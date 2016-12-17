@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import yup from 'yup'
 import moment from 'moment-timezone'
 import juration from 'juration'
@@ -8,7 +9,7 @@ export const chapterSchema = yup.object().shape({
   timezone: yup.string().required().test(
     'is-valid-timezone',
     '${path} is not a valid timezone',
-    value => moment.tz.names().indexOf(value) >= 0
+    value => moment.tz.names().indexOf(value) >= 0,
   ),
   goalRepositoryURL: yup.string().required().matches(/https?:\/\/github\.com\/.+\/.+/, '${path} must be a valid GitHub repository URL'),
   cycleDuration: yup.string().required().test(
@@ -18,7 +19,7 @@ export const chapterSchema = yup.object().shape({
       let durationSecs
       try {
         durationSecs = juration.parse(value)
-      } catch (error) {
+      } catch (err) {
         throw this.createError()
       }
       if (durationSecs < 300) {

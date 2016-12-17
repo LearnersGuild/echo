@@ -3,11 +3,7 @@ engines:
   csslint:
     enabled: true
   duplication:
-    enabled: true
-    config:
-      languages:
-        javascript:
-          mass_threshold: 100
+    enabled: false
   eslint:
     enabled: false
   fixme:
@@ -18,12 +14,7 @@ ratings:
   - "**.inc"
   - "**.js"
   - "**.jsx"
-  - "**.module"
-  - "**.php"
-  - "**.py"
-  - "**.rb"
-# exclude_paths:
-# - config/
-# - db/
-# - test/
-# - scripts/
+exclude_paths:
+- node_modules/
+- test/
+- "__tests__/"

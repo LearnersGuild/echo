@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
+import Promise from 'bluebird'
 import nock from 'nock'
 
 import config from 'src/config'
@@ -10,6 +11,7 @@ import {
 } from 'src/server/db/project'
 import {getCycleById} from 'src/server/db/cycle'
 import factory from 'src/test/factories'
+import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 export const useFixture = {
   buildOneQuestionSurvey() {
@@ -62,13 +64,14 @@ export const useFixture = {
         this.project = await factory.create('project', {chapterId: this.chapter.id})
         this.cycle = await getCycleById(this.project.cycleId)
         if (!questionRefs) {
-          this.questionA = await factory.create('question',
-            {body: 'A', responseType: 'percentage', subjectType: 'project'})
-          this.questionB = await factory.create('question',
-            {body: 'B', responseType: 'percentage', subjectType: 'project'})
+          const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
+          const statQuality = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_QUALITY})
+          const question = {responseType: 'percentage', subjectType: 'project'}
+          this.questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
+          this.questionQuality = await factory.create('question', {...question, body: 'quality', statId: statQuality.id})
           questionRefs = [
-            {name: 'A', questionId: this.questionA.id, subjectIds: [this.project.id]},
-            {name: 'B', questionId: this.questionB.id, subjectIds: [this.project.id]},
+            {name: 'completeness', questionId: this.questionCompleteness.id, subjectIds: [this.project.id]},
+            {name: 'quality', questionId: this.questionQuality.id, subjectIds: [this.project.id]},
           ]
         }
         this.survey = await factory.create('survey', {questionRefs})
@@ -146,6 +149,10 @@ export const useFixture = {
       }
     })
   },
+  nockClean() {
+    nock.cleanAll()
+    this.apiScope = null
+  },
   nockIDMGetUsersById(users, {times = 1} = {}) {
     this.apiScope = nock(config.server.idm.baseURL)
       .post('/graphql')
@@ -156,11 +163,16 @@ export const useFixture = {
         },
       })
   },
-  nockClean() {
-    nock.cleanAll()
-    this.apiScope = null
+  nockIDMGetUser(user) {
+    this.apiScope = nock(config.server.idm.baseURL)
+      .post('/graphql')
+      .reply(200, {
+        data: {
+          getUser: user,
+        },
+      })
   },
-  nockIDMfindUsers(users, {times = 1} = {}) {
+  nockIDMFindUsers(users, {times = 1} = {}) {
     this.apiScope = nock(config.server.idm.baseURL)
       .post('/graphql')
       .times(times)
@@ -170,7 +182,7 @@ export const useFixture = {
         },
       })
   },
-  nockfetchGoalInfo(goalNumber, {times = 1} = {}) {
+  nockFetchGoalInfo(goalNumber, {times = 1} = {}) {
     this.apiScope = nock('https://api.github.com')
       .get(`/repos/GuildCraftsTesting/web-development-js-testing/issues/${goalNumber}`)
       .times(times)

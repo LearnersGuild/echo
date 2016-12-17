@@ -21,7 +21,7 @@ export function processJobs(queueName, processor, onFailed = _defaultErrorHandle
 
   const queue = getQueue(queueName)
 
-  queue.process(async function (job) {
+  queue.process(async job => {
     const {data, queue: {name: queueName}, jobId, attemptsMade} = job
     const currentAttemptNumber = attemptsMade + 1
 

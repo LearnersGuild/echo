@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import {savePools, addPlayerIdsToPool} from 'src/server/db/pool'
 import {flatten} from 'src/common/util'
 import {shuffle, range} from 'src/server/util'
-import getActivePlayersInChapter from 'src/server/actions/getActivePlayersInChapter'
+import findActivePlayersInChapter from 'src/server/actions/findActivePlayersInChapter'
 
 const MAX_POOL_SIZE = 15
 /* eslint-disable key-spacing */
@@ -32,7 +32,7 @@ const POOL_NAMES = [
 ]
 
 export default async function createPoolsForCycle(cycle) {
-  const players = await getActivePlayersInChapter(cycle.chapterId)
+  const players = await findActivePlayersInChapter(cycle.chapterId)
   const poolAssignments = _splitPlayersIntoPools(players)
   const poolCount = poolAssignments.length
 

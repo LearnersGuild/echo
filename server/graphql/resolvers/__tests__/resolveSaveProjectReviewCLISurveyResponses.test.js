@@ -20,8 +20,8 @@ describe(testContext(__filename), function () {
 
   describe('answering one at a time', function () {
     it('saves the responses with the right attributes', async function () {
-      const args1 = {responses: [{questionName: 'A', responseParams: ['80'], respondentId: this.currentUser.id}], projectName: this.project.name}
-      const args2 = {responses: [{questionName: 'B', responseParams: ['75'], respondentId: this.currentUser.id}], projectName: this.project.name}
+      const args1 = {responses: [{questionName: 'completeness', responseParams: ['80'], respondentId: this.currentUser.id}], projectName: this.project.name}
+      const args2 = {responses: [{questionName: 'quality', responseParams: ['75'], respondentId: this.currentUser.id}], projectName: this.project.name}
       const {createdIds: [returnedResponseId1]} = await resolveSaveProjectReviewCLISurveyResponses(null, args1, this.ast)
       const {createdIds: [returnedResponseId2]} = await resolveSaveProjectReviewCLISurveyResponses(null, args2, this.ast)
 
@@ -32,9 +32,9 @@ describe(testContext(__filename), function () {
       const response2 = responses.find(({id}) => id === returnedResponseId2)
 
       expect(response1).to.have.property('value', 80)
-      expect(response1).to.have.property('questionId', this.questionA.id)
+      expect(response1).to.have.property('questionId', this.questionCompleteness.id)
       expect(response2).to.have.property('value', 75)
-      expect(response2).to.have.property('questionId', this.questionB.id)
+      expect(response2).to.have.property('questionId', this.questionQuality.id)
       responses.forEach(response => checkResponse(response, this.survey, this.currentUser, this.project))
     })
   })
@@ -43,8 +43,8 @@ describe(testContext(__filename), function () {
     it('saves the responses with the right attributes', async function () {
       const args = {
         responses: [
-          {questionName: 'A', responseParams: ['80'], respondentId: this.currentUser.id},
-          {questionName: 'B', responseParams: ['75'], respondentId: this.currentUser.id},
+          {questionName: 'completeness', responseParams: ['80'], respondentId: this.currentUser.id},
+          {questionName: 'quality', responseParams: ['75'], respondentId: this.currentUser.id},
         ],
         projectName: this.project.name
       }
@@ -53,9 +53,9 @@ describe(testContext(__filename), function () {
       const responses = await Response.run()
       expect(responses.length).to.eq(2)
       expectArraysToContainTheSameElements(createdIds, responses.map(({id}) => id))
-      expect(responses.find(response => response.questionId === this.questionA.id))
+      expect(responses.find(response => response.questionId === this.questionCompleteness.id))
         .to.have.property('value', 80)
-      expect(responses.find(response => response.questionId === this.questionB.id))
+      expect(responses.find(response => response.questionId === this.questionQuality.id))
         .to.have.property('value', 75)
       responses.forEach(response => checkResponse(response, this.survey, this.currentUser, this.project))
     })

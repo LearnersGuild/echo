@@ -2,13 +2,16 @@ import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
 
-import ProgressBar from 'react-toolbox/lib/progress_bar'
-
-import {userCan} from 'src/common/util'
+import LoadingIndicator from 'src/common/components/LoadingIndicator'
 import ChapterListComponent from 'src/common/components/ChapterList'
-import loadChapters from 'src/common/actions/loadChapters'
+import {findChapters} from 'src/common/actions/chapter'
+import {userCan, toSortedArray} from 'src/common/util'
 
 class ChapterList extends Component {
+  static fetchData(dispatch) {
+    dispatch(findChapters())
+  }
+
   constructor(props) {
     super(props)
     this.handleCreateChapter = this.handleCreateChapter.bind(this)
@@ -19,45 +22,26 @@ class ChapterList extends Component {
     this.constructor.fetchData(this.props.dispatch, this.props)
   }
 
-  static fetchData(dispatch) {
-    dispatch(loadChapters())
-  }
-
   handleCreateChapter() {
     this.props.dispatch(push('/chapters/new'))
   }
 
   handleEditChapter(row) {
-    this.props.dispatch(push(`/chapters/${this.chapterList()[row].id}`))
-  }
-
-  chapterList() {
-    const {chapters: {chapters}} = this.props
-    return Object.keys(chapters)
-      .map(chapterId => chapters[chapterId])
-      .sort((a, b) => {
-        if (a.name > b.name) {
-          return -1
-        } else if (a.name === b.name) {
-          return 0
-        }
-        return 1
-      })
+    this.props.dispatch(push(`/chapters/${this.props.chapters[row].id}`))
   }
 
   render() {
-    const {chapters, auth: {currentUser}} = this.props
-    if (chapters.isBusy) {
-      return <ProgressBar/>
-    }
+    const {isBusy, chapters, currentUser} = this.props
 
-    const chapterList = this.chapterList()
+    if (chapters.length === 0 && isBusy) {
+      return <LoadingIndicator/>
+    }
 
     return (
       <ChapterListComponent
         selectable={userCan(currentUser, 'updateChapter')}
         showCreateButton={userCan(currentUser, 'createChapter')}
-        chapters={chapterList}
+        chapters={chapters}
         onCreateChapter={this.handleCreateChapter}
         onEditChapter={this.handleEditChapter}
         />
@@ -66,21 +50,17 @@ class ChapterList extends Component {
 }
 
 ChapterList.propTypes = {
-  auth: PropTypes.shape({
-    isBusy: PropTypes.bool.isRequired,
-    currentUser: PropTypes.object.isRequired,
-  }).isRequired,
-  chapters: PropTypes.shape({
-    isBusy: PropTypes.bool.isRequired,
-    chapters: PropTypes.object.isRequired,
-  }).isRequired,
+  isBusy: PropTypes.bool.isRequired,
+  chapters: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
+  currentUser: PropTypes.object.isRequired,
 }
 
 function mapStateToProps(state) {
   return {
-    auth: state.auth,
-    chapters: state.chapters,
+    currentUser: state.auth.currentUser,
+    isBusy: state.chapters.isBusy,
+    chapters: toSortedArray(state.chapters.chapters, 'name'),
   }
 }
 

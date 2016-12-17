@@ -58,7 +58,7 @@ function generate() {
   const ghPromises = Array.from(Array(numGoals).keys()).map(() => postIssue(owner, repo, generateGoal()))
   Promise.all(ghPromises)
     .then(() => console.log(`Created ${numGoals} goal issues in ${config.server.github.repos.crafts}`))
-    .catch(error => console.error(error.stack))
+    .catch(err => console.error(err.stack))
 }
 
 export default generate

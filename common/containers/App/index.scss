@@ -1,0 +1,30 @@
+.app {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  padding: 0 2.4rem;
+  overflow: hidden;
+}
+
+.loading {
+  width: 100%;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: scroll;
+}
+
+.footer {
+  width: 100%;
+}

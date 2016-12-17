@@ -119,7 +119,7 @@ function _getPlayerResponses(project, teamPlayersById, retroResponses, retroQues
       result.add(playerId)
       return result
     }, new Set()))
-  if (invalidPlayerIds.length) {
+  if (invalidPlayerIds.length > 0) {
     console.warn(
       'Survey responses found for players who are not on project ' +
       `${project.name} (${project.id}): ${invalidPlayerIds.join(', ')}. ` +
