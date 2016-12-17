@@ -3,8 +3,8 @@ import {push} from 'react-router-redux'
 import {connect} from 'react-redux'
 import socketCluster from 'socketcluster-client'
 
-import loadCycleVotingResults, {receivedCycleVotingResults} from 'src/common/actions/loadCycleVotingResults'
 import CycleVotingResults, {cycleVotingResultsPropType} from 'src/common/components/CycleVotingResults'
+import {getCycleVotingResults, receivedCycleVotingResults} from 'src/common/actions/cycle'
 
 class WrappedCycleVotingResults extends Component {
   constructor() {
@@ -61,7 +61,7 @@ class WrappedCycleVotingResults extends Component {
   }
 
   static fetchData(dispatch) {
-    dispatch(loadCycleVotingResults())
+    dispatch(getCycleVotingResults({withUsers: true}))
   }
 
   handleClose() {
@@ -73,11 +73,16 @@ class WrappedCycleVotingResults extends Component {
   }
 
   render() {
+    if (!this.props.cycle && this.props.isBusy) {
+      return null
+    }
     return <CycleVotingResults onClose={this.handleClose} {...this.props}/>
   }
 }
 
 WrappedCycleVotingResults.propTypes = Object.assign({}, cycleVotingResultsPropType, {
+  isBusy: PropTypes.bool,
+  cycle: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
 })
 

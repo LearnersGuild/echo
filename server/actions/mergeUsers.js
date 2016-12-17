@@ -15,14 +15,14 @@ export default async function mergeUsers(users, options) {
   const players = mapById(await findPlayersByIds(userIds))
   const moderators = mapById(await findModeratorsByIds(userIds))
 
-  return users.reduce((result, user) => {
+  return Object.values(users.reduce((result, user) => {
     const gameUser = players.get(user.id) || moderators.get(user.id)
-    if (gameUser && skipNoMatch) {
+    if (gameUser) {
       // only return in results if user has a game account
-      result.push(Object.assign({}, user, gameUser))
-    } else {
+      result[user.id] = Object.assign({}, user, gameUser)
+    } else if (!skipNoMatch) {
       throw new Error(`User not found for id ${user.id}, user merge aborted`)
     }
     return result
-  }, [])
+  }, {}))
 }

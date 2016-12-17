@@ -1,4 +1,4 @@
-import {UPDATE_JWT} from 'src/common/actions/updateJWT'
+import {UPDATE_JWT} from 'src/common/actions/types'
 
 const initialState = {
   currentUser: null,
@@ -6,7 +6,7 @@ const initialState = {
   isBusy: false,
 }
 
-export function auth(state = initialState, action) {
+export default function auth(state = initialState, action) {
   switch (action.type) {
     case UPDATE_JWT:
       return Object.assign({}, state, {

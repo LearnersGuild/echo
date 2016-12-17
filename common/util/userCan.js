@@ -47,8 +47,41 @@ const CAPABILITY_ROLES = {
     'moderator',
   ],
 
+  listProjects: [
+    'backoffice',
+    'moderator',
+    'player',
+  ],
   updateProject: [
     'player',
+    'moderator',
+  ],
+  viewProject: [
+    'backoffice',
+    'moderator',
+    'player',
+  ],
+  viewProjectSummary: [
+    'backoffice',
+    'moderator',
+  ],
+
+  listUsers: [
+    'backoffice',
+    'moderator',
+    'player',
+  ],
+  viewUser: [
+    'backoffice',
+    'moderator',
+    'player',
+  ],
+  viewUserStats: [
+    'backoffice',
+    'moderator',
+  ],
+  viewUserSummary: [
+    'backoffice',
     'moderator',
   ],
 
@@ -68,9 +101,11 @@ const CAPABILITY_ROLES = {
     'player',
     'backoffice',
   ],
+
   runReports: [
     'backoffice'
   ],
+
   monitorJobQueues: [
     'backoffice',
   ],

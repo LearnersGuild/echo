@@ -50,8 +50,8 @@ async function addUserToDatabase(user) {
   })
   const upsertedUsers = await Promise.all(dbInsertPromises)
     .then(results => results.map(result => result.changes[0].new_val))
-    .catch(error => {
-      throw new Error(`Unable to insert game user(s): ${error}`)
+    .catch(err => {
+      throw new Error(`Unable to insert game user(s): ${err}`)
     })
   return upsertedUsers[0]
 }

@@ -132,14 +132,7 @@ export default class VotingPoolResults extends Component {
   }
 
   render() {
-    const {
-      isBusy,
-      cycle,
-    } = this.props
-
-    if (isBusy) {
-      return <ProgressBar mode="indeterminate"/>
-    }
+    const {cycle} = this.props
 
     if (!cycle) {
       return <div>No one in this pool has voted yet.</div>
@@ -183,6 +176,4 @@ VotingPoolResults.propTypes = {
   onToggleCollapsed: PropTypes.func.isRequired,
 
   pool: poolPropType,
-
-  isBusy: PropTypes.bool.isRequired,
 }

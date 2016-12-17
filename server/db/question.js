@@ -38,7 +38,7 @@ export async function getRelativeContributionQuestionForSurvey(survey) {
     .do(questionIds => questionsTable.getAll(r.args(questionIds)))
     .filter({responseType: 'relativeContribution', active: true})
 
-  if (!rcQuestions.length) {
+  if (rcQuestions.length === 0) {
     throw new Error(`No Relative Contribution Question Found on this survey [${survey.id}]!`)
   }
 

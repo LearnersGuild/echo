@@ -1,46 +1,58 @@
 import React, {Component, PropTypes} from 'react'
-import {Button} from 'react-toolbox/lib/button'
-import {CardTitle, CardText} from 'react-toolbox/lib/card'
-import Table from 'react-toolbox/lib/table'
+
+import ContentHeader from 'src/common/components/ContentHeader'
+import ContentTable from 'src/common/components/ContentTable'
 
 const ChapterModel = {
   name: {type: String},
-  timezone: {type: String},
-  cycleDuration: {type: String},
+  channelName: {title: 'Channel', type: String},
+  cycleNumber: {title: 'Cycle', type: Number},
+  cycleState: {title: 'State', type: String},
+  activeProjectCount: {title: 'Active Projects', type: Number},
+  activePlayerCount: {title: 'Active Players', type: Number},
 }
 
 export default class ChapterList extends Component {
   render() {
-    const {selectable, showCreateButton, chapters, onCreateChapter, onEditChapter} = this.props
-
-    const content = chapters && chapters.length > 0 ? (
-      <Table
-        selectable={selectable}
+    const {chapters, allowCreate, allowSelect, onClickCreate, onSelectRow} = this.props
+    const chapterData = (chapters || []).map(chapter => {
+      const cycle = chapter.latestCycle || {}
+      return {
+        ...chapter,
+        cycleNumber: cycle.cycleNumber,
+        cycleState: cycle.state,
+      }
+    })
+    const header = (
+      <ContentHeader
+        title="Chapters"
+        buttonIcon={allowCreate ? 'add_circle' : null}
+        onClickButton={allowCreate ? onClickCreate : null}
+        />
+    )
+    const content = chapterData.length > 0 ? (
+      <ContentTable
         model={ChapterModel}
-        source={chapters}
-        onSelect={selectable ? onEditChapter : undefined}
+        source={chapterData}
+        allowSelect={allowSelect}
+        onSelectRow={onSelectRow}
         />
     ) : (
-      <CardText>No chapters yet.</CardText>
+      <div>No chapters yet.</div>
     )
-    const createButton = showCreateButton ? (
-      <Button icon="add" floating accent onClick={onCreateChapter} style={{float: 'right'}}/>
-    ) : ''
-
     return (
       <div>
-        <CardTitle title="Chapters"/>
+        {header}
         {content}
-        {createButton}
       </div>
     )
   }
 }
 
 ChapterList.propTypes = {
-  selectable: PropTypes.bool.isRequired,
-  showCreateButton: PropTypes.bool.isRequired,
-  chapters: PropTypes.array.isRequired,
-  onCreateChapter: PropTypes.func.isRequired,
-  onEditChapter: PropTypes.func.isRequired,
+  allowCreate: PropTypes.bool,
+  allowSelect: PropTypes.bool,
+  chapters: PropTypes.array,
+  onClickCreate: PropTypes.func,
+  onSelectRow: PropTypes.func,
 }

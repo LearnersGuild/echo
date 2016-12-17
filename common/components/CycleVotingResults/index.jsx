@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react'
 import {List, ListItem, ListSubHeader, ListDivider} from 'react-toolbox/lib/list'
-import ProgressBar from 'react-toolbox/lib/progress_bar'
 
 import {CYCLE_STATES} from 'src/common/models/cycle'
 import VotingPoolResults, {poolPropType} from 'src/common/components/VotingPoolResults'
@@ -30,15 +29,8 @@ export default class CycleVotingResults extends Component {
       chapter,
       cycle,
       pools,
-      isBusy,
       onClose,
     } = this.props
-
-    if (isBusy) {
-      return (
-        <ProgressBar mode="indeterminate"/>
-      )
-    }
 
     if (!cycle) {
       return (
@@ -64,7 +56,6 @@ export default class CycleVotingResults extends Component {
           isOnlyPool={isOnlyPool}
           isCollapsed={isCollapsed}
           onToggleCollapsed={this.handleTogglePoolCollapsed}
-          isBusy={isBusy}
           />
       )
     })
@@ -74,7 +65,7 @@ export default class CycleVotingResults extends Component {
         <ListSubHeader caption={title}/>
         <ListDivider/>
         {poolList}
-        <a href={goalLibraryURL} target="_blank">
+        <a href={goalLibraryURL} target="_blank" rel="noopener noreferrer">
           <ListItem leftIcon="book" caption="View Goal Library"/>
         </a>
         <a onClick={onClose} className={styles.clickLink}>
@@ -101,8 +92,6 @@ export const cycleVotingResultsPropType = {
     state: PropTypes.oneOf(CYCLE_STATES),
   }),
   pools: PropTypes.arrayOf(poolPropType).isRequired,
-
-  isBusy: PropTypes.bool.isRequired,
 }
 
 CycleVotingResults.propTypes = Object.assign({}, cycleVotingResultsPropType, {

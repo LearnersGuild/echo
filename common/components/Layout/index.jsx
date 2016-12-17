@@ -1,3 +1,1 @@
-import * as jsxstyle from 'jsxstyle'
-
-export const Flex = jsxstyle.Flex
+export {default as Flex} from './Flex'
