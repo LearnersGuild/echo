@@ -1,8 +1,10 @@
+
 /* eslint-env mocha */
 /* global expect testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import factory from 'src/test/factories'
 import {truncateDBTables, useFixture} from 'src/test/helpers'
+import {expectArraysToContainTheSameElements} from 'src/test/helpers/expectations'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
 
 import importProject from '../importProject'
@@ -47,28 +49,24 @@ describe(testContext(__filename), function () {
     })
 
     it('creates a new project a projectIdentifier is not specified', async function () {
-      useFixture.nockIDMfindUsers(this.users)
-      useFixture.nockfetchGoalInfo(this.goalNumber, {times: 2})
+      useFixture.nockIDMFindUsers(this.users)
+      useFixture.nockFetchGoalInfo(this.goalNumber, {times: 2})
 
       const importedProject = await importProject(this.importData)
 
       expect(importedProject.goal.githubIssue.number).to.eq(this.goalNumber)
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
-      expect(
-        importedProject.playerIds.sort()
-      ).to.deep.eq(
-        this.players.map(p => p.id).sort()
-      )
+      expectArraysToContainTheSameElements(importedProject.playerIds, this.players.map(p => p.id))
     })
 
-    it('updates goal and users when a valid projectIdentifier is specified', async function () {
+    it('updates goal and users when a valid project identifier is specified', async function () {
       const newProject = await factory.create('project', {chapterId: this.chapter.id, cycleId: this.cycle.id})
       const newPlayers = await factory.createMany('player', {chapterId: this.chapter.id}, 4)
       const newGoalNumber = 2
 
-      useFixture.nockIDMfindUsers(newPlayers)
-      useFixture.nockfetchGoalInfo(newGoalNumber)
+      useFixture.nockIDMFindUsers(newPlayers)
+      useFixture.nockFetchGoalInfo(newGoalNumber)
 
       const importedProject = await importProject({
         ...this.importData,
@@ -82,9 +80,7 @@ describe(testContext(__filename), function () {
       expect(importedProject.cycleId).to.eq(this.cycle.id)
       expect(importedProject.playerIds.length).to.eq(newPlayers.length)
       expect(importedProject.goal.githubIssue.number).to.eq(newGoalNumber)
-      importedProject.playerIds.forEach(playerId => {
-        expect(newPlayers.find(p => p.id === playerId))
-      })
+      expectArraysToContainTheSameElements(importedProject.playerIds, newPlayers.map(p => p.id))
     })
   })
 })

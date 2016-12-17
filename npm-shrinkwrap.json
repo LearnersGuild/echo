@@ -1299,7 +1299,8 @@
       "dependencies": {
         "object-assign": {
           "version": "4.1.0",
-          "from": "object-assign@>=4.1.0 <5.0.0"
+          "from": "object-assign@4.1.0",
+          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.0.tgz"
         }
       }
     },
@@ -2989,6 +2990,11 @@
         }
       }
     },
+    "google-libphonenumber": {
+      "version": "2.0.6",
+      "from": "google-libphonenumber@latest",
+      "resolved": "https://registry.npmjs.org/google-libphonenumber/-/google-libphonenumber-2.0.6.tgz"
+    },
     "got": {
       "version": "5.6.0",
       "from": "got@>=5.0.0 <6.0.0",
@@ -3698,6 +3704,11 @@
       "version": "3.1.3",
       "from": "jws@>=3.0.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/jws/-/jws-3.1.3.tgz"
+    },
+    "keymirror": {
+      "version": "0.1.1",
+      "from": "keymirror@latest",
+      "resolved": "https://registry.npmjs.org/keymirror/-/keymirror-0.1.1.tgz"
     },
     "kind-of": {
       "version": "3.0.4",
@@ -6580,7 +6591,8 @@
     },
     "rethinkdb-changefeed-reconnect": {
       "version": "0.3.1",
-      "from": "rethinkdb-changefeed-reconnect@latest"
+      "from": "rethinkdb-changefeed-reconnect@0.3.1",
+      "resolved": "https://registry.npmjs.org/rethinkdb-changefeed-reconnect/-/rethinkdb-changefeed-reconnect-0.3.1.tgz"
     },
     "rethinkdbdash": {
       "version": "2.3.25",

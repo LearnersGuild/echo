@@ -1,7 +1,7 @@
 /* global __SERVER__ */
 import fetch from 'isomorphic-fetch'
 
-import {updateJWT} from 'src/common/actions/updateJWT'
+import {updateJWT} from 'src/common/actions/auth'
 
 let APP_BASE_URL = ''
 if (__SERVER__) {

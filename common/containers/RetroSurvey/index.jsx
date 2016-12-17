@@ -42,7 +42,7 @@ class RetroSurveyContainer extends Component {
 
   componentDidMount() {
     const {params: {projectName}, surveyActions} = this.props
-    surveyActions.fetchRetroSurvey({projectName})
+    surveyActions.getRetroSurvey({projectName})
   }
 
   componentWillReceiveProps(nextProps) {

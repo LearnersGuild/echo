@@ -4,9 +4,9 @@ import {push} from 'react-router-redux'
 
 import ProgressBar from 'react-toolbox/lib/progress_bar'
 
-import {userCan} from 'src/common/util'
 import ChapterListComponent from 'src/common/components/ChapterList'
-import loadChapters from 'src/common/actions/loadChapters'
+import {findChapters} from 'src/common/actions/chapter'
+import {userCan} from 'src/common/util'
 
 class ChapterList extends Component {
   constructor(props) {
@@ -20,7 +20,7 @@ class ChapterList extends Component {
   }
 
   static fetchData(dispatch) {
-    dispatch(loadChapters())
+    dispatch(findChapters())
   }
 
   handleCreateChapter() {

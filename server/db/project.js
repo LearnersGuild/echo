@@ -1,9 +1,10 @@
 import {connect} from 'src/db'
-
-import {customQueryError} from './errors'
-import {insertAllIntoTable, updateInTable} from './util'
+import {REFLECTION, PRACTICE} from 'src/common/models/cycle'
+import {getLatestCycleForChapter} from './cycle'
 import {getSurveyById} from './survey'
 import {getSurveyResponsesForPlayer} from './response'
+import {customQueryError} from './errors'
+import {insertAllIntoTable, updateInTable} from './util'
 
 const r = connect()
 export const table = r.table('projects')
@@ -32,12 +33,27 @@ export function getProjectsForChapter(chapterId) {
   return table.getAll(chapterId, {index: 'chapterId'})
 }
 
-export function getProjectsForPlayer(playerId) {
-  return findProjects(project => (project('playerIds').contains(playerId)))
+export function findProjectsForUser(userId) {
+  return findProjects(project => (project('playerIds').contains(userId)))
+}
+
+export function findProjectsByIds(projectIds) {
+  return table.getAll(...projectIds)
 }
 
 export function findProjects(filter) {
-  return filter ? table.filter(filter) : table
+  if (!filter) {
+    return table
+  }
+  if (Array.isArray(filter)) {
+    return table
+      .getAll(...filter)
+      .union(
+        table.getAll(...filter, {index: 'name'})
+      )
+      .distinct()
+  }
+  return table.filter(filter)
 }
 
 export function insertProjects(projects) {
@@ -106,4 +122,15 @@ export function findProjectsAndReviewResponsesForPlayer(chapterId, cycleId, play
         )
     }))
     .orderBy('name')
+}
+
+export async function findActiveProjectsForChapter(chapterId, options = {}) {
+  const latestCycle = await getLatestCycleForChapter(chapterId, {default: null})
+  const activeProjects = latestCycle && (latestCycle.state === PRACTICE || latestCycle.state === REFLECTION) ?
+    table.filter({chapterId, cycleId: latestCycle.id}) : null
+
+  if (options.count) {
+    return activeProjects ? activeProjects.count() : null
+  }
+  return activeProjects || []
 }

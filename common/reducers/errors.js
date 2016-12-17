@@ -1,13 +1,17 @@
-import {DISMISS_ERROR} from 'src/common/actions/dismissError'
-import {AUTHORIZATION_ERROR} from 'src/common/actions/authorizationError'
-import {ADD_INVITE_CODE_TO_CHAPTER_FAILURE} from 'src/common/actions/addInviteCodeToChapter'
-import {CREATE_OR_UPDATE_CHAPTER_FAILURE} from 'src/common/actions/createOrUpdateChapter'
-import {LOAD_CHAPTER_FAILURE} from 'src/common/actions/loadChapter'
-import {LOAD_CHAPTERS_FAILURE} from 'src/common/actions/loadChapters'
-import {LOAD_ALL_PLAYERS_FAILURE} from 'src/common/actions/loadAllPlayersAndCorrespondingUsers'
-import {LOAD_CYCLE_VOTING_RESULTS_FAILURE} from 'src/common/actions/loadCycleVotingResults'
-import {REASSIGN_PLAYERS_TO_CHAPTER_FAILURE} from 'src/common/actions/reassignPlayersToChapter'
-import {LOAD_RETRO_SURVEY_FAILURE, SURVEY_PARSE_FAILURE, SAVE_SURVEY_RESPONSES_FAILURE} from 'src/common/actions/survey'
+import {
+  DISMISS_ERROR,
+  AUTHORIZATION_ERROR,
+  ADD_INVITE_CODE_TO_CHAPTER_FAILURE,
+  SAVE_CHAPTER_FAILURE,
+  GET_CHAPTER_FAILURE,
+  FIND_CHAPTERS_FAILURE,
+  FIND_PLAYERS_FAILURE,
+  GET_CYCLE_VOTING_RESULTS_FAILURE,
+  REASSIGN_PLAYERS_TO_CHAPTER_FAILURE,
+  GET_RETRO_SURVEY_FAILURE,
+  SURVEY_PARSE_FAILURE,
+  SAVE_SURVEY_RESPONSES_FAILURE,
+} from 'src/common/actions/types'
 
 const initialState = {
   messages: [],
@@ -33,13 +37,13 @@ export function errors(state = initialState, action) {
       })
     case AUTHORIZATION_ERROR:
     case ADD_INVITE_CODE_TO_CHAPTER_FAILURE:
-    case CREATE_OR_UPDATE_CHAPTER_FAILURE:
-    case LOAD_CHAPTER_FAILURE:
-    case LOAD_CHAPTERS_FAILURE:
-    case LOAD_ALL_PLAYERS_FAILURE:
-    case LOAD_CYCLE_VOTING_RESULTS_FAILURE:
+    case SAVE_CHAPTER_FAILURE:
+    case GET_CHAPTER_FAILURE:
+    case FIND_CHAPTERS_FAILURE:
+    case FIND_PLAYERS_FAILURE:
+    case GET_CYCLE_VOTING_RESULTS_FAILURE:
     case REASSIGN_PLAYERS_TO_CHAPTER_FAILURE:
-    case LOAD_RETRO_SURVEY_FAILURE:
+    case GET_RETRO_SURVEY_FAILURE:
     case SURVEY_PARSE_FAILURE:
     case SAVE_SURVEY_RESPONSES_FAILURE:
       {

@@ -60,9 +60,22 @@ export function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-export function mapById(arr) {
-  return arr.reduce((result, el) => {
-    result.set(el.id, el)
+export function mapById(arr, idKey = 'id') {
+  return arr.reduce((result, item) => {
+    result.set(item[idKey], item)
+    return result
+  }, new Map())
+}
+
+export function groupById(arr, idKey = 'id') {
+  return arr.reduce((result, item) => {
+    const groupKey = item[idKey]
+    let group = result.get(groupKey)
+    if (!group) {
+      group = []
+    }
+    group.push(item)
+    result.set(groupKey, group)
     return result
   }, new Map())
 }

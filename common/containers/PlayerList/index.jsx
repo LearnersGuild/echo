@@ -3,11 +3,10 @@ import {connect} from 'react-redux'
 
 import ProgressBar from 'react-toolbox/lib/progress_bar'
 
-import {userCan} from 'src/common/util'
 import PlayerListComponent from 'src/common/components/PlayerList'
-import loadAllPlayersAndCorrespondingUsers from 'src/common/actions/loadAllPlayersAndCorrespondingUsers'
-import loadChapters from 'src/common/actions/loadChapters'
-import reassignPlayersToChapter from 'src/common/actions/reassignPlayersToChapter'
+import {findPlayers, reassignPlayersToChapter} from 'src/common/actions/user'
+import {findChapters} from 'src/common/actions/chapter'
+import {userCan} from 'src/common/util'
 
 class PlayerList extends Component {
   constructor(props) {
@@ -20,8 +19,8 @@ class PlayerList extends Component {
   }
 
   static fetchData(dispatch) {
-    dispatch(loadChapters())
-    dispatch(loadAllPlayersAndCorrespondingUsers())
+    dispatch(findChapters())
+    dispatch(findPlayers({withUsers: true}))
   }
 
   handleReassignPlayersToChapter(playerIds, chapterId) {
