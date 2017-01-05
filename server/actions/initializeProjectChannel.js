@@ -1,4 +1,5 @@
 import ChatClient from 'src/server/clients/ChatClient'
+import queueChatMessage from 'src/server/actions/queueChatMessage'
 
 export default async function initializeProjectChannel(project, players, options = {}) {
   const channelName = project.name
@@ -14,12 +15,12 @@ export default async function initializeProjectChannel(project, players, options
 
   // Split welcome message into 2 so that the goal link preview
   // is inserted right after the goal link.
-  const projectWelcomeMessage1 = `🎊 *Welcome to the ${channelName} project channel!* 🎊
+  const projectWelcomeMessages = [
+    `🎊 *Welcome to the ${channelName} project channel!* 🎊
 
 *Your goal is:* ${goalLink}
-`
-
-  const projectWelcomeMessage2 = `*Your team is:*
+`,
+    `*Your team is:*
   ${players.map(p => `• _${p.name}_ - @${p.handle}`).join('\n  ')}
 
 *Time to start work on your project!*
@@ -29,15 +30,11 @@ Once you've created the artifact, connect it to your project with the \`/project
 
 Run \`/project set-artifact --help\` for more guidance.
 `
+  ]
 
-  await chatClient.sendChannelMessage(channelName, projectWelcomeMessage1).catch(err => {
-    console.error(`Project channel ${channelName} welcome message #1 failed to post:`)
-    console.error(projectWelcomeMessage1)
-    console.error(err)
-  })
-  await chatClient.sendChannelMessage(channelName, projectWelcomeMessage2).catch(err => {
-    console.error(`Project channel ${channelName} welcome message #2 failed to post:`)
-    console.error(projectWelcomeMessage2)
-    console.error(err)
+  await queueChatMessage({
+    type: 'channel',
+    target: channelName,
+    msg: projectWelcomeMessages,
   })
 }

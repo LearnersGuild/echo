@@ -1,3 +1,4 @@
+import Promise from 'bluebird'
 import ChatClient from 'src/server/clients/ChatClient'
 import {processJobs} from 'src/server/util/queue'
 
@@ -5,18 +6,20 @@ export function start() {
   processJobs('sendChatMessage', sendChatMessage)
 }
 
-export async function sendChatMessage(event, chatClient = new ChatClient()) {
-  console.log(`Sending chat message to ${event.type} [${event.target}]`)
+export async function sendChatMessage({msg, target, type}, chatClient = new ChatClient()) {
+  console.log(`Sending chat message to ${type} [${target}]`)
 
-  switch (event.type) {
+  const msgs = Array.isArray(msg) ? msg : [msg]
+
+  switch (type) {
     case 'channel':
-      await chatClient.sendChannelMessage(event.target, event.msg)
+      await Promise.each(msgs, msg => chatClient.sendChannelMessage(target, msg))
       break
     case 'user':
-      await chatClient.sendDirectMessage(event.target, event.msg)
+      await Promise.each(msgs, msg => chatClient.sendDirectMessage(target, msg))
       break
     default:
-      console.error(`Invalid Message Type: ${event.type}`)
+      console.error(`Invalid Message Type: ${type}`)
       break
   }
 }

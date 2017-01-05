@@ -1,4 +1,5 @@
 /* eslint-disable prefer-arrow-callback */
+import Promise from 'bluebird'
 import {formProjectsIfNoneExist} from 'src/server/actions/formProjects'
 import initializeProjectChannel from 'src/server/actions/initializeProjectChannel'
 import sendCycleLaunchAnnouncement from 'src/server/actions/sendCycleLaunchAnnouncement'
@@ -20,10 +21,10 @@ export async function processCycleLaunch(cycle, options = {}) {
   await formProjectsIfNoneExist(cycle.id, err => _notifyModerators(cycle, `⚠️ ${err.message}`))
   const projects = await findProjects({chapterId: cycle.chapterId, cycleId: cycle.id})
 
-  await Promise.all(projects.map(async project => {
+  await Promise.each(projects, async project => {
     const players = await getPlayerInfo(project.playerIds)
-    return initializeProjectChannel(project, players, {chatClient})
-  }))
+    await initializeProjectChannel(project, players, {chatClient})
+  })
 
   return sendCycleLaunchAnnouncement(cycle, projects, {chatClient})
 }

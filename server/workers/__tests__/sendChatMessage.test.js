@@ -11,7 +11,7 @@ describe(testContext(__filename), function () {
     beforeEach('create stubs', function () {
       const recordMessageStub = type => {
         return (target, msg) => {
-          this.chatClientStub.sentMessages[type][target] = this.chatClientStub.sentMessages[target] || []
+          this.chatClientStub.sentMessages[type][target] = this.chatClientStub.sentMessages[type][target] || []
           this.chatClientStub.sentMessages[type][target].push(msg)
           return Promise.resolve()
         }
@@ -30,6 +30,15 @@ describe(testContext(__filename), function () {
       return sendChatMessage(event, this.chatClientStub).then(() => {
         const [msg] = this.chatClientStub.sentMessages.channel[event.target]
         expect(msg).to.eq(event.msg)
+      })
+    })
+
+    it('accepts an array of messages', function () {
+      const event = {type: 'channel', target: 'channel1', msg: ['msg1', 'msg2']}
+
+      return sendChatMessage(event, this.chatClientStub).then(() => {
+        const msgs = this.chatClientStub.sentMessages.channel[event.target]
+        expect(msgs).to.deep.eq(event.msg)
       })
     })
 

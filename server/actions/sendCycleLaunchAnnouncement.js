@@ -1,11 +1,20 @@
-import {connect} from 'src/db'
-import ChatClient from 'src/server/clients/ChatClient'
+import {Chapter} from 'src/server/services/dataService'
+import queueChatMessage from 'src/server/actions/queueChatMessage'
 
-const r = connect()
+export default async function sendCycleLaunchAnnouncement(cycle, projects) {
+  const chapter = await Chapter.get(cycle.chapterId)
+  const msg = _buildAnnouncement(projects)
 
-export default function sendCycleLaunchAnnouncement(cycle, projects, options = {}) {
-  const chatClient = options.chatClient || new ChatClient()
+  await queueChatMessage({
+    type: 'channel',
+    target: chapter.channelName,
+    msg,
+  })
+}
+
+function _buildAnnouncement(projects) {
   let announcement = '🚀  *The cycle has been launched!*\n'
+
   if (projects.length > 0) {
     const projectListString = projects.map(p => `  • #${p.name} - _${p.goal.title}_`).join('\n')
     announcement += `The following projects have been created:\n${projectListString}`
@@ -13,6 +22,5 @@ export default function sendCycleLaunchAnnouncement(cycle, projects, options = {
     announcement += 'No projects created'
   }
 
-  return r.table('chapters').get(cycle.chapterId).run()
-    .then(chapter => chatClient.sendChannelMessage(chapter.channelName, announcement))
+  return announcement
 }
