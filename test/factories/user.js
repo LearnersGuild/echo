@@ -8,7 +8,7 @@ export default function define(factory) {
     id: cb => cb(null, faker.random.uuid()),
     email: cb => cb(null, faker.internet.exampleEmail()),
     emails: cb => cb(null, [faker.internet.exampleEmail(), faker.internet.exampleEmail()]),
-    handle: cb => cb(null, `${faker.random.word()}${faker.random.number({max: 100})}`.toLowerCase()),
+    handle: factory.sequence(n => `user${n}`),
     avatarUrl: cb => cb(null, faker.image.imageUrl()),
     profileUrl: cb => cb(null, 'http://me.com'),
     name: cb => cb(null, faker.name.findName()),

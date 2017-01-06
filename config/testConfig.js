@@ -2,6 +2,7 @@ import 'babel-polyfill' // eslint-disable-line import/no-unassigned-import
 import jsdom from 'jsdom'
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
+import sinonChai from 'sinon-chai'
 
 // jsdom setup
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
@@ -26,6 +27,7 @@ global.testContext = filename => {
 
 // setup chai and make it available in all tests
 chai.use(chaiAsPromised)
+chai.use(sinonChai)
 global.expect = chai.expect
 
 // CSS modules setup

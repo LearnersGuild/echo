@@ -10,4 +10,5 @@ export async function mockIdmUsersById(userIds, overwriteObjs = null, options = 
     .post('/graphql')
     .times(isNaN(options.times) ? 1 : options.times)
     .reply(200, JSON.stringify({data: {getUsersByIds: idmUsers}}))
+  return idmUsers
 }

@@ -9,7 +9,7 @@ export default async function sendCycleLaunchAnnouncement(cycle, projects) {
     type: 'channel',
     target: chapter.channelName,
     msg,
-  })
+  }, {delay: 10000})
 }
 
 function _buildAnnouncement(projects) {

@@ -11,6 +11,7 @@ require('./cycleCompleted').start()
 require('./projectArtifactChanged').start()
 require('./surveyResponseSubmitted').start()
 require('./sendChatMessage').start()
+require('./projectCreated').start()
 
 // start change feed listeners
 require('src/server/configureChangeFeeds')()
