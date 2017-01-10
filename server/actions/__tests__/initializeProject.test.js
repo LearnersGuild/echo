@@ -1,34 +1,39 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
-import sinon from 'sinon'
-
 import factory from 'src/test/factories'
 import {Player} from 'src/server/services/dataService'
-import {withDBCleanup, mockIdmUsersById} from 'src/test/helpers'
+import {withDBCleanup, mockIdmUsersById, useFixture} from 'src/test/helpers'
 
 import initializeProject from '../initializeProject'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
 
-  describe('handleProjectCreated()', function () {
-    beforeEach('create stubs', async function () {
-      this.chatClientStub = {
-        createChannel: sinon.spy(),
-      }
+  describe('initializeProject()', function () {
+    beforeEach('setup data & mocks', async function () {
+      this.createdChannels = []
+      this.sentMessages = []
+      useFixture.nockClean()
+      useFixture.nockChatLogin({times: 3})
+      useFixture.nockChatCreateChannel({
+        times: 1,
+        onCreateChannel: requestBody => this.createdChannels.push(requestBody),
+      })
+
       this.project = await factory.create('project')
       this.users = await Player.getAll(...this.project.playerIds)
       this.idmUsers = await mockIdmUsersById(this.project.playerIds)
     })
 
-    it('sends a message to the project chatroom', async function () {
-      const projectName = this.project.name
-      const usersHandles = this.idmUsers.map(_ => _.handle)
+    it('creates the project channel and sends welcome messages', async function () {
+      const memberHandles = this.idmUsers.map(u => u.handle).concat(['echo']).sort()
 
-      await initializeProject(this.project, {chatClient: this.chatClientStub})
+      await initializeProject(this.project)
 
-      expect(this.chatClientStub.createChannel).to.have.been.calledWith(projectName, [...usersHandles, 'echo'])
+      const createdChannel = this.createdChannels[0]
+      expect(createdChannel.name).to.eq(this.project.name)
+      expect(createdChannel.members.sort()).to.deep.eq(memberHandles)
     })
   })
 })

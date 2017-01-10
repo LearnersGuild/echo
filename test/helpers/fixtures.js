@@ -154,7 +154,6 @@ export const useFixture = {
     this.apiScope = null
   },
   nockIDMGraphQL(dataKey, data, {times = 1} = {}) {
-    console.log('config.server.idm.baseURL:', config.server.idm.baseURL)
     this.apiScope = nock(config.server.idm.baseURL)
       .post('/graphql')
       .times(times)
@@ -198,6 +197,59 @@ export const useFixture = {
       .reply(200, {
         number: goalNumber,
         labels: [],
+      })
+  },
+  nockChatLogin(options = {}) {
+    const {times = 1} = options
+    this.apiScope = nock(config.server.chat.baseURL)
+      .post('/api/login')
+      .times(times)
+      .reply(200, {
+        success: true,
+        data: {
+          authToken: 'fakeauthtoken',
+          userId: 'fakeuserid',
+        },
+      })
+  },
+  nockChatCreateChannel(options = {}) {
+    const {times = 1, onCreateChannel = () => {}} = options
+    this.apiScope = nock(config.server.chat.baseURL)
+      .post('/api/lg/rooms')
+      .times(times)
+      .reply(200, function (uri, requestBody) {
+        onCreateChannel(requestBody)
+        return {
+          success: true,
+          room: {
+            rid: 'fakeroomid',
+            name: requestBody.name,
+            topic: requestBody.topic,
+            members: requestBody.members,
+          },
+        }
+      })
+  },
+  nockChatSendChannelMessage(options = {}) {
+    const {times = 1, onSendMessage = () => {}} = options
+    this.apiScope = nock(config.server.chat.baseURL)
+      .post(/api\/lg\/rooms\/*\/send/)
+      .times(times)
+      .reply(200, function (uri, requestBody) {
+        onSendMessage(requestBody)
+        return {
+          success: true,
+          result: {
+            _id: 'fakeid',
+            rid: 'fakeroomid',
+            ts: new Date().toISOString(),
+            u: {
+              _id: 'fakeuserid',
+              username: 'fakeuser',
+            },
+            msg: requestBody,
+          },
+        }
       })
   },
 }

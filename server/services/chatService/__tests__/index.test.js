@@ -43,7 +43,7 @@ describe(testContext(__filename), function () {
       this.apiScope
         .post(`/hooks/${config.server.chat.webhookTokens.DM}`)
         .reply(200, {
-          result: this.responses.createDirectMessage,
+          data: this.responses.createDirectMessage,
           status: 'success',
         })
     })
@@ -131,8 +131,8 @@ describe(testContext(__filename), function () {
   describe('deleteChannel()', function () {
     beforeEach(function () {
       this.rooms = {
-        found: 'existing-room',
-        notFound: 'non-existant-room',
+        found: 'found-room',
+        notFound: 'not-found-room',
       }
       this.apiScope.delete(`/api/lg/rooms/${this.rooms.found}`)
         .reply(200, {

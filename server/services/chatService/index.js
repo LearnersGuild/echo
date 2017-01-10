@@ -8,6 +8,7 @@ if (!config.server.chat.baseURL) {
 }
 
 const paths = {
+  login: '/api/login',
   channelCreate: () => '/api/lg/rooms',
   channelJoin: roomName => `/api/lg/rooms/${roomName}/join`,
   channelDelete: roomName => `/api/lg/rooms/${roomName}`,
@@ -32,7 +33,7 @@ export function createDirectMessage(userName, message) {
     method: 'POST',
     body: JSON.stringify({channel: `@${userName}`, message})
   })
-  .then(json => json.data || true)
+  .then(json => json.data)
 }
 
 export function createChannelMessage(channelName, msg) {
@@ -75,7 +76,7 @@ export function login() {
   if (!config.server.chat.userSecret) {
     throw new Error('Cannot log into chat: invalid user token')
   }
-  return _fetch('/api/login', {
+  return _fetch(paths.login, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

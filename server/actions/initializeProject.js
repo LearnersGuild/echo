@@ -32,8 +32,8 @@ async function _initializeProjectChannel(project, options = {}) {
   }
 }
 
-async function _isDuplicateChannelError(error) {
-  return (error.message || '').contains('already exists')
+function _isDuplicateChannelError(error) {
+  return (error.message || '').includes('already exists')
 }
 
 function _welcomeMessage1(channelName, goalLink) {

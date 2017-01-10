@@ -9,10 +9,10 @@ import {notifyUser} from 'src/server/services/notificationService'
 import {processJobs} from 'src/server/services/jobService'
 
 export function start() {
-  processJobs('cycleLaunched', processCycleLaunch, _handleCycleLaunchError)
+  processJobs('cycleLaunched', processCycleLaunched, _handleCycleLaunchError)
 }
 
-export async function processCycleLaunch(cycle, options) {
+export async function processCycleLaunched(cycle, options) {
   console.log(`Forming teams for cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
 
   await formProjectsIfNoneExist(cycle.id, err => _notifyModerators(cycle, `⚠️ ${err.message}`))
