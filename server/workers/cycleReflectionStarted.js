@@ -5,14 +5,12 @@ import {findProjects} from 'src/server/db/project'
 import {findModeratorsForChapter} from 'src/server/db/moderator'
 import ensureCycleReflectionSurveysExist from 'src/server/actions/ensureCycleReflectionSurveysExist'
 import reloadSurveyAndQuestionData from 'src/server/actions/reloadSurveyAndQuestionData'
-import {sendChannelMessage} from 'src/server/services/chatService'
-import {notifyUser} from 'src/server/services/notificationService'
-import {processJobs} from 'src/server/services/jobService'
 
 const r = connect()
 
 export function start() {
-  processJobs('cycleReflectionStarted', processCycleReflectionStarted, notifyModeratorsAboutError)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('cycleReflectionStarted', processCycleReflectionStarted, notifyModeratorsAboutError)
 }
 
 async function processCycleReflectionStarted(cycle) {
@@ -30,10 +28,7 @@ async function _sendStartReflectionAnnouncement(cycle) {
   const reflectionInstructions = 'To get started check out `/retro --help` and `/review --help`'
 
   const chapter = await r.table('chapters').get(cycle.chapterId)
-  await Promise.all([
-    _createChapterAnnoucement(chapter, announcement + reflectionInstructions),
-    _createProjectAnnouncements(cycle, announcement + reflectionInstructions),
-  ])
+  await _createReflectionAnnoucements(chapter, cycle, announcement + reflectionInstructions)
 }
 
 async function notifyModeratorsAboutError(cycle, originalErr) {
@@ -45,18 +40,22 @@ async function notifyModeratorsAboutError(cycle, originalErr) {
 }
 
 function _notifyModerators(chapterId, message) {
+  const notificationService = require('src/server/services/notificationService')
+
   return findModeratorsForChapter(chapterId).then(moderators => {
-    moderators.forEach(moderator => notifyUser(moderator.id, message))
+    moderators.forEach(moderator => notificationService.notifyUser(moderator.id, message))
   })
 }
 
-function _createChapterAnnoucement(chapter, message) {
-  return sendChannelMessage(chapter.channelName, message)
-}
+function _createReflectionAnnoucements(chapter, cycle, message) {
+  const chatService = require('src/server/services/chatService')
 
-function _createProjectAnnouncements(cycle, message) {
-  return findProjects({chapterId: cycle.chapterId, cycleId: cycle.id})
-    .then(projects => Promise.map(projects, project => (
-      sendChannelMessage(project.name, message)
-    )))
+  return Promise.all([
+    chatService.sendChannelMessage(chapter.channelName, message),
+
+    findProjects({chapterId: cycle.chapterId, cycleId: cycle.id})
+      .then(projects => Promise.map(projects, project => (
+        chatService.sendChannelMessage(project.name, message)
+      )))
+  ])
 }

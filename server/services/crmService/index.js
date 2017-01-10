@@ -6,7 +6,17 @@ const properties = {
   echoSignUp: 'signed_up_for_echo',
 }
 
-export function getContactByEmail(email) {
+/**
+ * NOTE: this service's functions are exported the way they are to enable certain stubbing
+ * functionality for testing that relies on the way the module is cached and
+ * later required by dependent modules. Please do not change to user separate exports.
+ */
+export default {
+  getContactByEmail,
+  notifyContactSignedUp,
+}
+
+function getContactByEmail(email) {
   const encodedEmail = encodeURIComponent(email)
   return fetch(_crmURL(`/contacts/v1/contact/email/${encodedEmail}/profile`), {
     method: 'GET',
@@ -21,7 +31,7 @@ export function getContactByEmail(email) {
   })
 }
 
-export function notifyContactSignedUp(email) {
+function notifyContactSignedUp(email) {
   return getContactByEmail(email)
     .then(contact => {
       return fetch(_crmURL(`/contacts/v1/contact/vid/${contact.vid}/profile`), {

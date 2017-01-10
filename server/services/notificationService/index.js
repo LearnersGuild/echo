@@ -5,11 +5,21 @@ import config from 'src/config'
 // TODO: fix this! we're effectively using module caching to create a singleton. yuck.
 let socket = null
 
-export function notify(channelName, message) {
+/**
+ * NOTE: this service's functions are exported the way they are to enable certain stubbing
+ * functionality for testing that relies on the way the module is cached and
+ * later required by dependent modules. Please do not change to user separate exports.
+ */
+export default {
+  notify,
+  notifyUser,
+}
+
+function notify(channelName, message) {
   return _getSocket().publish(channelName, message)
 }
 
-export function notifyUser(userId, message) {
+function notifyUser(userId, message) {
   return _getSocket().publish(`notifyUser-${userId}`, message)
 }
 

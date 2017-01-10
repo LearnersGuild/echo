@@ -4,13 +4,12 @@ import parseLinkHeader from 'parse-link-header'
 import config from 'src/config'
 import {connect} from 'src/db'
 import {getOwnerAndRepoFromGitHubURL} from 'src/common/util'
-import * as chatService from 'src/server/services/chatService'
-import {processJobs} from 'src/server/services/jobService'
 
 const r = connect()
 
 export function start() {
-  processJobs('chapterCreated', processChapterCreated)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('chapterCreated', processChapterCreated)
 }
 
 async function processChapterCreated(chapter) {
@@ -117,6 +116,8 @@ async function addTeamIdToChapter(chapter, team) {
 }
 
 async function createChapterChannel(chapter) {
+  const {createChannel} = require('src/server/services/chatService')
+
   console.log(`Creating chapter channel ${chapter.channelName}`)
-  await chatService.createChannel(chapter.channelName, ['echo'], `${chapter.name}`)
+  await createChannel(chapter.channelName, ['echo'], `${chapter.name}`)
 }

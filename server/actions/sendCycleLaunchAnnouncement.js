@@ -1,9 +1,10 @@
 import {Chapter} from 'src/server/services/dataService'
-import {sendChannelMessage} from 'src/server/services/chatService'
 
 export default async function sendCycleLaunchAnnouncement(cycle, projects) {
+  const chatService = require('src/server/services/chatService')
+
   const chapter = await Chapter.get(cycle.chapterId)
-  await sendChannelMessage(chapter.channelName, _buildAnnouncement(projects))
+  await chatService.sendChannelMessage(chapter.channelName, _buildAnnouncement(projects))
 }
 
 function _buildAnnouncement(projects) {

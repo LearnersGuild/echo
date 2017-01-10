@@ -1,10 +1,13 @@
 import fetch from 'isomorphic-fetch'
 
 import config from 'src/config'
-import {createJob} from 'src/server/services/jobService'
 
 if (!config.server.chat.baseURL) {
   throw new Error('Chat base URL must be set in config')
+}
+
+const queues = {
+  messageSent: 'chatMessageSent',
 }
 
 const paths = {
@@ -16,19 +19,30 @@ const paths = {
   messageCreateDirect: () => `/hooks/${config.server.chat.webhookTokens.DM}`,
 }
 
-const queues = {
-  messageSent: 'chatMessageSent',
+/**
+ * NOTE: this service's functions are exported the way they are to enable certain stubbing
+ * functionality for testing that relies on the way the module is cached and
+ * later required by dependent modules. Please do not change to user separate exports.
+ */
+export default {
+  createChannel,
+  createChannelMessage,
+  createDirectMessage,
+  deleteChannel,
+  joinChannel,
+  sendChannelMessage,
+  sendDirectMessage,
 }
 
-export function sendChannelMessage(channelName, message, options) {
+function sendChannelMessage(channelName, message, options) {
   return _queueMessage('channel', channelName, message, options)
 }
 
-export function sendDirectMessage(userName, message, options) {
+function sendDirectMessage(userName, message, options) {
   return _queueMessage('direct', userName, message, options)
 }
 
-export function createDirectMessage(userName, message) {
+function createDirectMessage(userName, message) {
   return _loginAndFetch(paths.messageCreateDirect(), {
     method: 'POST',
     body: JSON.stringify({channel: `@${userName}`, message})
@@ -36,7 +50,7 @@ export function createDirectMessage(userName, message) {
   .then(json => json.data)
 }
 
-export function createChannelMessage(channelName, msg) {
+function createChannelMessage(channelName, msg) {
   return _loginAndFetch(paths.messageCreateChannel(channelName), {
     method: 'POST',
     body: JSON.stringify({msg})
@@ -44,7 +58,7 @@ export function createChannelMessage(channelName, msg) {
   .then(json => json.result)
 }
 
-export function createChannel(channelName, members = ['echo'], topic = '') {
+function createChannel(channelName, members = [config.server.chat.userName], topic = '') {
   return _loginAndFetch(paths.channelCreate(), {
     method: 'POST',
     body: JSON.stringify({
@@ -56,39 +70,25 @@ export function createChannel(channelName, members = ['echo'], topic = '') {
   .then(result => result.room)
 }
 
-export function joinChannel(channelName, members = []) {
+function joinChannel(channelName, members = []) {
   return _loginAndFetch(paths.channelJoin(channelName), {
     method: 'POST',
     body: JSON.stringify({
-      members: members.concat('echo'),
+      members: members.concat(config.server.chat.userName),
     }),
   })
   .then(res => res.result)
 }
 
-export function deleteChannel(channelName) {
+function deleteChannel(channelName) {
   return _loginAndFetch(paths.channelDelete(channelName), {
     method: 'DELETE',
   }).then(json => Boolean(json.result)) // return true on success
 }
 
-export function login() {
-  if (!config.server.chat.userSecret) {
-    throw new Error('Cannot log into chat: invalid user token')
-  }
-  return _fetch(paths.login, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: `user=echo&password=${config.server.chat.userSecret}`,
-  })
-  .then(json => json.data)
-}
-
 function _loginAndFetch(path, options) {
   // TODO: cache these headers for a few seconds
-  return login().then(r => {
+  return _login().then(r => {
     const authHeaders = {
       'X-User-Id': r.userId,
       'X-Auth-Token': r.authToken,
@@ -100,6 +100,20 @@ function _loginAndFetch(path, options) {
     const optionsWithHeaders = Object.assign({}, options, {headers})
     return _fetch(path, optionsWithHeaders)
   })
+}
+
+function _login() {
+  if (!config.server.chat.userSecret) {
+    throw new Error('Cannot log into chat: invalid user token')
+  }
+  return _fetch(paths.login, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `user=${config.server.chat.userName}&password=${config.server.chat.userSecret}`,
+  })
+  .then(json => json.data)
 }
 
 function _fetch(path, options) {
@@ -119,8 +133,10 @@ function _fetch(path, options) {
 }
 
 function _queueMessage(type, target, message, options) {
+  const jobService = require('src/server/services/jobService')
+
   const payload = {type, target, msg: message}
-  return createJob(queues.messageSent, payload, {
+  return jobService.createJob(queues.messageSent, payload, {
     attempts: config.server.chat.retries.message,
     backoff: {type: 'exponential'},
     ...options

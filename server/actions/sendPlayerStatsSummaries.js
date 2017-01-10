@@ -6,9 +6,10 @@ import {findPlayersByIds} from 'src/server/db/player'
 import {getStatByDescriptor} from 'src/server/db/stat'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {groupResponsesBySubject} from 'src/server/util/survey'
-import * as chatService from 'src/server/services/chatService'
 
-export default async function sendPlayerStatsSummaries(project, chatClient = chatService) {
+export default async function sendPlayerStatsSummaries(project) {
+  const chatService = require('src/server/services/chatService')
+
   const projectPlayers = await findPlayersByIds(project.playerIds)
   const projectPlayerUsers = await getPlayerInfo(project.playerIds)
   const players = _mergePlayerUsers(projectPlayers, projectPlayerUsers)
@@ -46,7 +47,7 @@ export default async function sendPlayerStatsSummaries(project, chatClient = cha
 
     const retroStatsMessage = _compilePlayerStatsMessage(player, feedbackData)
 
-    return chatClient.sendDirectMessage(player.handle, retroStatsMessage).catch(err => {
+    return chatService.sendDirectMessage(player.handle, retroStatsMessage).catch(err => {
       console.error(`\n\nThere was a problem while sending stats DM to player @${player.handle}`)
       console.error('Error:', err, err.stack)
       console.error(`Message: "${retroStatsMessage}"`)

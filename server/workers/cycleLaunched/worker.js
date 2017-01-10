@@ -5,11 +5,10 @@ import initializeProject from 'src/server/actions/initializeProject'
 import sendCycleLaunchAnnouncement from 'src/server/actions/sendCycleLaunchAnnouncement'
 import {findModeratorsForChapter} from 'src/server/db/moderator'
 import {findProjects} from 'src/server/db/project'
-import {notifyUser} from 'src/server/services/notificationService'
-import {processJobs} from 'src/server/services/jobService'
 
 export function start() {
-  processJobs('cycleLaunched', processCycleLaunched, _handleCycleLaunchError)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('cycleLaunched', processCycleLaunched, _handleCycleLaunchError)
 }
 
 export async function processCycleLaunched(cycle, options) {
@@ -29,9 +28,11 @@ async function _handleCycleLaunchError(cycle, err) {
 }
 
 async function _notifyModerators(cycle, message) {
+  const notificationService = require('src/server/services/notificationService')
+
   try {
     await findModeratorsForChapter(cycle.chapterId).then(moderators => {
-      moderators.forEach(moderator => notifyUser(moderator.id, message))
+      moderators.forEach(moderator => notificationService.notifyUser(moderator.id, message))
     })
   } catch (err) {
     console.error('Moderator notification error:', err)

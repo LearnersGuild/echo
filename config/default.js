@@ -41,6 +41,7 @@ module.exports = {
     },
     chat: {
       baseURL: process.env.CHAT_BASE_URL,
+      userName: 'echo',
       userSecret: process.env.CHAT_API_USER_SECRET,
       webhookTokens: {
         DM: process.env.CHAT_API_WEBHOOK_TOKEN_DM,

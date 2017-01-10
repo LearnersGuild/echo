@@ -2,19 +2,31 @@ import raven from 'raven'
 
 import config from 'src/config'
 import {parseQueryError} from 'src/server/db/errors'
-import {getQueue} from 'src/server/services/queueService'
 
 const sentry = new raven.Client(config.server.sentryDSN)
 
-export function createJob(jobQueueName, jobPayload, jobOptions) {
-  return getQueue(jobQueueName).add(jobPayload, jobOptions)
+/**
+ * NOTE: this service's functions are exported the way they are to enable certain stubbing
+ * functionality for testing that relies on the way the module is cached and
+ * later required by dependent modules. Please do not change to user separate exports.
+ */
+export default {
+  createJob,
+  processJobs,
 }
 
-export function processJobs(jobQueueName, processor, onFailed = () => null) {
+function createJob(jobQueueName, jobPayload, jobOptions) {
+  const queueService = require('src/server/services/queueService')
+  return queueService.getQueue(jobQueueName).add(jobPayload, jobOptions)
+}
+
+function processJobs(jobQueueName, processor, onFailed = () => null) {
+  const queueService = require('src/server/services/queueService')
+
   _assertIsFunction(processor, 'processor (2nd argument)')
   _assertIsFunction(onFailed, 'onFailed (3rd argument)')
 
-  const jobQueue = getQueue(jobQueueName)
+  const jobQueue = queueService.getQueue(jobQueueName)
 
   jobQueue.process(async job => {
     const {data, queue, jobId, attemptsMade} = job

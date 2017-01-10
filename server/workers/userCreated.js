@@ -4,8 +4,6 @@ import config from 'src/config'
 import {connect} from 'src/db'
 import {replace as replacePlayer} from 'src/server/db/player'
 import {replace as replaceModerator} from 'src/server/db/moderator'
-import {notifyContactSignedUp} from 'src/server/clients/CRMClient'
-import {processJobs} from 'src/server/services/jobService'
 
 const r = connect()
 
@@ -18,7 +16,8 @@ const upsertToDatabase = {
 }
 
 export function start() {
-  processJobs('userCreated', processUserCreated)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('userCreated', processUserCreated)
 }
 
 async function processUserCreated(user) {
@@ -82,13 +81,16 @@ async function addUserToGitHubChapterTeam(user, gameUser) {
 }
 
 function notifyCRMSystemOfPlayerSignUp(user) {
+  const crmService = require('src/server/services/crmService')
+
   if (config.server.crm.enabled !== true) {
     return Promise.resolve()
   }
   if (!_userHasRole(user, 'player')) {
     return Promise.resolve()
   }
-  return notifyContactSignedUp(user.email)
+
+  return crmService.notifyContactSignedUp(user.email)
 }
 
 function _userHasRole(user, role) {

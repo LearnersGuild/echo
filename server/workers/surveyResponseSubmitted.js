@@ -1,10 +1,10 @@
+import Promise from 'bluebird'
+
 import {findProjectBySurveyId} from 'src/server/db/project'
 import {getSurveyById, recordSurveyCompletedBy, surveyWasCompletedBy} from 'src/server/db/survey'
 import sendPlayerStatsSummaries from 'src/server/actions/sendPlayerStatsSummaries'
 import updatePlayerStatsForProject from 'src/server/actions/updatePlayerStatsForProject'
 import updateProjectStats from 'src/server/actions/updateProjectStats'
-import * as chatService from 'src/server/services/chatService'
-import {processJobs} from 'src/server/services/jobService'
 
 const PROJECT_SURVEY_TYPES = {
   RETROSPECTIVE: 'retrospective',
@@ -12,10 +12,11 @@ const PROJECT_SURVEY_TYPES = {
 }
 
 export function start() {
-  processJobs('surveyResponseSubmitted', processSurveyResponseSubmitted)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('surveyResponseSubmitted', processSurveyResponseSubmitted)
 }
 
-export async function processSurveyResponseSubmitted(event, chatClient = chatService) {
+export async function processSurveyResponseSubmitted(event) {
   console.log(`Survey [${event.surveyId}] Response Submitted By [${event.respondentId}]`)
 
   if (!await surveyWasCompletedBy(event.surveyId, event.respondentId)) {
@@ -48,17 +49,16 @@ export async function processSurveyResponseSubmitted(event, chatClient = chatSer
       if (surveyPreviouslyCompletedByRespondent) {
         console.log(`Completed Retrospective Survey [${event.surveyId}] Updated By [${event.respondentId}]`)
         const survey = await getSurveyById(event.surveyId)
-        await updateStatsIfNeeded(project, survey, chatClient)
+        await updateStatsIfNeeded(project, survey)
       } else {
         console.log(`Retrospective Survey [${event.surveyId}] Completed By [${event.respondentId}]`)
         const survey = changes[0].new_val
         await Promise.all([
           announce(
             [project.name],
-            buildRetroAnnouncement(project, survey),
-            chatClient
+            buildRetroAnnouncement(project, survey)
           ),
-          updateStatsIfNeeded(project, survey, chatClient)
+          updateStatsIfNeeded(project, survey)
         ])
       }
       break
@@ -71,8 +71,7 @@ export async function processSurveyResponseSubmitted(event, chatClient = chatSer
         const survey = changes[0].new_val
         announce(
           [project.name],
-          buildProjectReviewAnnouncement(project, survey),
-          chatClient
+          buildProjectReviewAnnouncement(project, survey)
         )
       }
       await updateProjectStats(project.id)
@@ -83,7 +82,7 @@ export async function processSurveyResponseSubmitted(event, chatClient = chatSer
   }
 }
 
-async function updateStatsIfNeeded(project, survey, chatClient) {
+async function updateStatsIfNeeded(project, survey) {
   const totalPlayers = project.playerIds.length
   const finishedPlayers = survey.completedBy.length
 
@@ -91,7 +90,7 @@ async function updateStatsIfNeeded(project, survey, chatClient) {
     console.log(`All respondents have completed this survey [${survey.id}]. Updating stats.`)
     await updateProjectStats(project.id)
     await updatePlayerStatsForProject(project)
-    await sendPlayerStatsSummaries(project, chatClient)
+    await sendPlayerStatsSummaries(project)
   }
 }
 
@@ -110,7 +109,10 @@ function buildProjectReviewAnnouncement(project, survey) {
   return [banner, progress].join('\n')
 }
 
-function announce(channels, announcement, chatClient) {
-  const announcePromises = channels.map(channel => chatClient.sendChannelMessage(channel, announcement))
-  return Promise.all(announcePromises)
+function announce(channels, announcement) {
+  const chatService = require('src/server/services/chatService')
+
+  return Promise.map(channels, channel => (
+    chatService.sendChannelMessage(channel, announcement)
+  ))
 }

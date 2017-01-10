@@ -7,7 +7,6 @@ import nock from 'nock'
 import config from 'src/config'
 
 import {
-  login,
   createDirectMessage,
   createChannelMessage,
   createChannel,
@@ -18,23 +17,15 @@ import {
 describe(testContext(__filename), function () {
   beforeEach(function () {
     this.responses = {}
-    this.responses.login = {
-      data: {
-        authToken: 'L7Cf5bJAcNXkRuo0ZRyu0QmjzSIcFCO1QBpKYM0nE3g',
-        userId: 'L9Dnu2G2NSWm8cQpr'
-      },
-      status: 'success',
-    }
     this.apiScope = nock(config.server.chat.baseURL)
       .post('/api/login')
-      .reply(200, this.responses.login)
-  })
-
-  describe('login()', function () {
-    it('returns the parsed response on success', function () {
-      const result = login()
-      return expect(result).to.eventually.deep.equal(this.responses.login.data)
-    })
+      .reply(200, {
+        status: 'success',
+        data: {
+          authToken: 'L7Cf5bJAcNXkRuo0ZRyu0QmjzSIcFCO1QBpKYM0nE3g',
+          userId: 'L9Dnu2G2NSWm8cQpr'
+        },
+      })
   })
 
   describe('createDirectMessage()', function () {
@@ -43,8 +34,8 @@ describe(testContext(__filename), function () {
       this.apiScope
         .post(`/hooks/${config.server.chat.webhookTokens.DM}`)
         .reply(200, {
-          data: this.responses.createDirectMessage,
           status: 'success',
+          data: this.responses.createDirectMessage,
         })
     })
 
@@ -69,8 +60,8 @@ describe(testContext(__filename), function () {
       this.apiScope
         .post('/api/lg/rooms/channel/send')
         .reply(200, {
-          result: this.responses.createChannelMessage,
           status: 'success',
+          result: this.responses.createChannelMessage,
         })
     })
 
