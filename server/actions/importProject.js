@@ -1,9 +1,8 @@
-
 import logger from 'src/server/util/logger'
 import findUsers from 'src/server/actions/findUsers'
 import fetchGoalInfo from 'src/server/actions/fetchGoalInfo'
 import generateProjectName from 'src/server/actions/generateProjectName'
-import initializeProjectChannel from 'src/server/actions/initializeProjectChannel'
+import initializeProject from 'src/server/actions/initializeProject'
 import {Project} from 'src/server/services/dataService'
 import {getChapter} from 'src/server/db/chapter'
 import {getProject} from 'src/server/db/project'
@@ -32,7 +31,7 @@ export default async function importProject(data = {}, options = {}) {
     savedProject = await new Project(projectValues).save()
 
     if (options.initializeChannel) {
-      await initializeProjectChannel(savedProject, users)
+      await initializeProject(savedProject, users)
     }
   }
 

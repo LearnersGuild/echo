@@ -1,16 +1,16 @@
 import {connect} from 'src/db'
-import ChatClient from 'src/server/clients/ChatClient'
-import {processJobs} from 'src/server/util/queue'
 import {findPoolsByCycleId} from 'src/server/db/pool'
 import createPoolsForCycle from 'src/server/actions/createPoolsForCycle'
+import * as chatService from 'src/server/services/chatService'
+import {processJobs} from 'src/server/services/jobService'
 
 const r = connect()
 
 export function start() {
-  processJobs('cycleInitialized', processNewCycle)
+  processJobs('cycleInitialized', processCycleInitialized)
 }
 
-export async function processNewCycle(cycle, chatClient = new ChatClient()) {
+export async function processCycleInitialized(cycle, chatClient = chatService) {
   console.log(`Initializing cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
   await ensurePoolsForCycle(cycle)
   await sendVotingAnnouncement(cycle, chatClient)

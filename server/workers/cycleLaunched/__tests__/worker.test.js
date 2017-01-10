@@ -13,10 +13,7 @@ describe(testContext(__filename), function () {
     describe('when a cycle has been launched', function () {
       beforeEach(async function () {
         this.chapter = await factory.create('chapter')
-        this.cycle = await factory.create('cycle', {
-          chapterId: this.chapter.id,
-          cycleNumber: 3,
-        })
+        this.cycle = await factory.create('cycle', {chapterId: this.chapter.id, cycleNumber: 3})
         this.pool = await factory.create('pool', {cycleId: this.cycle.id})
       })
 

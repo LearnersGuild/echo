@@ -1,10 +1,10 @@
-import ChatClient from 'src/server/clients/ChatClient'
-import {processJobs} from 'src/server/util/queue'
 import {findProjectBySurveyId} from 'src/server/db/project'
 import {getSurveyById, recordSurveyCompletedBy, surveyWasCompletedBy} from 'src/server/db/survey'
 import sendPlayerStatsSummaries from 'src/server/actions/sendPlayerStatsSummaries'
 import updatePlayerStatsForProject from 'src/server/actions/updatePlayerStatsForProject'
 import updateProjectStats from 'src/server/actions/updateProjectStats'
+import * as chatService from 'src/server/services/chatService'
+import {processJobs} from 'src/server/services/jobService'
 
 const PROJECT_SURVEY_TYPES = {
   RETROSPECTIVE: 'retrospective',
@@ -15,7 +15,7 @@ export function start() {
   processJobs('surveyResponseSubmitted', processSurveyResponseSubmitted)
 }
 
-export async function processSurveyResponseSubmitted(event, chatClient = new ChatClient()) {
+export async function processSurveyResponseSubmitted(event, chatClient = chatService) {
   console.log(`Survey [${event.surveyId}] Response Submitted By [${event.respondentId}]`)
 
   if (!await surveyWasCompletedBy(event.surveyId, event.respondentId)) {

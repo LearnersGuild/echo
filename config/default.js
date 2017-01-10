@@ -45,6 +45,9 @@ module.exports = {
       webhookTokens: {
         DM: process.env.CHAT_API_WEBHOOK_TOKEN_DM,
       },
+      retries: {
+        message: 5,
+      },
     },
     github: {
       tokens: {

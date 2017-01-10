@@ -4,14 +4,12 @@
 import factory from 'src/test/factories'
 import {withDBCleanup} from 'src/test/helpers'
 
-import {
-  processCompletedCycle,
-} from 'src/server/workers/cycleCompleted'
+import {processCycleCompleted} from '../cycleCompleted'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
 
-  describe('processNewCycle()', function () {
+  describe('processCycleCompleted()', function () {
     beforeEach('create stubs', function () {
       this.chatClientStub = {
         sentMessages: {},
@@ -32,7 +30,7 @@ describe(testContext(__filename), function () {
       })
 
       it('sends a message to the chapter chatroom', function () {
-        return processCompletedCycle(this.cycle, this.chatClientStub).then(() => {
+        return processCycleCompleted(this.cycle, this.chatClientStub).then(() => {
           const msg = this.chatClientStub.sentMessages[this.chapter.channelName][0]
           expect(msg).to.match(/Cycle 3 is complete/)
         })

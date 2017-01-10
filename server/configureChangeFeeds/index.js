@@ -1,5 +1,5 @@
 import {GOAL_SELECTION, PRACTICE, REFLECTION, COMPLETE} from 'src/common/models/cycle'
-import {getQueue} from 'src/server/util/queue'
+import {getQueue} from 'src/server/services/queueService'
 
 import newChapters from './newChapters'
 import newOrUpdatedVotes from './newOrUpdatedVotes'

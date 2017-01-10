@@ -7,9 +7,7 @@ import {update as updateSurvey} from 'src/server/db/survey'
 import {getProjectById} from 'src/server/db/project'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
-import {
-  processSurveyResponseSubmitted,
-} from 'src/server/workers/surveyResponseSubmitted'
+import {processSurveyResponseSubmitted} from '../surveyResponseSubmitted'
 
 describe(testContext(__filename), function () {
   withDBCleanup()

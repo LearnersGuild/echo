@@ -4,14 +4,12 @@
 import factory from 'src/test/factories'
 import {withDBCleanup} from 'src/test/helpers'
 
-import {
-  processProjectArtifactChange,
-} from 'src/server/workers/projectArtifactChanged'
+import {processProjectArtifactChanged} from '../projectArtifactChanged'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
 
-  describe('processNewCycle()', function () {
+  describe('processProjectArtifactChanged()', function () {
     beforeEach('create stubs', function () {
       this.chatClientStub = {
         sentMessages: {},
@@ -31,7 +29,7 @@ describe(testContext(__filename), function () {
       })
 
       it('sends a message to the chapter chatroom', function () {
-        return processProjectArtifactChange(this.project, this.chatClientStub).then(() => {
+        return processProjectArtifactChanged(this.project, this.chatClientStub).then(() => {
           const msg = this.chatClientStub.sentMessages[this.project.name][0]
           expect(msg).to.match(/artifact.*https:\/\/example.com.*curious-cats has been updated/)
         })

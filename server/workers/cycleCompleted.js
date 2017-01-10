@@ -1,14 +1,14 @@
 import {connect} from 'src/db'
-import ChatClient from 'src/server/clients/ChatClient'
-import {processJobs} from 'src/server/util/queue'
+import * as chatService from 'src/server/services/chatService'
+import {processJobs} from 'src/server/services/jobService'
 
 const r = connect()
 
 export function start() {
-  processJobs('cycleCompleted', processCompletedCycle)
+  processJobs('cycleCompleted', processCycleCompleted)
 }
 
-export async function processCompletedCycle(cycle, chatClient = new ChatClient()) {
+export async function processCycleCompleted(cycle, chatClient = chatService) {
   console.log(`Completing cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
   await sendCompletionAnnouncement(cycle, chatClient)
 }

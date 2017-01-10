@@ -1,11 +1,11 @@
-import ChatClient from 'src/server/clients/ChatClient'
-import {processJobs} from 'src/server/util/queue'
+import * as chatService from 'src/server/services/chatService'
+import {processJobs} from 'src/server/services/jobService'
 
 export function start() {
-  processJobs('projectArtifactChanged', processProjectArtifactChange)
+  processJobs('projectArtifactChanged', processProjectArtifactChanged)
 }
 
-export async function processProjectArtifactChange(project, chatClient = new ChatClient()) {
+export async function processProjectArtifactChanged(project, chatClient = chatService) {
   console.log(`Project artifact for project #${project.name} changed to ${project.artifactURL}`)
   await sendProjectArtifactChangedAnnouncement(project, chatClient)
 }
