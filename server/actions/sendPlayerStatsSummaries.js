@@ -4,11 +4,12 @@ import {getSurveyById} from 'src/server/db/survey'
 import {findQuestionsByIds} from 'src/server/db/question'
 import {findPlayersByIds} from 'src/server/db/player'
 import {getStatByDescriptor} from 'src/server/db/stat'
-import ChatClient from 'src/server/clients/ChatClient'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {groupResponsesBySubject} from 'src/server/util/survey'
 
-export default async function sendPlayerStatsSummaries(project, chatClient = new ChatClient()) {
+export default async function sendPlayerStatsSummaries(project) {
+  const chatService = require('src/server/services/chatService')
+
   const projectPlayers = await findPlayersByIds(project.playerIds)
   const projectPlayerUsers = await getPlayerInfo(project.playerIds)
   const players = _mergePlayerUsers(projectPlayers, projectPlayerUsers)
@@ -46,7 +47,7 @@ export default async function sendPlayerStatsSummaries(project, chatClient = new
 
     const retroStatsMessage = _compilePlayerStatsMessage(player, feedbackData)
 
-    return chatClient.sendDirectMessage(player.handle, retroStatsMessage).catch(err => {
+    return chatService.sendDirectMessage(player.handle, retroStatsMessage).catch(err => {
       console.error(`\n\nThere was a problem while sending stats DM to player @${player.handle}`)
       console.error('Error:', err, err.stack)
       console.error(`Message: "${retroStatsMessage}"`)
@@ -98,16 +99,16 @@ Contribution difference: ${stats.ecd || 0}%
 **Stats earned for this project:**
 Technical Health: ${stats.th || 0}%
 Culture Contribution: ${stats.cc || 0}%
-- Structure: ${stats.cultureContributionStructure || 0}%
-- Safety: ${stats.cultureContributionSafety || 0}%
-- Truth: ${stats.cultureContributionTruth || 0}%
-- Challenge: ${stats.cultureContributionChallenge || 0}%
-- Support: ${stats.cultureContributionSupport || 0}%
-- Engagement: ${stats.cultureContributionEngagement || 0}%
-- Enjoyment: ${stats.cultureContributionEnjoyment || 0}%
+  - Structure: ${stats.cultureContributionStructure || 0}%
+  - Safety: ${stats.cultureContributionSafety || 0}%
+  - Truth: ${stats.cultureContributionTruth || 0}%
+  - Challenge: ${stats.cultureContributionChallenge || 0}%
+  - Support: ${stats.cultureContributionSupport || 0}%
+  - Engagement: ${stats.cultureContributionEngagement || 0}%
+  - Enjoyment: ${stats.cultureContributionEnjoyment || 0}%
 Team Play: ${stats.tp || 0}%
-- Receptiveness: ${stats.receptiveness || 0}%
-- Results Focus: ${stats.resultsFocus || 0}%
-- Flexible Leadership: ${stats.flexibleLeadership || 0}%
-- Friction Reduction: ${stats.frictionReduction || 0}%`
+  - Receptiveness: ${stats.receptiveness || 0}%
+  - Results Focus: ${stats.resultsFocus || 0}%
+  - Flexible Leadership: ${stats.flexibleLeadership || 0}%
+  - Friction Reduction: ${stats.frictionReduction || 0}%`
 }

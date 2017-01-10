@@ -2,22 +2,10 @@ import fetch from 'isomorphic-fetch'
 
 import config from 'src/config'
 import {connect} from 'src/db'
-import {processJobs} from 'src/server/util/queue'
 import {replace as replacePlayer} from 'src/server/db/player'
 import {replace as replaceModerator} from 'src/server/db/moderator'
-import {notifyContactSignedUp} from 'src/server/clients/CRMClient'
 
 const r = connect()
-
-export function start() {
-  processJobs('newGameUser', processNewGameUser)
-}
-
-async function processNewGameUser(user) {
-  const gameUser = await addUserToDatabase(user)
-  await addUserToGitHubChapterTeam(user, gameUser)
-  await notifyCRMSystemOfPlayerSignUp(user)
-}
 
 const DEFAULT_PLAYER_STATS = {stats: {elo: {rating: 1000}}}
 
@@ -25,6 +13,17 @@ const upsertToDatabase = {
   // we use .replace() instead of .insert() in case we get duplicates in the queue
   moderator: gameUser => replaceModerator(gameUser, {returnChanges: 'always'}),
   player: gameUser => replacePlayer({...gameUser, ...DEFAULT_PLAYER_STATS}, {returnChanges: 'always'}),
+}
+
+export function start() {
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('userCreated', processUserCreated)
+}
+
+async function processUserCreated(user) {
+  const gameUser = await addUserToDatabase(user)
+  await addUserToGitHubChapterTeam(user, gameUser)
+  await notifyCRMSystemOfPlayerSignUp(user)
 }
 
 async function addUserToDatabase(user) {
@@ -82,13 +81,16 @@ async function addUserToGitHubChapterTeam(user, gameUser) {
 }
 
 function notifyCRMSystemOfPlayerSignUp(user) {
+  const crmService = require('src/server/services/crmService')
+
   if (config.server.crm.enabled !== true) {
     return Promise.resolve()
   }
   if (!_userHasRole(user, 'player')) {
     return Promise.resolve()
   }
-  return notifyContactSignedUp(user.email)
+
+  return crmService.notifyContactSignedUp(user.email)
 }
 
 function _userHasRole(user, role) {

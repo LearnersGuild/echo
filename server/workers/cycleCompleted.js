@@ -1,22 +1,21 @@
 import {connect} from 'src/db'
-import ChatClient from 'src/server/clients/ChatClient'
-import {processJobs} from 'src/server/util/queue'
 
 const r = connect()
 
 export function start() {
-  processJobs('cycleCompleted', processCompletedCycle)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('cycleCompleted', processCycleCompleted)
 }
 
-export async function processCompletedCycle(cycle, chatClient = new ChatClient()) {
+export async function processCycleCompleted(cycle) {
+  const chatService = require('src/server/services/chatService')
+
   console.log(`Completing cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
-  await sendCompletionAnnouncement(cycle, chatClient)
-}
 
-function sendCompletionAnnouncement(cycle, chatClient) {
+  // send completion announcement
   return r.table('chapters').get(cycle.chapterId).run()
     .then(chapter => {
       const announcement = `✅ *Cycle ${cycle.cycleNumber} is complete*.`
-      return chatClient.sendChannelMessage(chapter.channelName, announcement)
+      return chatService.sendChannelMessage(chapter.channelName, announcement)
     })
 }

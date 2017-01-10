@@ -1,27 +1,24 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
+import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {withDBCleanup, useFixture} from 'src/test/helpers'
-import {findPoolsByCycleId} from 'src/server/db/pool'
-
-import {
-  processNewCycle,
-} from 'src/server/workers/cycleInitialized'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
+  beforeEach(function () {
+    stubs.chatService.enable()
+  })
+  afterEach(function () {
+    stubs.chatService.disable()
+  })
 
-  describe('processNewCycle()', function () {
-    beforeEach('create stubs', function () {
-      this.chatClientStub = {
-        sentMessages: {},
-        sendChannelMessage: (channel, msg) => {
-          this.chatClientStub.sentMessages[channel] = this.chatClientStub.sentMessages[channel] || []
-          this.chatClientStub.sentMessages[channel].push(msg)
-        }
-      }
-    })
+  describe('processCycleInitialized()', function () {
+    const chatService = require('src/server/services/chatService')
+    const {findPoolsByCycleId} = require('src/server/db/pool')
+
+    const {processCycleInitialized} = require('../cycleInitialized')
 
     describe('when a new cycle is created', function () {
       beforeEach(async function () {
@@ -32,24 +29,31 @@ describe(testContext(__filename), function () {
         })
       })
 
-      it('sends a message to the chapter chatroom', function () {
+      it('sends a message to the chapter chatroom', async function () {
         useFixture.nockIDMGetUsersById([])
-        return processNewCycle(this.cycle, this.chatClientStub).then(() => {
-          const msg = this.chatClientStub.sentMessages[this.chapter.channelName][0]
-          expect(msg).to.match(/Voting is now open for cycle 2/)
-          expect(msg).to.match(/goal library.*https:\/\/example\.com.*vote --help/)
-        })
+        await processCycleInitialized(this.cycle)
+
+        expect(chatService.sendChannelMessage.callCount).to.eq(1)
+
+        expect(chatService.sendChannelMessage).to.have.been
+          .calledWithMatch(this.chapter.channelName, `Voting is now open for cycle ${this.cycle.cycleNumber}`)
+
+        expect(chatService.sendChannelMessage).to.have.been
+          .calledWithMatch(this.chapter.channelName, `[the goal library](${this.chapter.goalRepositoryURL}/issues)`)
+
+        expect(chatService.sendChannelMessage).to.have.been
+          .calledWithMatch(this.chapter.channelName, '/vote --help')
       })
 
       it('will not recreate pools if they already exist', async function () {
         const poolCountExpr = findPoolsByCycleId(this.cycle.id).count()
 
         useFixture.nockIDMGetUsersById([])
-        await processNewCycle(this.cycle, this.chatClientStub)
+        await processCycleInitialized(this.cycle)
         const poolCountAfterFirstRun = await poolCountExpr
 
         useFixture.nockIDMGetUsersById([])
-        await processNewCycle(this.cycle, this.chatClientStub)
+        await processCycleInitialized(this.cycle)
         const poolCountAfterSecondRun = await poolCountExpr
 
         expect(poolCountAfterSecondRun).to.eq(poolCountAfterFirstRun)

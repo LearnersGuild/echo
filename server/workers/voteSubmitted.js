@@ -1,24 +1,20 @@
 import Promise from 'bluebird'
 
 import {connect} from 'src/db'
-import {processJobs} from 'src/server/util/queue'
-import {getSocket} from 'src/server/util/socket'
 import {getCycleById} from 'src/server/db/cycle'
 import {getChapterById} from 'src/server/db/chapter'
 import {getPoolById} from 'src/server/db/pool'
 import fetchGoalInfo from 'src/server/actions/fetchGoalInfo'
 import getCycleVotingResults from 'src/server/actions/getCycleVotingResults'
 
-const PREFIX_NOTIFY_USER = 'notifyUser-'
-const PREFIX_CYCLE_VOTING_RESULTS = 'cycleVotingResults-'
-
 const r = connect()
 
 export function start() {
-  processJobs('newOrUpdatedVote', processVote)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('voteSubmitted', processVoteSubmitted)
 }
 
-async function processVote(vote) {
+async function processVoteSubmitted(vote) {
   const goals = await fetchGoalsInfo(vote)
   const validatedVote = Object.assign({}, vote, {
     pendingValidation: false,
@@ -51,20 +47,20 @@ function formatGoals(prefix, goals) {
 }
 
 function validateGoalsAndNotifyUser(vote, goals) {
-  const socket = getSocket()
+  const notificationService = require('src/server/services/notificationService')
 
-  const invalidGoalDescriptors = vote.notYetValidatedGoalDescriptors
-    .filter((goalDescriptor, i) => goals[i] === null)
-
+  const invalidGoalDescriptors = vote.notYetValidatedGoalDescriptors.filter((goalDescriptor, i) => goals[i] === null)
   if (invalidGoalDescriptors.length > 0) {
-    socket.publish(`${PREFIX_NOTIFY_USER}${vote.playerId}`, `The following goals are invalid: ${invalidGoalDescriptors.join(', ')}`)
+    notificationService.notifyUser(vote.playerId, `The following goals are invalid: ${invalidGoalDescriptors.join(', ')}`)
+
     if (vote.goals) {
-      socket.publish(`${PREFIX_NOTIFY_USER}${vote.playerId}`, formatGoals('Falling back to previous vote', vote.goals))
+      notificationService.notifyUser(vote.playerId, formatGoals('Falling back to previous vote', vote.goals))
     }
+
     return false
   }
 
-  socket.publish(`${PREFIX_NOTIFY_USER}${vote.playerId}`, formatGoals('Votes submitted for', goals))
+  notificationService.notifyUser(vote.playerId, formatGoals('Votes submitted for', goals))
   return true
 }
 
@@ -77,9 +73,10 @@ function updateVote(vote) {
 }
 
 async function pushCandidateGoalsForCycle(vote) {
+  const notificationService = require('src/server/services/notificationService')
+
   const pool = await getPoolById(vote.poolId)
   const cycle = await getCycleById(pool.cycleId)
   const cycleVotingResults = await getCycleVotingResults(cycle.chapterId, cycle.id)
-  const socket = getSocket()
-  return socket.publish(`${PREFIX_CYCLE_VOTING_RESULTS}${cycle.id}`, cycleVotingResults)
+  return notificationService.notify(`cycleVotingResults-${cycle.id}`, cycleVotingResults)
 }
