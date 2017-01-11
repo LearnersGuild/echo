@@ -1,26 +1,23 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
+import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {withDBCleanup} from 'src/test/helpers'
 
-import {
-  processProjectArtifactChange,
-} from 'src/server/workers/projectArtifactChanged'
-
 describe(testContext(__filename), function () {
   withDBCleanup()
+  beforeEach(function () {
+    stubs.chatService.enable()
+  })
+  afterEach(function () {
+    stubs.chatService.disable()
+  })
 
-  describe('processNewCycle()', function () {
-    beforeEach('create stubs', function () {
-      this.chatClientStub = {
-        sentMessages: {},
-        sendChannelMessage: (channel, msg) => {
-          this.chatClientStub.sentMessages[channel] = this.chatClientStub.sentMessages[channel] || []
-          this.chatClientStub.sentMessages[channel].push(msg)
-        }
-      }
-    })
+  describe('processProjectArtifactChanged()', function () {
+    const chatService = require('src/server/services/chatService')
+
+    const {processProjectArtifactChanged} = require('../projectArtifactChanged')
 
     describe('when a cycle has completed', function () {
       beforeEach(async function () {
@@ -30,11 +27,14 @@ describe(testContext(__filename), function () {
         })
       })
 
-      it('sends a message to the chapter chatroom', function () {
-        return processProjectArtifactChange(this.project, this.chatClientStub).then(() => {
-          const msg = this.chatClientStub.sentMessages[this.project.name][0]
-          expect(msg).to.match(/artifact.*https:\/\/example.com.*curious-cats has been updated/)
-        })
+      it('sends a message to the chapter chatroom', async function () {
+        await processProjectArtifactChanged(this.project)
+
+        expect(chatService.sendChannelMessage).to.have.been
+          .calledWithMatch(this.project.name, `[artifact](${this.project.artifactURL})`)
+
+        expect(chatService.sendChannelMessage).to.have.been
+          .calledWithMatch(this.project.name, `#${this.project.name} has been updated`)
       })
     })
   })

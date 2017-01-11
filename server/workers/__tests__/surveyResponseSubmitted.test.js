@@ -1,33 +1,26 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
+import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {withDBCleanup, useFixture, mockIdmUsersById} from 'src/test/helpers'
-import {update as updateSurvey} from 'src/server/db/survey'
-import {getProjectById} from 'src/server/db/project'
-import {STAT_DESCRIPTORS} from 'src/common/models/stat'
-
-import {
-  processSurveyResponseSubmitted,
-} from 'src/server/workers/surveyResponseSubmitted'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
+  beforeEach(function () {
+    stubs.chatService.enable()
+  })
+  afterEach(function () {
+    stubs.chatService.disable()
+  })
 
   describe('processSurveyResponseSubmitted()', function () {
-    beforeEach('create stubs', function () {
-      const recordMessage = (target, msg) => {
-        this.chatClientStub.sentMessages[target] = this.chatClientStub.sentMessages[target] || []
-        this.chatClientStub.sentMessages[target].push(msg)
-        return Promise.resolve()
-      }
+    const chatService = require('src/server/services/chatService')
+    const {update: updateSurvey} = require('src/server/db/survey')
+    const {getProjectById} = require('src/server/db/project')
+    const {STAT_DESCRIPTORS} = require('src/common/models/stat')
 
-      this.chatClientStub = {
-        sentMessages: {},
-        sendChannelMessage: recordMessage,
-        sendDirectMessage: recordMessage,
-      }
-    })
+    const {processSurveyResponseSubmitted} = require('../surveyResponseSubmitted')
 
     describe('for retrospective surveys', function () {
       useFixture.buildOneQuestionSurvey()
@@ -54,16 +47,15 @@ describe(testContext(__filename), function () {
           })
         })
 
-        it('sends a message to the project chatroom', function () {
+        it('sends a message to the project chatroom', async function () {
           const event = {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          return processSurveyResponseSubmitted(event, this.chatClientStub).then(() => {
-            const msg = this.chatClientStub.sentMessages[this.project.name][0]
-            expect(msg).to.match(/submitted their reflections/)
-            expect(msg).to.match(/1 \/ \d .* completed/)
-          })
+          await processSurveyResponseSubmitted(event)
+          expect(chatService.sendChannelMessage.callCount).to.eq(1)
+          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'submitted their reflections')
+          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'completed')
         })
 
         it('sends a message to the project chatroom ONLY once', async function () {
@@ -71,9 +63,9 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
-          expect(this.chatClientStub.sentMessages[this.project.name]).to.have.length(1)
+          await processSurveyResponseSubmitted(event)
+          await processSurveyResponseSubmitted(event)
+          expect(chatService.sendChannelMessage.callCount).to.eq(1)
         })
       })
 
@@ -87,37 +79,31 @@ describe(testContext(__filename), function () {
             subjectId: this.project.playerIds[1],
             value: 'u da best!',
           })), this.project.playerIds.length)
-
           await updateSurvey({...this.survey, completedBy: this.project.playerIds})
-          await mockIdmUsersById(this.project.playerIds)
+          this.users = await mockIdmUsersById(this.project.playerIds)
         })
 
-        it('sends a DM to each player', function () {
+        it('sends a DM to each player', async function () {
           const event = {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          return processSurveyResponseSubmitted(event, this.chatClientStub).then(() => {
-            const msgs = Object.values(this.chatClientStub.sentMessages)
-              .reduce((result, next) => result.concat(next), [])
-
-            expect(msgs).to.have.length(this.project.playerIds.length)
-
-            msgs.forEach(msg => expect(msg).to.match(/RETROSPECTIVE RESULTS/))
-          })
+          await processSurveyResponseSubmitted(event)
+          expect(chatService.sendDirectMessage.callCount).to.eq(this.users.length)
+          this.users.forEach(user => (
+            expect(chatService.sendDirectMessage).to.have.been.calledWithMatch(user.handle, 'RETROSPECTIVE RESULTS')
+          ))
         })
       })
 
       describe('when the survey has NOT been completed', function () {
-        it('does not send a message to the project chatroom', function () {
+        it('does not send a message to the project chatroom', async function () {
           const event = {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          return processSurveyResponseSubmitted(event, this.chatClientStub).then(() => {
-            const sentMessages = this.chatClientStub.sentMessages[this.project.name]
-            expect(sentMessages).to.be.undefined
-          })
+          await processSurveyResponseSubmitted(event)
+          expect(chatService.sendChannelMessage.callCount).to.eq(0)
         })
       })
     })
@@ -141,16 +127,15 @@ describe(testContext(__filename), function () {
           return factory.createMany('response', overwriteObjs, overwriteObjs.length)
         })
 
-        it('sends a message to the project chatroom', function () {
+        it('sends a message to the project chatroom', async function () {
           const event = {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          return processSurveyResponseSubmitted(event, this.chatClientStub).then(() => {
-            const msg = this.chatClientStub.sentMessages[this.project.name][0]
-            expect(msg).to.match(/project review has just been completed/)
-            expect(msg).to.match(/reviewed by 1 player./)
-          })
+          await processSurveyResponseSubmitted(event)
+          expect(chatService.sendChannelMessage.callCount).to.eq(1)
+          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'project review has just been completed')
+          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'reviewed by 1 player')
         })
 
         it('updates the project stats', async function () {
@@ -159,7 +144,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
           const project = await getProjectById(this.project.id)
           expect(project).to.have.property('stats')
         })
@@ -169,24 +154,21 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
-          expect(this.chatClientStub.sentMessages[this.project.name]).to.have.length(1)
+          await processSurveyResponseSubmitted(event)
+          await processSurveyResponseSubmitted(event)
+          expect(chatService.sendChannelMessage.callCount).to.eq(1)
+          expect(chatService.sendChannelMessage).to.have.been.calledWith(this.project.name)
         })
       })
 
       describe('when the survey has NOT been completed', function () {
-        it('does not send a message to the project or chapter chatroom', function () {
+        it('does not send a message to the project or chapter chatroom', async function () {
           const event = {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          return processSurveyResponseSubmitted(event, this.chatClientStub).then(() => {
-            [this.project.name, this.chapter.channelName].forEach(channel => {
-              const sentMessages = this.chatClientStub.sentMessages[channel]
-              expect(sentMessages).to.be.undefined
-            })
-          })
+          await processSurveyResponseSubmitted(event)
+          expect(chatService.sendChannelMessage.callCount).to.eq(0)
         })
       })
     })

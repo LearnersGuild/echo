@@ -1,27 +1,25 @@
 /* eslint-disable prefer-arrow-callback */
 import Promise from 'bluebird'
-import {getQueue, processJobs} from 'src/server/util/queue'
 import {formProjectsIfNoneExist} from 'src/server/actions/formProjects'
+import initializeProject from 'src/server/actions/initializeProject'
 import sendCycleLaunchAnnouncement from 'src/server/actions/sendCycleLaunchAnnouncement'
 import {findModeratorsForChapter} from 'src/server/db/moderator'
 import {findProjects} from 'src/server/db/project'
-import {getSocket} from 'src/server/util/socket'
-import ChatClient from 'src/server/clients/ChatClient'
 
 export function start() {
-  processJobs('cycleLaunched', processCycleLaunch, _handleCycleLaunchError)
+  const jobService = require('src/server/services/jobService')
+  jobService.processJobs('cycleLaunched', processCycleLaunched, _handleCycleLaunchError)
 }
 
-export async function processCycleLaunch(cycle, options = {}) {
+export async function processCycleLaunched(cycle, options) {
   console.log(`Forming teams for cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
-  const chatClient = options.chatClient || new ChatClient()
 
   await formProjectsIfNoneExist(cycle.id, err => _notifyModerators(cycle, `⚠️ ${err.message}`))
   const projects = await findProjects({chapterId: cycle.chapterId, cycleId: cycle.id})
 
-  await Promise.each(projects, ({id}) => _queueProjectCreatedEvent(id))
+  await Promise.each(projects, project => initializeProject(project, options))
 
-  return sendCycleLaunchAnnouncement(cycle, projects, {chatClient})
+  return sendCycleLaunchAnnouncement(cycle, projects)
 }
 
 async function _handleCycleLaunchError(cycle, err) {
@@ -30,22 +28,13 @@ async function _handleCycleLaunchError(cycle, err) {
 }
 
 async function _notifyModerators(cycle, message) {
+  const notificationService = require('src/server/services/notificationService')
+
   try {
-    const socket = getSocket()
     await findModeratorsForChapter(cycle.chapterId).then(moderators => {
-      moderators.forEach(moderator => {
-        socket.publish(`notifyUser-${moderator.id}`, message)
-      })
+      moderators.forEach(moderator => notificationService.notifyUser(moderator.id, message))
     })
   } catch (err) {
     console.error('Moderator notification error:', err)
   }
-}
-
-function _queueProjectCreatedEvent(projectId) {
-  const projectCreatedQueue = getQueue('projectCreated')
-  return projectCreatedQueue.add({projectId}, {
-    attempts: 5,
-    backoff: {type: 'exponential', delay: 1000},
-  })
 }

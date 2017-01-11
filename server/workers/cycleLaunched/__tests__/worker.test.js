@@ -4,24 +4,21 @@
 import factory from 'src/test/factories'
 import {withDBCleanup} from 'src/test/helpers'
 
-import {processCycleLaunch} from 'src/server/workers/cycleLaunched/worker'
+import {processCycleLaunched} from '../worker'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
 
-  describe('processCycleLaunch()', function () {
+  describe('processCycleLaunched()', function () {
     describe('when a cycle has been launched', function () {
       beforeEach(async function () {
         this.chapter = await factory.create('chapter')
-        this.cycle = await factory.create('cycle', {
-          chapterId: this.chapter.id,
-          cycleNumber: 3,
-        })
+        this.cycle = await factory.create('cycle', {chapterId: this.chapter.id, cycleNumber: 3})
         this.pool = await factory.create('pool', {cycleId: this.cycle.id})
       })
 
       it('does not throw an error when no votes have been submitted', function () {
-        expect(processCycleLaunch(this.cycle)).to.not.be.rejected
+        expect(processCycleLaunched(this.cycle)).to.not.be.rejected
       })
     })
   })

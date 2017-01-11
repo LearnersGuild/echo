@@ -154,7 +154,6 @@ export const useFixture = {
     this.apiScope = null
   },
   nockIDMGraphQL(dataKey, data, {times = 1} = {}) {
-    console.log('config.server.idm.baseURL:', config.server.idm.baseURL)
     this.apiScope = nock(config.server.idm.baseURL)
       .post('/graphql')
       .times(times)

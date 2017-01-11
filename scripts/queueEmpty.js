@@ -1,7 +1,7 @@
 /* eslint-disable import/imports-first */
 import parseArgs from 'minimist'
 
-import {emptyQueue} from 'src/server/util/queue'
+import {emptyQueue} from 'src/server/services/queueService'
 import {finish} from './util'
 
 run()
