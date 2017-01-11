@@ -28,9 +28,7 @@ describe(testContext(__filename), function () {
 
     it('creates the project channel and welcome messages', async function () {
       const memberHandles = this.users.map(u => u.handle)
-
       await initializeProject(this.project)
-
       expect(chatService.createChannel).to.have.been.calledWith(this.project.name, [...memberHandles, 'echo'])
       expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Welcome to the')
       expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Your team is')

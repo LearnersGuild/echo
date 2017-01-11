@@ -44,7 +44,6 @@ export async function processSurveyResponseSubmitted(event) {
   const surveyPreviouslyCompletedByRespondent = surveyPreviouslyCompletedBy.includes(event.respondentId)
 
   switch (surveyType) {
-
     case PROJECT_SURVEY_TYPES.RETROSPECTIVE:
       if (surveyPreviouslyCompletedByRespondent) {
         console.log(`Completed Retrospective Survey [${event.surveyId}] Updated By [${event.respondentId}]`)
@@ -54,10 +53,7 @@ export async function processSurveyResponseSubmitted(event) {
         console.log(`Retrospective Survey [${event.surveyId}] Completed By [${event.respondentId}]`)
         const survey = changes[0].new_val
         await Promise.all([
-          announce(
-            [project.name],
-            buildRetroAnnouncement(project, survey)
-          ),
+          announce([project.name], buildRetroAnnouncement(project, survey)),
           updateStatsIfNeeded(project, survey)
         ])
       }
@@ -69,10 +65,7 @@ export async function processSurveyResponseSubmitted(event) {
       } else {
         console.log(`New Project Review Survey [${event.surveyId}] completed by [${event.respondentId}]`)
         const survey = changes[0].new_val
-        announce(
-          [project.name],
-          buildProjectReviewAnnouncement(project, survey)
-        )
+        announce([project.name], buildProjectReviewAnnouncement(project, survey))
       }
       await updateProjectStats(project.id)
       break

@@ -52,7 +52,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
           expect(chatService.sendChannelMessage.callCount).to.eq(1)
           expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'submitted their reflections')
           expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'completed')
@@ -63,8 +63,8 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
+          await processSurveyResponseSubmitted(event)
           expect(chatService.sendChannelMessage.callCount).to.eq(1)
         })
       })
@@ -88,7 +88,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
           expect(chatService.sendDirectMessage.callCount).to.eq(this.users.length)
           this.users.forEach(user => (
             expect(chatService.sendDirectMessage).to.have.been.calledWithMatch(user.handle, 'RETROSPECTIVE RESULTS')
@@ -102,7 +102,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
           expect(chatService.sendChannelMessage.callCount).to.eq(0)
         })
       })
@@ -132,7 +132,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
           expect(chatService.sendChannelMessage.callCount).to.eq(1)
           expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'project review has just been completed')
           expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'reviewed by 1 player')
@@ -144,7 +144,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
           const project = await getProjectById(this.project.id)
           expect(project).to.have.property('stats')
         })
@@ -154,8 +154,8 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
+          await processSurveyResponseSubmitted(event)
           expect(chatService.sendChannelMessage.callCount).to.eq(1)
           expect(chatService.sendChannelMessage).to.have.been.calledWith(this.project.name)
         })
@@ -167,7 +167,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             surveyId: this.survey.id,
           }
-          await processSurveyResponseSubmitted(event, this.chatClientStub)
+          await processSurveyResponseSubmitted(event)
           expect(chatService.sendChannelMessage.callCount).to.eq(0)
         })
       })

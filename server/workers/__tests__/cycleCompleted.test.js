@@ -1,24 +1,23 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
+import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {withDBCleanup} from 'src/test/helpers'
 
-import {processCycleCompleted} from '../cycleCompleted'
-
 describe(testContext(__filename), function () {
   withDBCleanup()
+  beforeEach(function () {
+    stubs.chatService.enable()
+  })
+  afterEach(function () {
+    stubs.chatService.disable()
+  })
 
   describe('processCycleCompleted()', function () {
-    beforeEach('create stubs', function () {
-      this.chatClientStub = {
-        sentMessages: {},
-        sendChannelMessage: (channel, msg) => {
-          this.chatClientStub.sentMessages[channel] = this.chatClientStub.sentMessages[channel] || []
-          this.chatClientStub.sentMessages[channel].push(msg)
-        }
-      }
-    })
+    const chatService = require('src/server/services/chatService')
+
+    const {processCycleCompleted} = require('../cycleCompleted')
 
     describe('when a cycle has completed', function () {
       beforeEach(async function () {
@@ -29,11 +28,10 @@ describe(testContext(__filename), function () {
         })
       })
 
-      it('sends a message to the chapter chatroom', function () {
-        return processCycleCompleted(this.cycle, this.chatClientStub).then(() => {
-          const msg = this.chatClientStub.sentMessages[this.chapter.channelName][0]
-          expect(msg).to.match(/Cycle 3 is complete/)
-        })
+      it('sends a message to the chapter chatroom', async function () {
+        await processCycleCompleted(this.cycle)
+        expect(chatService.sendChannelMessage).to.have.been
+          .calledWithMatch(this.chapter.channelName, `Cycle ${this.cycle.cycleNumber} is complete`)
       })
     })
   })
