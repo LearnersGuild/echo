@@ -18,6 +18,7 @@ describe(testContext(__filename), function () {
     useFixture.buildSurvey()
 
     beforeEach('Setup Survey Data', async function () {
+      useFixture.nockClean()
       await reloadSurveyAndQuestionData()
 
       this.setupSurveyData = async customResponses => {
