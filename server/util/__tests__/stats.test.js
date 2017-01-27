@@ -248,11 +248,11 @@ describe(testContext(__filename), function () {
       player.stats.cc = player.stats.tp = 85
       expect(computePlayerLevel(player)).to.equal(2)
 
-      player.stats.xp = 500
+      player.stats.xp = 400
       player.stats.th = 80
       expect(computePlayerLevel(player)).to.equal(3)
 
-      player.stats.xp = 750
+      player.stats.xp = 600
       player.stats.cc = 90
       player.stats.th = 90
       expect(computePlayerLevel(player)).to.equal(3)
@@ -264,7 +264,7 @@ describe(testContext(__filename), function () {
       expect(computePlayerLevel(player)).to.equal(4)
 
       player.stats.elo.rating = 1150
-      player.stats.xp = 1000
+      player.stats.xp = 800
       player.stats.cc = player.stats.tp = 90
       expect(computePlayerLevel(player)).to.equal(4)
 
