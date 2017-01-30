@@ -20,6 +20,9 @@ export default class UserProjectSummary extends Component {
 
   renderUserProjectStats() {
     const userStats = this.props.userProjectStats || {}
+    const {overallStats} = this.props || {}
+    const {difference} = this.props
+
     return !objectValuesAreAllNull(userStats) ? ([
       <Flex key="stats" fill>
         <Flex className={styles.column} column>
@@ -32,18 +35,9 @@ export default class UserProjectSummary extends Component {
           <div>{'Est. Accy.'}</div>
           <div>{'Est. Bias'}</div>
           <div>{'Challenge'}</div>
-        </Flex>,
-        <Flex className={styles.column} column>
-          <div><span>&nbsp;</span></div>
-          <div>{renderStat(STAT_DESCRIPTORS.RATING_ELO, userStats, false)}</div>
-          <div>{renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS, userStats, false)}</div>
-          <div>{renderStat(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION, userStats)}%</div>
-          <div>{renderStat(STAT_DESCRIPTORS.TEAM_PLAY, userStats)}%</div>
-          <div>{renderStat(STAT_DESCRIPTORS.TECHNICAL_HEALTH, userStats)}%</div>
-          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, userStats)}%</div>
-          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, userStats)}%</div>
-          <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE, userStats, false)}</div>
         </Flex>
+        <ProjectStatColumns className={styles.column} columnName={'Project'} columnStats={userStats}/>
+        <ProjectStatColumns className={styles.column} columnName={'Game'} columnStats={overallStats} statDiffObject={difference}/>
       </Flex>,
       <Flex key="teamPlay" fill>
         <Flex className={styles.column} column>
@@ -166,5 +160,90 @@ UserProjectSummary.propTypes = {
     [STAT_DESCRIPTORS.RESULTS_FOCUS]: PropTypes.number,
     [STAT_DESCRIPTORS.TEAM_PLAY]: PropTypes.number,
     [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: PropTypes.number,
+  }),
+  difference: PropTypes.shape({
+    eloDifference: PropTypes.number,
+    xpDifference: PropTypes.number,
+    cultureDifference: PropTypes.number,
+    teamPlayDifference: PropTypes.number,
+    technicalHealthDifference: PropTypes.number,
+    estimationAccuracyDifference: PropTypes.number,
+    estimationBiasDifference: PropTypes.number,
+    challengeDifference: PropTypes.number
+  }),
+}
+
+const StatsDifference = props => {
+  const {statDiff} = props
+  if (!statDiff) {
+    return null
+  }
+
+  return statDiff > 0 ?
+    <strong style={{color: 'green'}}>
+      &uarr; {Math.floor(statDiff)}
+    </strong> :
+    <strong style={{color: 'red'}}>
+      &darr; {Math.floor(statDiff)}
+    </strong>
+}
+
+StatsDifference.propTypes = {statDiff: PropTypes.number}
+
+const ProjectStatColumns = props => {
+  const {className, columnName, columnStats, statDiffObject} = props
+  return (<Flex className={(className)} column>
+    <div><strong>{columnName}</strong></div>
+    {
+      ([
+        {name: STAT_DESCRIPTORS.RATING_ELO, suffix: ''},
+        {name: STAT_DESCRIPTORS.EXPERIENCE_POINTS, suffix: ''},
+        {name: STAT_DESCRIPTORS.CULTURE_CONTRIBUTION, suffix: '%'},
+        {name: STAT_DESCRIPTORS.TEAM_PLAY, suffix: '%'},
+        {name: STAT_DESCRIPTORS.TECHNICAL_HEALTH, suffix: '%'},
+        {name: STAT_DESCRIPTORS.ESTIMATION_ACCURACY, suffix: '%'},
+        {name: STAT_DESCRIPTORS.ESTIMATION_BIAS, suffix: '%'},
+        {name: STAT_DESCRIPTORS.CHALLENGE, suffix: ''},
+      ]).map(({name, suffix}, i) => {
+        if (columnName === 'Project' && name === STAT_DESCRIPTORS.RATING_ELO) {
+          return <div key={i}>{'N/A'}</div>
+        }
+
+        return <div key={i}>
+          {renderStat(name, columnStats)}{suffix} {statDiffObject ? <StatsDifference key={i} statDiff={statDiffObject[name]}/> : null}
+        </div>
+      })
+    }
+  </Flex>)
+}
+
+ProjectStatColumns.propTypes = {
+  className: PropTypes.string,
+  columnName: PropTypes.string,
+  columnStats: PropTypes.shape({
+    [STAT_DESCRIPTORS.CHALLENGE]: PropTypes.number,
+    [STAT_DESCRIPTORS.CULTURE_CONTRIBUTION]: PropTypes.number,
+    [STAT_DESCRIPTORS.ESTIMATION_ACCURACY]: PropTypes.number,
+    [STAT_DESCRIPTORS.ESTIMATION_BIAS]: PropTypes.number,
+    [STAT_DESCRIPTORS.EXPERIENCE_POINTS]: PropTypes.number,
+    [STAT_DESCRIPTORS.FLEXIBLE_LEADERSHIP]: PropTypes.number,
+    [STAT_DESCRIPTORS.FRICTION_REDUCTION]: PropTypes.number,
+    [STAT_DESCRIPTORS.PROJECT_HOURS]: PropTypes.number,
+    [STAT_DESCRIPTORS.RATING_ELO]: PropTypes.number,
+    [STAT_DESCRIPTORS.RECEPTIVENESS]: PropTypes.number,
+    [STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION]: PropTypes.number,
+    [STAT_DESCRIPTORS.RESULTS_FOCUS]: PropTypes.number,
+    [STAT_DESCRIPTORS.TEAM_PLAY]: PropTypes.number,
+    [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: PropTypes.number,
+  }),
+  statDiffObject: PropTypes.shape({
+    eloDifference: PropTypes.number,
+    xpDifference: PropTypes.number,
+    cultureDifference: PropTypes.number,
+    teamPlayDifference: PropTypes.number,
+    technicalHealthDifference: PropTypes.number,
+    estimationAccuracyDifference: PropTypes.number,
+    estimationBiasDifference: PropTypes.number,
+    challengeDifference: PropTypes.number
   }),
 }

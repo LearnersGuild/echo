@@ -211,7 +211,7 @@ export const LEVELS = [
     [TEAM_PLAY]:           85, [TECHNICAL_HEALTH]: 80, [ESTIMATION_ACCURACY]:  92,
   }},
   {level: 4, requirements: {
-    [EXPERIENCE_POINTS]:  600, [RATING_ELO]:     1100, [CULTURE_CONTRIBUTION]: 90,
+    [EXPERIENCE_POINTS]:  600, [RATING_ELO]:     1050, [CULTURE_CONTRIBUTION]: 90,
     [TEAM_PLAY]:           90, [TECHNICAL_HEALTH]: 90, [ESTIMATION_ACCURACY]:  93,
   }},
   {level: 5, requirements: {
