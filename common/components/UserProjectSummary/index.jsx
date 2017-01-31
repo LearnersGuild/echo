@@ -36,14 +36,20 @@ export default class UserProjectSummary extends Component {
         </Flex>,
         <Flex className={styles.column} column>
           <div><span>&nbsp;</span></div>
-          <div>{renderStat(STAT_DESCRIPTORS.RATING_ELO, userStats, false)} <StatsDifference statDiff={difference.eloDifference}/></div>
-          <div>{renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS, userStats, false)} <StatsDifference statDiff={difference.xpDifference}/></div>
-          <div>{renderStat(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION, userStats)}% <StatsDifference statDiff={difference.cultureDifference}/></div>
-          <div>{renderStat(STAT_DESCRIPTORS.TEAM_PLAY, userStats)}% <StatsDifference statDiff={difference.teamPlayDifference}/></div>
-          <div>{renderStat(STAT_DESCRIPTORS.TECHNICAL_HEALTH, userStats)}% <StatsDifference statDiff={difference.technicalHealthDifference}/></div>
-          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, userStats)}% <StatsDifference statDiff={difference.estimationAccuracyDifference}/></div>
-          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, userStats)}% <StatsDifference statDiff={difference.estimationBiasDifference}/></div>
-          <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE, userStats, false)} <StatsDifference statDiff={difference.challengeDifference}/></div>
+          {
+            ([
+              {name: STAT_DESCRIPTORS.RATING_ELO, suffix: ''},
+              {name: STAT_DESCRIPTORS.EXPERIENCE_POINTS, suffix: ''},
+              {name: STAT_DESCRIPTORS.CULTURE_CONTRIBUTION, suffix: '%'},
+              {name: STAT_DESCRIPTORS.TEAM_PLAY, suffix: '%'},
+              {name: STAT_DESCRIPTORS.TECHNICAL_HEALTH, suffix: '%'},
+              {name: STAT_DESCRIPTORS.ESTIMATION_ACCURACY, suffix: '%'},
+              {name: STAT_DESCRIPTORS.ESTIMATION_BIAS, suffix: '%'},
+              {name: STAT_DESCRIPTORS.CHALLENGE, suffix: ''},
+            ]).map(({name, suffix}, i) =>
+              <div key={i}>{renderStat(name, userStats)}{suffix} <StatsDifference key={i} statDiff={difference[name]}/></div>
+            )
+          }
         </Flex>
       </Flex>,
       <Flex key="teamPlay" fill>

@@ -119,20 +119,30 @@ class UserDetail extends Component {
 
   renderProjects() {
     const {userProjectSummaries} = this.props
-    const projectSummaries = (addPointInTimeOverallStats(userProjectSummaries) || []).map((projectSummary, i) => {
-      const {userProjectStats, overallStats} = projectSummary
-      const statsDifference = {
-        eloDifference: userProjectStats.ratingElo - overallStats.ratingElo,
-        xpDifference: userProjectStats.experiencePoints - overallStats.experiencePoints,
-        cultureDifference: userProjectStats.cultureContribution - overallStats.cultureContribution,
-        teamPlayDifference: userProjectStats.teamPlay - overallStats.teamPlay,
-        technicalHealthDifference: userProjectStats.technicalHealth - overallStats.technicalHealth,
-        estimationAccuracyDifference: userProjectStats.estimationAccuracy - overallStats.estimationAccuracy,
-        estimationBiasDifference: userProjectStats.estimationBias - overallStats.estimationBias,
-        challengeDifference: userProjectStats.challenge - overallStats.challenge
+    const summariesWithOverallStats = addPointInTimeOverallStats(userProjectSummaries || [])
+    const projectStatNames = [
+      STAT_DESCRIPTORS.RATING_ELO,
+      STAT_DESCRIPTORS.EXPERIENCE_POINTS,
+      STAT_DESCRIPTORS.CULTURE_CONTRIBUTION,
+      STAT_DESCRIPTORS.TEAM_PLAY,
+      STAT_DESCRIPTORS.TECHNICAL_HEALTH,
+      STAT_DESCRIPTORS.ESTIMATION_ACCURACY,
+      STAT_DESCRIPTORS.ESTIMATION_BIAS,
+      STAT_DESCRIPTORS.CHALLENGE,
+      STAT_DESCRIPTORS.NUM_PROJECTS_REVIEWED,
+    ]
+    const projectSummaries = summariesWithOverallStats.map((summary, i) => {
+      const {overallStats} = summary
+
+      const statsDifference = {}
+      if (i < summariesWithOverallStats.length - 1) {
+        const getDiff = stat => overallStats[stat] - summariesWithOverallStats[i + 1].overallStats[stat]
+        projectStatNames.forEach(stat => {
+          statsDifference[stat] = getDiff(stat)
+        })
       }
 
-      return <UserProjectSummary key={i} {...projectSummary} difference={statsDifference}/>
+      return <UserProjectSummary key={i} {...summary} difference={statsDifference}/>
     })
     return (
       <div>
