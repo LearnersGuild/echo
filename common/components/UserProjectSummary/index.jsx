@@ -167,4 +167,10 @@ UserProjectSummary.propTypes = {
     [STAT_DESCRIPTORS.TEAM_PLAY]: PropTypes.number,
     [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: PropTypes.number,
   }),
+  threshold: PropTypes.shape({  // An idea of what I would want to create
+    teamThreshold: PropTypes.number,
+    cultureThreshold: PropTypes.number,
+    experienceThreshold: PropTypes.number,
+    estimationThreshold: PropTypes.number
+  })
 }

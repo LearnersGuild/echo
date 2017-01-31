@@ -116,6 +116,7 @@ class UserDetail extends Component {
     )
   }
 
+
   renderProjects() {
     const {userProjectSummaries} = this.props
     const projectSummaries = (userProjectSummaries || []).map((projectSummary, i) => (
@@ -130,6 +131,23 @@ class UserDetail extends Component {
       </div>
     )
   }
+
+//First idea
+  renderThresholdStatValues(stats) {
+    const {userProjectThreshold} = this.props
+    if (teamThreshold < 65 || cultureThreshold < 65 ||
+      estimationThreshold < 90) {
+        return !objectValuesAreAllNull(stats) ? (
+          <div>
+            <div className="inRed">In The Red</div>
+            <div>{renderThresholdStat(STAT_DESCRIPTORS.TEAM_PLAY)}%</div>
+            <div>{renderThresholdStat(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION)}%</div>
+            <div>{renderThresholdStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
+            <div>{renderThresholdStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY)}%</div>
+          </div>
+        ) : <div/>
+      }
+    }
 
   renderTabs() {
     return (
