@@ -118,9 +118,25 @@ class UserDetail extends Component {
 
   renderProjects() {
     const {userProjectSummaries} = this.props
-    const projectSummaries = (userProjectSummaries || []).map((projectSummary, i) => (
-      <UserProjectSummary key={i} {...projectSummary}/>
-    ))
+    const projectSummaries = (userProjectSummaries || []).map((projectSummary, i) => {
+      const { userProjectStats }  = projectSummary
+      let previousStatsDiff = {}
+
+      if (i < userProjectSummaries.length - 1) {
+        previousStatsDiff = {
+          eloDifference: userProjectStats.ratingElo - userProjectSummaries[i + 1].userProjectStats.ratingElo,
+          xpDifference: userProjectStats.experiencePoints - userProjectSummaries[i + 1].userProjectStats.experiencePoints,
+          cultureDifference: userProjectStats.cultureContribution - userProjectSummaries[i + 1].userProjectStats.cultureContribution,
+          teamPlayDifference: userProjectStats.teamPlay - userProjectSummaries[i + 1].userProjectStats.teamPlay,
+          technicalHealthDifference: userProjectStats.technicalHealth - userProjectSummaries[i + 1].userProjectStats.technicalHealth,
+          estimationAccuracyDifference: userProjectStats.estimationAccuracy - userProjectSummaries[i + 1].userProjectStats.estimationAccuracy,
+          estimationBiasDifference: userProjectStats.estimationBias - userProjectSummaries[i + 1].userProjectStats.estimationBias,
+          challengeDifference: userProjectStats.challenge - userProjectSummaries[i + 1].userProjectStats.challenge
+        }
+      }
+
+      return <UserProjectSummary key={i} {...projectSummary} diff={previousStatsDiff} />
+    })
     return (
       <div>
         {projectSummaries.length > 0 ?
