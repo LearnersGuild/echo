@@ -20,7 +20,7 @@ export default class UserProjectSummary extends Component {
 
   renderUserProjectStats() {
     const userStats = this.props.userProjectStats || {}
-    const { diff } = this.props
+    const {difference} = this.props
     return !objectValuesAreAllNull(userStats) ? ([
       <Flex key="stats" fill>
         <Flex className={styles.column} column>
@@ -36,14 +36,14 @@ export default class UserProjectSummary extends Component {
         </Flex>,
         <Flex className={styles.column} column>
           <div><span>&nbsp;</span></div>
-          <div>{renderStat(STAT_DESCRIPTORS.RATING_ELO, userStats, false)} <StatsDifference statDiff={diff.eloDifference} /></div>
-          <div>{renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS, userStats, false)} <StatsDifference statDiff={diff.xpDifference} /></div>
-          <div>{renderStat(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION, userStats)}% <StatsDifference statDiff={diff.cultureDifference} /></div>
-          <div>{renderStat(STAT_DESCRIPTORS.TEAM_PLAY, userStats)}% <StatsDifference statDiff={diff.teamPlayDifference} /></div>
-          <div>{renderStat(STAT_DESCRIPTORS.TECHNICAL_HEALTH, userStats)}% <StatsDifference statDiff={diff.technicalHealthDifference} /></div>
-          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, userStats)}% <StatsDifference statDiff={diff.estimationAccuracyDifference} /></div>
-          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, userStats)}% <StatsDifference statDiff={diff.estimationBiasDifference} /></div>
-          <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE, userStats, false)} <StatsDifference statDiff={diff.challengeDifference} /></div>
+          <div>{renderStat(STAT_DESCRIPTORS.RATING_ELO, userStats, false)} <StatsDifference statDiff={difference.eloDifference}/></div>
+          <div>{renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS, userStats, false)} <StatsDifference statDiff={difference.xpDifference}/></div>
+          <div>{renderStat(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION, userStats)}% <StatsDifference statDiff={difference.cultureDifference}/></div>
+          <div>{renderStat(STAT_DESCRIPTORS.TEAM_PLAY, userStats)}% <StatsDifference statDiff={difference.teamPlayDifference}/></div>
+          <div>{renderStat(STAT_DESCRIPTORS.TECHNICAL_HEALTH, userStats)}% <StatsDifference statDiff={difference.technicalHealthDifference}/></div>
+          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, userStats)}% <StatsDifference statDiff={difference.estimationAccuracyDifference}/></div>
+          <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, userStats)}% <StatsDifference statDiff={difference.estimationBiasDifference}/></div>
+          <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE, userStats, false)} <StatsDifference statDiff={difference.challengeDifference}/></div>
         </Flex>
       </Flex>,
       <Flex key="teamPlay" fill>
@@ -168,18 +168,31 @@ UserProjectSummary.propTypes = {
     [STAT_DESCRIPTORS.TEAM_PLAY]: PropTypes.number,
     [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: PropTypes.number,
   }),
+  difference: PropTypes.shape({
+    eloDifference: PropTypes.number,
+    xpDifference: PropTypes.number,
+    cultureDifference: PropTypes.number,
+    teamPlayDifference: PropTypes.number,
+    technicalHealthDifference: PropTypes.number,
+    estimationAccuracyDifference: PropTypes.number,
+    estimationBiasDifference: PropTypes.number,
+    challengeDifference: PropTypes.number
+  }),
 }
 
 const StatsDifference = props => {
-  const { statDiff } = props
+  const {statDiff} = props
+  if (!statDiff) {
+    return null
+  }
 
-  return !statDiff
-    ? null
-    : statDiff > 0
-      ? <strong style={{color: 'green'}}>
-          &uarr; { Math.floor(statDiff) }
-      </strong>
-      : <strong style={{color: 'red'}}>
-          &darr; { Math.floor(statDiff) }
-      </strong>
+  return statDiff > 0 ?
+    <strong style={{color: 'green'}}>
+      &uarr; {Math.floor(statDiff)}
+    </strong> :
+    <strong style={{color: 'red'}}>
+      &darr; {Math.floor(statDiff)}
+    </strong>
 }
+
+StatsDifference.propTypes = {statDiff: PropTypes.number}

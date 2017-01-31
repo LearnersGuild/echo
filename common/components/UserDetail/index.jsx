@@ -9,6 +9,7 @@ import {Flex} from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {objectValuesAreAllNull} from 'src/common/util'
+import addPointInTimeOverallStats from 'src/common/util/addPointInTimeOverallStats'
 
 import styles from './index.scss'
 import theme from './theme.scss'
@@ -118,24 +119,20 @@ class UserDetail extends Component {
 
   renderProjects() {
     const {userProjectSummaries} = this.props
-    const projectSummaries = (userProjectSummaries || []).map((projectSummary, i) => {
-      const { userProjectStats }  = projectSummary
-      let previousStatsDiff = {}
-
-      if (i < userProjectSummaries.length - 1) {
-        previousStatsDiff = {
-          eloDifference: userProjectStats.ratingElo - userProjectSummaries[i + 1].userProjectStats.ratingElo,
-          xpDifference: userProjectStats.experiencePoints - userProjectSummaries[i + 1].userProjectStats.experiencePoints,
-          cultureDifference: userProjectStats.cultureContribution - userProjectSummaries[i + 1].userProjectStats.cultureContribution,
-          teamPlayDifference: userProjectStats.teamPlay - userProjectSummaries[i + 1].userProjectStats.teamPlay,
-          technicalHealthDifference: userProjectStats.technicalHealth - userProjectSummaries[i + 1].userProjectStats.technicalHealth,
-          estimationAccuracyDifference: userProjectStats.estimationAccuracy - userProjectSummaries[i + 1].userProjectStats.estimationAccuracy,
-          estimationBiasDifference: userProjectStats.estimationBias - userProjectSummaries[i + 1].userProjectStats.estimationBias,
-          challengeDifference: userProjectStats.challenge - userProjectSummaries[i + 1].userProjectStats.challenge
-        }
+    const projectSummaries = (addPointInTimeOverallStats(userProjectSummaries) || []).map((projectSummary, i) => {
+      const {userProjectStats, overallStats} = projectSummary
+      const statsDifference = {
+        eloDifference: userProjectStats.ratingElo - overallStats.ratingElo,
+        xpDifference: userProjectStats.experiencePoints - overallStats.experiencePoints,
+        cultureDifference: userProjectStats.cultureContribution - overallStats.cultureContribution,
+        teamPlayDifference: userProjectStats.teamPlay - overallStats.teamPlay,
+        technicalHealthDifference: userProjectStats.technicalHealth - overallStats.technicalHealth,
+        estimationAccuracyDifference: userProjectStats.estimationAccuracy - overallStats.estimationAccuracy,
+        estimationBiasDifference: userProjectStats.estimationBias - overallStats.estimationBias,
+        challengeDifference: userProjectStats.challenge - overallStats.challenge
       }
 
-      return <UserProjectSummary key={i} {...projectSummary} diff={previousStatsDiff} />
+      return <UserProjectSummary key={i} {...projectSummary} difference={statsDifference}/>
     })
     return (
       <div>
