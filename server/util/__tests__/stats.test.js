@@ -3,20 +3,20 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
 import {
   aggregateBuildCycles,
-  relativeContribution,
+  computePlayerLevel,
+  cultureContribution,
+  effectiveContributionCycles,
+  eloRatings,
   expectedContribution,
   expectedContributionDelta,
-  effectiveContributionCycles,
-  technicalHealth,
-  cultureContribution,
-  teamPlay,
-  scoreMargins,
-  eloRatings,
   experiencePoints,
-  computePlayerLevel,
+  floatStatFormatter,
   getPlayerStat,
   intStatFormatter,
-  floatStatFormatter,
+  relativeContribution,
+  scoreMargins,
+  teamPlay,
+  technicalHealth,
 } from 'src/server/util/stats'
 
 describe(testContext(__filename), function () {
@@ -332,6 +332,72 @@ describe(testContext(__filename), function () {
       }
 
       expect(() => computePlayerLevel(playerWithInvalidStats)).to.throw
+    })
+
+    it.only('NEW returns the correct level for a given player', function () {
+      const player = {
+        stats: {
+          elo: {rating: 900},
+          xp: 403,
+          weightedAverages: {
+            cc: 80,
+            tp: 80,
+            "estimationAccuracy": 91,
+            "th": 82 ,
+          },
+        },
+        projects: {
+          project_last_week: {
+            "cc": 80 ,
+            "elo": {
+              "rating": 900 ,
+            } ,
+            "estimationAccuracy": 91 ,
+            "th": 82 ,
+            "tp": 80 ,
+            "xp": 401
+          },
+          project_two_weeks_ago: {
+            "cc": 80 ,
+            "elo": {
+              "rating": 900 ,
+            } ,
+            "estimationAccuracy": 91 ,
+            "th": 82 ,
+            "tp": 80 ,
+            "xp": 402
+           }
+        }
+      }
+      // console.log('get to lvl 22222 check')
+
+      expect(computePlayerLevel(player)).to.equal(2)
+
+      // console.log('get to lvl 3 check')
+      player.stats.xp = 400
+      player.projects.project_last_week.cc = 86
+      player.projects.project_last_week.tp = 86
+      player.projects.project_last_week.th = 86
+      player.projects.project_last_week.estimationAccuracy = 92
+      player.projects.project_last_week.elo.rating = 1021
+      expect(computePlayerLevel(player)).to.equal(3)
+
+      // console.log('get to lvl 4 check')
+      player.stats.xp = 600
+      player.projects.project_last_week.cc = 91
+      player.projects.project_last_week.tp = 91
+      player.projects.project_last_week.th = 91
+      player.projects.project_last_week.estimationAccuracy = 93
+      player.projects.project_last_week.elo.rating = 1051
+      expect(computePlayerLevel(player)).to.equal(4)
+
+      player.stats.xp = 800
+      player.projects.project_last_week.cc = 91
+      player.projects.project_last_week.tp = 91
+      player.projects.project_last_week.th = 96
+      player.projects.project_last_week.estimationAccuracy = 96
+      player.projects.project_last_week.elo.rating = 1151
+      expect(computePlayerLevel(player)).to.equal(4)
     })
 
     it('returns the correct level for a given player', function () {

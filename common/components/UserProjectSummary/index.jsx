@@ -118,6 +118,15 @@ export default class UserProjectSummary extends Component {
     ) : <div/>
   }
 
+// IDEA:
+  // renderThreshold() {
+  //   const thresholdStats = this.props.threshold || {}
+  //   if (teamThreshold < 65 || cultureThreshold < 65 ||
+  //   estimationThreshold < 90) {
+  //     return inTheRed
+  //   }
+  // }
+
   render() {
     return (
       <Flex className={styles.userProjectSummary} column>
@@ -167,10 +176,11 @@ UserProjectSummary.propTypes = {
     [STAT_DESCRIPTORS.TEAM_PLAY]: PropTypes.number,
     [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: PropTypes.number,
   }),
-  threshold: PropTypes.shape({  // An idea of what I would want to create
-    teamThreshold: PropTypes.number,
-    cultureThreshold: PropTypes.number,
-    experienceThreshold: PropTypes.number,
-    estimationThreshold: PropTypes.number
-  })
+  // IDEA:
+  // threshold: PropTypes.shape({  // An idea of what I would want to create
+  //   teamThreshold: PropTypes.number,
+  //   cultureThreshold: PropTypes.number,
+  //   experienceThreshold: PropTypes.number,
+  //   estimationThreshold: PropTypes.number
+  // })
 }

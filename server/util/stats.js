@@ -4,6 +4,7 @@ import elo from 'elo-rank'
 import {roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {avg, toPercent} from './index'
+import {getRecentProjectIds} from '../db/player'
 
 export const LIKERT_SCORE_NA = 0
 export const LIKERT_SCORE_MIN = 1
@@ -223,13 +224,21 @@ export const LEVELS = [
 
 export function computePlayerLevel(player) {
   const stats = _playerLevelStats(player)
+  const recentProjects = getRecentProjectIds(stats.id, 3) //assuming we get an array of 3 proj
 
   const levelsDescending = LEVELS.slice().reverse()
   for (const {level, requirements} of levelsDescending) {
-    const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
-    if (playerMeetsRequirements) {
-      return level
-    }
+    // const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
+    // NOTE iterate through recent projects and get all recent levels
+    let highestRecentLevel = recentProjects.reduce((highestLevel, project) => {
+      const weeklyLevel = Object.keys(requirements).every(project => project[stat] >= requirements[stat])
+      if(weeklyLevel > highestLevel) {highestLevel = weeklyLevel}
+    }, 0)
+    // if (playerMeetsRequirements) {
+    //   return level
+    // }
+    // NOTE assign whatever their highest level is
+    return highestRecentLevel
   }
 
   throw new Error(`Could not place this player in ANY level! ${player.id}`)
