@@ -223,24 +223,27 @@ export const LEVELS = [
 /* eslint-enable key-spacing */
 
 export function computePlayerLevel(player) {
-  const stats = _playerLevelStats(player)
-  // const recentProjects = getRecentProjectIds(stats.id, 3) // assuming we get an array of 3 proj
+  const stats = _playerLevelStats(player) // assumes that player has userProjectSummaries ??
+  const recentProjects = getRecentProjectIds(stats.id, 3) // returns 3 id's
+  // use recent ids to get recent projects from player object
 
   const levelsDescending = LEVELS.slice().reverse()
-  for (const {level, requirements} of levelsDescending) {
-    const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
-    // // NOTE iterate through recent projects and get all recent levels
-    // const highestRecentLevel = recentProjects.reduce((highestLevel, project) => {
-    //   const weeklyLevel = Object.keys(requirements).every(project => project[stat] >= requirements[stat])
-    //   if (weeklyLevel > highestLevel) {
-    //     highestLevel = weeklyLevel
-    //   }
-    // }, 0)
-    if (playerMeetsRequirements) {
-      return level
-    }
-    // NOTE assign whatever their highest level is
-    // return highestRecentLevel
+
+
+    // iterate through recent projects and get levels for last 3 weeks
+    const highestRecentLevel = recentProjects.reduce((highestLevel, project) => {
+        const recentOverallStats = addPointInTimeOverallStats(project) //needs projectSummary .. ?
+
+        for (const {level, requirements} of levelsDescending) {
+          const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
+          if (playerMeetsRequirements > highestLevel) {
+            highestLevel = weeklyLevel
+          }
+        }
+        
+        return highestLevel
+      }, 0)
+    return highestRecentLevel  // return whatever their highest level in the last 3 weeks
   }
 
   throw new Error(`Could not place this player in ANY level! ${player.id}`)
