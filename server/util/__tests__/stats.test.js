@@ -19,6 +19,10 @@ import {
   technicalHealth,
 } from 'src/server/util/stats'
 
+import factory from 'src/test/factories'
+import {mockIdmUsersById} from 'src/test/helpers'
+import {withDBCleanup} from 'src/test/helpers'
+
 describe(testContext(__filename), function () {
   describe('aggregateBuildCycles()', function () {
     it('default build cycles (1)', function () {
@@ -323,6 +327,8 @@ describe(testContext(__filename), function () {
   })
 
   describe('computePlayerLevel()', function () {
+    withDBCleanup()
+
     it('throws an Exception if player stats are invalid', function () {
       const playerWithInvalidStats = {
         stats: {
@@ -334,70 +340,57 @@ describe(testContext(__filename), function () {
       expect(() => computePlayerLevel(playerWithInvalidStats)).to.throw
     })
 
-    it.only('NEW returns the correct level for a given player', function () {
-      const player = {
-        stats: {
-          elo: {rating: 900},
-          xp: 403,
-          weightedAverages: {
-            cc: 80,
-            tp: 80,
-            estimationAccuracy: 91,
-            th: 82,
-          },
+    it.only('NEW returns the correct level for a given player', async function () {
+      const cycles = await factory.createMany('cycle', [
+        {cycleNumber: 1},
+        {cycleNumber: 2},
+        {cycleNumber: 3},
+      ])
+      const [player, teammate] = await factory.createMany('player', 2)
+      const playerIds = [player.id, teammate.id]
+      mockIdmUsersById(playerIds)
+
+      const projects = await factory.createMany('project', [
+        {cycleId: cycles[0].id, playerIds},
+        {cycleId: cycles[1].id, playerIds},
+        // {cycleId: cycles[2].id, playerIds},
+      ])
+
+
+      player.stats = {
+        elo: {rating: 900},
+        weightedAverages: {
+          estimationAccuracy: 91,
+          cc: 80,
+          th: 82,
+          tp: 80,
         },
+        xp: 403,
         projects: {
-          projectLastWeek: {
-            cc: 80,
-            elo: {
-              rating: 900,
-            },
-            estimationAccuracy: 91,
-            th: 82,
-            tp: 80,
-            xp: 401
+          [projects[0].id]: {
+            elo: {rating: 991},
+            estimationAccuracy: 92,
+            cc: 81,
+            th: 81,
+            tp: 81,
+            xp: 151,
           },
-          projectTwoWeeksAgo: {
-            cc: 80,
-            elo: {
-              rating: 900,
-            },
-            estimationAccuracy: 91,
-            th: 82,
-            tp: 80,
-            xp: 402
-          }
+          [projects[1].id]: {
+            elo: {rating: 991},
+            estimationAccuracy: 92,
+            cc: 81,
+            th: 81,
+            tp: 81,
+            xp: 1
+          },
         }
       }
-      // console.log('get to lvl 22222 check')
+      expect(await computePlayerLevel(player)).to.equal(2)
 
-      expect(computePlayerLevel(player)).to.equal(2)
+      const nextTolastWeekProject = player.stats.projects[projects[1].id]
 
-      // console.log('get to lvl 3 check')
-      player.stats.xp = 400
-      player.projects.project_last_week.cc = 86
-      player.projects.project_last_week.tp = 86
-      player.projects.project_last_week.th = 86
-      player.projects.project_last_week.estimationAccuracy = 92
-      player.projects.project_last_week.elo.rating = 1021
-      expect(computePlayerLevel(player)).to.equal(3)
-
-      // console.log('get to lvl 4 check')
-      player.stats.xp = 600
-      player.projects.project_last_week.cc = 91
-      player.projects.project_last_week.tp = 91
-      player.projects.project_last_week.th = 91
-      player.projects.project_last_week.estimationAccuracy = 93
-      player.projects.project_last_week.elo.rating = 1051
-      expect(computePlayerLevel(player)).to.equal(4)
-
-      player.stats.xp = 800
-      player.projects.project_last_week.cc = 91
-      player.projects.project_last_week.tp = 91
-      player.projects.project_last_week.th = 96
-      player.projects.project_last_week.estimationAccuracy = 96
-      player.projects.project_last_week.elo.rating = 1151
-      expect(computePlayerLevel(player)).to.equal(4)
+      nextTolastWeekProject.tp = 70
+      expect(await computePlayerLevel(player)).to.equal(2)
     })
 
     it('returns the correct level for a given player', function () {

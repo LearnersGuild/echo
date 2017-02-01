@@ -3,8 +3,10 @@ import elo from 'elo-rank'
 
 import {roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
-// import {getRecentProjectIds} from '../db/player'
+import {getRecentProjectIds} from '../db/player'
 import {avg, toPercent} from './index'
+import {findUserProjectSummaries} from 'src/server/actions/findUserProjectSummaries'
+import addPointInTimeOverallStats from 'src/common/util/addPointInTimeOverallStats'
 
 export const LIKERT_SCORE_NA = 0
 export const LIKERT_SCORE_MIN = 1
@@ -222,31 +224,29 @@ export const LEVELS = [
 ]
 /* eslint-enable key-spacing */
 
-export function computePlayerLevel(player) {
-  const stats = _playerLevelStats(player) // assumes that player has userProjectSummaries ??
-  const recentProjects = getRecentProjectIds(stats.id, 3) // returns 3 id's
+export async function computePlayerLevel(player) {
+  const summaries = await findUserProjectSummaries(player)
+  const summariesWithOverallStats = addPointInTimeOverallStats(summaries)
+  console.log(summariesWithOverallStats)
+  // const stats = _playerLevelStats(player) // assumes that player has userProjectSummaries ??
+  // const recentProjectIds = await getRecentProjectIds(player, 2) // returns 3 id's
   // use recent ids to get recent projects from player object
 
-  const levelsDescending = LEVELS.slice().reverse()
+  // const levelsDescending = LEVELS.slice().reverse()
 
+  // iterate through recent projects and get levels for last 3 weeks
+  const recentOverallStats = summariesWithOverallStats.map(_ => _.overallStats).slice(0, 2)
+  console.log(recentOverallStats)
 
-    // iterate through recent projects and get levels for last 3 weeks
-    const highestRecentLevel = recentProjects.reduce((highestLevel, project) => {
-        const recentOverallStats = addPointInTimeOverallStats(project) //needs projectSummary .. ?
+  // for (const pointInTimeStats of recentOverallStats) {
+  //   for (const {level, requirements} of levelsDescending) {
+  //     const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
+  //     if (playerMeetsRequirements > highestLevel) {
+  //       highestLevel = weeklyLevel
+  //     }
+  //   }
+  // }
 
-        for (const {level, requirements} of levelsDescending) {
-          const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
-          if (playerMeetsRequirements > highestLevel) {
-            highestLevel = weeklyLevel
-          }
-        }
-        
-        return highestLevel
-      }, 0)
-    return highestRecentLevel  // return whatever their highest level in the last 3 weeks
-  }
-
-  throw new Error(`Could not place this player in ANY level! ${player.id}`)
 }
 
 export const floatStatFormatter = value => parseFloat(Number(value).toFixed(2))
