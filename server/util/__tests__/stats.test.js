@@ -20,8 +20,7 @@ import {
 } from 'src/server/util/stats'
 
 import factory from 'src/test/factories'
-import {mockIdmUsersById} from 'src/test/helpers'
-import {withDBCleanup} from 'src/test/helpers'
+import {mockIdmUsersById, withDBCleanup} from 'src/test/helpers'
 
 describe(testContext(__filename), function () {
   describe('aggregateBuildCycles()', function () {
@@ -356,7 +355,6 @@ describe(testContext(__filename), function () {
         // {cycleId: cycles[2].id, playerIds},
       ])
 
-
       player.stats = {
         elo: {rating: 900},
         weightedAverages: {
@@ -385,11 +383,12 @@ describe(testContext(__filename), function () {
           },
         }
       }
+      expect(await computePlayerLevel(player)).to.be.a.number
       expect(await computePlayerLevel(player)).to.equal(2)
 
-      const nextTolastWeekProject = player.stats.projects[projects[1].id]
+      // const nextTolastWeekProject = player.stats.projects[projects[1].id]
 
-      nextTolastWeekProject.tp = 70
+      // nextTolastWeekProject.tp = 70
       expect(await computePlayerLevel(player)).to.equal(2)
     })
 

@@ -3,10 +3,9 @@ import elo from 'elo-rank'
 
 import {roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
-import {getRecentProjectIds} from '../db/player'
-import {avg, toPercent} from './index'
 import {findUserProjectSummaries} from 'src/server/actions/findUserProjectSummaries'
 import addPointInTimeOverallStats from 'src/common/util/addPointInTimeOverallStats'
+import {avg, toPercent} from './index'
 
 export const LIKERT_SCORE_NA = 0
 export const LIKERT_SCORE_MIN = 1
@@ -227,26 +226,26 @@ export const LEVELS = [
 export async function computePlayerLevel(player) {
   const summaries = await findUserProjectSummaries(player)
   const summariesWithOverallStats = addPointInTimeOverallStats(summaries)
-  console.log(summariesWithOverallStats)
-  // const stats = _playerLevelStats(player) // assumes that player has userProjectSummaries ??
-  // const recentProjectIds = await getRecentProjectIds(player, 2) // returns 3 id's
-  // use recent ids to get recent projects from player object
-
-  // const levelsDescending = LEVELS.slice().reverse()
-
-  // iterate through recent projects and get levels for last 3 weeks
+  console.log('hihi;;;;;;;;;;;;;', summariesWithOverallStats)
+  const levelsDescending = LEVELS.slice().reverse()
+  //
   const recentOverallStats = summariesWithOverallStats.map(_ => _.overallStats).slice(0, 2)
-  console.log(recentOverallStats)
-
-  // for (const pointInTimeStats of recentOverallStats) {
-  //   for (const {level, requirements} of levelsDescending) {
-  //     const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
-  //     if (playerMeetsRequirements > highestLevel) {
-  //       highestLevel = weeklyLevel
-  //     }
-  //   }
-  // }
-
+  console.log('=========================', recentOverallStats)
+  //
+  //
+  let highestLevel = 0
+  for (const {level, requirements} of levelsDescending) {
+    for (const pointInTimeStats of recentOverallStats) {
+      // let playerMeetsRequirements
+      const playerMeetsRequirements = Object.keys(requirements).every(stat => pointInTimeStats[stat] >= requirements[stat])
+      // const playerMeetsRequirements = Object.keys(requirements).every(pointInTimeStats => stats[stat] >= requirements[stat])
+      if (playerMeetsRequirements && level > highestLevel) {
+        highestLevel = level
+      // }
+      }
+    }
+    return highestLevel
+  }
 }
 
 export const floatStatFormatter = value => parseFloat(Number(value).toFixed(2))
@@ -263,18 +262,18 @@ export function getPlayerStat(player, statName, formatter = floatStatFormatter) 
   return formatter(statValue)
 }
 
-function _playerLevelStats(player) {
-/* eslint-disable key-spacing */
-  return {
-    [RATING_ELO]:           getPlayerStat(player, 'elo.rating', intStatFormatter),
-    [EXPERIENCE_POINTS]:    getPlayerStat(player, 'xp', intStatFormatter),
-    [CULTURE_CONTRIBUTION]: getPlayerStat(player, 'weightedAverages.cc'),
-    [TEAM_PLAY]:            getPlayerStat(player, 'weightedAverages.tp'),
-    [TECHNICAL_HEALTH]:     getPlayerStat(player, 'weightedAverages.th'),
-    [ESTIMATION_ACCURACY]:  getPlayerStat(player, 'weightedAverages.estimationAccuracy')
-  }
-/* eslint-enable key-spacing */
-}
+// function _playerLevelStats(player) {
+// /* eslint-disable key-spacing */
+//   return {
+//     [RATING_ELO]:           getPlayerStat(player, 'elo.rating', intStatFormatter),
+//     [EXPERIENCE_POINTS]:    getPlayerStat(player, 'xp', intStatFormatter),
+//     [CULTURE_CONTRIBUTION]: getPlayerStat(player, 'weightedAverages.cc'),
+//     [TEAM_PLAY]:            getPlayerStat(player, 'weightedAverages.tp'),
+//     [TECHNICAL_HEALTH]:     getPlayerStat(player, 'weightedAverages.th'),
+//     [ESTIMATION_ACCURACY]:  getPlayerStat(player, 'weightedAverages.estimationAccuracy')
+//   }
+// /* eslint-enable key-spacing */
+// }
 
 function _validatePlayer(player) {
   if (!player) {
