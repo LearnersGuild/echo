@@ -226,26 +226,23 @@ export const LEVELS = [
 export async function computePlayerLevel(player) {
   const summaries = await findUserProjectSummaries(player)
   const summariesWithOverallStats = addPointInTimeOverallStats(summaries)
-  console.log('hihi;;;;;;;;;;;;;', summariesWithOverallStats)
+  console.log(summariesWithOverallStats)
   const levelsDescending = LEVELS.slice().reverse()
-  //
+
   const recentOverallStats = summariesWithOverallStats.map(_ => _.overallStats).slice(0, 2)
-  console.log('=========================', recentOverallStats)
-  //
-  //
+  console.log('=========================\n', recentOverallStats)
+
   let highestLevel = 0
   for (const {level, requirements} of levelsDescending) {
     for (const pointInTimeStats of recentOverallStats) {
       // let playerMeetsRequirements
       const playerMeetsRequirements = Object.keys(requirements).every(stat => pointInTimeStats[stat] >= requirements[stat])
-      // const playerMeetsRequirements = Object.keys(requirements).every(pointInTimeStats => stats[stat] >= requirements[stat])
       if (playerMeetsRequirements && level > highestLevel) {
         highestLevel = level
-      // }
       }
     }
-    return highestLevel
   }
+  return highestLevel
 }
 
 export const floatStatFormatter = value => parseFloat(Number(value).toFixed(2))

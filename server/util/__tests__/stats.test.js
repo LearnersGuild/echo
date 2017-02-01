@@ -343,16 +343,14 @@ describe(testContext(__filename), function () {
       const cycles = await factory.createMany('cycle', [
         {cycleNumber: 1},
         {cycleNumber: 2},
-        {cycleNumber: 3},
       ])
       const [player, teammate] = await factory.createMany('player', 2)
       const playerIds = [player.id, teammate.id]
-      mockIdmUsersById(playerIds)
+      await mockIdmUsersById(playerIds)
 
       const projects = await factory.createMany('project', [
         {cycleId: cycles[0].id, playerIds},
         {cycleId: cycles[1].id, playerIds},
-        // {cycleId: cycles[2].id, playerIds},
       ])
 
       player.stats = {
@@ -386,9 +384,9 @@ describe(testContext(__filename), function () {
       expect(await computePlayerLevel(player)).to.be.a.number
       expect(await computePlayerLevel(player)).to.equal(2)
 
-      // const nextTolastWeekProject = player.stats.projects[projects[1].id]
+      const nextTolastWeekProject = player.stats.projects[projects[1].id]
 
-      // nextTolastWeekProject.tp = 70
+      nextTolastWeekProject.tp = 70
       expect(await computePlayerLevel(player)).to.equal(2)
     })
 
