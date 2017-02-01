@@ -209,9 +209,9 @@ const ProjectStatColumns = props => {
           return <div key={i}>{'N/A'}</div>
         }
 
-        return <div key={i}>
+        return (<div key={i}>
           {renderStat(name, columnStats)}{suffix} {statDiffObject ? <StatsDifference key={i} statDiff={statDiffObject[name]}/> : null}
-        </div>
+        </div>)
       })
     }
   </Flex>)
