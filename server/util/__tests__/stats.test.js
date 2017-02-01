@@ -342,31 +342,31 @@ describe(testContext(__filename), function () {
           weightedAverages: {
             cc: 80,
             tp: 80,
-            "estimationAccuracy": 91,
-            "th": 82 ,
+            estimationAccuracy: 91,
+            th: 82,
           },
         },
         projects: {
-          project_last_week: {
-            "cc": 80 ,
-            "elo": {
-              "rating": 900 ,
-            } ,
-            "estimationAccuracy": 91 ,
-            "th": 82 ,
-            "tp": 80 ,
-            "xp": 401
+          projectLastWeek: {
+            cc: 80,
+            elo: {
+              rating: 900,
+            },
+            estimationAccuracy: 91,
+            th: 82,
+            tp: 80,
+            xp: 401
           },
-          project_two_weeks_ago: {
-            "cc": 80 ,
-            "elo": {
-              "rating": 900 ,
-            } ,
-            "estimationAccuracy": 91 ,
-            "th": 82 ,
-            "tp": 80 ,
-            "xp": 402
-           }
+          projectTwoWeeksAgo: {
+            cc: 80,
+            elo: {
+              rating: 900,
+            },
+            estimationAccuracy: 91,
+            th: 82,
+            tp: 80,
+            xp: 402
+          }
         }
       }
       // console.log('get to lvl 22222 check')
