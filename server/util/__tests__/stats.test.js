@@ -343,6 +343,7 @@ describe(testContext(__filename), function () {
       const cycles = await factory.createMany('cycle', [
         {cycleNumber: 1},
         {cycleNumber: 2},
+        // {cycleNumber: 3},
       ])
       const [player, teammate] = await factory.createMany('player', 2)
       const playerIds = [player.id, teammate.id]
@@ -351,6 +352,7 @@ describe(testContext(__filename), function () {
       const projects = await factory.createMany('project', [
         {cycleId: cycles[0].id, playerIds},
         {cycleId: cycles[1].id, playerIds},
+        // {cycleId: cycles[2].id, playerIds},
       ])
 
       player.stats = {
@@ -379,15 +381,40 @@ describe(testContext(__filename), function () {
             tp: 81,
             xp: 1
           },
+          // [projects[2].id]: {
+          //   elo: {rating: 1021},
+          //   estimationAccuracy: 92,
+          //   cc: 86,
+          //   th: 81,
+          //   tp: 86,
+          //   xp: 405
+          // },
         }
       }
       expect(await computePlayerLevel(player)).to.equal(2)
 
-      await mockIdmUsersById(playerIds)  
+
+      await mockIdmUsersById(playerIds)
       const nextTolastWeekProject = player.stats.projects[projects[1].id]
 
       nextTolastWeekProject.tp = 70
+      nextTolastWeekProject.cc = 60
+      nextTolastWeekProject.th = 60
+      nextTolastWeekProject.estimationAccuracy = 89
+      nextTolastWeekProject.xp = 149
       expect(await computePlayerLevel(player)).to.equal(2)
+
+
+      // await mockIdmUsersById(playerIds)
+      // const lastWeekProject = player.stats.projects[projects[2].id]
+      //
+      // lastWeekProject.tp = 86
+      // lastWeekProject.cc = 86
+      // lastWeekProject.th = 83
+      // lastWeekProject.estimationAccuracy = 93
+      // lastWeekProject.xp = 403
+      // expect(await computePlayerLevel(player)).to.equal(3)
+
     })
 
     it('returns the correct level for a given player', function () {
