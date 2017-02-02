@@ -339,7 +339,7 @@ describe(testContext(__filename), function () {
       expect(() => computePlayerLevel(playerWithInvalidStats)).to.throw
     })
 
-    it.only('NEW returns the correct level for a given player', async function () {
+    async function createProjectStats({lastWeek = {}, thisWeek = {}} = {}) {
       const cycles = await factory.createMany('cycle', [
         {cycleNumber: 1},
         {cycleNumber: 2},
@@ -370,6 +370,7 @@ describe(testContext(__filename), function () {
             th: 81,
             tp: 81,
             xp: 151,
+            ...lastWeek
           },
           [projects[1].id]: {
             elo: {rating: 991},
@@ -377,33 +378,34 @@ describe(testContext(__filename), function () {
             cc: 81,
             th: 81,
             tp: 81,
-            xp: 1
+            xp: 151,
+            ...thisWeek,
           },
         }
       }
-      expect(await computePlayerLevel(player)).to.equal(2)
+      return player
+    }
 
-      const nextTolastWeekProject = player.stats.projects[projects[1].id]
-
-      nextTolastWeekProject.tp = 60
-      nextTolastWeekProject.cc = 60
-      nextTolastWeekProject.th = 60
-      nextTolastWeekProject.estimationAccuracy = 88
-      nextTolastWeekProject.xp = 148
-
-      expect(await computePlayerLevel(player)).to.equal(2)
-
-      const lastWeekProject = player.stats.projects[projects[0].id]
-      lastWeekProject.elo.rating = 1021
-      lastWeekProject.tp = 90
-      lastWeekProject.cc = 90
-      lastWeekProject.th = 90
-      lastWeekProject.estimationAccuracy = 93
-      lastWeekProject.xp = 1252
-      expect(await computePlayerLevel(player)).to.equal(3)
+    it('NEW returns the correct level for a given player', async function () {
+      const player = await createProjectStats()
+      const result = await computePlayerLevel(player)
+      expect(result).to.have.property('level', 2)
     })
 
-    it('returns the correct level for a given player', function () {
+    it('returns the correct level when a player is in the red', async function () {
+      const player = await createProjectStats({thisWeek: {cc: 70}})
+      const result = await computePlayerLevel(player)
+      expect(result).to.have.property('level', 2)
+      expect(result).to.have.property('inTheRedStats').deep.eq(['cultureContribution'])
+    })
+
+    it('returns the correct level when a player is improving', async function () {
+      const player = await createProjectStats({thisWeek: {cc: 98}, lastWeek: {cc: 70}})
+      const result = await computePlayerLevel(player)
+      expect(result).to.have.property('level', 2)
+    })
+
+    it.skip('returns the correct level for a given player', function () {
       const player = {
         stats: {
           elo: {rating: 900},

@@ -226,22 +226,31 @@ export const LEVELS = [
 export async function computePlayerLevel(player) {
   const summaries = await findUserProjectSummaries(player)
   const summariesWithOverallStats = addPointInTimeOverallStats(summaries)
-  const levelsDescending = LEVELS.slice().reverse()
   const recentOverallStats = summariesWithOverallStats.map(_ => _.overallStats).slice(0, 2)
 
-  let highestLevel = 0
-  for (const pointInTimeStats of recentOverallStats) {
-    for (const {level, requirements} of levelsDescending) {
-      const playerMeetsRequirements = Object.keys(requirements).every(stat => pointInTimeStats[stat] >= requirements[stat])
-      if (playerMeetsRequirements) {
-        // highestLevel.push(level)
-        highestLevel = level
-        break
-      }
+  const recentLevels = recentOverallStats.map(_computeLevelForOverallStats)
+  const level = Math.max(...recentLevels)
+
+  return {
+    level,
+    inTheRedStats: _getInTheRedStats(recentOverallStats[0], level),
+  }
+}
+
+function _computeLevelForOverallStats(pointInTimeStats) {
+  const levelsDescending = LEVELS.slice().reverse()
+  for (const {level, requirements} of levelsDescending) {
+    const playerMeetsRequirements = Object.keys(requirements).every(stat => pointInTimeStats[stat] >= requirements[stat])
+    if (playerMeetsRequirements) {
+      return level
     }
   }
-  // console.log('this is the highest level', highestLevel)
-  return highestLevel
+}
+
+function _getInTheRedStats(stats, level) {
+  const {requirements} = LEVELS[level]
+  const inTheRedStats = Object.keys(requirements).filter(stat => stats[stat] < requirements[stat])
+  return inTheRedStats
 }
 
 export const floatStatFormatter = value => parseFloat(Number(value).toFixed(2))
