@@ -381,9 +381,9 @@ describe(testContext(__filename), function () {
           },
         }
       }
-      expect(await computePlayerLevel(player)).to.be.a.number
       expect(await computePlayerLevel(player)).to.equal(2)
 
+      await mockIdmUsersById(playerIds)  
       const nextTolastWeekProject = player.stats.projects[projects[1].id]
 
       nextTolastWeekProject.tp = 70
