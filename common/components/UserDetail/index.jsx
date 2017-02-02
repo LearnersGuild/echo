@@ -9,6 +9,7 @@ import {Flex} from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {objectValuesAreAllNull} from 'src/common/util'
+import {computePlayerLevel} from '../server/util/stats'
 
 import styles from './index.scss'
 import theme from './theme.scss'
@@ -132,18 +133,11 @@ class UserDetail extends Component {
   }
 
   // First idea  //
-  renderThresholdStatValues(stats) {
-    const userProjectThreshold = stat => !stat || Number.isFinite(stats[stat]) ? stats[stat] : '--'
-    const {
-      teamThreshold,
-      cultureThreshold,
-      estimationThreshold
-    } = userProjectThreshold
-    if (teamThreshold < 65 || cultureThreshold < 65 ||
-    estimationThreshold < 90) {
+  renderThresholdStats(stats) {
+    const userProjectThreshold = s
       return !objectValuesAreAllNull(stats) ? (
         <div>
-          <div className="inRed">In The Red</div>
+          <div className="inRed">In The Red :yes</div>
           <div>{userProjectThreshold(STAT_DESCRIPTORS.TEAM_PLAY)}%</div>
           <div>{userProjectThreshold(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION)}%</div>
           <div>{userProjectThreshold(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
