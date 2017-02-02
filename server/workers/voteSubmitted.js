@@ -16,15 +16,23 @@ export function start() {
 
 async function processVoteSubmitted(vote) {
   const goals = await fetchGoalsInfo(vote)
-  const validatedVote = Object.assign({}, vote, {
-    pendingValidation: false,
-    notYetValidatedGoalDescriptors: null,
-  })
-  if (validateGoalsAndNotifyUser(vote, goals)) {
-    validatedVote.goals = goals
+  const goalDescriptorIsInvalid = (goalDescriptor, i) => goals[i] === null
+
+  const invalidGoalDescriptors = vote.notYetValidatedGoalDescriptors
+    .filter(goalDescriptorIsInvalid)
+
+  const validatedVote = invalidGoalDescriptors.length > 0 ? {
+    ...vote,
+    invalidGoalDescriptors: vote.notYetValidatedGoalDescriptors,
+  } : {
+    ...vote,
+    invalidGoalDescriptors: null,
+    goals,
   }
+
   await updateVote(validatedVote)
   await pushCandidateGoalsForCycle(validatedVote)
+  notifyUser(validatedVote)
 }
 
 async function fetchGoalsInfo(vote) {
@@ -46,30 +54,31 @@ function formatGoals(prefix, goals) {
   return `${prefix}:\n - ${goalLinks.join('\n- ')}`
 }
 
-function validateGoalsAndNotifyUser(vote, goals) {
+function notifyUser(vote) {
   const notificationService = require('src/server/services/notificationService')
 
-  const invalidGoalDescriptors = vote.notYetValidatedGoalDescriptors.filter((goalDescriptor, i) => goals[i] === null)
-  if (invalidGoalDescriptors.length > 0) {
-    notificationService.notifyUser(vote.playerId, `The following goals are invalid: ${invalidGoalDescriptors.join(', ')}`)
-
+  if (vote.invalidGoalDescriptors && vote.invalidGoalDescriptors.length > 0) {
+    notificationService.notifyUser(vote.playerId, `The following goals are invalid: ${vote.invalidGoalDescriptors.join(', ')}`)
     if (vote.goals) {
       notificationService.notifyUser(vote.playerId, formatGoals('Falling back to previous vote', vote.goals))
     }
-
-    return false
+  } else {
+    notificationService.notifyUser(vote.playerId, formatGoals('Votes submitted for', vote.goals))
   }
-
-  notificationService.notifyUser(vote.playerId, formatGoals('Votes submitted for', goals))
-  return true
 }
 
 function updateVote(vote) {
-  const newVote = Object.assign({}, vote, {updatedAt: r.now()})
   return r.table('votes')
     .get(vote.id)
-    .update(newVote)
-    .run()
+    .replace(
+      r.row
+        .merge({
+          ...vote,
+          pendingValidation: false,
+          updatedAt: r.now()
+        })
+        .without('notYetValidatedGoalDescriptors')
+    )
 }
 
 async function pushCandidateGoalsForCycle(vote) {

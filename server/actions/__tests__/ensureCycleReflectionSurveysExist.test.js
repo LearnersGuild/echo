@@ -116,22 +116,28 @@ describe(testContext(__filename), function () {
   describe('ensureRetrospectiveSurveysExist', function () {
     beforeEach(async function () {
       this.cycle = await factory.create('cycle')
-      this.players = await factory.createMany('player', 8, {chapterId: this.cycle.chapterId})
-      this.projects = await Promise.all(Array.from(Array(2).keys()).map(i => {
-        return factory.create('project', {
-          chapterId: this.cycle.chapterId,
-          cycleId: this.cycle.id,
-          playerIds: this.players.slice(i * 4, i * 4 + 4).map(p => p.id),
-        })
-      }))
+      this.createPlayersAndProjects = async numPlayersPerProject => {
+        const numProjects = Math.min(numPlayersPerProject, 2)
+        const numPlayersTotal = numProjects * numPlayersPerProject
+        this.players = await factory.createMany('player', numPlayersTotal, {chapterId: this.cycle.chapterId})
+        this.projects = await Promise.all(Array.from(Array(numProjects).keys()).map(i => {
+          return factory.create('project', {
+            chapterId: this.cycle.chapterId,
+            cycleId: this.cycle.id,
+            playerIds: this.players
+              .slice(i * numPlayersPerProject, i * numPlayersPerProject + numPlayersPerProject)
+              .map(p => p.id),
+          })
+        }))
+      }
     })
 
     describe('when there is a restrospective surveyBlueprint with questions', function () {
       beforeEach(async function () {
-        this.teamQuestions = await factory.createMany('question', {subjectType: 'team'}, 2)
-        this.playerQuestions = await factory.createMany('question', {subjectType: 'player'}, 2)
-        this.projectQuestions = await factory.createMany('question', {responseType: 'integer', subjectType: 'project'}, 2)
-        this.questions = this.teamQuestions.concat(this.playerQuestions).concat(this.projectQuestions)
+        const teamQuestions = [await factory.create('question', {responseType: 'relativeContribution', subjectType: 'team'})]
+        const playerQuestions = await factory.createMany('question', {responseType: 'likert7Agreement', subjectType: 'player'}, 2)
+        const projectQuestions = await factory.createMany('question', {responseType: 'integer', subjectType: 'project'}, 2)
+        this.questions = teamQuestions.concat(playerQuestions).concat(projectQuestions)
         this.surveyBlueprint = await factory.create('surveyBlueprint', {
           descriptor: RETROSPECTIVE_DESCRIPTOR,
           defaultQuestionRefs: this.questions.map(q => ({questionId: q.id}))
@@ -139,40 +145,21 @@ describe(testContext(__filename), function () {
       })
 
       it('creates a survey for each project team with all of the default retro questions', async function () {
+        const numPlayersPerProject = 4
+        await this.createPlayersAndProjects(numPlayersPerProject)
+
         await ensureRetrospectiveSurveysExist(this.cycle)
 
-        const surveys = await r.table('surveys').run()
-        expect(surveys).to.have.length(this.projects.length)
+        await _itBuildsTheSurveyProperly(this.projects, this.questions)
+      })
 
-        const updatedProjects = await projectsTable.getAll(...this.projects.map(p => p.id))
-        updatedProjects.forEach(project => {
-          const {playerIds, retrospectiveSurveyId} = project
+      it('ignores questions with a `responseType` of `relativeContribution` for single-player teams', async function () {
+        const numPlayersPerProject = 1
+        await this.createPlayersAndProjects(numPlayersPerProject)
 
-          const survey = surveys.find(({id}) => id === retrospectiveSurveyId)
-          expect(survey).to.exist
+        await ensureRetrospectiveSurveysExist(this.cycle)
 
-          const questionIds = this.questions.map(({id}) => id)
-          const surveyRefIds = survey.questionRefs.map(({questionId}) => questionId)
-
-          const refOffsets = surveyRefIds.map(refId => questionIds.indexOf(refId))
-          expect(refOffsets).to.deep.equal(refOffsets.sort())
-
-          expectSetEquality(questionIds, surveyRefIds)
-
-          this.teamQuestions.forEach(question => {
-            const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
-            expect(refs).to.have.length(1)
-            expect(refs[0].subjectIds.sort()).to.deep.eq(playerIds.sort())
-          })
-
-          const compareFirstElement = ([a], [b]) => a < b ? -1 : 1
-          this.playerQuestions.forEach(question => {
-            const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
-            expect(refs).to.have.length(playerIds.length)
-            expect(refs.map(ref => ref.subjectIds).sort(compareFirstElement))
-             .to.deep.eq(playerIds.sort().map(id => [id]))
-          })
-        })
+        await _itBuildsTheSurveyProperly(this.projects, this.questions, {shouldIncludeRelativeContribution: false})
       })
 
       describe('when there are other projects not in this cycle', function () {
@@ -190,6 +177,8 @@ describe(testContext(__filename), function () {
       })
 
       it('creates any missing surveys when run multiple times', async function () {
+        const numPlayersPerProject = 4
+        await this.createPlayersAndProjects(numPlayersPerProject)
         await ensureRetrospectiveSurveysExist(this.cycle)
         const firstProject = await findProjects({chapterId: this.cycle.chapterId, cycleId: this.cycle.id}).nth(0)
         const {retrospectiveSurveyId} = firstProject
@@ -203,9 +192,75 @@ describe(testContext(__filename), function () {
     })
 
     describe('when there is no retrospective surveyBlueprint', function () {
-      it('rejects the promise', function () {
+      it('rejects the promise', async function () {
+        const numPlayersPerProject = 4
+        await this.createPlayersAndProjects(numPlayersPerProject)
         return expect(ensureRetrospectiveSurveysExist(this.cycle)).to.be.rejected
       })
     })
   })
 })
+
+async function _itBuildsTheSurveyProperly(projects, questions, opts = null) {
+  const options = opts || {shouldIncludeRelativeContribution: true}
+
+  const tqFilter = options.shouldIncludeRelativeContribution ?
+    question => question.subjectType === 'team' :
+    question => question.subjectType === 'team' && question.responseType !== 'relativeContribution'
+  const teamQuestions = questions.filter(tqFilter)
+  const playerQuestions = questions.filter(_ => _.subjectType === 'player')
+  const projectQuestions = questions.filter(_ => _.subjectType === 'project')
+  const rcQuestions = questions.filter(_ => _.responseType === 'relativeContribution')
+
+  const surveys = await r.table('surveys').run()
+  expect(surveys).to.have.length(projects.length)
+
+  const updatedProjects = await projectsTable.getAll(...projects.map(p => p.id))
+  updatedProjects.forEach(project => {
+    const {playerIds, retrospectiveSurveyId, id: projectId} = project
+
+    const survey = surveys.find(({id}) => id === retrospectiveSurveyId)
+    expect(survey).to.exist
+
+    let questionIds = questions.map(({id}) => id)
+    questionIds = options.shouldIncludeRelativeContribution ?
+      questionIds :
+      questionIds.filter(questionId => !rcQuestions.find(rcQuestion => rcQuestion.id === questionId))
+
+    const surveyRefIds = survey.questionRefs.map(({questionId}) => questionId)
+
+    const refOffsets = surveyRefIds.map(refId => questionIds.indexOf(refId))
+    expect(refOffsets).to.deep.equal(refOffsets.sort())
+
+    expectSetEquality(questionIds, surveyRefIds)
+
+    teamQuestions.forEach(question => {
+      const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
+      expect(refs).to.have.length(1)
+      expect(refs[0].subjectIds.sort()).to.deep.eq(playerIds.sort())
+    })
+
+    const compareFirstElement = ([a], [b]) => a < b ? -1 : 1
+    playerQuestions.forEach(question => {
+      const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
+      expect(refs).to.have.length(playerIds.length)
+      expect(refs.map(ref => ref.subjectIds).sort(compareFirstElement))
+       .to.deep.eq(playerIds.sort().map(id => [id]))
+    })
+
+    projectQuestions.forEach(question => {
+      const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
+      expect(refs).to.have.length(1)
+      expect(refs[0].subjectIds.sort()).to.deep.eq([projectId])
+    })
+
+    rcQuestions.forEach(question => {
+      const refs = survey.questionRefs.filter(ref => ref.questionId === question.id)
+      const expectedNumRCQuestions = options.shouldIncludeRelativeContribution ? 1 : 0
+      expect(refs).to.have.length(expectedNumRCQuestions)
+      if (expectedNumRCQuestions > 0) {
+        expect(refs[0].subjectIds.sort()).to.deep.eq(playerIds.sort())
+      }
+    })
+  })
+}

@@ -49,6 +49,12 @@ function projectSurveyExists(project, surveyDescriptor) {
 }
 
 function buildSurveyQuestionRefs(project, surveyDescriptor) {
+  const selectApplicableQuestions = questions => (
+    project.playerIds.length !== 1 ?
+      questions :
+      questions.filter(question => question.responseType !== 'relativeContribution')
+  )
+
   return getSurveyBlueprintByDescriptor(surveyDescriptor)
     .then(surveyBlueprint => {
       const questionRefDefaults = surveyBlueprint.defaultQuestionRefs
@@ -61,6 +67,7 @@ function buildSurveyQuestionRefs(project, surveyDescriptor) {
         .reduce((obj, next) => Object.assign({}, obj, {[next.questionId]: next}), {})
 
       return getActiveQuestionsByIds(questionRefDefaults.map(({questionId}) => questionId))
+        .then(selectApplicableQuestions)
         .then(questions => questions.sort((a, b) => getOffset(a.id) - getOffset(b.id)))
         .then(questions =>
           mapQuestionsToQuestionRefs(questions, project, questionRefDefaultsById, surveyDescriptor)

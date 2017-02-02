@@ -59,7 +59,7 @@
   },
   "homepage": "https://github.com/LearnersGuild/game#readme",
   "dependencies": {
-    "@learnersguild/idm-jwt-auth": "^1.2.1",
+    "@learnersguild/idm-jwt-auth": "^2.0.1",
     "animal-id": "0.0.1",
     "auto-loader": "^0.2.0",
     "autoprefixer": "^6.5.3",

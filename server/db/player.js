@@ -61,8 +61,10 @@ async function _updateWeightedAverages(player) {
   return update({id: player.id, stats: {weightedAverages}})
 }
 
+const MAX_RECENT_PROJECTS_TO_CONSIDER = 100
+const MAX_CYCLES_IN_WEIGHTED_AVERAGE = 6
 async function _computeWeightedAverages(player) {
-  const recentProjectIds = await getRecentProjectIds(player, 6)
+  const recentProjectIds = await getRecentProjectIds(player, MAX_RECENT_PROJECTS_TO_CONSIDER)
   const recentProjectStats = recentProjectIds.map(id => player.stats.projects[id])
   const recentStatValues = recentProjectStats.reduce((result, next) => {
     for (const [k, v] of Object.entries(next)) {
@@ -76,7 +78,7 @@ async function _computeWeightedAverages(player) {
 
   const weightedAverages = {}
   for (const [stat, values] of Object.entries(recentStatValues)) {
-    weightedAverages[stat] = avg(values)
+    weightedAverages[stat] = avg(values.slice(0, MAX_CYCLES_IN_WEIGHTED_AVERAGE))
   }
 
   return weightedAverages

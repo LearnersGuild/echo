@@ -13,8 +13,10 @@ export function findVotesForCycle(cycleId, filters) {
 }
 
 export function findVotesForPool(poolId, filters) {
+  const voteIsValid = vote => vote.hasFields('goals').and(vote('goals').count().gt(0))
   return votesTable
     .getAll(poolId, {index: 'poolId'})
+    .filter(voteIsValid)
     .filter(filters || {})
 }
 

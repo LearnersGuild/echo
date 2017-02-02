@@ -100,11 +100,11 @@ function _createVotes({chapters, cycleLists, playerLists}) {
 }
 
 function _createVotesForCycle(cycle, players) {
-  const votes = players.map(player => ({
+  const voteAttrs = players.map(player => ({
     cycleId: cycle.id,
-    playerId: player.id
+    playerId: player.id,
   }))
-  return factory.createMany('vote', votes)
+  return factory.createMany('cycle vote', voteAttrs)
 }
 
 function _votesWithCycleId() {

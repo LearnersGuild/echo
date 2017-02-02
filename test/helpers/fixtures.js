@@ -32,8 +32,8 @@ export const useFixture = {
   },
   buildSurvey() {
     beforeEach(function () {
-      this.buildSurvey = async function (questionRefs, type = 'retrospective') {
-        this.project = await factory.create('project')
+      this.buildSurvey = async function (questionRefs, type = 'retrospective', project = null) {
+        this.project = project || await factory.create('project')
         this.cycleId = this.project.cycleId
         if (!questionRefs) {
           this.surveyQuestion = await factory.create('question', {
