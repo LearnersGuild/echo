@@ -9,7 +9,7 @@ import {Flex} from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {objectValuesAreAllNull} from 'src/common/util'
-import {computePlayerLevel} from '../server/util/stats'
+import {computePlayerLevel} from 'src/server/util'
 
 import styles from './index.scss'
 import theme from './theme.scss'
@@ -133,19 +133,23 @@ class UserDetail extends Component {
   }
 
   // First idea  //
-  renderThresholdStats(stats) {
-    const userProjectThreshold = s
-      return !objectValuesAreAllNull(stats) ? (
-        <div>
-          <div className="inRed">In The Red :yes</div>
-          <div>{userProjectThreshold(STAT_DESCRIPTORS.TEAM_PLAY)}%</div>
-          <div>{userProjectThreshold(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION)}%</div>
-          <div>{userProjectThreshold(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
-          <div>{userProjectThreshold(STAT_DESCRIPTORS.ESTIMATION_ACCURACY)}%</div>
-        </div>
-      ) : <div/>
-    }
-  }
+  // renderThresholdStats(stats) {
+  //   const {user} = this.props
+  //   const playerLevel = computePlayerLevel(user)  //not sure if user is the same as player, need to log and compare details.
+  //   const inTheRedStats = playerLevel[inTheRedStats]
+  //   return inTheRedStats.length === 0 ? (
+  //     <div>
+  //       <div className="inGreen">You're level ${playerLevel.level}.</div>
+  //     </div>) 
+  //   : (
+  //     <div>
+  //       <div className="inRed">You're in the <span>Red</span>!</div>
+  //       <div>
+  //         //needs in the red stats w spread operator ???
+  //       </div>
+  //     </div>
+  //   ) 
+  // }
 
   renderTabs() {
     return (
