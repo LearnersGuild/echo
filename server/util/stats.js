@@ -228,19 +228,19 @@ export async function computePlayerLevel(player) {
   const summariesWithOverallStats = addPointInTimeOverallStats(summaries)
   const levelsDescending = LEVELS.slice().reverse()
   const recentOverallStats = summariesWithOverallStats.map(_ => _.overallStats).slice(0, 2)
-  console.log('=========================\n', recentOverallStats)
 
-  let highestLevel = []
+  let highestLevel = 0
   for (const pointInTimeStats of recentOverallStats) {
     for (const {level, requirements} of levelsDescending) {
       const playerMeetsRequirements = Object.keys(requirements).every(stat => pointInTimeStats[stat] >= requirements[stat])
       if (playerMeetsRequirements) {
-        highestLevel.push(level)
+        // highestLevel.push(level)
+        highestLevel = level
         break
       }
     }
   }
-  console.log('this is the highest level', highestLevel)
+  // console.log('this is the highest level', highestLevel)
   return highestLevel
 }
 

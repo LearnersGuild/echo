@@ -346,11 +346,11 @@ describe(testContext(__filename), function () {
       ])
       const [player, teammate] = await factory.createMany('player', 2)
       const playerIds = [player.id, teammate.id]
-      await mockIdmUsersById(playerIds)
+      await mockIdmUsersById(playerIds, null, {times: 10})
 
       const projects = await factory.createMany('project', [
-        {cycleId: cycles[0].id, playerIds},
-        {cycleId: cycles[1].id, playerIds},
+        {cycleId: cycles[0].id, playerIds, createdAt: new Date('Mon, 20 Dec 1995 13:30:00 GMT')},
+        {cycleId: cycles[1].id, playerIds, createdAt: new Date('Mon, 25 Dec 1995 13:30:00 GMT')},
       ])
 
       player.stats = {
@@ -381,9 +381,8 @@ describe(testContext(__filename), function () {
           },
         }
       }
-      // expect(await computePlayerLevel(player)).to.equal(2)
+      expect(await computePlayerLevel(player)).to.equal(2)
 
-      // await mockIdmUsersById(playerIds)
       const nextTolastWeekProject = player.stats.projects[projects[1].id]
 
       nextTolastWeekProject.tp = 60
@@ -391,17 +390,17 @@ describe(testContext(__filename), function () {
       nextTolastWeekProject.th = 60
       nextTolastWeekProject.estimationAccuracy = 88
       nextTolastWeekProject.xp = 148
+
       expect(await computePlayerLevel(player)).to.equal(2)
 
-      // await mockIdmUsersById(playerIds)
-      //
-      // const lastWeekProject = player.stats.projects[projects[0].id]
-      // lastWeekProject.tp = 90
-      // lastWeekProject.cc = 90
-      // lastWeekProject.th = 90
-      // lastWeekProject.estimationAccuracy = 93
-      // lastWeekProject.xp = 252
-      // expect(await computePlayerLevel(player)).to.equal(2)
+      const lastWeekProject = player.stats.projects[projects[0].id]
+      lastWeekProject.elo.rating = 1021
+      lastWeekProject.tp = 90
+      lastWeekProject.cc = 90
+      lastWeekProject.th = 90
+      lastWeekProject.estimationAccuracy = 93
+      lastWeekProject.xp = 1252
+      expect(await computePlayerLevel(player)).to.equal(3)
     })
 
     it('returns the correct level for a given player', function () {
