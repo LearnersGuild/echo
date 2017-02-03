@@ -9,6 +9,7 @@ import {Flex} from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {objectValuesAreAllNull} from 'src/common/util'
+import addPointInTimeOverallStats from 'src/common/util/addPointInTimeOverallStats'
 
 import styles from './index.scss'
 import theme from './theme.scss'
@@ -118,9 +119,31 @@ class UserDetail extends Component {
 
   renderProjects() {
     const {userProjectSummaries} = this.props
-    const projectSummaries = (userProjectSummaries || []).map((projectSummary, i) => (
-      <UserProjectSummary key={i} {...projectSummary}/>
-    ))
+    const summariesWithOverallStats = addPointInTimeOverallStats(userProjectSummaries || [])
+    const projectStatNames = [
+      STAT_DESCRIPTORS.RATING_ELO,
+      STAT_DESCRIPTORS.EXPERIENCE_POINTS,
+      STAT_DESCRIPTORS.CULTURE_CONTRIBUTION,
+      STAT_DESCRIPTORS.TEAM_PLAY,
+      STAT_DESCRIPTORS.TECHNICAL_HEALTH,
+      STAT_DESCRIPTORS.ESTIMATION_ACCURACY,
+      STAT_DESCRIPTORS.ESTIMATION_BIAS,
+      STAT_DESCRIPTORS.CHALLENGE,
+      STAT_DESCRIPTORS.NUM_PROJECTS_REVIEWED,
+    ]
+    const projectSummaries = summariesWithOverallStats.map((summary, i) => {
+      const {overallStats} = summary
+
+      const statsDifference = {}
+      if (i < summariesWithOverallStats.length - 1) {
+        const getDiff = stat => overallStats[stat] - summariesWithOverallStats[i + 1].overallStats[stat]
+        projectStatNames.forEach(stat => {
+          statsDifference[stat] = getDiff(stat)
+        })
+      }
+
+      return <UserProjectSummary key={i} {...summary} difference={statsDifference}/>
+    })
     return (
       <div>
         {projectSummaries.length > 0 ?
