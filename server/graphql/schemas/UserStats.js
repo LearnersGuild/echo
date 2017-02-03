@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLFloat} from 'graphql'
+import {GraphQLInt, GraphQLFloat, GraphQLString, GraphQLList} from 'graphql'
 import {GraphQLObjectType} from 'graphql/type'
 
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
@@ -9,6 +9,7 @@ export default new GraphQLObjectType({
   fields: () => {
     return {
       [STAT_DESCRIPTORS.LEVEL]: {type: GraphQLInt, description: 'Level'},
+      inTheRedStats: {type: new GraphQLList(GraphQLString), description: 'Player\'s Stats that are in the Red'},
       [STAT_DESCRIPTORS.RATING_ELO]: {type: GraphQLInt, description: 'Elo rating'},
       [STAT_DESCRIPTORS.EXPERIENCE_POINTS]: {type: GraphQLFloat, description: 'Experience points'},
       [STAT_DESCRIPTORS.CULTURE_CONTRIBUTION]: {type: GraphQLFloat, description: 'Culture contribution'},

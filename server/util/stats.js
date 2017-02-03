@@ -224,6 +224,10 @@ export const LEVELS = [
 /* eslint-enable key-spacing */
 
 export async function computePlayerLevel(player) {
+  return computePlayerDetails(player).level
+}
+
+export async function computePlayerLevelDetails(player) {
   const summaries = await findUserProjectSummaries(player)
   const summariesWithOverallStats = addPointInTimeOverallStats(summaries)
   const recentOverallStats = summariesWithOverallStats.map(_ => _.overallStats).slice(0, 2)

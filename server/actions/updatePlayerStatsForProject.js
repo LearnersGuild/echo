@@ -260,7 +260,7 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
     stats.abc = aggregateBuildCycles(teamPlayersById.size)
     stats.th = technicalHealth(scores.th)
     stats.cc = cultureContribution(scores.cc)
-    stats.computePlayerLevel  = computePlayerLevel(player)
+    stats.computePlayerLevel  = await computePlayerLevel(player)
     stats.cultureContributionStructure = cultureContributionStructure(scores.cultureContributionStructure)
     stats.cultureContributionSafety = cultureContributionSafety(scores.cultureContributionSafety)
     stats.cultureContributionTruth = cultureContributionTruth(scores.cultureContributionTruth)
