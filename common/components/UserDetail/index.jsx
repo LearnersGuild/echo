@@ -9,7 +9,6 @@ import {Flex} from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {objectValuesAreAllNull} from 'src/common/util'
-import {computePlayerLevel} from 'src/server/util/stats'
 
 import styles from './index.scss'
 import theme from './theme.scss'
@@ -135,11 +134,11 @@ class UserDetail extends Component {
 
   renderThresholdStats() {
     // this isn't quite written right, but it's on it's way.
-    const {user} = this.props
-    const playerLevel = computePlayerLevel(user).then(playerLevel => playerLevel)
-        // ^^not sure if user is the same as player, need to log and compare details.
+    const {stats, computePlayerLevel} = this.props
+    const playerLevel = (computePlayerLevel).then(playerLevel => playerLevel)
+    console.log('this is the player level props', playerLevel)
+    //     // ^^not sure if user is the same as player, need to log and compare details.
     const {inTheRedStats} = playerLevel
-
     const redStatList = intheRedStats.map(stat => <li key={stat}>{stat}</li>
 
     return (inTheRedStats.length === 0) ? (
@@ -151,7 +150,7 @@ class UserDetail extends Component {
         <div className="inRed">You're in the <span>Red</span>!</div>
         <ul>{redStatList}</ul>
       </div>
-    ) 
+    )
   }
 
   renderTabs() {
