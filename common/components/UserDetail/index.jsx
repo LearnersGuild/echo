@@ -133,26 +133,23 @@ class UserDetail extends Component {
     )
   }
 
-  renderThresholdStats(stats) {
+  renderThresholdStats() {
+    // this isn't quite written right, but it's on it's way.
     const {user} = this.props
     const playerLevel = computePlayerLevel(user).then(playerLevel => playerLevel)
         // ^^not sure if user is the same as player, need to log and compare details.
     const {inTheRedStats} = playerLevel
 
-    const redStatList = intheRedStats.map(stat => 
-        <li key={stat}>{stat}</li>
-      )
+    const redStatList = intheRedStats.map(stat => <li key={stat}>{stat}</li>
 
-    return inTheRedStats.length === 0 ? (
+    return (inTheRedStats.length === 0) ? (
       <div>
         <div className="inGreen">You're level ${playerLevel.level}.</div>
       </div>
       ) : (
       <div>
         <div className="inRed">You're in the <span>Red</span>!</div>
-        <ul>
-          {redStatList}
-        </ul>
+        <ul>{redStatList}</ul>
       </div>
     ) 
   }
