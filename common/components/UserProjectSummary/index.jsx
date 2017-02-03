@@ -42,7 +42,7 @@ export default class UserProjectSummary extends Component {
         </Flex>
         <ProjectStatColumn className={styles.column} columnName={'Project'} columnStats={projectStats}/>
         <ProjectStatColumn className={styles.column} columnName={'Total'} columnStats={overallStats}/>
-        <ProjectStatColumn className={styles.column} columnType={'StatDifference'} columnStats={statsDifference}/>
+        <ProjectStatColumn className={styles.column} columnType={'StatDifference'} columnStats={statsDifference} overallStats={overallStats}/>
       </Flex>,
       <Flex key="teamPlay" fill>
         <Flex className={styles.column} column>

@@ -8,8 +8,8 @@ import {userStatsPropType} from 'src/common/components/UserProjectSummary'
 const BLANK = '--'
 const renderStat = (stat, userStats) => Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
 
-const ProjectStatColumn = props => {
-  const {columnType, className, columnName, columnStats} = props
+export default function ProjectStatColumn(props) {
+  const {columnType, className, columnName, columnStats, overallStats} = props
 
   return (
     <Flex className={(className)} column>
@@ -26,12 +26,12 @@ const ProjectStatColumn = props => {
           {name: STAT_DESCRIPTORS.TEAM_PLAY, suffix: '%'},
           {name: STAT_DESCRIPTORS.TECHNICAL_HEALTH, suffix: '%'},
           {name: STAT_DESCRIPTORS.ESTIMATION_ACCURACY, suffix: '%'},
-          {name: STAT_DESCRIPTORS.ESTIMATION_BIAS, suffix: '%'},
-          {name: STAT_DESCRIPTORS.CHALLENGE, suffix: ''},
-        ]).map(({name, suffix}, i) => {
+          {name: STAT_DESCRIPTORS.ESTIMATION_BIAS, suffix: '%', target: 0},
+          {name: STAT_DESCRIPTORS.CHALLENGE, suffix: '', target: 7},
+        ]).map(({name, suffix, target}, i) => {
           if (columnType === 'StatDifference') {
             return columnStats[name] ?
-              <StatDifference key={i} statDiff={columnStats[name]}/> :
+              <StatDifference key={i} statDiff={columnStats[name]} target={target} overallStat={overallStats[name]}/> :
               <br key={i}/>
           }
           return (<div key={i}>{renderStat(name, columnStats)}{suffix}</div>)
@@ -45,7 +45,6 @@ ProjectStatColumn.propTypes = {
   columnType: PropTypes.string,
   className: PropTypes.string,
   columnName: PropTypes.string,
-  columnStats: PropTypes.shape(userStatsPropType)
+  columnStats: PropTypes.shape(userStatsPropType),
+  overallStats: PropTypes.shape(userStatsPropType)
 }
-
-export default ProjectStatColumn

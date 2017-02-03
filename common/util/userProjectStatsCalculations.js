@@ -30,7 +30,7 @@ const projectStatNames = [
   CHALLENGE
 ]
 
-export function addOverallStatsAndDeltas(userProjectSummaries) {
+export function mergeOverallStatsAndDeltas(userProjectSummaries) {
   return addDeltaToStats(addPointInTimeOverallStats(userProjectSummaries))
 }
 

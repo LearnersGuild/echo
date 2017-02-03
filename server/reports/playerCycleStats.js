@@ -5,7 +5,7 @@ import config from 'src/config'
 import graphQLFetcher from 'src/server/util/graphql'
 import {Chapter, Player} from 'src/server/services/dataService'
 import getUserSummary from 'src/common/actions/queries/getUserSummary'
-import {addPointInTimeOverallStats} from 'src/common/util/addPointInTimeOverallStats'
+import {addPointInTimeOverallStats} from 'src/common/util/userProjectStatsCalculations'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 const {

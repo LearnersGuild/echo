@@ -7,7 +7,7 @@ import {
   _getSumClosure,
   addPointInTimeOverallStats,
   addDeltaToStats,
-  addOverallStatsAndDeltas
+  mergeOverallStatsAndDeltas
 } from 'src/common/util/userProjectStatsCalculations'
 
 const projectSummaries = [
@@ -98,9 +98,9 @@ const projectStatNames = [
 ]
 
 describe(testContext(__filename), () => {
-  describe('addOverallStatsAndDeltas()', () => {
+  describe('mergeOverallStatsAndDeltas()', () => {
     it('adds both overallStats and deltas to project summaries', () => {
-      const combinedStats = addOverallStatsAndDeltas(projectSummaries)
+      const combinedStats = mergeOverallStatsAndDeltas(projectSummaries)
 
       expect(combinedStats).to.be.an('array')
 
