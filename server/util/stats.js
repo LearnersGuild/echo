@@ -224,7 +224,7 @@ export const LEVELS = [
 /* eslint-enable key-spacing */
 
 export async function computePlayerLevel(player) {
-  return computePlayerDetails(player).level
+  return computePlayerLevelDetails(player).level
 }
 
 export async function computePlayerLevelDetails(player) {
