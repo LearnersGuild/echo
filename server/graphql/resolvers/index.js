@@ -18,7 +18,7 @@ import {Chapter, Cycle, Project, Survey} from 'src/server/services/dataService'
 import {handleError} from 'src/server/graphql/util'
 import {BadInputError} from 'src/server/errors'
 import {mapById} from 'src/server/util'
-import {computePlayerLevel} from 'src/server/util/stats'
+import {computePlayerLevel, computePlayerLevelDetails} from 'src/server/util/stats'
 
 const r = connect()
 
