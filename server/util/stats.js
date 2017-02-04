@@ -4,7 +4,7 @@ import elo from 'elo-rank'
 import {roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {findUserProjectSummaries} from 'src/server/actions/findUserProjectSummaries'
-import addPointInTimeOverallStats from 'src/common/util/addPointInTimeOverallStats'
+import {addPointInTimeOverallStats}from 'src/common/util/addPointInTimeOverallStats'
 import {avg, toPercent} from './index'
 
 export const LIKERT_SCORE_NA = 0
@@ -234,6 +234,8 @@ export async function computePlayerLevelDetails(player) {
 
   const recentLevels = recentOverallStats.map(_computeLevelForOverallStats)
   const level = Math.max(...recentLevels)
+  console.log("this is a level??", level)
+  console.log("recent levels?", recentLevels)
 
   return {
     level,

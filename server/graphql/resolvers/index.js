@@ -156,8 +156,9 @@ export async function resolveUserStats(user, args, {rootValue: {currentUser}}) {
   const userStats = user.stats || {}
   const userAverageStats = userStats.weightedAverages || {}
   const levelDetails = await computePlayerLevelDetails(user)
+  const computeLevel = await computePlayerLevel(user)
   return {
-    [STAT_DESCRIPTORS.LEVEL]: levelDetails.level,
+    [STAT_DESCRIPTORS.LEVEL]: computePlayerLevel.level,
     inTheRedStats: levelDetails.inTheRedStats,
     [STAT_DESCRIPTORS.RATING_ELO]: (userStats.elo || {}).rating,
     [STAT_DESCRIPTORS.EXPERIENCE_POINTS]: roundDecimal(userStats.xp) || 0,
