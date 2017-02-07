@@ -66,19 +66,27 @@ export function start() {
   // catch-all error handler
   app.use((err, req, res, next) => {
     const serverError = formatServerError(err)
-    const responseBody = `<h1>${serverError.statusCode} - ${serverError.type}</h1><p>${serverError.message}</p>`
 
     if (serverError.statusCode >= 500) {
       sentry.captureException(err)
 
-      const realError = serverError.originalError || serverError
       console.error(`${serverError.name || 'UNHANDLED ERROR'}:
         method: ${req.method.toUpperCase()} ${req.originalUrl}
         params: ${JSON.stringify(req.params)}
         error: ${config.server.secure ? realError.toString() : realError.stack}`)
     }
 
-    res.status(serverError.statusCode).send(responseBody)
+    res.status(serverError.statusCode)
+    if (req.accepts('json')) {
+      const errors = [serverError]
+      if (serverError.originalError) {
+        errors.push(serverError.originalError)
+      }
+      return res.json({errors})
+    }
+
+    const responseBody = `<h1>${serverError.statusCode} - ${serverError.type}</h1><p>${serverError.message}</p>`
+    res.send(responseBody)
   })
 
   // socket cluster
