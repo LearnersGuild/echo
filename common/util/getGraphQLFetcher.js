@@ -1,7 +1,7 @@
 /* global __SERVER__ */
 import fetch from 'isomorphic-fetch'
 
-import {updateJWT} from 'src/common/actions/auth'
+import {updateJWT, unauthenticatedError} from 'src/common/actions/auth'
 import {fetchDataRequest, fetchDataSuccess, fetchDataFailure} from 'src/common/actions/app'
 import handleGraphQLError from 'src/common/util/handleGraphQLError'
 
@@ -18,6 +18,7 @@ export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASE_URL
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
       body: JSON.stringify(graphQLParams),
     }
@@ -30,6 +31,9 @@ export default function getGraphQLFetcher(dispatch, auth, baseUrl = APP_BASE_URL
     return fetch(`${baseUrl}/graphql`, options)
       .then(resp => {
         if (!resp.ok) {
+          if (resp.status === 401) {
+            dispatch(unauthenticatedError())
+          }
           return resp.json().then(errorResponse => {
             throw errorResponse
           })

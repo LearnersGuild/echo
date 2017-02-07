@@ -3,6 +3,7 @@ import keyMirror from 'keymirror'
 export default keyMirror({
   UPDATE_JWT: null,
   AUTHORIZATION_ERROR: null,
+  UNAUTHENTICATED_ERROR: null,
   DISMISS_ERROR: null,
 
   APP_SHOW_LOADING: null,
