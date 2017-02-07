@@ -3,6 +3,8 @@ import elo from 'elo-rank'
 
 import {roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
+import {findUserProjectSummaries} from 'src/server/actions/findUserProjectSummaries'
+import {addPointInTimeOverallStats}from 'src/common/util/addPointInTimeOverallStats'
 import {avg, toPercent} from './index'
 
 export const LIKERT_SCORE_NA = 0
@@ -221,18 +223,40 @@ export const LEVELS = [
 ]
 /* eslint-enable key-spacing */
 
-export function computePlayerLevel(player) {
-  const stats = _playerLevelStats(player)
+export async function computePlayerLevel(player) {
+  return computePlayerLevelDetails(player).level
+}
 
+export async function computePlayerLevelDetails(player) {
+  const summaries = await findUserProjectSummaries(player)
+  const summariesWithOverallStats = addPointInTimeOverallStats(summaries)
+  const recentOverallStats = summariesWithOverallStats.map(_ => _.overallStats).slice(0, 2)
+
+  const recentLevels = recentOverallStats.map(_computeLevelForOverallStats)
+  const level = Math.max(...recentLevels)
+  console.log("this is a level??", level)
+  console.log("recent levels?", recentLevels)
+
+  return {
+    level,
+    inTheRedStats: _getInTheRedStats(recentOverallStats[0], level),
+  }
+}
+
+function _computeLevelForOverallStats(pointInTimeStats) {
   const levelsDescending = LEVELS.slice().reverse()
   for (const {level, requirements} of levelsDescending) {
-    const playerMeetsRequirements = Object.keys(requirements).every(stat => stats[stat] >= requirements[stat])
+    const playerMeetsRequirements = Object.keys(requirements).every(stat => pointInTimeStats[stat] >= requirements[stat])
     if (playerMeetsRequirements) {
       return level
     }
   }
+}
 
-  throw new Error(`Could not place this player in ANY level! ${player.id}`)
+function _getInTheRedStats(stats, level) {
+  const {requirements} = LEVELS[level]
+  const inTheRedStats = Object.keys(requirements).filter(stat => stats[stat] < requirements[stat])
+  return inTheRedStats
 }
 
 export const floatStatFormatter = value => parseFloat(Number(value).toFixed(2))
@@ -249,18 +273,18 @@ export function getPlayerStat(player, statName, formatter = floatStatFormatter) 
   return formatter(statValue)
 }
 
-function _playerLevelStats(player) {
-/* eslint-disable key-spacing */
-  return {
-    [RATING_ELO]:           getPlayerStat(player, 'elo.rating', intStatFormatter),
-    [EXPERIENCE_POINTS]:    getPlayerStat(player, 'xp', intStatFormatter),
-    [CULTURE_CONTRIBUTION]: getPlayerStat(player, 'weightedAverages.cc'),
-    [TEAM_PLAY]:            getPlayerStat(player, 'weightedAverages.tp'),
-    [TECHNICAL_HEALTH]:     getPlayerStat(player, 'weightedAverages.th'),
-    [ESTIMATION_ACCURACY]:  getPlayerStat(player, 'weightedAverages.estimationAccuracy')
-  }
-/* eslint-enable key-spacing */
-}
+// function _playerLevelStats(player) {
+// /* eslint-disable key-spacing */
+//   return {
+//     [RATING_ELO]:           getPlayerStat(player, 'elo.rating', intStatFormatter),
+//     [EXPERIENCE_POINTS]:    getPlayerStat(player, 'xp', intStatFormatter),
+//     [CULTURE_CONTRIBUTION]: getPlayerStat(player, 'weightedAverages.cc'),
+//     [TEAM_PLAY]:            getPlayerStat(player, 'weightedAverages.tp'),
+//     [TECHNICAL_HEALTH]:     getPlayerStat(player, 'weightedAverages.th'),
+//     [ESTIMATION_ACCURACY]:  getPlayerStat(player, 'weightedAverages.estimationAccuracy')
+//   }
+// /* eslint-enable key-spacing */
+// }
 
 function _validatePlayer(player) {
   if (!player) {

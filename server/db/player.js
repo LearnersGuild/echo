@@ -84,7 +84,7 @@ async function _computeWeightedAverages(player) {
   return weightedAverages
 }
 
-function getRecentProjectIds(player, count) {
+export function getRecentProjectIds(player, count) {
   const projectIds = Object.keys(player.stats.projects)
   return r.table('projects')
     .getAll(...projectIds)

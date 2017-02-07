@@ -12,6 +12,7 @@ import {avg, sum, mapById, safePushInt, toPairs} from 'src/server/util'
 import {userCan, roundDecimal} from 'src/common/util'
 import {
   aggregateBuildCycles,
+  computePlayerLevel,
   relativeContribution,
   expectedContribution,
   expectedContributionDelta,
@@ -72,8 +73,8 @@ async function _updateMultiPlayerProjectStats(project) {
   // compute all stats and initialize Elo rating
   const playerStatsConfigsById = await _getPlayersStatsConfig(adjustedProject.playerIds)
   const computeStats = _computeStatsClosure(adjustedProject, teamPlayersById, retroResponses, statsQuestions, playerStatsConfigsById)
-  const teamPlayersStats = Array.from(playerResponsesById.values())
-    .map(responses => computeStats(responses, statsQuestions))
+  const teamPlayersStats = await Promise.all(Array.from(playerResponsesById.values())
+    .map(responses => computeStats(responses, statsQuestions)))
 
   // compute updated Elo ratings and merge them in
   const teamPlayersStatsWithUpdatedEloRatings = _mergeEloRatings(teamPlayersStats, playerStatsConfigsById)
@@ -238,7 +239,7 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
 
   // create a stats-computation function based on a closure of the passed-in
   // parameters as well as some additional derived data
-  return (responses, statsQuestions) => {
+  return async (responses, statsQuestions) => {
     const playerId = responses[0].subjectId
     const player = teamPlayersById.get(playerId)
     const scores = _extractPlayerScores(statsQuestions, responses, playerId)
@@ -259,6 +260,7 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
     stats.abc = aggregateBuildCycles(teamPlayersById.size)
     stats.th = technicalHealth(scores.th)
     stats.cc = cultureContribution(scores.cc)
+    stats.computePlayerLevel = await computePlayerLevel(player)
     stats.cultureContributionStructure = cultureContributionStructure(scores.cultureContributionStructure)
     stats.cultureContributionSafety = cultureContributionSafety(scores.cultureContributionSafety)
     stats.cultureContributionTruth = cultureContributionTruth(scores.cultureContributionTruth)

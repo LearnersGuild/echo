@@ -18,7 +18,7 @@ import {Chapter, Cycle, Project, Survey} from 'src/server/services/dataService'
 import {handleError} from 'src/server/graphql/util'
 import {BadInputError} from 'src/server/errors'
 import {mapById} from 'src/server/util'
-import {computePlayerLevel} from 'src/server/util/stats'
+import {computePlayerLevel, computePlayerLevelDetails} from 'src/server/util/stats'
 
 const r = connect()
 
@@ -145,7 +145,7 @@ export async function resolveUser(source, {identifier}, {rootValue: {currentUser
   return user
 }
 
-export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
+export async function resolveUserStats(user, args, {rootValue: {currentUser}}) {
   if (user.id !== currentUser.id && !userCan(currentUser, 'viewUserStats')) {
     return null
   }
@@ -155,8 +155,11 @@ export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
 
   const userStats = user.stats || {}
   const userAverageStats = userStats.weightedAverages || {}
+  const levelDetails = await computePlayerLevelDetails(user)
+  const computeLevel = await computePlayerLevel(user)
   return {
-    [STAT_DESCRIPTORS.LEVEL]: computePlayerLevel(user),
+    [STAT_DESCRIPTORS.LEVEL]: computePlayerLevel.level,
+    inTheRedStats: levelDetails.inTheRedStats,
     [STAT_DESCRIPTORS.RATING_ELO]: (userStats.elo || {}).rating,
     [STAT_DESCRIPTORS.EXPERIENCE_POINTS]: roundDecimal(userStats.xp) || 0,
     [STAT_DESCRIPTORS.CULTURE_CONTRIBUTION]: roundDecimal(userAverageStats.cc),

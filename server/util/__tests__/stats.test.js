@@ -3,21 +3,24 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
 import {
   aggregateBuildCycles,
-  relativeContribution,
+  computePlayerLevel,
+  cultureContribution,
+  effectiveContributionCycles,
+  eloRatings,
   expectedContribution,
   expectedContributionDelta,
-  effectiveContributionCycles,
-  technicalHealth,
-  cultureContribution,
-  teamPlay,
-  scoreMargins,
-  eloRatings,
   experiencePoints,
-  computePlayerLevel,
+  floatStatFormatter,
   getPlayerStat,
   intStatFormatter,
-  floatStatFormatter,
+  relativeContribution,
+  scoreMargins,
+  teamPlay,
+  technicalHealth,
 } from 'src/server/util/stats'
+
+import factory from 'src/test/factories'
+import {mockIdmUsersById, withDBCleanup} from 'src/test/helpers'
 
 describe(testContext(__filename), function () {
   describe('aggregateBuildCycles()', function () {
@@ -323,6 +326,8 @@ describe(testContext(__filename), function () {
   })
 
   describe('computePlayerLevel()', function () {
+    withDBCleanup()
+
     it('throws an Exception if player stats are invalid', function () {
       const playerWithInvalidStats = {
         stats: {
@@ -334,7 +339,73 @@ describe(testContext(__filename), function () {
       expect(() => computePlayerLevel(playerWithInvalidStats)).to.throw
     })
 
-    it('returns the correct level for a given player', function () {
+    async function createProjectStats({lastWeek = {}, thisWeek = {}} = {}) {
+      const cycles = await factory.createMany('cycle', [
+        {cycleNumber: 1},
+        {cycleNumber: 2},
+      ])
+      const [player, teammate] = await factory.createMany('player', 2)
+      const playerIds = [player.id, teammate.id]
+      await mockIdmUsersById(playerIds, null, {times: 10})
+
+      const projects = await factory.createMany('project', [
+        {cycleId: cycles[0].id, playerIds, createdAt: new Date('Mon, 20 Dec 1995 13:30:00 GMT')},
+        {cycleId: cycles[1].id, playerIds, createdAt: new Date('Mon, 25 Dec 1995 13:30:00 GMT')},
+      ])
+
+      player.stats = {
+        elo: {rating: 900},
+        weightedAverages: {
+          estimationAccuracy: 91,
+          cc: 80,
+          th: 82,
+          tp: 80,
+        },
+        xp: 403,
+        projects: {
+          [projects[0].id]: {
+            elo: {rating: 991},
+            estimationAccuracy: 92,
+            cc: 81,
+            th: 81,
+            tp: 81,
+            xp: 151,
+            ...lastWeek
+          },
+          [projects[1].id]: {
+            elo: {rating: 991},
+            estimationAccuracy: 92,
+            cc: 81,
+            th: 81,
+            tp: 81,
+            xp: 151,
+            ...thisWeek,
+          },
+        }
+      }
+      return player
+    }
+
+    it('NEW returns the correct level for a given player', async function () {
+      const player = await createProjectStats()
+      const result = await computePlayerLevel(player)
+      expect(result).to.have.property('level', 2)
+    })
+
+    it('returns the correct level when a player is in the red', async function () {
+      const player = await createProjectStats({thisWeek: {cc: 70}})
+      const result = await computePlayerLevel(player)
+      expect(result).to.have.property('level', 2)
+      expect(result).to.have.property('inTheRedStats').deep.eq(['cultureContribution'])
+    })
+
+    it('returns the correct level when a player is improving', async function () {
+      const player = await createProjectStats({thisWeek: {cc: 98}, lastWeek: {cc: 70}})
+      const result = await computePlayerLevel(player)
+      expect(result).to.have.property('level', 2)
+    })
+
+    it.skip('returns the correct level for a given player', function () {
       const player = {
         stats: {
           elo: {rating: 900},
