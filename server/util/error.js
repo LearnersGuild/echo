@@ -26,6 +26,22 @@ export class LGInternalServerError extends Error {
   }
 }
 
+export class LGTokenExpiredError extends Error {
+  constructor(value) {
+    if (typeof value === 'string') {
+      super(value)
+    } else {
+      super()
+      this.message = 'Your authentication token has expired.'
+      if (value instanceof Error) {
+        this.originalError = value
+      }
+    }
+    this.name = 'LGTokenExpiredError'
+    this.statusCode = 401
+  }
+}
+
 export function formatServerError(origError) {
   const queryError = parseQueryError(origError)
 
@@ -37,6 +53,8 @@ export function formatServerError(origError) {
     return _internalServerError(origError)
   } else if (origError.name === 'BadRequestError') {
     return _badRequestError(origError)
+  } else if (origError.name === 'TokenExpiredError') {
+    return _tokenExpiredError(origError)
   } else if (!(origError instanceof GraphQLError)) {
     // any other non-graphql error masked as internal error
     return _internalServerError(origError)
@@ -51,6 +69,10 @@ function _badRequestError(origError) {
   error.message = origError.message
   error.originalError = origError
   return error
+}
+
+function _tokenExpiredError(origError) {
+  return new LGTokenExpiredError(origError)
 }
 
 function _internalServerError(origError) {
