@@ -27,6 +27,16 @@ describe.only(testContext(__filename), function () {
         const updatedSurvey = await Survey.get(this.survey.id)
         expect(updatedSurvey.unlockedFor).to.include(this.playerId)
       })
+
+      it('adds the player to the unlockedFor array only once', async function () {
+        await unlockRetroSurveyForUser(this.playerId, this.projectId)
+        await unlockRetroSurveyForUser(this.playerId, this.projectId)
+        const updatedSurvey = await Survey.get(this.survey.id)
+        const updatedSurveyOnce = updatedSurvey.unlockedFor.filter(id =>
+          id === this.playerId
+        ).length
+        expect(updatedSurveyOnce).to.eql(1)
+      })
     })
 
     context('when the survey has NOT been completed', function () {
@@ -54,6 +64,13 @@ describe.only(testContext(__filename), function () {
       })
 
       it('removes the player to the unlockedFor array', async function () {
+        await lockRetroSurveyForUser(this.playerId, this.projectId)
+        const updatedSurvey = await Survey.get(this.survey.id)
+        expect(updatedSurvey.unlockedFor).to.not.include(this.playerId)
+      })
+
+      it('does not throw an error if the survey is already locked', async function () {
+        await lockRetroSurveyForUser(this.playerId, this.projectId)
         await lockRetroSurveyForUser(this.playerId, this.projectId)
         const updatedSurvey = await Survey.get(this.survey.id)
         expect(updatedSurvey.unlockedFor).to.not.include(this.playerId)
