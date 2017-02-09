@@ -31,7 +31,6 @@ export default new GraphQLObjectType({
       artifactURL: {type: GraphQLURL, description: 'The URL pointing to the output of this project'},
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
       updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},
-      isLocked: {type: new GraphQLNonNull(GraphQLBoolean), description: 'True if the user has already completed the survey and no moderator has unlocked it.'}
     }
   },
 })
