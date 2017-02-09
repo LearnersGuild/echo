@@ -84,14 +84,18 @@ export function start() {
         error: ${config.server.secure ? originalError.toString() : originalError.stack}`)
     }
 
-    res.status(serverError.statusCode)
-
-    if (req.accepts('json')) {
-      return res.json({errors: [serverError]})
+    if (res.headersSent) {
+      return
     }
 
-    const responseBody = `<h1>${serverError.statusCode} - ${serverError.type}</h1><p>${serverError.message}</p>`
-    res.send(responseBody)
+    res.status(serverError.statusCode)
+
+    if (req.accepts('html')) {
+      const responseBody = `<h1>${serverError.statusCode} - ${serverError.name || 'UNHANDLED ERROR'}</h1><p>${serverError.message}</p>`
+      return res.send(responseBody)
+    }
+
+    res.json({errors: [serverError]})
   })
 
   // socket cluster
