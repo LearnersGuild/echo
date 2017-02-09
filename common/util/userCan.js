@@ -43,7 +43,7 @@ const CAPABILITY_ROLES = {
   getProjectReviewSurveyStatus: GAME_PLAY,
   lockAndUnlockSurveys: ['moderator'],
 
-  runReports: ['moderator', 'sysadmin'],
+  runReports: ['moderator', 'coach', 'sysadmin'],
   monitorJobQueues: ['sysadmin'],
   beIgnoredWhenComputingElo: ['coach'],
   beExcludedFromVoting: ['moderator', 'coach'],
