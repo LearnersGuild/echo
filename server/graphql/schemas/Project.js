@@ -30,7 +30,8 @@ export default new GraphQLObjectType({
       players: {type: new GraphQLList(UserProfile), description: 'The project members', resolve: resolveProjectPlayers},
       artifactURL: {type: GraphQLURL, description: 'The URL pointing to the output of this project'},
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
-      updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},
+      updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'}
+      lockedStatus: {type: new GraphQLNonNull(GraphQLBoolean), description: 'True if the user has completed or locked the survey'}
     }
   },
 })
