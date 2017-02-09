@@ -84,13 +84,14 @@ export function start() {
         error: ${config.server.secure ? originalError.toString() : originalError.stack}`)
     }
 
+    res.status(serverError.statusCode)
+
     if (req.accepts('json')) {
       return res.json({errors: [serverError]})
     }
 
     const responseBody = `<h1>${serverError.statusCode} - ${serverError.type}</h1><p>${serverError.message}</p>`
-
-    res.status(serverError.statusCode).send(responseBody)
+    res.send(responseBody)
   })
 
   // socket cluster
