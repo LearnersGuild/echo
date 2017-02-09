@@ -67,13 +67,21 @@ export function start() {
   app.use((err, req, res, next) => {
     const serverError = formatServerError(err)
 
+    let originalError
+    if (serverError.originalError) {
+      originalError = serverError.originalError
+      delete serverError.originalError
+    } else {
+      originalError = serverError
+    }
+
     if (serverError.statusCode >= 500) {
       sentry.captureException(err)
 
       console.error(`${serverError.name || 'UNHANDLED ERROR'}:
         method: ${req.method.toUpperCase()} ${req.originalUrl}
         params: ${JSON.stringify(req.params)}
-        error: ${config.server.secure ? realError.toString() : realError.stack}`)
+        error: ${config.server.secure ? originalError.toString() : originalError.stack}`)
     }
 
     res.status(serverError.statusCode)
