@@ -63,15 +63,26 @@ export default class UserProjectSummary extends Component {
     ]) : <div/>
   }
 
-  renderHoursAndContribution() {
+  renderLevelProgress() {
+    const {userProjectStats = {}} = this.props
+    const userProjectLevel = userProjectStats[STAT_DESCRIPTORS.LEVEL] || {}
+    const {starting = null, ending = null} = userProjectLevel
+    const isBlank = !starting
+    const levelProgress = starting === ending ? starting : `${starting} → ${ending}`
+    return isBlank ? <span>{BLANK}</span> : <span>{levelProgress}</span>
+  }
+
+  renderHoursContributionAndLevel() {
     const {project} = this.props
     const userStats = this.props.userProjectStats || {}
     const projectHours = (project.stats || {})[STAT_DESCRIPTORS.PROJECT_HOURS] || BLANK
     const userProjectHours = userStats[STAT_DESCRIPTORS.PROJECT_HOURS] || BLANK
+
     return !objectValuesAreAllNull(userStats) ? (
       <div>
         <div>{userProjectHours} hours [team total: {projectHours}]</div>
         <div>{renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION, userStats)}% contribution</div>
+        <div>Player Level: {this.renderLevelProgress()}</div>
       </div>
     ) : <div/>
   }
@@ -94,7 +105,7 @@ export default class UserProjectSummary extends Component {
           <div>State: {cycle.state}</div>
           <div title={goalLine} className={styles.goalLine}>{goalLine}</div>
           <div>{`${startDate}${endDate}`} [cycle {cycle.cycleNumber}]</div>
-          {this.renderHoursAndContribution()}
+          {this.renderHoursContributionAndLevel()}
         </Flex>
         {this.renderUserProjectStats()}
       </Flex>

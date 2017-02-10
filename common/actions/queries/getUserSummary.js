@@ -45,17 +45,17 @@ export default function getUserSummary(identifier) {
             name
           }
           stats {
-            ${LEVEL}
-            ${EXPERIENCE_POINTS}
-            ${ELO}
+            ${CHALLENGE}
             ${CULTURE_CONTRIBUTION}
+            ${ELO}
+            ${ESTIMATION_ACCURACY}
+            ${ESTIMATION_BIAS}
+            ${EXPERIENCE_POINTS}
+            ${LEVEL}
+            ${NUM_PROJECTS_REVIEWED}
             ${TEAM_PLAY}
             ${TECHNICAL_HEALTH}
             ${TIME_ON_TASK}
-            ${ESTIMATION_ACCURACY}
-            ${ESTIMATION_BIAS}
-            ${CHALLENGE}
-            ${NUM_PROJECTS_REVIEWED}
           }
         }
         userProjectSummaries {
@@ -85,15 +85,19 @@ export default function getUserSummary(identifier) {
           userProjectStats {
             ${CHALLENGE}
             ${CULTURE_CONTRIBUTION}
+            ${ELO}
             ${ESTIMATION_ACCURACY}
             ${ESTIMATION_BIAS}
             ${EXPERIENCE_POINTS}
+            ${LEVEL} {
+              starting
+              ending
+            }
+            ${PROJECT_HOURS}
+            ${RELATIVE_CONTRIBUTION}
             ${TEAM_PLAY_FLEXIBLE_LEADERSHIP}
             ${TEAM_PLAY_FRICTION_REDUCTION}
-            ${PROJECT_HOURS}
-            ${ELO}
             ${TEAM_PLAY_RECEPTIVENESS}
-            ${RELATIVE_CONTRIBUTION}
             ${TEAM_PLAY_RESULTS_FOCUS}
             ${TEAM_PLAY}
             ${TECHNICAL_HEALTH}
