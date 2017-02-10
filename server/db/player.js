@@ -1,11 +1,13 @@
 import {connect} from 'src/db'
 import {updateInTable, replaceInTable} from 'src/server/db/util'
 import {avg} from 'src/server/util'
+import {computePlayerLevel} from 'src/server/util/stats'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 const {
   ELO,
   EXPERIENCE_POINTS,
+  LEVEL,
   RELATIVE_CONTRIBUTION_EFFECTIVE_CYCLES,
 } = STAT_DESCRIPTORS
 
@@ -59,13 +61,28 @@ export function savePlayerProjectStats(playerId, projectId, newStats = {}) {
     },
     statsComputedAt: r.now(),
   }, {returnChanges: true})
-  .then(result => result.changes[0].new_val)
-  .then(_updateWeightedAverages)
+    .then(result => result.changes[0].new_val)
+    .then(_updateWeightedAverages)
+    // level calculation depends on weighted average calculation
+    .then(result => result.changes[0].new_val)
+    .then(player => _updateLevels(player, projectId))
 }
 
 async function _updateWeightedAverages(player) {
   const weightedAverages = await _computeWeightedAverages(player)
-  return update({id: player.id, stats: {weightedAverages}})
+  return update({id: player.id, stats: {weightedAverages}}, {returnChanges: true})
+}
+
+async function _updateLevels(player, projectId) {
+  const stats = player.stats || {}
+  const previousLevel = stats[LEVEL] || 0
+  const currentLevel = computePlayerLevel(player)
+  stats.projects[projectId][LEVEL] = {
+    starting: previousLevel,
+    ending: currentLevel,
+  }
+  stats[LEVEL] = currentLevel
+  return update({id: player.id, stats})
 }
 
 const MAX_RECENT_PROJECTS_TO_CONSIDER = 100

@@ -26,6 +26,7 @@ const {
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
   EXPERIENCE_POINTS,
+  LEVEL,
   PROJECT_HOURS,
   RELATIVE_CONTRIBUTION,
   RELATIVE_CONTRIBUTION_AGGREGATE_CYCLES,
@@ -147,7 +148,11 @@ describe(testContext(__filename), function () {
               matches: 3,
               score: 0.71,
               kFactor: 20,
-            }
+            },
+            [LEVEL]: {
+              ending: 1,
+              starting: 0,
+            },
           },
         })
       })
@@ -199,6 +204,7 @@ describe(testContext(__filename), function () {
         // was ignored
         expect(updatedActivePlayer.stats[RELATIVE_CONTRIBUTION_EFFECTIVE_CYCLES]).to.eq(123)
         expect(updatedActivePlayer.stats[EXPERIENCE_POINTS]).to.eq(43.05)
+        expect(updatedActivePlayer.stats[LEVEL]).to.eq(1)
         expect(updatedActivePlayer.stats[ELO]).to.deep.eq({
           rating: 1296,
           matches: 2,
@@ -239,7 +245,11 @@ describe(testContext(__filename), function () {
               matches: 2,
               score: 1.17,
               kFactor: 20,
-            }
+            },
+            [LEVEL]: {
+              ending: 1,
+              starting: 0,
+            },
           },
         })
       })
@@ -309,6 +319,10 @@ describe(testContext(__filename), function () {
             [TEAM_HOURS]: 35,
             [TIME_ON_TASK]: 87.5,
             [EXPERIENCE_POINTS]: 35,
+            [LEVEL]: {
+              ending: 0,
+              starting: 0,
+            },
           },
         })
       })
