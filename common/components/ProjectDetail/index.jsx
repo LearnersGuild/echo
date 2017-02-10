@@ -161,7 +161,7 @@ class ProjectDetail extends Component {
   }
 
   renderUserSummaries() {
-    const {projectUserSummaries} = this.props
+    const {projectUserSummaries, project} = this.props
     const memberSummaries = (projectUserSummaries || [])
       .filter(summary => (
         summary.userProjectStats !== null
