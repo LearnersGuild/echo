@@ -7,7 +7,6 @@ const {STAT_DESCRIPTORS} = require('src/common/models/stat')
 const getPlayerInfo = require('src/server/actions/getPlayerInfo')
 const {findPlayers} = require('src/server/db/player')
 const {mapById} = require('src/server/util')
-const {computePlayerLevel} = require('src/server/util/stats')
 const {finish} = require('./util')
 
 const {LEVEL} = STAT_DESCRIPTORS
@@ -25,7 +24,7 @@ async function run() {
   const playerUserMap = mapById(playerUsers)
   players = players
     .map(p => {
-      return {...p, ...(playerUserMap.get(p.id) || {}), [LEVEL]: computePlayerLevel(p)}
+      return {...p, ...(playerUserMap.get(p.id) || {}), [LEVEL]: (p.stats || {})[LEVEL] || 0}
     })
     .filter(p => p.active && p.roles.indexOf('staff') < 0)
     .sort((a, b) => a.handle.localeCompare(b.handle))
