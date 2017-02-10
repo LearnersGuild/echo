@@ -14,6 +14,10 @@ export default function surveyModel(thinky) {
         .required()
         .allowNull(false),
 
+      unlockedFor: array()
+        .allowNull(false)
+        .default([]),
+
       questionRefs: array()
         .required()
         .allowNull(false),
@@ -25,6 +29,7 @@ export default function surveyModel(thinky) {
       updatedAt: date()
         .allowNull(false)
         .default(r.now()),
+
     },
     associate: (Survey, models) => {
       Survey.hasMany(models.Question, 'questions', 'id', 'surveyId', {init: false})
