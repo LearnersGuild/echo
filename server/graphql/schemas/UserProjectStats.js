@@ -7,8 +7,10 @@ export default new GraphQLObjectType({
   name: 'UserProjectStats',
   description: 'A user\'s stats for a project',
   fields: () => {
+    const {ProjectLevels} = require('src/server/graphql/schemas')
+
     return {
-      [STAT_DESCRIPTORS.LEVEL]: {type: GraphQLInt, description: 'Level'},
+      [STAT_DESCRIPTORS.LEVEL]: {type: ProjectLevels, description: 'Project Level'},
       [STAT_DESCRIPTORS.CHALLENGE]: {type: GraphQLFloat, description: 'Challenge'},
       [STAT_DESCRIPTORS.CULTURE_CONTRIBUTION]: {type: GraphQLFloat, description: 'Culture contribution'},
       [STAT_DESCRIPTORS.ESTIMATION_ACCURACY]: {type: GraphQLFloat, description: 'Estimation accuracy'},
