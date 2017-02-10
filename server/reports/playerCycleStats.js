@@ -9,13 +9,14 @@ import {addPointInTimeOverallStats} from 'src/common/util/userProjectStatsCalcul
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 const {
-  PROJECT_HOURS,
-  ELO,
-  EXPERIENCE_POINTS,
   CHALLENGE,
   CULTURE_CONTRIBUTION,
+  ELO,
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
+  EXPERIENCE_POINTS,
+  LEVEL,
+  PROJECT_HOURS,
   RELATIVE_CONTRIBUTION,
   TEAM_PLAY,
   TECHNICAL_HEALTH,
@@ -62,13 +63,13 @@ async function cyclesForPlayer(player, fetcher) {
 
 function _presentProjectSummary(projectSummary) {
   const statNames = [
-    PROJECT_HOURS,
-    ELO,
-    EXPERIENCE_POINTS,
     CHALLENGE,
     CULTURE_CONTRIBUTION,
+    ELO,
     ESTIMATION_ACCURACY,
     ESTIMATION_BIAS,
+    EXPERIENCE_POINTS,
+    PROJECT_HOURS,
     RELATIVE_CONTRIBUTION,
     TEAM_PLAY,
     TECHNICAL_HEALTH,
@@ -78,8 +79,13 @@ function _presentProjectSummary(projectSummary) {
     PROJECT_HOURS,
   ]
 
+  /* eslint-disable camelcase */
+  const projectLevel = projectSummary.userProjectStats[LEVEL] || {}
   const columns = {
     cycle: projectSummary.project.cycle.cycleNumber,
+    project_levelStarting: projectLevel.starting || '',
+    project_levelEnding: projectLevel.ending || '',
+    overall_level: projectSummary.overallStats[LEVEL],
   }
   statNames.forEach(statName => {
     columns[`project_${statName}`] = projectSummary.userProjectStats[statName]

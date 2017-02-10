@@ -3,31 +3,33 @@ import {avg, sum} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 const {
-  ELO,
-  EXPERIENCE_POINTS,
   CHALLENGE,
   CULTURE_CONTRIBUTION,
+  ELO,
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
+  EXPERIENCE_POINTS,
+  LEVEL,
+  RELATIVE_CONTRIBUTION,
+  TEAM_PLAY,
   TEAM_PLAY_FLEXIBLE_LEADERSHIP,
   TEAM_PLAY_FRICTION_REDUCTION,
   TEAM_PLAY_RECEPTIVENESS,
-  RELATIVE_CONTRIBUTION,
   TEAM_PLAY_RESULTS_FOCUS,
-  TEAM_PLAY,
   TECHNICAL_HEALTH,
   TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 const projectStatNames = [
-  ELO,
-  EXPERIENCE_POINTS,
+  CHALLENGE,
   CULTURE_CONTRIBUTION,
-  TEAM_PLAY,
-  TECHNICAL_HEALTH,
+  ELO,
+  LEVEL,
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
-  CHALLENGE
+  EXPERIENCE_POINTS,
+  TEAM_PLAY,
+  TECHNICAL_HEALTH,
 ]
 
 export function mergeOverallStatsAndDeltas(userProjectSummaries) {
@@ -71,6 +73,7 @@ export function addPointInTimeOverallStats(projectSummaries) {
         [ESTIMATION_BIAS]:                 getAvgUnlessNull(ESTIMATION_BIAS),
         [EXPERIENCE_POINTS]:               getSumUnlessNull(EXPERIENCE_POINTS),
         [ELO]:                             project.userProjectStats[ELO],
+        [LEVEL]:                           (project.userProjectStats[LEVEL] || {}).ending || null,
         [RELATIVE_CONTRIBUTION]:           getAvgUnlessNull(RELATIVE_CONTRIBUTION),
         [TEAM_PLAY]:                       getAvgUnlessNull(TEAM_PLAY),
         [TEAM_PLAY_FLEXIBLE_LEADERSHIP]:   getAvgUnlessNull(TEAM_PLAY_FLEXIBLE_LEADERSHIP),

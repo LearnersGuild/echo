@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* global expect, testContext */
-/* eslint-disable prefer-arrow-callback, no-unused-expressions, key-spacing, comma-spacing, no-multi-spaces, max-nested-callbacks */
+/* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {
   _getAvgClosure,
@@ -17,6 +17,7 @@ const {
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
   EXPERIENCE_POINTS,
+  LEVEL,
   PROJECT_COMPLETENESS,
   PROJECT_QUALITY,
   PROJECT_HOURS,
@@ -46,11 +47,22 @@ const projectSummaries = [
     },
     userProjectEvaluations: [],
     userProjectStats: {
-      [CHALLENGE]:                    null, [CULTURE_CONTRIBUTION]:  null, [ESTIMATION_ACCURACY]:           null,
-      [ESTIMATION_BIAS]:              null, [EXPERIENCE_POINTS]:     null, [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: null,
-      [TEAM_PLAY_FRICTION_REDUCTION]: null, [PROJECT_HOURS]:         null, [ELO]:                           null,
-      [TEAM_PLAY_RECEPTIVENESS]:      null, [RELATIVE_CONTRIBUTION]: null, [TEAM_PLAY_RESULTS_FOCUS]:       null,
-      [TEAM_PLAY]:                    null, [TECHNICAL_HEALTH]:      null, [TIME_ON_TASK]:                  null,
+      [CHALLENGE]: null,
+      [CULTURE_CONTRIBUTION]: null,
+      [ELO]: null,
+      [ESTIMATION_ACCURACY]: null,
+      [ESTIMATION_BIAS]: null,
+      [EXPERIENCE_POINTS]: null,
+      [LEVEL]: null,
+      [PROJECT_HOURS]: null,
+      [RELATIVE_CONTRIBUTION]: null,
+      [TEAM_PLAY]: null,
+      [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: null,
+      [TEAM_PLAY_FRICTION_REDUCTION]: null,
+      [TEAM_PLAY_RECEPTIVENESS]: null,
+      [TEAM_PLAY_RESULTS_FOCUS]: null,
+      [TECHNICAL_HEALTH]: null,
+      [TIME_ON_TASK]: null,
     }
   },
   {
@@ -72,11 +84,22 @@ const projectSummaries = [
       {generalFeedback: null}
     ],
     userProjectStats: {
-      [CHALLENGE]:                    10, [CULTURE_CONTRIBUTION]:  42,    [ESTIMATION_ACCURACY]:           98,
-      [ESTIMATION_BIAS]:               2, [EXPERIENCE_POINTS]:     35.72, [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: 75,
-      [TEAM_PLAY_FRICTION_REDUCTION]: 67, [PROJECT_HOURS]:         24,    [ELO]:                          989,
-      [TEAM_PLAY_RECEPTIVENESS]:      75, [RELATIVE_CONTRIBUTION]: 38,    [TEAM_PLAY_RESULTS_FOCUS]:       50,
-      [TEAM_PLAY]:                    58, [TECHNICAL_HEALTH]:      67,    [TIME_ON_TASK]:                91.8,
+      [CHALLENGE]: 10,
+      [CULTURE_CONTRIBUTION]: 42,
+      [ELO]: 989,
+      [ESTIMATION_ACCURACY]: 98,
+      [ESTIMATION_BIAS]: 2,
+      [EXPERIENCE_POINTS]: 35.72,
+      [LEVEL]: {starting: 0, ending: 1},
+      [PROJECT_HOURS]: 24,
+      [RELATIVE_CONTRIBUTION]: 38,
+      [TEAM_PLAY]: 58,
+      [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: 75,
+      [TEAM_PLAY_FRICTION_REDUCTION]: 67,
+      [TEAM_PLAY_RECEPTIVENESS]: 75,
+      [TEAM_PLAY_RESULTS_FOCUS]: 50,
+      [TECHNICAL_HEALTH]: 67,
+      [TIME_ON_TASK]: 91.8,
     }
   },
   {
@@ -97,24 +120,34 @@ const projectSummaries = [
       {generalFeedback: null}
     ],
     userProjectStats: {
-      [CHALLENGE]:                     7,  [CULTURE_CONTRIBUTION]:  83, [ESTIMATION_ACCURACY]:          100,
-      [ESTIMATION_BIAS]:               0,  [EXPERIENCE_POINTS]:     35, [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: 83,
-      [TEAM_PLAY_FRICTION_REDUCTION]: 83,                               [ELO]:                          979,
-      [TEAM_PLAY_RECEPTIVENESS]:      83,  [RELATIVE_CONTRIBUTION]: 50, [TEAM_PLAY_RESULTS_FOCUS]:       83,
-      [TEAM_PLAY]:                    83,  [TECHNICAL_HEALTH]:      83, [TIME_ON_TASK]:                93.2,
+      [CHALLENGE]: 7,
+      [CULTURE_CONTRIBUTION]: 83,
+      [ESTIMATION_ACCURACY]: 100,
+      [ESTIMATION_BIAS]: 0,
+      [EXPERIENCE_POINTS]: 35,
+      [LEVEL]: {starting: 1, ending: 2},
+      [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: 83,
+      [TEAM_PLAY_FRICTION_REDUCTION]: 83,
+      [ELO]: 979,
+      [TEAM_PLAY_RECEPTIVENESS]: 83,
+      [RELATIVE_CONTRIBUTION]: 50,
+      [TEAM_PLAY_RESULTS_FOCUS]: 83,
+      [TEAM_PLAY]: 83,
+      [TECHNICAL_HEALTH]: 83,
+      [TIME_ON_TASK]: 93.2,
     }
   }
 ]
 
 const projectStatNames = [
-  STAT_DESCRIPTORS.ELO,
-  STAT_DESCRIPTORS.EXPERIENCE_POINTS,
-  STAT_DESCRIPTORS.CULTURE_CONTRIBUTION,
-  STAT_DESCRIPTORS.TEAM_PLAY,
-  STAT_DESCRIPTORS.TECHNICAL_HEALTH,
-  STAT_DESCRIPTORS.ESTIMATION_ACCURACY,
-  STAT_DESCRIPTORS.ESTIMATION_BIAS,
-  STAT_DESCRIPTORS.CHALLENGE
+  CHALLENGE,
+  CULTURE_CONTRIBUTION,
+  ELO,
+  ESTIMATION_ACCURACY,
+  ESTIMATION_BIAS,
+  EXPERIENCE_POINTS,
+  TEAM_PLAY,
+  TECHNICAL_HEALTH,
 ]
 
 describe(testContext(__filename), () => {
@@ -176,23 +209,43 @@ describe(testContext(__filename), () => {
     it('adds point-in-time userOverallStats to each project summary', () => {
       const result = addPointInTimeOverallStats(projectSummaries)
 
-      const firstProjectSummary = result[result.length - 1]
-      expect(firstProjectSummary.overallStats).to.deep.eq(firstProjectSummary.userProjectStats)
+      const firstProjectOverallStats = {...result[result.length - 1].userProjectStats, level: 2}
+      expect(result[result.length - 1].overallStats).to.deep.eq(firstProjectOverallStats)
 
       expect(result[result.length - 2].overallStats).to.deep.eq({
-        [CHALLENGE]:                   8.5, [CULTURE_CONTRIBUTION]:   62.5, [ESTIMATION_ACCURACY]:           99,
-        [ESTIMATION_BIAS]:               1, [EXPERIENCE_POINTS]:     70.72, [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: 79,
-        [TEAM_PLAY_FRICTION_REDUCTION]: 75,                                 [ELO]:                          989,
-        [TEAM_PLAY_RECEPTIVENESS]:      79, [RELATIVE_CONTRIBUTION]:    44, [TEAM_PLAY_RESULTS_FOCUS]:     66.5,
-        [TEAM_PLAY]:                  70.5, [TECHNICAL_HEALTH]:         75, [TIME_ON_TASK]:                92.5,
+        [CHALLENGE]: 8.5,
+        [CULTURE_CONTRIBUTION]: 62.5,
+        [ELO]: 989,
+        [ESTIMATION_ACCURACY]: 99,
+        [ESTIMATION_BIAS]: 1,
+        [EXPERIENCE_POINTS]: 70.72,
+        [LEVEL]: 1,
+        [RELATIVE_CONTRIBUTION]: 44,
+        [TEAM_PLAY]: 70.5,
+        [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: 79,
+        [TEAM_PLAY_FRICTION_REDUCTION]: 75,
+        [TEAM_PLAY_RECEPTIVENESS]: 79,
+        [TEAM_PLAY_RESULTS_FOCUS]: 66.5,
+        [TECHNICAL_HEALTH]: 75,
+        [TIME_ON_TASK]: 92.5,
       })
 
       expect(result[result.length - 3].overallStats).to.deep.eq({
-        [CHALLENGE]:                    null, [CULTURE_CONTRIBUTION]:  null, [ESTIMATION_ACCURACY]:           null,
-        [ESTIMATION_BIAS]:              null, [EXPERIENCE_POINTS]:     null, [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: null,
-        [TEAM_PLAY_FRICTION_REDUCTION]: null,                                [ELO]:                           null,
-        [TEAM_PLAY_RECEPTIVENESS]:      null, [RELATIVE_CONTRIBUTION]: null, [TEAM_PLAY_RESULTS_FOCUS]:       null,
-        [TEAM_PLAY]:                    null, [TECHNICAL_HEALTH]:      null, [TIME_ON_TASK]:                  null,
+        [CHALLENGE]: null,
+        [CULTURE_CONTRIBUTION]: null,
+        [ELO]: null,
+        [ESTIMATION_ACCURACY]: null,
+        [ESTIMATION_BIAS]: null,
+        [EXPERIENCE_POINTS]: null,
+        [LEVEL]: null,
+        [RELATIVE_CONTRIBUTION]: null,
+        [TEAM_PLAY]: null,
+        [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: null,
+        [TEAM_PLAY_FRICTION_REDUCTION]: null,
+        [TEAM_PLAY_RECEPTIVENESS]: null,
+        [TEAM_PLAY_RESULTS_FOCUS]: null,
+        [TECHNICAL_HEALTH]: null,
+        [TIME_ON_TASK]: null,
       })
     })
   })
