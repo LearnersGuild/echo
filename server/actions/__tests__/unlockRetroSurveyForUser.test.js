@@ -1,8 +1,12 @@
+/* eslint-env mocha */
+/* global expect testContext */
+/* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import factory from 'src/test/factories'
-import {Response} from 'src/server/services/dataService'
+import {withDBCleanup, useFixture} from 'src/test/helpers'
+import {Survey, Response} from 'src/server/services/dataService'
 
 import saveSurveyResponses from '../saveSurveyResponses'
-import unlockRetroSurveyForUser from '/src/server/actions/unlockRetroSurveyForUser'
+import {lockRetroSurveyForUser, unlockRetroSurveyForUser} from 'src/server/actions/unlockRetroSurveyForUser'
 
 describe(testContext(__filename), function () {
   withDBCleanup()
@@ -10,21 +14,54 @@ describe(testContext(__filename), function () {
 
   beforeEach(async function () {
     await this.buildSurvey()
-    const playerId = this.project.playerIds[0]
-    this.currentUser = await factory.build('user', {id: playerId})
-    this.projectId = await factory.build('project', {id: projectId})
+    this.playerId = this.project.playerIds[0]
+    this.projectId = this.project.id
   })
 
-  it('unlocks the survey that is tied to a specific project', async function () {
-    const args = {
-      responses: [
-        {
-          respondentId: this.currentUser.id,
-          surveyId: this.survey.id,
-          projectId: this.project.id,
-          questionId: this.surveyQuestion.id,
-          values: [{subjectId: this.survey.questionRefs[0].subjectIds[0], value: 'response'}],
-        }
-      ],
-      projectName: this.project.name
-    }
+  describe('unlockRetroSurveyForUser()', function () {
+    context('when the survey has been completed', function () {
+      beforeEach(async function () {
+        this.survey.completedBy.push(this.playerId)
+        await Survey.save(this.survey, {conflict: 'update'})
+      })
+
+      it('adds the player to the unlockedFor array', async function () {
+        await unlockRetroSurveyForUser(this.playerId, this.projectId)
+        const updatedSurvey = await Survey.get(this.survey.id)
+        expect(updatedSurvey.unlockedFor).to.include(this.playerId)
+      })
+    })
+
+    context('when the survey has NOT been completed', function () {
+      it('throws an error', function () {
+        return expect(
+          unlockRetroSurveyForUser(this.playerId, this.projectId)
+        ).to.be.rejectedWith(/incomplete/)
+      })
+    })
+  })
+
+  describe('lockRetroSurveyForUser()', function () {
+    context('when the survey has NOT been completed', function () {
+      it('throws an error', function () {
+        return expect(
+          lockRetroSurveyForUser(this.playerId, this.projectId)
+        ).to.be.rejectedWith(/incomplete/)
+      })
+    })
+
+    context('when the survey is comepleted and unlocked', function () {
+      beforeEach(async function () {
+        this.survey.completedBy.push(this.playerId)
+        this.survey.unlockedFor = [this.playerId]
+        await Survey.save(this.survey, {conflict: 'update'})
+      })
+
+      it('removes the player to the unlockedFor array', async function () {
+        await lockRetroSurveyForUser(this.playerId, this.projectId)
+        const updatedSurvey = await Survey.get(this.survey.id)
+        expect(updatedSurvey.unlockedFor).to.not.include(this.playerId)
+      })
+    })
+  })
+})
