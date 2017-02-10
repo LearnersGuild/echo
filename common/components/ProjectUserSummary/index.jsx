@@ -16,9 +16,10 @@ export default class ProjectUserSummary extends Component {
 
   renderSummary() {
     const {user, userProjectStats: userStats, totalProjectHours} = this.props
+    const blank = '--'
     const userProfilePath = `/users/${user.handle}`
     const userHours = userStats[STAT_DESCRIPTORS.PROJECT_HOURS]
-    const blank = '--'
+    const userStartingLevel = (userStats[STAT_DESCRIPTORS.LEVEL] || {}).starting || blank
 
     return (
       <Flex className={styles.summary}>
@@ -36,7 +37,7 @@ export default class ProjectUserSummary extends Component {
             </div>
             <div>{user.name}</div>
             <div>{userStats[STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION] || blank}% {'Contribution'}</div>
-            <div>Level {userStats[STAT_DESCRIPTORS.LEVEL]}</div>
+            <div>Level {userStartingLevel}</div>
             <div>{userHours} hours [team total: {totalProjectHours}]</div>
           </div>
         </Flex>
