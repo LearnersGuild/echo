@@ -10,7 +10,7 @@ export default {
     responses: {
       description: 'The response to unlock',
       type: new GraphQLNonNull(new GraphQLList(SurveyResponseInput))
-    }
-  },
-  resolve: resolveSaveSurveyResponses,
+    },
+    resolve(source, args, {rootValue: {SurveyResponseInput}})
+  }
 }

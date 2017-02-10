@@ -8,8 +8,7 @@ import {Survey, Response} from 'src/server/services/dataService'
 import saveSurveyResponses from '../saveSurveyResponses'
 import {lockRetroSurveyForUser, unlockRetroSurveyForUser} from 'src/server/actions/unlockRetroSurveyForUser'
 
-describe(testContext(__filename), function () {
-  withDBCleanup()
+describe.only(testContext(__filename), function () {
   useFixture.buildSurvey()
 
   beforeEach(async function () {
