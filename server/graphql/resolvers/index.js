@@ -18,7 +18,6 @@ import {Chapter, Cycle, Project, Survey} from 'src/server/services/dataService'
 import {handleError} from 'src/server/graphql/util'
 import {BadInputError} from 'src/server/errors'
 import {mapById} from 'src/server/util'
-import {computePlayerLevel} from 'src/server/util/stats'
 
 const {
   CHALLENGE,
@@ -185,7 +184,7 @@ export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
   const userStats = user.stats || {}
   const userAverageStats = userStats.weightedAverages || {}
   return {
-    [LEVEL]: computePlayerLevel(user),
+    [LEVEL]: userStats[LEVEL] || 0,
     [ELO]: (userStats[ELO] || {}).rating,
     [EXPERIENCE_POINTS]: roundDecimal(userStats[EXPERIENCE_POINTS]) || 0,
     [CULTURE_CONTRIBUTION]: roundDecimal(userAverageStats[CULTURE_CONTRIBUTION]),
@@ -254,7 +253,7 @@ export function extractUserProjectStats(user, project) {
   return {
     userId: user.id,
     project: project.id,
-    [LEVEL]: computePlayerLevel(user),
+    [LEVEL]: userProjectStats[LEVEL],
     [CHALLENGE]: userProjectStats[CHALLENGE],
     [CULTURE_CONTRIBUTION]: userProjectStats[CULTURE_CONTRIBUTION],
     [ESTIMATION_ACCURACY]: userProjectStats[ESTIMATION_ACCURACY],

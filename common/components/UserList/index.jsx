@@ -15,14 +15,14 @@ const UserModel = {
   name: {type: String},
   chapterName: {title: 'Chapter', type: String},
   email: {type: String},
-  active: {type: Boolean},
+  active: {type: String},
 }
 
 const UserModelWithStats = {
   ...UserModel,
-  [LEVEL]: {title: 'Level', type: Number},
-  [ELO]: {title: 'Elo', type: Number},
-  [EXPERIENCE_POINTS]: {title: 'XP', type: Number},
+  [LEVEL]: {title: 'Level', type: String},
+  [ELO]: {title: 'Elo', type: String},
+  [EXPERIENCE_POINTS]: {title: 'XP', type: String},
 }
 
 export default class UserList extends Component {
@@ -32,12 +32,14 @@ export default class UserList extends Component {
       const stats = user.stats || {}
       const experiencePoints = stats[EXPERIENCE_POINTS] || '--'
       const elo = stats[ELO] || '--'
-      const level = stats[LEVEL] || '--'
+      // react-toolbox Table has a bug where it does not properly render falsey
+      // values, so we have to convert a level of 0 to '0'
+      const level = typeof stats[LEVEL] === 'number' ? `${stats[LEVEL]}` : '--'
       const row = Object.assign({}, user, {
         chapterName: (user.chapter || {}).name,
         active: user.active ? 'Yes' : 'No',
       })
-      if (stats) {
+      if (stats && user.active) {
         Object.assign(row, {
           [ELO]: elo,
           [EXPERIENCE_POINTS]: experiencePoints,
