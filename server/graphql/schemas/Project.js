@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLID, GraphQLString, GraphQLInt, GraphQLBoolean} from 'graphql'
+import {GraphQLNonNull, GraphQLID, GraphQLString, GraphQLInt} from 'graphql'
 import {GraphQLURL, GraphQLDateTime} from 'graphql-custom-types'
 import {GraphQLObjectType, GraphQLList} from 'graphql/type'
 
