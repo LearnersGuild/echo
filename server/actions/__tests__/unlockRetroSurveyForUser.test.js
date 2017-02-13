@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 /* global expect testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
-import factory from 'src/test/factories'
 import {withDBCleanup, useFixture} from 'src/test/helpers'
 import {Survey, Response} from 'src/server/services/dataService'
 import saveSurveyResponses from '../saveSurveyResponses'
