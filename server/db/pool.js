@@ -36,7 +36,9 @@ export function findPools(filter) {
 }
 
 export function findPoolsByCycleId(cycleId) {
-  return poolsTable.getAll(cycleId, {index: 'cycleId'})
+  return poolsTable
+    .getAll(cycleId, {index: 'cycleId'})
+    .orderBy('level')
 }
 
 export function getPlayersInPool(poolId) {
