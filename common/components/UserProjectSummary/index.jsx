@@ -95,7 +95,9 @@ export default class UserProjectSummary extends Component {
           <div title={goalLine} className={styles.goalLine}>{goalLine}</div>
           <div>{`${startDate}${endDate}`} [cycle {cycle.cycleNumber}]</div>
           {this.renderHoursAndContribution()}
-          // add a link here to click the unlock/lockAndUnlockSurveys api
+          {
+            // add a link here to click the unlock/lockAndUnlockSurveys api
+          }
         </Flex>
         {this.renderUserProjectStats()}
       </Flex>
