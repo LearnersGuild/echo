@@ -7,16 +7,8 @@ import factory from 'src/test/factories'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {range} from 'src/server/util'
-import {findPools, getPlayersInPool} from 'src/server/db/pool'
+import {findPoolsByCycleId, getPlayersInPool} from 'src/server/db/pool'
 import createPoolsForCycle from 'src/server/actions/createPoolsForCycle'
-
-const {
-  ELO,
-  EXPERIENCE_POINTS,
-  CULTURE_CONTRIBUTION,
-  TEAM_PLAY,
-  TECHNICAL_HEALTH,
-} = STAT_DESCRIPTORS
 
 describe(testContext(__filename), function () {
   withDBCleanup()
@@ -24,24 +16,28 @@ describe(testContext(__filename), function () {
   beforeEach(async function () {
     useFixture.nockClean()
     this.cycle = await factory.create('cycle', {state: GOAL_SELECTION})
-    const {chapterId} = this.cycle
-    this.createLvl1Players = count => _createPlayers({count, chapterId, [ELO]: 900, [EXPERIENCE_POINTS]: 0, [CULTURE_CONTRIBUTION]: 65, [TEAM_PLAY]: 65, [TECHNICAL_HEALTH]: 0})
-    this.createLvl2Players = count => _createPlayers({count, chapterId, [ELO]: 990, [EXPERIENCE_POINTS]: 150, [CULTURE_CONTRIBUTION]: 80, [TEAM_PLAY]: 80, [TECHNICAL_HEALTH]: 0})
-    this.createLvl4Players = count => _createPlayers({count, chapterId, [ELO]: 1100, [EXPERIENCE_POINTS]: 750, [CULTURE_CONTRIBUTION]: 90, [TEAM_PLAY]: 90, [TECHNICAL_HEALTH]: 90})
+    this.createPlayersInLevel = (count, level) => {
+      return factory.createMany('player',
+        range(0, count).map(() => ({
+          chapterId: this.cycle.chapterId,
+          stats: {[STAT_DESCRIPTORS.LEVEL]: level},
+        }))
+      )
+    }
   })
 
   describe('createPoolsForCycle()', function () {
     it('creates pools based on levels', async function () {
-      const lvl1Players = await this.createLvl1Players(6)
-      const lvl2Players = await this.createLvl2Players(6)
-      const lvl4Players = await this.createLvl4Players(6)
+      const lvl1Players = await this.createPlayersInLevel(6, 1)
+      const lvl2Players = await this.createPlayersInLevel(6, 2)
+      const lvl4Players = await this.createPlayersInLevel(6, 4)
 
       const users = lvl1Players.concat(lvl2Players.concat(lvl4Players)).map(_ => ({id: _.id, active: true}))
       useFixture.nockIDMGetUsersById(users)
 
       await createPoolsForCycle(this.cycle)
 
-      const pools = await findPools({cycleId: this.cycle.id})
+      const pools = await findPoolsByCycleId(this.cycle.id)
       expect(pools).to.have.length(3)
 
       const playersInPool = {
@@ -49,7 +45,6 @@ describe(testContext(__filename), function () {
         [pools[1].id]: await getPlayersInPool(pools[1].id),
         [pools[2].id]: await getPlayersInPool(pools[2].id),
       }
-      _sortByMaxElo(pools, playersInPool)
       const ids = players => players.map(_ => _.id).sort()
 
       expect(ids(playersInPool[pools[0].id])).to.deep.eq(ids(lvl1Players))
@@ -58,15 +53,15 @@ describe(testContext(__filename), function () {
     })
 
     it('splits large levels into multiple pools', async function () {
-      const lvl1Players = await this.createLvl1Players(17)
-      const lvl2Players = await this.createLvl2Players(6)
+      const lvl1Players = await this.createPlayersInLevel(17, 1)
+      const lvl2Players = await this.createPlayersInLevel(6, 2)
 
       const users = lvl1Players.concat(lvl2Players).map(_ => ({id: _.id, active: true}))
       useFixture.nockIDMGetUsersById(users)
 
       await createPoolsForCycle(this.cycle)
 
-      const pools = await findPools({cycleId: this.cycle.id})
+      const pools = await findPoolsByCycleId(this.cycle.id)
       expect(pools).to.have.length(3)
 
       const playersInPool = {
@@ -74,7 +69,6 @@ describe(testContext(__filename), function () {
         [pools[1].id]: await getPlayersInPool(pools[1].id),
         [pools[2].id]: await getPlayersInPool(pools[2].id),
       }
-      _sortByMaxElo(pools, playersInPool)
 
       expect([
         playersInPool[pools[0].id].length,
@@ -84,17 +78,3 @@ describe(testContext(__filename), function () {
     })
   })
 })
-
-function _sortByMaxElo(pools, playersInPool) {
-  const maxElo = pool => Math.max(...playersInPool[pool.id].map(player => player.stats[ELO].rating))
-  return pools.sort((a, b) => maxElo(a) - maxElo(b))
-}
-
-function _createPlayers({count, chapterId, elo, experiencePoints, cultureContribution, teamPlay, technicalHealth, estimationAccuracy = 99}) {
-  return factory.createMany('player',
-    range(0, count).map(() => ({
-      chapterId,
-      stats: {experiencePoints, [ELO]: {rating: elo}, weightedAverages: {cultureContribution, teamPlay, technicalHealth, estimationAccuracy}}
-    }))
-  )
-}

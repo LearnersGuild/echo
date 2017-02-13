@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import {savePools, addPlayerIdsToPool} from 'src/server/db/pool'
 import {flatten} from 'src/common/util'
 import {shuffle, range} from 'src/server/util'
-import {LEVELS, computePlayerLevel} from 'src/server/util/stats'
+import {LEVELS} from 'src/server/util/stats'
 import findActiveVotingPlayersInChapter from 'src/server/actions/findActiveVotingPlayersInChapter'
 
 const MAX_POOL_SIZE = 15
@@ -28,7 +28,7 @@ export default async function createPoolsForCycle(cycle) {
 
 function _splitPlayersIntoPools(players) {
   const playerLevelById = players.reduce((result, player) => {
-    result.set(player.id, computePlayerLevel(player))
+    result.set(player.id, player.stats.level || 0)
     return result
   }, new Map())
 
