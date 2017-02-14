@@ -16,6 +16,7 @@ const {
   PROJECT_COMPLETENESS,
   PROJECT_QUALITY,
   PROJECT_HOURS,
+  PROJECT_TIME_OFF_HOURS,
 } = STAT_DESCRIPTORS
 
 describe(testContext(__filename), function () {
@@ -24,22 +25,30 @@ describe(testContext(__filename), function () {
 
   it('updates the project record', async function () {
     await this.saveReviews([
-      {[PROJECT_COMPLETENESS]: 50, [PROJECT_QUALITY]: 60, [PROJECT_HOURS]: 10},
-      {[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 60, [PROJECT_HOURS]: 20},
-      {[PROJECT_COMPLETENESS]: 30, [PROJECT_QUALITY]: 30, [PROJECT_HOURS]: 30},
+      {[PROJECT_COMPLETENESS]: 50, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 28},
+      {[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 18},
+      {[PROJECT_COMPLETENESS]: 30, [PROJECT_QUALITY]: 30, [PROJECT_TIME_OFF_HOURS]: 8},
     ])
     await updateProjectStats(this.project.id)
-    await this.expectProjectStatsAfterUpdateToEqual({[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 50, [PROJECT_HOURS]: 60})
+    await this.expectProjectStatsAfterUpdateToEqual({
+      [PROJECT_COMPLETENESS]: 40,
+      [PROJECT_QUALITY]: 50,
+      [PROJECT_HOURS]: 60
+    })
   })
 
   it('includes external reviews', async function () {
     await this.saveReviews([
-      {[PROJECT_COMPLETENESS]: 50, [PROJECT_QUALITY]: 60, [PROJECT_HOURS]: 5},
-      {[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 60, [PROJECT_HOURS]: 6},
-      {[PROJECT_COMPLETENESS]: 30, [PROJECT_QUALITY]: 30, [PROJECT_HOURS]: 7, external: true},
+      {[PROJECT_COMPLETENESS]: 50, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 33},
+      {[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 32},
+      {[PROJECT_COMPLETENESS]: 30, [PROJECT_QUALITY]: 30, [PROJECT_TIME_OFF_HOURS]: 31, external: true},
     ])
     await updateProjectStats(this.project.id)
-    await this.expectProjectStatsAfterUpdateToEqual({[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 50, [PROJECT_HOURS]: 18})
+    await this.expectProjectStatsAfterUpdateToEqual({
+      [PROJECT_COMPLETENESS]: 40,
+      [PROJECT_QUALITY]: 50,
+      [PROJECT_HOURS]: 18
+    })
   })
 
   it('promise not rejected if no responses exist', function () {
@@ -47,20 +56,19 @@ describe(testContext(__filename), function () {
     return expect(promise).to.not.be.rejected
   })
 
-  beforeEach(function () {
+  beforeEach(async function () {
+    await reloadSurveyAndQuestionData()
+    const questions = {
+      [PROJECT_COMPLETENESS]: await getQId(PROJECT_COMPLETENESS),
+      [PROJECT_QUALITY]: await getQId(PROJECT_QUALITY),
+      [PROJECT_TIME_OFF_HOURS]: await getQId(PROJECT_TIME_OFF_HOURS),
+    }
+
+    await this.buildSurvey(Object.values(questions).map(q => ({
+      ...q, subjectIds: () => this.project.id
+    })), 'projectReview')
+
     this.saveReviews = async reviews => {
-      await reloadSurveyAndQuestionData()
-
-      const questions = {
-        [PROJECT_COMPLETENESS]: await getQId(STAT_DESCRIPTORS.PROJECT_COMPLETENESS),
-        [PROJECT_QUALITY]: await getQId(STAT_DESCRIPTORS.PROJECT_QUALITY),
-        [PROJECT_HOURS]: await getQId(STAT_DESCRIPTORS.PROJECT_HOURS),
-      }
-
-      await this.buildSurvey(Object.values(questions).map(q => ({
-        ...q, subjectIds: () => this.project.id
-      })), 'projectReview')
-
       const responseData = []
       const internalPlayerIds = [...this.project.playerIds]
 
