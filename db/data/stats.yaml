@@ -19,6 +19,9 @@
   id: feb2ba15-5131-4dab-a4f1-ec9f26c29122
   descriptor: projectHours
 -
+  id: a1ae9c4e-76ea-49fa-bf4f-193399593503
+  descriptor: projectTimeOffHours
+-
   id: af6445a3-f631-411f-84b3-d6aaea87d6dc
   descriptor: challenge
 -
