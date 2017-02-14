@@ -34,6 +34,7 @@ import {
   teamPlayResultsFocus,
   teamPlayFrictionReduction,
 } from 'src/server/util/stats'
+import {PROJECT_DEFAULT_EXPECTED_HOURS} from 'src/common/models/project'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {groupResponsesBySubject, assertValidSurvey} from 'src/server/util/survey'
 import {entireProjectTeamHasCompletedSurvey} from 'src/server/util/project'
@@ -285,7 +286,7 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
       playerEstimationAccuraciesById.set(player.id, accuracy)
     }
 
-    const expectedHours = project.expectedHours || 40
+    const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
 
     const stats = {}
     stats.playerId = playerId // will be removed later

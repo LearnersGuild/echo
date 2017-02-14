@@ -4,6 +4,7 @@
 import {connect} from 'src/db'
 import factory from 'src/test/factories'
 import {CYCLE_STATES, GOAL_SELECTION, PRACTICE, REFLECTION} from 'src/common/models/cycle'
+import {PROJECT_DEFAULT_EXPECTED_HOURS} from 'src/common/models/project'
 import {getCycleById} from 'src/server/db/cycle'
 import {withDBCleanup, runGraphQLMutation} from 'src/test/helpers'
 
@@ -40,7 +41,7 @@ describe(testContext(__filename), function () {
         .then(result => result.data.createCycle)
         .then(returnedCycle => getCycleById(returnedCycle.id).then(savedCycle => {
           expect(savedCycle).to.have.property('state', GOAL_SELECTION)
-          expect(savedCycle).to.have.property('projectDefaultExpectedHours', 40)
+          expect(savedCycle).to.have.property('projectDefaultExpectedHours', PROJECT_DEFAULT_EXPECTED_HOURS)
         })
       )
     })

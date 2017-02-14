@@ -1,0 +1,1 @@
+export const PROJECT_DEFAULT_EXPECTED_HOURS = 38
