@@ -55,6 +55,7 @@ const {
   ESTIMATION_BIAS,
   EXPERIENCE_POINTS,
   PROJECT_HOURS,
+  PROJECT_TIME_OFF_HOURS,
   RELATIVE_CONTRIBUTION,
   RELATIVE_CONTRIBUTION_AGGREGATE_CYCLES,
   RELATIVE_CONTRIBUTION_DELTA,
@@ -137,7 +138,7 @@ async function _updateSinglePlayerProjectStats(project, retroSurvey) {
   const [playerId] = project.playerIds
   const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
   const {retroResponses, statsQuestions} = await _getRetroQuestionsAndResponses(project, retroSurvey)
-  const reportedHours = _playerResponsesForQuestionById(retroResponses, statsQuestions[PROJECT_HOURS].id, _ => parseInt(_, 10)).get(playerId) || 0
+  const reportedHours = _playerProjectHoursById(expectedHours, retroResponses, statsQuestions).get(playerId) || PROJECT_DEFAULT_EXPECTED_HOURS
   const challenge = _playerResponsesForQuestionById(retroResponses, statsQuestions[CHALLENGE].id).get(playerId)
   const projectHours = Math.min(reportedHours, expectedHours)
 
@@ -163,8 +164,18 @@ async function _getRetroQuestionsAndResponses(project, retroSurvey) {
 }
 
 function _getPlayerResponses(project, teamPlayersById, retroResponses, retroQuestions, statsQuestions) {
-  const isZeroHoursResponse = response => (response.questionId === statsQuestions[PROJECT_HOURS].id && parseInt(response.value, 10) === 0)
-  const inactivePlayerIds = retroResponses.filter(isZeroHoursResponse).map(_ => _.respondentId)
+  const isInactivePlayerResponse = response => {
+    const responseValue = parseInt(response.value, 10)
+    const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
+    const reportedMoreTimeOffThanExpectedHoursInProject = (
+      response.questionId === statsQuestions[PROJECT_TIME_OFF_HOURS].id && responseValue >= expectedHours
+    )
+    const reportedZeroHours = (
+      response.questionId === statsQuestions[PROJECT_HOURS].id && responseValue === 0
+    )
+    return reportedMoreTimeOffThanExpectedHoursInProject || reportedZeroHours
+  }
+  const inactivePlayerIds = retroResponses.filter(isInactivePlayerResponse).map(_ => _.respondentId)
 
   const isNotFromOrAboutInactivePlayer = response => {
     return !inactivePlayerIds.includes(response.respondentId) &&
@@ -231,6 +242,7 @@ async function _getStatsQuestions(questions) {
     [TECHNICAL_HEALTH]: getQ(TECHNICAL_HEALTH),
     [RELATIVE_CONTRIBUTION]: getQ(RELATIVE_CONTRIBUTION),
     [PROJECT_HOURS]: getQ(PROJECT_HOURS),
+    [PROJECT_TIME_OFF_HOURS]: getQ(PROJECT_TIME_OFF_HOURS),
     [CHALLENGE]: getQ(CHALLENGE),
     [CULTURE_CONTRIBUTION]: getQ(CULTURE_CONTRIBUTION),
     [CULTURE_CONTRIBUTION_STRUCTURE]: getQ(CULTURE_CONTRIBUTION_STRUCTURE),
@@ -268,7 +280,8 @@ function _playerResponsesForQuestionById(retroResponses, questionId, valueFor = 
 }
 
 function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQuestions, playerStatsConfigsById) {
-  const teamPlayerHours = _playerResponsesForQuestionById(retroResponses, statsQuestions[PROJECT_HOURS].id, _ => parseInt(_, 10))
+  const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
+  const teamPlayerHours = _playerProjectHoursById(expectedHours, retroResponses, statsQuestions)
   const teamPlayerChallenges = _playerResponsesForQuestionById(retroResponses, statsQuestions[CHALLENGE].id)
   const teamHours = sum(Array.from(teamPlayerHours.values()))
 
@@ -322,6 +335,28 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
 
     return stats
   }
+}
+
+function _playerProjectHoursById(projectExpectedHours, retroResponses, statsQuestions) {
+  // We _used to_ ask players to report how many hours they worked, but later switched
+  // to asking them to report how many hours they took off. However, we occasionally
+  // retroatively update stats when mechanics change, so we need to handle both cases.
+  //
+  // To simplify things, we just keep track of the `PROJECT_HOURS` stat, which will be
+  // either derived (in the case that the survey asked for "time off") or raw (in the
+  // case that the survey asked for "hours worked").
+  const surveyIncludesTimeOffHoursQuestion = Boolean(statsQuestions[PROJECT_TIME_OFF_HOURS].active)
+
+  if (surveyIncludesTimeOffHoursQuestion) {
+    const teamPlayerProjectHours = _playerResponsesForQuestionById(retroResponses, statsQuestions[PROJECT_TIME_OFF_HOURS].id, _ => parseInt(_, 10))
+    for (const [playerId, timeOffHours] of teamPlayerProjectHours.entries()) {
+      const reportedHours = Math.max(0, projectExpectedHours - timeOffHours)
+      teamPlayerProjectHours.set(playerId, reportedHours)
+    }
+    return teamPlayerProjectHours
+  }
+
+  return _playerResponsesForQuestionById(retroResponses, statsQuestions[PROJECT_HOURS].id, _ => parseInt(_, 10))
 }
 
 function _extractPlayerScores(statsQuestions, responses, playerId) {
