@@ -43,7 +43,6 @@ const {
   TEAM_PLAY_RECEPTIVENESS,
   TEAM_PLAY_RESULTS_FOCUS,
   TECHNICAL_HEALTH,
-  TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 const r = connect()
@@ -175,8 +174,8 @@ export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
   if (user.id !== currentUser.id && !userCan(currentUser, 'viewUserStats')) {
     return null
   }
-  if (user.stats && TIME_ON_TASK in user.stats) {
-    // we know that stats were already resolved properly, because TIME_ON_TASK
+  if (user.stats && CHALLENGE in user.stats) {
+    // we know that stats were already resolved properly, because CHALLENGE
     // would ordinarily be a part of weightedAverages
     return user.stats
   }
@@ -190,7 +189,6 @@ export function resolveUserStats(user, args, {rootValue: {currentUser}}) {
     [CULTURE_CONTRIBUTION]: roundDecimal(userAverageStats[CULTURE_CONTRIBUTION]),
     [TEAM_PLAY]: roundDecimal(userAverageStats[TEAM_PLAY]),
     [TECHNICAL_HEALTH]: roundDecimal(userAverageStats[TECHNICAL_HEALTH]),
-    [TIME_ON_TASK]: roundDecimal(userAverageStats[TIME_ON_TASK]),
     [ESTIMATION_ACCURACY]: roundDecimal(userAverageStats[ESTIMATION_ACCURACY]),
     [ESTIMATION_BIAS]: roundDecimal(userAverageStats[ESTIMATION_BIAS]),
     [CHALLENGE]: roundDecimal(userAverageStats[CHALLENGE]),
@@ -273,7 +271,6 @@ export function extractUserProjectStats(user, project) {
     [TEAM_PLAY_RESULTS_FOCUS]: userProjectStats[TEAM_PLAY_RESULTS_FOCUS],
     [TEAM_PLAY]: userProjectStats[TEAM_PLAY],
     [TECHNICAL_HEALTH]: userProjectStats[TECHNICAL_HEALTH],
-    [TIME_ON_TASK]: userProjectStats[TIME_ON_TASK],
   }
 }
 

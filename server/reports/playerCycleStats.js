@@ -20,7 +20,6 @@ const {
   RELATIVE_CONTRIBUTION,
   TEAM_PLAY,
   TECHNICAL_HEALTH,
-  TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 export default function requestHandler(req, res) {
@@ -73,7 +72,6 @@ function _presentProjectSummary(projectSummary) {
     RELATIVE_CONTRIBUTION,
     TEAM_PLAY,
     TECHNICAL_HEALTH,
-    TIME_ON_TASK,
   ]
   const projectOnlyStatNames = [
     PROJECT_HOURS,

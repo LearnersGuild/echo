@@ -14,7 +14,6 @@ export default new GraphQLObjectType({
       [STAT_DESCRIPTORS.CULTURE_CONTRIBUTION]: {type: GraphQLFloat, description: 'Culture contribution'},
       [STAT_DESCRIPTORS.TEAM_PLAY]: {type: GraphQLFloat, description: 'Team play'},
       [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: {type: GraphQLFloat, description: 'Technical health'},
-      [STAT_DESCRIPTORS.TIME_ON_TASK]: {type: GraphQLFloat, description: 'Time on task'},
       [STAT_DESCRIPTORS.ESTIMATION_ACCURACY]: {type: GraphQLFloat, description: 'Estimation accuracy'},
       [STAT_DESCRIPTORS.ESTIMATION_BIAS]: {type: GraphQLFloat, description: 'Estimation bias'},
       [STAT_DESCRIPTORS.CHALLENGE]: {type: GraphQLFloat, description: 'Challenge'},

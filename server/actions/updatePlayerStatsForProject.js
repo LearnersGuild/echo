@@ -70,7 +70,6 @@ const {
   TEAM_PLAY_RECEPTIVENESS,
   TEAM_PLAY_RESULTS_FOCUS,
   TECHNICAL_HEALTH,
-  TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 export default async function updatePlayerStatsForProject(project) {
@@ -146,7 +145,6 @@ async function _updateSinglePlayerProjectStats(project, retroSurvey) {
     [CHALLENGE]: challenge,
     [PROJECT_HOURS]: projectHours,
     [TEAM_HOURS]: reportedHours,
-    [TIME_ON_TASK]: (reportedHours === 0) ? 0 : reportedHours / expectedHours * 100,
     [EXPERIENCE_POINTS]: projectHours,
   }
 
@@ -292,7 +290,6 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
     stats.playerId = playerId // will be removed later
     stats[TEAM_HOURS] = teamHours
     stats[PROJECT_HOURS] = Math.min(teamPlayerHours.get(playerId) || 0, expectedHours)
-    stats[TIME_ON_TASK] = (stats[PROJECT_HOURS] === 0) ? 0 : stats[PROJECT_HOURS] / expectedHours * 100
     stats[CHALLENGE] = teamPlayerChallenges.get(playerId)
     stats[TECHNICAL_HEALTH] = technicalHealth(scores[TECHNICAL_HEALTH])
     stats[CULTURE_CONTRIBUTION] = cultureContribution(scores[CULTURE_CONTRIBUTION])

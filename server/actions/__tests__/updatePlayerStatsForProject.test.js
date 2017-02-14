@@ -43,7 +43,6 @@ const {
   TEAM_PLAY_RECEPTIVENESS,
   TEAM_PLAY_RESULTS_FOCUS,
   TECHNICAL_HEALTH,
-  TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 describe(testContext(__filename), function () {
@@ -139,7 +138,6 @@ describe(testContext(__filename), function () {
             [ESTIMATION_BIAS]: 0,
             [ESTIMATION_ACCURACY]: 100,
             [PROJECT_HOURS]: 35,
-            [TIME_ON_TASK]: 87.5,
             [TEAM_HOURS]: 140,
             [RELATIVE_CONTRIBUTION_EFFECTIVE_CYCLES]: 100,
             [EXPERIENCE_POINTS]: 35,
@@ -236,7 +234,6 @@ describe(testContext(__filename), function () {
             [ESTIMATION_BIAS]: 0,
             [ESTIMATION_ACCURACY]: 100,
             [PROJECT_HOURS]: 35,
-            [TIME_ON_TASK]: 87.5,
             [TEAM_HOURS]: 105,
             [RELATIVE_CONTRIBUTION_EFFECTIVE_CYCLES]: 123,
             [EXPERIENCE_POINTS]: 43.05,
@@ -317,7 +314,6 @@ describe(testContext(__filename), function () {
             [CHALLENGE]: 7,
             [PROJECT_HOURS]: 35,
             [TEAM_HOURS]: 35,
-            [TIME_ON_TASK]: 87.5,
             [EXPERIENCE_POINTS]: 35,
             [LEVEL]: {
               ending: 0,

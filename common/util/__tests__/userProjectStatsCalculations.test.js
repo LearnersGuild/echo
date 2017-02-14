@@ -28,7 +28,6 @@ const {
   TEAM_PLAY_RECEPTIVENESS,
   TEAM_PLAY_RESULTS_FOCUS,
   TECHNICAL_HEALTH,
-  TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 const projectSummaries = [
@@ -62,7 +61,6 @@ const projectSummaries = [
       [TEAM_PLAY_RECEPTIVENESS]: null,
       [TEAM_PLAY_RESULTS_FOCUS]: null,
       [TECHNICAL_HEALTH]: null,
-      [TIME_ON_TASK]: null,
     }
   },
   {
@@ -99,7 +97,6 @@ const projectSummaries = [
       [TEAM_PLAY_RECEPTIVENESS]: 75,
       [TEAM_PLAY_RESULTS_FOCUS]: 50,
       [TECHNICAL_HEALTH]: 67,
-      [TIME_ON_TASK]: 91.8,
     }
   },
   {
@@ -134,7 +131,6 @@ const projectSummaries = [
       [TEAM_PLAY_RESULTS_FOCUS]: 83,
       [TEAM_PLAY]: 83,
       [TECHNICAL_HEALTH]: 83,
-      [TIME_ON_TASK]: 93.2,
     }
   }
 ]
@@ -227,7 +223,6 @@ describe(testContext(__filename), () => {
         [TEAM_PLAY_RECEPTIVENESS]: 79,
         [TEAM_PLAY_RESULTS_FOCUS]: 66.5,
         [TECHNICAL_HEALTH]: 75,
-        [TIME_ON_TASK]: 92.5,
       })
 
       expect(result[result.length - 3].overallStats).to.deep.eq({
@@ -245,7 +240,6 @@ describe(testContext(__filename), () => {
         [TEAM_PLAY_RECEPTIVENESS]: null,
         [TEAM_PLAY_RESULTS_FOCUS]: null,
         [TECHNICAL_HEALTH]: null,
-        [TIME_ON_TASK]: null,
       })
     })
   })

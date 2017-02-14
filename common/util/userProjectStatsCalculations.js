@@ -17,7 +17,6 @@ const {
   TEAM_PLAY_RECEPTIVENESS,
   TEAM_PLAY_RESULTS_FOCUS,
   TECHNICAL_HEALTH,
-  TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 const projectStatNames = [
@@ -81,7 +80,6 @@ export function addPointInTimeOverallStats(projectSummaries) {
         [TEAM_PLAY_RECEPTIVENESS]:         getAvgUnlessNull(TEAM_PLAY_RECEPTIVENESS),
         [TEAM_PLAY_RESULTS_FOCUS]:         getAvgUnlessNull(TEAM_PLAY_RESULTS_FOCUS),
         [TECHNICAL_HEALTH]:                getAvgUnlessNull(TECHNICAL_HEALTH),
-        [TIME_ON_TASK]:                    getAvgUnlessNull(TIME_ON_TASK),
       }
     }
   })

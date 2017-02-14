@@ -20,7 +20,6 @@ const {
   TEAM_PLAY_RECEPTIVENESS,
   TEAM_PLAY_RESULTS_FOCUS,
   TECHNICAL_HEALTH,
-  TIME_ON_TASK,
 } = STAT_DESCRIPTORS
 
 export default function getUserSummary(identifier) {
@@ -55,7 +54,6 @@ export default function getUserSummary(identifier) {
             ${NUM_PROJECTS_REVIEWED}
             ${TEAM_PLAY}
             ${TECHNICAL_HEALTH}
-            ${TIME_ON_TASK}
           }
         }
         userProjectSummaries {
@@ -101,7 +99,6 @@ export default function getUserSummary(identifier) {
             ${TEAM_PLAY_RESULTS_FOCUS}
             ${TEAM_PLAY}
             ${TECHNICAL_HEALTH}
-            ${TIME_ON_TASK}
           }
         }
       }
