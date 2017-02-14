@@ -154,6 +154,15 @@
   subjectType: project
   active: true
 -
+  id: bbace690-b4c6-435f-a2f8-23bf95c97754
+  body: During this past cycle, how many hours of personal time did you take during guild hours?
+  responseType: numeric
+  statId: a1ae9c4e-76ea-49fa-bf4f-193399593503
+  validationOptions:
+    min: 0
+  subjectType: project
+  active: true
+-
   id: 09dff295-c339-4326-8e21-71cf332e0895
   body: |
     Based on a challenge scale of 1 to 10 where 7 represents your ZPD, which number best reflects the challenge level you felt while doing this project?
