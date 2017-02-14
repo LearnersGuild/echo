@@ -135,7 +135,7 @@ async function _updateMultiPlayerProjectStats(project, retroSurvey) {
 
 async function _updateSinglePlayerProjectStats(project, retroSurvey) {
   const [playerId] = project.playerIds
-  const expectedHours = project.expectedHours || 40
+  const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
   const {retroResponses, statsQuestions} = await _getRetroQuestionsAndResponses(project, retroSurvey)
   const reportedHours = _playerResponsesForQuestionById(retroResponses, statsQuestions[PROJECT_HOURS].id, _ => parseInt(_, 10)).get(playerId) || 0
   const challenge = _playerResponsesForQuestionById(retroResponses, statsQuestions[CHALLENGE].id).get(playerId)

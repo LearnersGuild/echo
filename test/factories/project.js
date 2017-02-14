@@ -2,6 +2,7 @@ import faker from 'faker'
 
 import {connect} from 'src/db'
 import {REFLECTION} from 'src/common/models/cycle'
+import {PROJECT_DEFAULT_EXPECTED_HOURS} from 'src/common/models/project'
 
 const r = connect()
 const now = new Date()
@@ -31,7 +32,7 @@ export default function define(factory) {
         },
       }
     }),
-    expectedHours: 40,
+    expectedHours: PROJECT_DEFAULT_EXPECTED_HOURS,
     artifactURL: factory.sequence(n => `http://artifact.example.com/${n}`),
     createdAt: cb => cb(null, now),
     updatedAt: cb => cb(null, now),
