@@ -26,6 +26,8 @@ const ProjectEvaluationModel = {
 class ProjectDetail extends Component {
   constructor(props) {
     super(props)
+    console.log('Project Details props', props)
+
     this.state = {tabIndex: 0}
     this.renderHeader = this.renderHeader.bind(this)
     this.renderDetails = this.renderDetails.bind(this)
