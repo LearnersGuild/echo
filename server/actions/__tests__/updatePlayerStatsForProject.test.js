@@ -8,6 +8,7 @@ import {getPlayerById} from 'src/server/db/player'
 import {saveSurvey} from 'src/server/db/survey'
 import {findQuestionsByStat} from 'src/server/db/question'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
+import {PROJECT_DEFAULT_EXPECTED_HOURS} from 'src/common/models/project'
 import reloadSurveyAndQuestionData from 'src/server/actions/reloadSurveyAndQuestionData'
 
 import updatePlayerStatsForProject from 'src/server/actions/updatePlayerStatsForProject'
@@ -183,7 +184,7 @@ describe(testContext(__filename), function () {
       it('ignores players who have reported "time off hours" >= "expected hours" in the project', async function () {
         await this.setupSurveyData({
           [STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION]: [35, 25, 25, 15],
-          [STAT_DESCRIPTORS.PROJECT_TIME_OFF_HOURS]: [3, 3, 3, 40],
+          [STAT_DESCRIPTORS.PROJECT_TIME_OFF_HOURS]: [3, 3, 3, PROJECT_DEFAULT_EXPECTED_HOURS + 2],
         })
 
         const activePlayerId = this.project.playerIds[0]

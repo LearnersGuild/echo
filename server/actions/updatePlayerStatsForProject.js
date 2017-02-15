@@ -164,17 +164,7 @@ async function _getRetroQuestionsAndResponses(project, retroSurvey) {
 }
 
 function _getPlayerResponses(project, teamPlayersById, retroResponses, retroQuestions, statsQuestions) {
-  const isInactivePlayerResponse = response => {
-    const responseValue = parseInt(response.value, 10)
-    const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
-    const reportedMoreTimeOffThanExpectedHoursInProject = (
-      response.questionId === statsQuestions[PROJECT_TIME_OFF_HOURS].id && responseValue >= expectedHours
-    )
-    const reportedZeroHours = (
-      response.questionId === statsQuestions[PROJECT_HOURS].id && responseValue === 0
-    )
-    return reportedMoreTimeOffThanExpectedHoursInProject || reportedZeroHours
-  }
+  const isInactivePlayerResponse = _isInactivePlayerResponseClosure(project, statsQuestions)
   const inactivePlayerIds = retroResponses.filter(isInactivePlayerResponse).map(_ => _.respondentId)
 
   const isNotFromOrAboutInactivePlayer = response => {
@@ -209,6 +199,23 @@ function _getPlayerResponses(project, teamPlayersById, retroResponses, retroQues
   }
 
   return playerResponses
+}
+
+function _isInactivePlayerResponseClosure(project, statsQuestions) {
+  return response => {
+    const responseValue = () => parseInt(response.value, 10)
+
+    if (response.questionId === statsQuestions[PROJECT_HOURS].id) {
+      return responseValue() === 0
+    }
+
+    if (response.questionId === statsQuestions[PROJECT_TIME_OFF_HOURS].id) {
+      const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
+      return responseValue() >= expectedHours
+    }
+
+    return false
+  }
 }
 
 function _adjustRCResponsesTo100Percent(playerResponses, statsQuestions) {
