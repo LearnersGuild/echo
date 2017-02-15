@@ -10,6 +10,7 @@ import {
   SAVE_SURVEY_RESPONSES_FAILURE,
   SET_SURVEY_GROUP,
   SURVEY_PARSE_FAILURE,
+  UNLOCK_SURVEY_SUCCESS,
 } from 'src/common/actions/types'
 
 const initialState = {
@@ -49,6 +50,13 @@ export default function surveys(state = initialState, action) {
       return Object.assign({}, state, {
         isBusy: false,
         error: null,
+      })
+
+    case UNLOCK_SURVEY_SUCCESS:
+      return Object.assign({}, state, {
+        isBusy: false,
+        error: null,
+        retro: action.response,
       })
 
     case FIND_RETRO_SURVEYS_FAILURE:
