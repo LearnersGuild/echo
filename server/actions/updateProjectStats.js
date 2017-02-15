@@ -59,7 +59,7 @@ function getProjectStats(projectId, projectExpectedHours) {
         .sum()
         .default(null)
       const projectHours = r.branch(
-        computedProjectHours.ne(null),
+        stats.hasFields(PROJECT_TIME_OFF_HOURS),
         computedProjectHours,
         sum(PROJECT_HOURS)
       )
