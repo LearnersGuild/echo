@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-spaces */
 import elo from 'elo-rank'
 
 import {roundDecimal} from 'src/common/util'
@@ -91,7 +90,7 @@ export function relativeContributionEffectiveCycles(relativeContributionAggregat
   return relativeContributionAggregateCycles * relativeContribution
 }
 
-export const technicalHealth    = likert7Average
+export const technicalHealth = likert7Average
 export const cultureContribution = likert7Average
 export const cultureContributionStructure = likert7Average
 export const cultureContributionSafety = likert7Average
@@ -100,11 +99,11 @@ export const cultureContributionChallenge = likert7Average
 export const cultureContributionSupport = likert7Average
 export const cultureContributionEngagement = likert7Average
 export const cultureContributionEnjoyment = likert7Average
-export const teamPlay           = likert7Average
-export const teamPlayReceptiveness      = likert7Average
+export const teamPlay = likert7Average
+export const teamPlayReceptiveness = likert7Average
 export const teamPlayFlexibleLeadership = likert7Average
-export const teamPlayResultsFocus       = likert7Average
-export const teamPlayFrictionReduction  = likert7Average
+export const teamPlayResultsFocus = likert7Average
+export const teamPlayFrictionReduction = likert7Average
 
 export function likert7Average(scores) {
   return averageScoreInRange(LIKERT_SCORE_MIN, LIKERT_SCORE_MAX, scores)
@@ -192,35 +191,50 @@ function _applyStretchFactor(unstretchedScore) {
   return stretchedScore
 }
 
-/* eslint-disable key-spacing */
 // see: https://playbook.learnersguild.org/Game_Manual/Levels_and_Roles.html#level-requirements
-export const LEVELS = [
-  {[LEVEL]: 0, requirements: {
-    [EXPERIENCE_POINTS]:   0, [ELO]:               0, [CULTURE_CONTRIBUTION]:  0,
-    [TEAM_PLAY]:           0, [TECHNICAL_HEALTH]:  0, [ESTIMATION_ACCURACY]:   0,
-  }},
-  {[LEVEL]: 1, requirements: {
-    [EXPERIENCE_POINTS]:    0, [ELO]:             900, [CULTURE_CONTRIBUTION]: 65,
-    [TEAM_PLAY]:           65, [TECHNICAL_HEALTH]:  0, [ESTIMATION_ACCURACY]:  90,
-  }},
-  {[LEVEL]: 2, requirements: {
-    [EXPERIENCE_POINTS]:  150, [ELO]:             990, [CULTURE_CONTRIBUTION]: 80,
-    [TEAM_PLAY]:           80, [TECHNICAL_HEALTH]:  0, [ESTIMATION_ACCURACY]:  91,
-  }},
-  {[LEVEL]: 3, requirements: {
-    [EXPERIENCE_POINTS]:  400, [ELO]:            1020, [CULTURE_CONTRIBUTION]: 85,
-    [TEAM_PLAY]:           85, [TECHNICAL_HEALTH]: 80, [ESTIMATION_ACCURACY]:  92,
-  }},
-  {[LEVEL]: 4, requirements: {
-    [EXPERIENCE_POINTS]:  600, [ELO]:            1050, [CULTURE_CONTRIBUTION]: 90,
-    [TEAM_PLAY]:           90, [TECHNICAL_HEALTH]: 90, [ESTIMATION_ACCURACY]:  93,
-  }},
-  {[LEVEL]: 5, requirements: {
-    [EXPERIENCE_POINTS]:  800, [ELO]:            1150, [CULTURE_CONTRIBUTION]: 90,
-    [TEAM_PLAY]:           90, [TECHNICAL_HEALTH]: 95, [ESTIMATION_ACCURACY]:  94,
-  }},
-]
-/* eslint-enable key-spacing */
+export const LEVELS = [{
+  [LEVEL]: 0,
+  requirements: {
+    [EXPERIENCE_POINTS]: 0,
+    [ELO]: 0,
+    [ESTIMATION_ACCURACY]: 0,
+  },
+}, {
+  [LEVEL]: 1,
+  requirements: {
+    [EXPERIENCE_POINTS]: 0,
+    [ELO]: 900,
+    [ESTIMATION_ACCURACY]: 90,
+  },
+}, {
+  [LEVEL]: 2,
+  requirements: {
+    [EXPERIENCE_POINTS]: 150,
+    [ELO]: 990,
+    [ESTIMATION_ACCURACY]: 91,
+  },
+}, {
+  [LEVEL]: 3,
+  requirements: {
+    [EXPERIENCE_POINTS]: 400,
+    [ELO]: 1020,
+    [ESTIMATION_ACCURACY]: 92,
+  },
+}, {
+  [LEVEL]: 4,
+  requirements: {
+    [EXPERIENCE_POINTS]: 600,
+    [ELO]: 1050,
+    [ESTIMATION_ACCURACY]: 93,
+  }
+}, {
+  [LEVEL]: 5,
+  requirements: {
+    [EXPERIENCE_POINTS]: 800,
+    [ELO]: 1150,
+    [ESTIMATION_ACCURACY]: 94,
+  },
+}]
 
 export function computePlayerLevel(player) {
   const stats = _playerLevelStats(player)
@@ -251,16 +265,14 @@ export function getPlayerStat(player, statName, formatter = floatStatFormatter) 
 }
 
 function _playerLevelStats(player) {
-/* eslint-disable key-spacing */
   return {
-    [ELO]:                  getPlayerStat(player, 'elo.rating', intStatFormatter),
-    [EXPERIENCE_POINTS]:    getPlayerStat(player, EXPERIENCE_POINTS, intStatFormatter),
+    [ELO]: getPlayerStat(player, 'elo.rating', intStatFormatter),
+    [EXPERIENCE_POINTS]: getPlayerStat(player, EXPERIENCE_POINTS, intStatFormatter),
     [CULTURE_CONTRIBUTION]: getPlayerStat(player, `weightedAverages.${CULTURE_CONTRIBUTION}`),
-    [TEAM_PLAY]:            getPlayerStat(player, `weightedAverages.${TEAM_PLAY}`),
-    [TECHNICAL_HEALTH]:     getPlayerStat(player, `weightedAverages.${TECHNICAL_HEALTH}`),
-    [ESTIMATION_ACCURACY]:  getPlayerStat(player, `weightedAverages.${ESTIMATION_ACCURACY}`),
+    [TEAM_PLAY]: getPlayerStat(player, `weightedAverages.${TEAM_PLAY}`),
+    [TECHNICAL_HEALTH]: getPlayerStat(player, `weightedAverages.${TECHNICAL_HEALTH}`),
+    [ESTIMATION_ACCURACY]: getPlayerStat(player, `weightedAverages.${ESTIMATION_ACCURACY}`),
   }
-/* eslint-enable key-spacing */
 }
 
 function _validatePlayer(player) {

@@ -350,52 +350,41 @@ describe(testContext(__filename), function () {
           [ELO]: {rating: 900},
           [EXPERIENCE_POINTS]: 0,
           weightedAverages: {
-            [CULTURE_CONTRIBUTION]: 0,
-            [TEAM_PLAY]: 0,
-            [TECHNICAL_HEALTH]: 0,
+            [ESTIMATION_ACCURACY]: 0,
           },
         }
       }
       expect(computePlayerLevel(player)).to.equal(0)
 
       player.stats[ELO].rating = 1000
-      player.stats.weightedAverages[CULTURE_CONTRIBUTION] = player.stats.weightedAverages[TEAM_PLAY] = 65
       player.stats.weightedAverages[ESTIMATION_ACCURACY] = 90
       expect(computePlayerLevel(player)).to.equal(1)
 
       player.stats[EXPERIENCE_POINTS] = 150
-      player.stats.weightedAverages[CULTURE_CONTRIBUTION] = player.stats.weightedAverages[TEAM_PLAY] = 80
       player.stats.weightedAverages[ESTIMATION_ACCURACY] = 91
       expect(computePlayerLevel(player)).to.equal(2)
 
       player.stats[ELO].rating = 1050
-      player.stats.weightedAverages[CULTURE_CONTRIBUTION] = player.stats.weightedAverages[TEAM_PLAY] = 85
       player.stats.weightedAverages[ESTIMATION_ACCURACY] = 91
       expect(computePlayerLevel(player)).to.equal(2)
 
       player.stats[EXPERIENCE_POINTS] = 400
-      player.stats.weightedAverages[TECHNICAL_HEALTH] = 80
       player.stats.weightedAverages[ESTIMATION_ACCURACY] = 92
       expect(computePlayerLevel(player)).to.equal(3)
 
       player.stats[EXPERIENCE_POINTS] = 600
-      player.stats.weightedAverages[CULTURE_CONTRIBUTION] = 90
-      player.stats.weightedAverages[TECHNICAL_HEALTH] = 90
       expect(computePlayerLevel(player)).to.equal(3)
 
       player.stats[ELO].rating = 1100
       expect(computePlayerLevel(player)).to.equal(3)
 
-      player.stats.weightedAverages[TEAM_PLAY] = 90
       player.stats.weightedAverages[ESTIMATION_ACCURACY] = 93
       expect(computePlayerLevel(player)).to.equal(4)
 
       player.stats[ELO].rating = 1150
       player.stats[EXPERIENCE_POINTS] = 800
-      player.stats.weightedAverages[CULTURE_CONTRIBUTION] = player.stats.weightedAverages[TEAM_PLAY] = 90
       expect(computePlayerLevel(player)).to.equal(4)
 
-      player.stats.weightedAverages[TECHNICAL_HEALTH] = 95
       player.stats.weightedAverages[ESTIMATION_ACCURACY] = 94
       expect(computePlayerLevel(player)).to.equal(5)
     })
