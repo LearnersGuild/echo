@@ -99,7 +99,7 @@
     "{{subject}} was open to feedback, and received it gracefully without becoming defensive or dismissive. {{subject}} separated their ego from their work."
   statId: 006e828a-4724-4efe-8c67-10449e48eadd
   subjectType: player
-  active: true
+  active: false
 -
   id: fbec7b49-aec5-4dc0-a29c-38bea860bacc
   body: |
@@ -109,7 +109,7 @@
   responseType: likert7Agreement
   statId: 1a4f5b18-7907-4bd1-bfd2-10ec3f30d2d6
   subjectType: player
-  active: true
+  active: false
 -
   id: 9adcba88-35d6-45c4-8e55-5ebaf1829678
   body: |
@@ -119,7 +119,7 @@
   responseType: likert7Agreement
   statId: 56e2de0e-1200-4722-bc70-9768edf8fffd
   subjectType: player
-  active: true
+  active: false
 -
   id: 35b1e5a7-9305-4752-8b21-cea413ae1bed
   body: |
@@ -129,7 +129,7 @@
   responseType: likert7Agreement
   statId: 8d93d767-d0a1-48a4-848c-8663b7f997f1
   subjectType: player
-  active: true
+  active: false
 -
   id: 2c335ce5-ed0b-4068-92c8-56666fb7fdad
   body: How would you rate the quality of this project on a scale of 0-100%? (using the quality rubric)
@@ -191,7 +191,7 @@
   responseType: likert7Agreement
   statId: 8bbb56d6-237d-46a1-aa16-a449390fd459
   subjectType: player
-  active: true
+  active: false
 -
   id: db613a80-c573-4fe9-80d4-ddcf94624d8a
   body: |
@@ -201,7 +201,7 @@
   responseType: likert7Agreement
   statId: 94f35364-9031-43c3-bc4a-871213992eb6
   subjectType: player
-  active: true
+  active: false
 -
   id: 0f063fa9-2a44-4254-ba0b-198db409157b
   body: |
@@ -211,7 +211,7 @@
   responseType: likert7Agreement
   statId: 4afae04a-4f99-4abe-b5d7-fa8d8139b66c
   subjectType: player
-  active: true
+  active: false
 -
   id: 90d8dbf6-83da-44ea-a118-248019b00478
   body: |
@@ -221,7 +221,7 @@
   responseType: likert7Agreement
   statId: 52140bf3-9a00-4b1b-ba7b-59d19e8bee3a
   subjectType: player
-  active: true
+  active: false
 -
   id: 61b1e890-a8f8-444e-8b08-d6fcb9977bc3
   body: |
@@ -231,7 +231,7 @@
   responseType: likert7Agreement
   statId: 06e4ec74-1bff-42ad-8db6-795fa2462e4a
   subjectType: player
-  active: true
+  active: false
 -
   id: afe46b1a-d5a2-4602-a991-edb901a42490
   body: |
@@ -241,7 +241,7 @@
   responseType: likert7Agreement
   statId: 8884db6c-671e-481b-8e8a-baf8b3d5fd2e
   subjectType: player
-  active: true
+  active: false
 -
   id: 974c7854-2e95-4de0-9ec2-5fa4c6a3e364
   body: |
@@ -251,4 +251,4 @@
   responseType: likert7Agreement
   statId: c7ee711b-9ac9-4a36-8d2d-c63200fc59a9
   subjectType: player
-  active: true
+  active: false

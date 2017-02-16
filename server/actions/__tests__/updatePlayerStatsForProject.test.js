@@ -328,7 +328,7 @@ describe(testContext(__filename), function () {
   })
 })
 
-const _getQId = descriptor => findQuestionsByStat(descriptor).filter({active: true})(0)('id')
+const _getQId = descriptor => findQuestionsByStat(descriptor)(0)('id')
 const _qAndR = async (descriptor, responses) => {
   const val = responses[descriptor]
   const qr = {questionId: await _getQId(descriptor)}
