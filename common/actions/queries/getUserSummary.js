@@ -2,7 +2,6 @@ import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 const {
   CHALLENGE,
-  CULTURE_CONTRIBUTION,
   ELO,
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
@@ -14,12 +13,6 @@ const {
   PROJECT_HOURS,
   PROJECT_QUALITY,
   RELATIVE_CONTRIBUTION,
-  TEAM_PLAY,
-  TEAM_PLAY_FLEXIBLE_LEADERSHIP,
-  TEAM_PLAY_FRICTION_REDUCTION,
-  TEAM_PLAY_RECEPTIVENESS,
-  TEAM_PLAY_RESULTS_FOCUS,
-  TECHNICAL_HEALTH,
 } = STAT_DESCRIPTORS
 
 export default function getUserSummary(identifier) {
@@ -45,15 +38,12 @@ export default function getUserSummary(identifier) {
           }
           stats {
             ${CHALLENGE}
-            ${CULTURE_CONTRIBUTION}
             ${ELO}
             ${ESTIMATION_ACCURACY}
             ${ESTIMATION_BIAS}
             ${EXPERIENCE_POINTS}
             ${LEVEL}
             ${NUM_PROJECTS_REVIEWED}
-            ${TEAM_PLAY}
-            ${TECHNICAL_HEALTH}
           }
         }
         userProjectSummaries {
@@ -82,7 +72,6 @@ export default function getUserSummary(identifier) {
           }
           userProjectStats {
             ${CHALLENGE}
-            ${CULTURE_CONTRIBUTION}
             ${ELO}
             ${ESTIMATION_ACCURACY}
             ${ESTIMATION_BIAS}
@@ -93,12 +82,6 @@ export default function getUserSummary(identifier) {
             }
             ${PROJECT_HOURS}
             ${RELATIVE_CONTRIBUTION}
-            ${TEAM_PLAY_FLEXIBLE_LEADERSHIP}
-            ${TEAM_PLAY_FRICTION_REDUCTION}
-            ${TEAM_PLAY_RECEPTIVENESS}
-            ${TEAM_PLAY_RESULTS_FOCUS}
-            ${TEAM_PLAY}
-            ${TECHNICAL_HEALTH}
           }
         }
       }

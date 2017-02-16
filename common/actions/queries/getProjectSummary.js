@@ -55,7 +55,6 @@ export default function getProjectSummary(identifier) {
           }
           userProjectStats {
             ${STAT_DESCRIPTORS.CHALLENGE}
-            ${STAT_DESCRIPTORS.CULTURE_CONTRIBUTION}
             ${STAT_DESCRIPTORS.ELO}
             ${STAT_DESCRIPTORS.ESTIMATION_ACCURACY}
             ${STAT_DESCRIPTORS.ESTIMATION_BIAS}
@@ -66,12 +65,6 @@ export default function getProjectSummary(identifier) {
             }
             ${STAT_DESCRIPTORS.PROJECT_HOURS}
             ${STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION}
-            ${STAT_DESCRIPTORS.TEAM_PLAY_FLEXIBLE_LEADERSHIP}
-            ${STAT_DESCRIPTORS.TEAM_PLAY_FRICTION_REDUCTION}
-            ${STAT_DESCRIPTORS.TEAM_PLAY_RECEPTIVENESS}
-            ${STAT_DESCRIPTORS.TEAM_PLAY_RESULTS_FOCUS}
-            ${STAT_DESCRIPTORS.TEAM_PLAY}
-            ${STAT_DESCRIPTORS.TECHNICAL_HEALTH}
           }
         }
       }

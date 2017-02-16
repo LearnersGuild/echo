@@ -34,9 +34,6 @@ class UserDetail extends Component {
         <div>Level</div>
         <div>Elo</div>
         <div>XP</div>
-        <div>Culture</div>
-        <div><nobr>Team Play</nobr></div>
-        <div>Technical</div>
         <div><nobr>Est. Accy.</nobr></div>
         <div><nobr>Est. Bias</nobr></div>
         <div>Challenge</div>
@@ -53,9 +50,6 @@ class UserDetail extends Component {
         <div>{renderStat(STAT_DESCRIPTORS.LEVEL)}</div>
         <div>{renderStat(STAT_DESCRIPTORS.ELO)}</div>
         <div>{renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
-        <div>{renderStat(STAT_DESCRIPTORS.CULTURE_CONTRIBUTION)}%</div>
-        <div>{renderStat(STAT_DESCRIPTORS.TEAM_PLAY)}%</div>
-        <div>{renderStat(STAT_DESCRIPTORS.TECHNICAL_HEALTH)}%</div>
         <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY)}%</div>
         <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS)}%</div>
         <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
@@ -179,9 +173,6 @@ UserDetail.propTypes = {
     stats: PropTypes.shape({
       [STAT_DESCRIPTORS.ELO]: PropTypes.number,
       [STAT_DESCRIPTORS.EXPERIENCE_POINTS]: PropTypes.number,
-      [STAT_DESCRIPTORS.CULTURE_CONTRIBUTION]: PropTypes.number,
-      [STAT_DESCRIPTORS.TEAM_PLAY]: PropTypes.number,
-      [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: PropTypes.number,
       [STAT_DESCRIPTORS.ESTIMATION_ACCURACY]: PropTypes.number,
       [STAT_DESCRIPTORS.ESTIMATION_BIAS]: PropTypes.number,
       [STAT_DESCRIPTORS.CHALLENGE]: PropTypes.number,

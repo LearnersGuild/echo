@@ -45,9 +45,6 @@ export default class ProjectUserSummary extends Component {
           <Flex className={styles.subcolumn} column>
             <div>{'Elo'}</div>
             <div>{'XP'}</div>
-            <div>{'Culture'}</div>
-            <div>{'Team Play'}</div>
-            <div>{'Technical'}</div>
             <div>{'Est. Accy.'}</div>
             <div>{'Est. Bias'}</div>
             <div>{'Challenge'}</div>
@@ -55,28 +52,9 @@ export default class ProjectUserSummary extends Component {
           <Flex className={styles.subcolumn} column>
             <div>{userStats[STAT_DESCRIPTORS.ELO] || blank}</div>
             <div>{userStats[STAT_DESCRIPTORS.EXPERIENCE_POINTS] || blank}</div>
-            <div>{userStats[STAT_DESCRIPTORS.CULTURE_CONTRIBUTION] || blank}%</div>
-            <div>{userStats[STAT_DESCRIPTORS.TEAM_PLAY] || blank}%</div>
-            <div>{userStats[STAT_DESCRIPTORS.TECHNICAL_HEALTH] || blank}%</div>
             <div>{userStats[STAT_DESCRIPTORS.ESTIMATION_ACCURACY] || blank}%</div>
             <div>{userStats[STAT_DESCRIPTORS.ESTIMATION_BIAS] || blank}%</div>
             <div>{userStats[STAT_DESCRIPTORS.CHALLENGE] || blank}</div>
-          </Flex>
-        </Flex>
-        <Flex className={styles.column} fill>
-          <Flex className={styles.subcolumn} column text="Team Play Feedback">
-            <em>Team Play Feedback</em>
-            <div>{'Focus'}</div>
-            <div>{'Friction'}</div>
-            <div>{'Leadership'}</div>
-            <div>{'Receptiveness'}</div>
-          </Flex>
-          <Flex className={styles.subcolumn} column>
-            <div>&nbsp;</div>
-            <div>{userStats[STAT_DESCRIPTORS.TEAM_PLAY_RESULTS_FOCUS] || blank}%</div>
-            <div>{userStats[STAT_DESCRIPTORS.TEAM_PLAY_FRICTION_REDUCTION] || blank}%</div>
-            <div>{userStats[STAT_DESCRIPTORS.TEAM_PLAY_FLEXIBLE_LEADERSHIP] || blank}%</div>
-            <div>{userStats[STAT_DESCRIPTORS.TEAM_PLAY_RECEPTIVENESS] || blank}%</div>
           </Flex>
         </Flex>
       </Flex>
