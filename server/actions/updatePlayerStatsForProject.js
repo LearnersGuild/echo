@@ -21,18 +21,7 @@ import {
   experiencePoints,
   technicalHealth,
   cultureContribution,
-  cultureContributionStructure,
-  cultureContributionSafety,
-  cultureContributionTruth,
-  cultureContributionChallenge,
-  cultureContributionSupport,
-  cultureContributionEngagement,
-  cultureContributionEnjoyment,
   teamPlay,
-  teamPlayReceptiveness,
-  teamPlayFlexibleLeadership,
-  teamPlayResultsFocus,
-  teamPlayFrictionReduction,
 } from 'src/server/util/stats'
 import {PROJECT_DEFAULT_EXPECTED_HOURS} from 'src/common/models/project'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
@@ -43,13 +32,6 @@ import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 const {
   CHALLENGE,
   CULTURE_CONTRIBUTION,
-  CULTURE_CONTRIBUTION_CHALLENGE,
-  CULTURE_CONTRIBUTION_ENGAGEMENT,
-  CULTURE_CONTRIBUTION_ENJOYMENT,
-  CULTURE_CONTRIBUTION_SAFETY,
-  CULTURE_CONTRIBUTION_STRUCTURE,
-  CULTURE_CONTRIBUTION_SUPPORT,
-  CULTURE_CONTRIBUTION_TRUTH,
   ELO,
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
@@ -66,10 +48,6 @@ const {
   RELATIVE_CONTRIBUTION_SELF,
   TEAM_HOURS,
   TEAM_PLAY,
-  TEAM_PLAY_FLEXIBLE_LEADERSHIP,
-  TEAM_PLAY_FRICTION_REDUCTION,
-  TEAM_PLAY_RECEPTIVENESS,
-  TEAM_PLAY_RESULTS_FOCUS,
   TECHNICAL_HEALTH,
 } = STAT_DESCRIPTORS
 
@@ -252,18 +230,7 @@ async function _getStatsQuestions(questions) {
     [PROJECT_TIME_OFF_HOURS]: getQ(PROJECT_TIME_OFF_HOURS),
     [CHALLENGE]: getQ(CHALLENGE),
     [CULTURE_CONTRIBUTION]: getQ(CULTURE_CONTRIBUTION),
-    [CULTURE_CONTRIBUTION_STRUCTURE]: getQ(CULTURE_CONTRIBUTION_STRUCTURE),
-    [CULTURE_CONTRIBUTION_SAFETY]: getQ(CULTURE_CONTRIBUTION_SAFETY),
-    [CULTURE_CONTRIBUTION_TRUTH]: getQ(CULTURE_CONTRIBUTION_TRUTH),
-    [CULTURE_CONTRIBUTION_CHALLENGE]: getQ(CULTURE_CONTRIBUTION_CHALLENGE),
-    [CULTURE_CONTRIBUTION_SUPPORT]: getQ(CULTURE_CONTRIBUTION_SUPPORT),
-    [CULTURE_CONTRIBUTION_ENGAGEMENT]: getQ(CULTURE_CONTRIBUTION_ENGAGEMENT),
-    [CULTURE_CONTRIBUTION_ENJOYMENT]: getQ(CULTURE_CONTRIBUTION_ENJOYMENT),
     [TEAM_PLAY]: getQ(TEAM_PLAY),
-    [TEAM_PLAY_RECEPTIVENESS]: getQ(TEAM_PLAY_RECEPTIVENESS),
-    [TEAM_PLAY_RESULTS_FOCUS]: getQ(TEAM_PLAY_RESULTS_FOCUS),
-    [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: getQ(TEAM_PLAY_FLEXIBLE_LEADERSHIP),
-    [TEAM_PLAY_FRICTION_REDUCTION]: getQ(TEAM_PLAY_FRICTION_REDUCTION),
   }
 }
 
@@ -313,18 +280,7 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
     stats[CHALLENGE] = teamPlayerChallenges.get(playerId)
     stats[TECHNICAL_HEALTH] = technicalHealth(scores[TECHNICAL_HEALTH])
     stats[CULTURE_CONTRIBUTION] = cultureContribution(scores[CULTURE_CONTRIBUTION])
-    stats[CULTURE_CONTRIBUTION_STRUCTURE] = cultureContributionStructure(scores[CULTURE_CONTRIBUTION_STRUCTURE])
-    stats[CULTURE_CONTRIBUTION_SAFETY] = cultureContributionSafety(scores[CULTURE_CONTRIBUTION_SAFETY])
-    stats[CULTURE_CONTRIBUTION_TRUTH] = cultureContributionTruth(scores[CULTURE_CONTRIBUTION_TRUTH])
-    stats[CULTURE_CONTRIBUTION_CHALLENGE] = cultureContributionChallenge(scores[CULTURE_CONTRIBUTION_CHALLENGE])
-    stats[CULTURE_CONTRIBUTION_SUPPORT] = cultureContributionSupport(scores[CULTURE_CONTRIBUTION_SUPPORT])
-    stats[CULTURE_CONTRIBUTION_ENGAGEMENT] = cultureContributionEngagement(scores[CULTURE_CONTRIBUTION_ENGAGEMENT])
-    stats[CULTURE_CONTRIBUTION_ENJOYMENT] = cultureContributionEnjoyment(scores[CULTURE_CONTRIBUTION_ENJOYMENT])
     stats[TEAM_PLAY] = teamPlay(scores[TEAM_PLAY])
-    stats[TEAM_PLAY_RECEPTIVENESS] = teamPlayReceptiveness(scores[TEAM_PLAY_RECEPTIVENESS])
-    stats[TEAM_PLAY_RESULTS_FOCUS] = teamPlayResultsFocus(scores[TEAM_PLAY_RESULTS_FOCUS])
-    stats[TEAM_PLAY_FLEXIBLE_LEADERSHIP] = teamPlayFlexibleLeadership(scores[TEAM_PLAY_FLEXIBLE_LEADERSHIP])
-    stats[TEAM_PLAY_FRICTION_REDUCTION] = teamPlayFrictionReduction(scores[TEAM_PLAY_FRICTION_REDUCTION])
     stats[RELATIVE_CONTRIBUTION] = relativeContribution(scores.playerRCScoresById, playerEstimationAccuraciesById)
     stats[RELATIVE_CONTRIBUTION_EXPECTED] = relativeContributionExpected(stats[PROJECT_HOURS], stats[TEAM_HOURS])
     stats[RELATIVE_CONTRIBUTION_DELTA] = relativeContributionDelta(stats[RELATIVE_CONTRIBUTION_EXPECTED], stats[RELATIVE_CONTRIBUTION])
@@ -372,18 +328,7 @@ function _extractPlayerScores(statsQuestions, responses, playerId) {
   const scores = {
     [TECHNICAL_HEALTH]: [],
     [CULTURE_CONTRIBUTION]: [],
-    [CULTURE_CONTRIBUTION_STRUCTURE]: [],
-    [CULTURE_CONTRIBUTION_SAFETY]: [],
-    [CULTURE_CONTRIBUTION_TRUTH]: [],
-    [CULTURE_CONTRIBUTION_CHALLENGE]: [],
-    [CULTURE_CONTRIBUTION_SUPPORT]: [],
-    [CULTURE_CONTRIBUTION_ENGAGEMENT]: [],
-    [CULTURE_CONTRIBUTION_ENJOYMENT]: [],
     [TEAM_PLAY]: [],
-    [TEAM_PLAY_RECEPTIVENESS]: [],
-    [TEAM_PLAY_FLEXIBLE_LEADERSHIP]: [],
-    [TEAM_PLAY_RESULTS_FOCUS]: [],
-    [TEAM_PLAY_FRICTION_REDUCTION]: [],
     [RELATIVE_CONTRIBUTION]: {
       all: [],
       self: null,
