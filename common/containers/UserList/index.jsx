@@ -44,6 +44,7 @@ class UserListContainer extends Component {
 UserListContainer.propTypes = {
   users: PropTypes.array.isRequired,
   isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   currentUser: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,

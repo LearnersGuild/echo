@@ -50,6 +50,7 @@ ProjectDetailContainer.propTypes = {
   projectEvaluations: PropTypes.array,
   projectUserSummaries: PropTypes.array,
   isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   currentUser: PropTypes.object,
   fetchData: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,

@@ -34,6 +34,7 @@ class ProjectFormContainer extends Component {
 ProjectFormContainer.propTypes = {
   project: PropTypes.object,
   isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   fetchData: PropTypes.func.isRequired,
   showLoad: PropTypes.func.isRequired,
   hideLoad: PropTypes.func.isRequired,

@@ -51,6 +51,7 @@ class ProjectListContainer extends Component {
 ProjectListContainer.propTypes = {
   projects: PropTypes.array.isRequired,
   isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   currentUser: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,

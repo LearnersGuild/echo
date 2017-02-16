@@ -219,6 +219,7 @@
         "single",
         "avoid-escape"
       ],
+      "react/no-unused-prop-types": 0,
       "react/forbid-component-props": 0,
       "react/jsx-indent": [
         2,

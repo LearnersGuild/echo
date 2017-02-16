@@ -55,6 +55,7 @@ class ChapterListContainer extends Component {
 ChapterListContainer.propTypes = {
   chapters: PropTypes.array.isRequired,
   isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   currentUser: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,

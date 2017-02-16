@@ -261,6 +261,7 @@ class RetroSurveyContainer extends Component {
 
 RetroSurveyContainer.propTypes = {
   isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   currentUser: PropTypes.object,
   error: PropTypes.object,
   groupIndex: PropTypes.number,

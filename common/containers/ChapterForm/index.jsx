@@ -34,6 +34,7 @@ class ChapterFormContainer extends Component {
 ChapterFormContainer.propTypes = {
   chapter: PropTypes.object,
   isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   fetchData: PropTypes.func.isRequired,
   showLoad: PropTypes.func.isRequired,
   hideLoad: PropTypes.func.isRequired,

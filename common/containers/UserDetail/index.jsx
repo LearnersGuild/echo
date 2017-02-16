@@ -45,6 +45,8 @@ class UserDetailContainer extends Component {
 UserDetailContainer.propTypes = {
   user: PropTypes.object,
   userProjectSummaries: PropTypes.array,
+  isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   fetchData: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
   showLoad: PropTypes.func.isRequired,
