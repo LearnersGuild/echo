@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 
 import {findProjectBySurveyId} from 'src/server/db/project'
 import {getSurveyById, recordSurveyCompletedBy, surveyWasCompletedBy} from 'src/server/db/survey'
-import sendPlayerStatsSummaries from 'src/server/actions/sendPlayerStatsSummaries'
+import sendRetroCompletedNotification from 'src/server/actions/sendRetroCompletedNotification'
 import updatePlayerStatsForProject from 'src/server/actions/updatePlayerStatsForProject'
 import updateProjectStats from 'src/server/actions/updateProjectStats'
 import updatePlayerCumulativeStats from 'src/server/actions/updatePlayerCumulativeStats'
@@ -84,7 +84,7 @@ async function updateStatsIfNeeded(project, survey, respondentId) {
     console.log(`All respondents have completed this survey [${survey.id}]. Updating stats.`)
     await updateProjectStats(project.id)
     await updatePlayerStatsForProject(project)
-    await sendPlayerStatsSummaries(project)
+    await sendRetroCompletedNotification(project)
   }
 }
 

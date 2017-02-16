@@ -91,7 +91,7 @@ describe(testContext(__filename), function () {
           await processSurveyResponseSubmitted(event)
           expect(chatService.sendDirectMessage.callCount).to.eq(this.users.length)
           this.users.forEach(user => (
-            expect(chatService.sendDirectMessage).to.have.been.calledWithMatch(user.handle, 'RETROSPECTIVE RESULTS')
+            expect(chatService.sendDirectMessage).to.have.been.calledWithMatch(user.handle, 'RETROSPECTIVE COMPLETE')
           ))
         })
       })
