@@ -8,13 +8,6 @@ import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {groupResponsesBySubject} from 'src/server/util/survey'
 
 const {
-  CULTURE_CONTRIBUTION_CHALLENGE,
-  CULTURE_CONTRIBUTION_ENGAGEMENT,
-  CULTURE_CONTRIBUTION_ENJOYMENT,
-  CULTURE_CONTRIBUTION_SAFETY,
-  CULTURE_CONTRIBUTION_STRUCTURE,
-  CULTURE_CONTRIBUTION_SUPPORT,
-  CULTURE_CONTRIBUTION_TRUTH,
   PROJECT_HOURS,
   RELATIVE_CONTRIBUTION,
   RELATIVE_CONTRIBUTION_DELTA,
@@ -22,10 +15,6 @@ const {
   RELATIVE_CONTRIBUTION_OTHER,
   RELATIVE_CONTRIBUTION_SELF,
   TEAM_HOURS,
-  TEAM_PLAY_FLEXIBLE_LEADERSHIP,
-  TEAM_PLAY_FRICTION_REDUCTION,
-  TEAM_PLAY_RECEPTIVENESS,
-  TEAM_PLAY_RESULTS_FOCUS,
 } = STAT_DESCRIPTORS
 
 export default async function sendPlayerStatsSummaries(project) {
@@ -115,21 +104,5 @@ Team-assessed: ${stats[RELATIVE_CONTRIBUTION_OTHER] || 0}%
 
 Your estimated contribution to the project: ${stats[RELATIVE_CONTRIBUTION] || 0}%
 Expected contribution for # of hours: ${stats[RELATIVE_CONTRIBUTION_EXPECTED] || 0}%
-Contribution difference: ${stats[RELATIVE_CONTRIBUTION_DELTA] || 0}%
-
-**Feedback for this project:**
-
-Culture Contribution:
-  - Structure: ${stats[CULTURE_CONTRIBUTION_STRUCTURE] || 0}%
-  - Safety: ${stats[CULTURE_CONTRIBUTION_SAFETY] || 0}%
-  - Truth: ${stats[CULTURE_CONTRIBUTION_TRUTH] || 0}%
-  - Challenge: ${stats[CULTURE_CONTRIBUTION_CHALLENGE] || 0}%
-  - Support: ${stats[CULTURE_CONTRIBUTION_SUPPORT] || 0}%
-  - Engagement: ${stats[CULTURE_CONTRIBUTION_ENGAGEMENT] || 0}%
-  - Enjoyment: ${stats[CULTURE_CONTRIBUTION_ENJOYMENT] || 0}%
-Team Play:
-  - Receptiveness: ${stats[TEAM_PLAY_RECEPTIVENESS] || 0}%
-  - Results Focus: ${stats[TEAM_PLAY_RESULTS_FOCUS] || 0}%
-  - Flexible Leadership: ${stats[TEAM_PLAY_FLEXIBLE_LEADERSHIP] || 0}%
-  - Friction Reduction: ${stats[TEAM_PLAY_FRICTION_REDUCTION] || 0}%`
+Contribution difference: ${stats[RELATIVE_CONTRIBUTION_DELTA] || 0}%`
 }
