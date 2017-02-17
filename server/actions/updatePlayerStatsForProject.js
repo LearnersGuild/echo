@@ -221,7 +221,7 @@ function _adjustRCResponsesTo100Percent(playerResponses, statsQuestions) {
 
 async function _getStatsQuestions(questions) {
   const stats = await statsByDescriptor()
-  const getQ = descriptor => questions.filter(_ => _.statId === stats[descriptor].id)[0] || {}
+  const getQ = descriptor => questions.filter(_ => _.statId === stats[descriptor].id)[0]
 
   const statsQuestions = {
     [TECHNICAL_HEALTH]: getQ(TECHNICAL_HEALTH),
