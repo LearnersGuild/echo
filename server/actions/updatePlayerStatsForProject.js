@@ -117,7 +117,7 @@ async function _updateSinglePlayerProjectStats(project, retroSurvey) {
   const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
   const {retroResponses, statsQuestions} = await _getRetroQuestionsAndResponses(project, retroSurvey)
   const reportedHours = _playerProjectHoursById(expectedHours, retroResponses, statsQuestions).get(playerId) || PROJECT_DEFAULT_EXPECTED_HOURS
-  const challenge = _playerResponsesForQuestionById(retroResponses, statsQuestions[CHALLENGE].id).get(playerId)
+  const challenge = _playerResponsesForQuestionById(retroResponses, statsQuestions.idFor(CHALLENGE)).get(playerId)
   const projectHours = Math.min(reportedHours, expectedHours)
 
   const stats = {
@@ -183,11 +183,11 @@ function _isInactivePlayerResponseClosure(project, statsQuestions) {
   return response => {
     const responseValue = () => parseInt(response.value, 10)
 
-    if (response.questionId === statsQuestions[PROJECT_HOURS].id) {
+    if (statsQuestions.isIdFor(response.questionId, PROJECT_HOURS)) {
       return responseValue() === 0
     }
 
-    if (response.questionId === statsQuestions[PROJECT_TIME_OFF_HOURS].id) {
+    if (statsQuestions.isIdFor(response.questionId, PROJECT_TIME_OFF_HOURS)) {
       const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
       return responseValue() >= expectedHours
     }
@@ -201,7 +201,7 @@ function _adjustRCResponsesTo100Percent(playerResponses, statsQuestions) {
   // (especially important because inactive players may have been removed, but
   // we do it for all cases because it is actually "more correct")
   const rcResponsesByRespondentId = playerResponses
-    .filter(response => response.questionId === statsQuestions[RELATIVE_CONTRIBUTION].id)
+    .filter(response => statsQuestions.isIdFor(response.questionId, RELATIVE_CONTRIBUTION))
     .reduce((result, response) => {
       const rcResponsesForRespondent = result.get(response.respondentId) || []
       rcResponsesForRespondent.push(response)
@@ -209,7 +209,7 @@ function _adjustRCResponsesTo100Percent(playerResponses, statsQuestions) {
       return result
     }, new Map())
   return playerResponses.map(response => {
-    if (response.questionId !== statsQuestions[RELATIVE_CONTRIBUTION].id) {
+    if (!statsQuestions.isIdFor(response.questionId, RELATIVE_CONTRIBUTION)) {
       return response
     }
     const rcResponses = rcResponsesByRespondentId.get(response.respondentId)
@@ -223,7 +223,7 @@ async function _getStatsQuestions(questions) {
   const stats = await statsByDescriptor()
   const getQ = descriptor => questions.filter(_ => _.statId === stats[descriptor].id)[0] || {}
 
-  return {
+  const statsQuestions = {
     [TECHNICAL_HEALTH]: getQ(TECHNICAL_HEALTH),
     [RELATIVE_CONTRIBUTION]: getQ(RELATIVE_CONTRIBUTION),
     [PROJECT_HOURS]: getQ(PROJECT_HOURS),
@@ -231,7 +231,15 @@ async function _getStatsQuestions(questions) {
     [CHALLENGE]: getQ(CHALLENGE),
     [CULTURE_CONTRIBUTION]: getQ(CULTURE_CONTRIBUTION),
     [TEAM_PLAY]: getQ(TEAM_PLAY),
+    isIdFor(questionId, statDescriptor) {
+      return this[statDescriptor] && this[statDescriptor].id === questionId
+    },
+    idFor(statDescriptor) {
+      return this[statDescriptor] ? this[statDescriptor].id : undefined
+    },
   }
+
+  return statsQuestions
 }
 
 async function _getPlayersStatsConfig(playerIds) {
@@ -256,7 +264,7 @@ function _playerResponsesForQuestionById(retroResponses, questionId, valueFor = 
 function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQuestions, playerStatsConfigsById) {
   const expectedHours = project.expectedHours || PROJECT_DEFAULT_EXPECTED_HOURS
   const teamPlayerHours = _playerProjectHoursById(expectedHours, retroResponses, statsQuestions)
-  const teamPlayerChallenges = _playerResponsesForQuestionById(retroResponses, statsQuestions[CHALLENGE].id)
+  const teamPlayerChallenges = _playerResponsesForQuestionById(retroResponses, statsQuestions.idFor(CHALLENGE))
   const teamHours = sum(Array.from(teamPlayerHours.values()))
 
   // create a stats-computation function based on a closure of the passed-in
@@ -311,7 +319,7 @@ function _playerProjectHoursById(projectExpectedHours, retroResponses, statsQues
   const surveyIncludesTimeOffHoursQuestion = Boolean(statsQuestions[PROJECT_TIME_OFF_HOURS].active)
 
   if (surveyIncludesTimeOffHoursQuestion) {
-    const teamPlayerProjectHours = _playerResponsesForQuestionById(retroResponses, statsQuestions[PROJECT_TIME_OFF_HOURS].id, _ => parseInt(_, 10))
+    const teamPlayerProjectHours = _playerResponsesForQuestionById(retroResponses, statsQuestions.idFor(PROJECT_TIME_OFF_HOURS), _ => parseInt(_, 10))
     for (const [playerId, timeOffHours] of teamPlayerProjectHours.entries()) {
       const reportedHours = Math.max(0, projectExpectedHours - timeOffHours)
       teamPlayerProjectHours.set(playerId, reportedHours)
@@ -319,7 +327,7 @@ function _playerProjectHoursById(projectExpectedHours, retroResponses, statsQues
     return teamPlayerProjectHours
   }
 
-  return _playerResponsesForQuestionById(retroResponses, statsQuestions[PROJECT_HOURS].id, _ => parseInt(_, 10))
+  return _playerResponsesForQuestionById(retroResponses, statsQuestions.idFor(PROJECT_HOURS), _ => parseInt(_, 10))
 }
 
 function _extractPlayerScores(statsQuestions, responses, playerId) {
@@ -344,24 +352,20 @@ function _extractPlayerScores(statsQuestions, responses, playerId) {
       value: responseValue,
     } = response
 
-    switch (responseQuestionId) {
-      case statsQuestions[RELATIVE_CONTRIBUTION].id:
-        safePushInt(scores[RELATIVE_CONTRIBUTION].all, responseValue)
-        if (response.respondentId === playerId) {
-          scores[RELATIVE_CONTRIBUTION].self = parseInt(responseValue, 10)
-        } else {
-          safePushInt(scores[RELATIVE_CONTRIBUTION].other, responseValue)
+    if (statsQuestions.isIdFor(responseQuestionId, RELATIVE_CONTRIBUTION)) {
+      safePushInt(scores[RELATIVE_CONTRIBUTION].all, responseValue)
+      if (response.respondentId === playerId) {
+        scores[RELATIVE_CONTRIBUTION].self = parseInt(responseValue, 10)
+      } else {
+        safePushInt(scores[RELATIVE_CONTRIBUTION].other, responseValue)
+      }
+      playerRCScoresById.set(response.respondentId, responseValue)
+    } else {
+      appendScoreStats.forEach(stat => {
+        if (statsQuestions.isIdFor(responseQuestionId, stat)) {
+          safePushInt(scores[stat], responseValue)
         }
-        playerRCScoresById.set(response.respondentId, responseValue)
-        break
-
-      default:
-        appendScoreStats.forEach(stat => {
-          if (responseQuestionId === statsQuestions[stat].id) {
-            safePushInt(scores[stat], responseValue)
-          }
-        })
-        break
+      })
     }
   })
 
