@@ -316,7 +316,7 @@ function _playerProjectHoursById(projectExpectedHours, retroResponses, statsQues
   // To simplify things, we just keep track of the `PROJECT_HOURS` stat, which will be
   // either derived (in the case that the survey asked for "time off") or raw (in the
   // case that the survey asked for "hours worked").
-  const surveyIncludesTimeOffHoursQuestion = Boolean(statsQuestions[PROJECT_TIME_OFF_HOURS].active)
+  const surveyIncludesTimeOffHoursQuestion = Boolean(statsQuestions[PROJECT_TIME_OFF_HOURS])
 
   if (surveyIncludesTimeOffHoursQuestion) {
     const teamPlayerProjectHours = _playerResponsesForQuestionById(retroResponses, statsQuestions.idFor(PROJECT_TIME_OFF_HOURS), _ => parseInt(_, 10))
