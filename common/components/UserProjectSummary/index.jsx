@@ -31,6 +31,7 @@ export default class UserProjectSummary extends Component {
       [STAT_DESCRIPTORS.EXPERIENCE_POINTS]: null
     }
     const {overallStats = {}, statsDifference} = this.props
+    console.log({overallStats})
     return !objectValuesAreAllNull(userStats) ? ([
       <Flex key="stats" fill>
         <Flex className={styles.column} column>

@@ -37,7 +37,9 @@ export default function ProjectStatColumn(props) {
           if (columnType === 'StatDifference') {
             return renderStatDifference(name, i, target)
           }
-          return (<div key={i}>{renderStat(name)}{suffix}</div>)
+          const statValue = renderStat(name)
+          const suffixValue = statValue !== BLANK ? suffix : ''
+          return (<div key={i}>{statValue}{suffixValue}</div>)
         })
       }
     </Flex>

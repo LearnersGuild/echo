@@ -23,6 +23,8 @@ const ProjectEvaluationModel = {
   completeness: {title: 'Completeness', type: Number},
 }
 
+const BLANK = '--'
+
 class ProjectDetail extends Component {
   constructor(props) {
     super(props)
@@ -37,6 +39,13 @@ class ProjectDetail extends Component {
 
   handleChangeTab(tabIndex) {
     this.setState({tabIndex})
+  }
+
+  renderStat(stat, suffix = '') {
+    const projectStats = (this.props.project || {}).stats || {}
+    const statValue = Number.isFinite(projectStats[stat]) ? roundDecimal(projectStats[stat]) : BLANK
+    const suffixValue = statValue !== BLANK ? suffix : ''
+    return `${statValue}${suffixValue}`
   }
 
   renderHeader() {
@@ -84,7 +93,7 @@ class ProjectDetail extends Component {
 
   renderDetails() {
     const {project, projectUserSummaries} = this.props
-    const {chapter = {}, cycle = {}, stats = {}} = project
+    const {chapter = {}, cycle = {}} = project
 
     const memberList = projectUserSummaries.map((projectUserSummary, index) => {
       const {user} = projectUserSummary
@@ -95,10 +104,6 @@ class ProjectDetail extends Component {
         </Link>
       )
     })
-
-    const completeness = stats[STAT_DESCRIPTORS.PROJECT_COMPLETENESS]
-    const quality = stats[STAT_DESCRIPTORS.PROJECT_QUALITY]
-    const hours = stats[STAT_DESCRIPTORS.PROJECT_HOURS]
 
     return (
       <div className={styles.details}>
@@ -122,9 +127,9 @@ class ProjectDetail extends Component {
               <div>{moment(project.createdAt).format('MMM DD, YYYY')}</div>
               <div>{moment(project.updatedAt).format('MMM DD, YYYY')}</div>
               <div>&nbsp;</div>
-              <div>{!quality || isNaN(quality) ? '--' : `${roundDecimal(quality)}%`}</div>
-              <div>{!completeness || isNaN(completeness) ? '--' : `${roundDecimal(completeness)}%`}</div>
-              <div>{!hours || isNaN(hours) ? '--' : hours}</div>
+              <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_QUALITY, '%')}</div>
+              <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_COMPLETENESS, '%')}</div>
+              <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)}</div>
             </Flex>
           </Flex>
         </div>

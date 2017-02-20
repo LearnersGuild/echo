@@ -17,9 +17,11 @@ export default class ProjectUserSummary extends Component {
     this.renderFeedback = this.renderFeedback.bind(this)
   }
 
-  renderStat(stat) {
+  renderStat(stat, suffix = '') {
     const userStats = this.props.userProjectStats || {}
-    return Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
+    const statValue = Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
+    const suffixValue = statValue !== BLANK ? suffix : ''
+    return `${statValue}${suffixValue}`
   }
 
   renderSummary() {
@@ -42,7 +44,7 @@ export default class ProjectUserSummary extends Component {
               </Link>
             </div>
             <div>{user.name}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION)}% {'Contribution'}</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION, '%')} {'Contribution'}</div>
             <div>Level {userStartingLevel}</div>
             <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(totalProjectHours)}]</div>
           </div>
@@ -58,8 +60,8 @@ export default class ProjectUserSummary extends Component {
           <Flex className={styles.subcolumn} column>
             <div>{this.renderStat(STAT_DESCRIPTORS.EL)}</div>
             <div>{this.renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY)}%</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS)}%</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, '%')}</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, '%')}</div>
             <div>{this.renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
           </Flex>
         </Flex>
