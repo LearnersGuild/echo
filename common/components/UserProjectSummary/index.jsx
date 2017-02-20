@@ -10,13 +10,17 @@ import ProjectStatColumn from 'src/common/components/UserProjectSummary/ProjectS
 import styles from './index.scss'
 
 const BLANK = '--'
-const renderStat = (stat, userStats) => Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
 
 export default class UserProjectSummary extends Component {
   constructor(props) {
     super(props)
     this.renderSummary = this.renderSummary.bind(this)
     this.renderFeedback = this.renderFeedback.bind(this)
+  }
+
+  renderStat(stat) {
+    const userStats = this.props.userProjectStats || {}
+    return Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
   }
 
   renderUserProjectStats() {
@@ -57,12 +61,11 @@ export default class UserProjectSummary extends Component {
     const {project} = this.props
     const userStats = this.props.userProjectStats || {}
     const projectHours = (project.stats || {})[STAT_DESCRIPTORS.PROJECT_HOURS] || BLANK
-    const userProjectHours = userStats[STAT_DESCRIPTORS.PROJECT_HOURS] || BLANK
 
     return !objectValuesAreAllNull(userStats) ? (
       <div>
-        <div>{userProjectHours} hours [team total: {projectHours}]</div>
-        <div>{renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION, userStats)}% contribution</div>
+        <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(projectHours)}]</div>
+        <div>{this.renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION)}% contribution</div>
         <div>Player Level: {this.renderLevelProgress()}</div>
       </div>
     ) : <div/>

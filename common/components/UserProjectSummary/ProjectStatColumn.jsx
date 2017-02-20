@@ -7,10 +7,17 @@ import {userStatsPropType} from 'src/common/components/UserProjectSummary'
 import styles from './index.scss'
 
 const BLANK = '--'
-const renderStat = (stat, userStats) => Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
 
 export default function ProjectStatColumn(props) {
   const {columnType, className, columnName, columnStats, overallStats} = props
+
+  const renderStat = name => Number.isFinite(columnStats[name]) ? roundDecimal(columnStats[name]) : BLANK
+  const renderStatDifference = (name, i, target) => {
+    if (Number.isFinite(columnStats[name])) {
+      return <StatDifference key={i} statDiff={columnStats[name]} target={target} overallStat={overallStats[name]}/>
+    }
+    return <div key={`seperator--${i}`} className={styles.lineBreak}/>
+  }
 
   return (
     <Flex className={(className)} column>
@@ -28,11 +35,9 @@ export default function ProjectStatColumn(props) {
           {name: STAT_DESCRIPTORS.CHALLENGE, suffix: '', target: 7},
         ]).map(({name, suffix, target}, i) => {
           if (columnType === 'StatDifference') {
-            return columnStats[name] ?
-              <StatDifference key={i} statDiff={columnStats[name]} target={target} overallStat={overallStats[name]}/> :
-              <div key={`seperator--${i}`} className={styles.lineBreak}/>
+            return renderStatDifference(name, i, target)
           }
-          return (<div key={i}>{renderStat(name, columnStats)}{suffix}</div>)
+          return (<div key={i}>{renderStat(name)}{suffix}</div>)
         })
       }
     </Flex>

@@ -2,10 +2,13 @@ import React, {Component, PropTypes} from 'react'
 import {Link} from 'react-router'
 
 import {Flex} from 'src/common/components/Layout'
+import {roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {userStatsPropType} from 'src/common/components/UserProjectSummary'
 
 import styles from './index.scss'
+
+const BLANK = '--'
 
 export default class ProjectUserSummary extends Component {
   constructor(props) {
@@ -14,12 +17,15 @@ export default class ProjectUserSummary extends Component {
     this.renderFeedback = this.renderFeedback.bind(this)
   }
 
+  renderStat(stat) {
+    const userStats = this.props.userProjectStats || {}
+    return Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
+  }
+
   renderSummary() {
     const {user, userProjectStats: userStats, totalProjectHours} = this.props
-    const blank = '--'
     const userProfilePath = `/users/${user.handle}`
-    const userHours = userStats[STAT_DESCRIPTORS.PROJECT_HOURS]
-    const userStartingLevel = (userStats[STAT_DESCRIPTORS.LEVEL] || {}).starting || blank
+    const userStartingLevel = (userStats[STAT_DESCRIPTORS.LEVEL] || {}).starting || BLANK
 
     return (
       <Flex className={styles.summary}>
@@ -36,9 +42,9 @@ export default class ProjectUserSummary extends Component {
               </Link>
             </div>
             <div>{user.name}</div>
-            <div>{userStats[STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION] || blank}% {'Contribution'}</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION)}% {'Contribution'}</div>
             <div>Level {userStartingLevel}</div>
-            <div>{userHours} hours [team total: {totalProjectHours}]</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(totalProjectHours)}]</div>
           </div>
         </Flex>
         <Flex className={styles.column} fill>
@@ -50,11 +56,11 @@ export default class ProjectUserSummary extends Component {
             <div>{'Challenge'}</div>
           </Flex>
           <Flex className={styles.subcolumn} column>
-            <div>{userStats[STAT_DESCRIPTORS.ELO] || blank}</div>
-            <div>{userStats[STAT_DESCRIPTORS.EXPERIENCE_POINTS] || blank}</div>
-            <div>{userStats[STAT_DESCRIPTORS.ESTIMATION_ACCURACY] || blank}%</div>
-            <div>{userStats[STAT_DESCRIPTORS.ESTIMATION_BIAS] || blank}%</div>
-            <div>{userStats[STAT_DESCRIPTORS.CHALLENGE] || blank}</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.EL)}</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY)}%</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS)}%</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
           </Flex>
         </Flex>
       </Flex>
