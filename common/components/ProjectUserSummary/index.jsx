@@ -3,18 +3,55 @@ import {Link} from 'react-router'
 
 import {Flex} from 'src/common/components/Layout'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
+import {IconButton} from 'react-toolbox/lib/button'
 
 import styles from './index.scss'
 
 export default class ProjectUserSummary extends Component {
   constructor(props) {
     super(props)
+
+    const {unlockPlayerSurvey, lockPlayerSurvey, userRetrospectiveUnlocked} = this.props
+
+    this.state = {
+      lockStatus: userRetrospectiveUnlocked ? 'UNLOCKED' : 'LOCKED'
+    }
     this.renderSummary = this.renderSummary.bind(this)
     this.renderFeedback = this.renderFeedback.bind(this)
+    this.unlockSurvey = this.setSurveyStatus(unlockPlayerSurvey, 'UNLOCKED').bind(this)
+    this.lockSurvey = this.setSurveyStatus(lockPlayerSurvey, 'LOCKED').bind(this)
+  }
+
+  setSurveyStatus(changeSurveyStatus, lockStatus) {
+    return function () {
+      changeSurveyStatus().then(() => this.setState({lockStatus}))
+    }
+  }
+
+  surveyStatus() {
+    const {
+      userRetrospectiveComplete,
+      userRetrospectiveUnlocked,
+    } = this.props
+
+    if (userRetrospectiveComplete) {
+      return this.state.lockStatus === 'LOCKED' ?
+        <div className={styles.lock_buttons}>
+          <a onClick={this.unlockSurvey}>
+            <IconButton icon="lock_open"/>{'Unlock Survey'}
+          </a>
+        </div> :
+        <div className={styles.lock_buttons}>
+          <a onClick={this.lockSurvey}>
+            <IconButton icon="lock_outline"/>{'Lock Survey'}
+          </a>
+        </div>
+    }
   }
 
   renderSummary() {
     const {user, userProjectStats} = this.props
+
     const userStats = userProjectStats || {}
     const userProfilePath = `/users/${user.handle}`
     const userHours = userStats[STAT_DESCRIPTORS.PROJECT_HOURS]
@@ -36,6 +73,7 @@ export default class ProjectUserSummary extends Component {
             <div>{user.name}</div>
             <div>Level {userStats[STAT_DESCRIPTORS.LEVEL]}</div>
             <div>{`${!userHours || isNaN(userHours) ? 'No' : userHours} hours logged`}</div>
+            {this.surveyStatus()}
           </div>
         </Flex>
         <Flex className={styles.column} fill>
@@ -126,4 +164,8 @@ ProjectUserSummary.propTypes = {
     [STAT_DESCRIPTORS.TEAM_PLAY]: PropTypes.number,
     [STAT_DESCRIPTORS.TECHNICAL_HEALTH]: PropTypes.number,
   }),
+  unlockPlayerSurvey: PropTypes.func,
+  lockPlayerSurvey: PropTypes.func,
+  userRetrospectiveComplete: PropTypes.bool,
+  userRetrospectiveUnlocked: PropTypes.bool,
 }

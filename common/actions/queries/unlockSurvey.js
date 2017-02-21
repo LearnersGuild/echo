@@ -1,6 +1,6 @@
-export default function unlockSurvey(projectAndPlayerIds) {
+export default function unlockSurvey({playerId, projectId}) {
   return {
-    variables: {projectAndPlayerIds},
+    variables: {playerId, projectId},
     query: `
       mutation($playerId: ID!, $projectId: ID!) {
         unlockRetroSurveyForUser(playerId: $playerId, projectId: $projectId) {

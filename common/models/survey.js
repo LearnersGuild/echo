@@ -47,3 +47,15 @@ export function surveyProgress(fullSurveyForPlayer) {
     subjectCount,
   }
 }
+
+export function surveyLockedFor(survey, playerId) {
+  if (!surveyCompletedBy(survey, playerId)) {
+    return null
+  }
+
+  return !(survey.unlockedFor || []).includes(playerId)
+}
+
+export function surveyCompletedBy(survey, playerId) {
+  return (survey.completedBy || []).includes(playerId)
+}

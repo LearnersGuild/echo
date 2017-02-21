@@ -67,6 +67,8 @@ export default function getProjectSummary(identifier) {
             ${STAT_DESCRIPTORS.TEAM_PLAY}
             ${STAT_DESCRIPTORS.TECHNICAL_HEALTH}
           }
+          userRetrospectiveComplete
+          userRetrospectiveUnlocked
         }
       }
     }`,

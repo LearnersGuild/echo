@@ -5,6 +5,7 @@ import {connect} from 'src/db'
 import {userCan, roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {CYCLE_REFLECTION_STATES} from 'src/common/models/cycle'
+import {surveyCompletedBy, surveyLockedFor} from 'src/common/models/survey'
 import {getProjectByName, findActiveProjectsForChapter, findProjectsForUser} from 'src/server/db/project'
 import {getLatestCycleForChapter} from 'src/server/db/cycle'
 import saveSurveyResponses from 'src/server/actions/saveSurveyResponses'
@@ -233,9 +234,16 @@ async function getUserProjectSummary(user, project, projectUserMap, currentUser)
   userProjectEvaluations.forEach(evaluation => {
     evaluation.submittedBy = projectUserMap.get(evaluation.submittedById)
   })
+
+  const survey = await Survey.get(project.retrospectiveSurveyId)
+  const userRetrospectiveComplete = surveyCompletedBy(survey, user.id)
+  const userRetrospectiveUnlocked = !surveyLockedFor(survey, user.id)
+
   return {
     userProjectStats: extractUserProjectStats(user, project),
     userProjectEvaluations,
+    userRetrospectiveComplete,
+    userRetrospectiveUnlocked,
   }
 }
 
