@@ -13,7 +13,8 @@ export default function ProjectStatColumn(props) {
 
   const renderStat = name => Number.isFinite(columnStats[name]) ? roundDecimal(columnStats[name]) : BLANK
   const renderStatDifference = (name, i, target) => {
-    if (Number.isFinite(columnStats[name])) {
+    const value = columnStats[name]
+    if (Number.isFinite(value) && value !== 0) {
       return <StatDifference key={i} statDiff={columnStats[name]} target={target} overallStat={overallStats[name]}/>
     }
     return <div key={`seperator--${i}`} className={styles.lineBreak}/>
