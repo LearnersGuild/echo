@@ -58,7 +58,7 @@ export default class ProjectUserSummary extends Component {
             <div>{'Challenge'}</div>
           </Flex>
           <Flex className={styles.subcolumn} column>
-            <div>{this.renderStat(STAT_DESCRIPTORS.EL)}</div>
+            <div>{this.renderStat(STAT_DESCRIPTORS.ELO)}</div>
             <div>{this.renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
             <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, '%')}</div>
             <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, '%')}</div>
