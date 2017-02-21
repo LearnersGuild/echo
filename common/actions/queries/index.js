@@ -16,4 +16,6 @@ export default {
   importProject: require('./importProject'),
   reassignPlayersToChapter: require('./reassignPlayersToChapter'),
   saveRetrospectiveSurveyResponses: require('./saveRetrospectiveSurveyResponses'),
+  unlockSurvey: require('./unlockSurvey'),
+  lockSurvey: require('./lockSurvey'),
 }

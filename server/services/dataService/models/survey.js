@@ -12,6 +12,7 @@ export default function surveyModel(thinky) {
 
       completedBy: array()
         .required()
+        .default([])
         .allowNull(false),
 
       unlockedFor: array()

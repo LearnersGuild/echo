@@ -4,12 +4,14 @@ import {push} from 'react-router-redux'
 
 import {showLoad, hideLoad} from 'src/common/actions/app'
 import {getProjectSummary} from 'src/common/actions/project'
+import {unlockSurvey, lockSurvey} from 'src/common/actions/survey'
 import ProjectDetail from 'src/common/components/ProjectDetail'
 import {userCan} from 'src/common/util'
 
 class ProjectDetailContainer extends Component {
   constructor(props) {
     super(props)
+
     this.handleClickEdit = this.handleClickEdit.bind(this)
   }
 
@@ -32,7 +34,16 @@ class ProjectDetailContainer extends Component {
   }
 
   render() {
-    const {currentUser, isBusy, project, projectEvaluations, projectUserSummaries} = this.props
+    const {
+      currentUser,
+      isBusy,
+      project,
+      projectEvaluations,
+      projectUserSummaries,
+      unlockPlayerSurvey,
+      lockPlayerSurvey,
+    } = this.props
+
     return isBusy ? null : (
       <ProjectDetail
         project={project}
@@ -40,6 +51,8 @@ class ProjectDetailContainer extends Component {
         projectUserSummaries={projectUserSummaries}
         allowEdit={userCan(currentUser, 'importProject')}
         onClickEdit={this.handleClickEdit}
+        unlockPlayerSurvey={unlockPlayerSurvey}
+        lockPlayerSurvey={lockPlayerSurvey}
         />
     )
   }
@@ -56,8 +69,12 @@ ProjectDetailContainer.propTypes = {
   navigate: PropTypes.func.isRequired,
   showLoad: PropTypes.func.isRequired,
   hideLoad: PropTypes.func.isRequired,
+  unlockPlayerSurvey: PropTypes.func.isRequired,
+  lockPlayerSurvey: PropTypes.func.isRequired,
 }
 
+ProjectDetailContainer.unlockPlayerSurvey = unlockSurvey
+ProjectDetailContainer.lockPlayerSurvey = lockSurvey
 ProjectDetailContainer.fetchData = fetchData
 
 function fetchData(dispatch, props) {
@@ -92,6 +109,8 @@ function mapDispatchToProps(dispatch, props) {
     navigate: path => dispatch(push(path)),
     showLoad: () => dispatch(showLoad()),
     hideLoad: () => dispatch(hideLoad()),
+    unlockPlayerSurvey: (playerId, projectId) => dispatch(unlockSurvey({playerId, projectId})),
+    lockPlayerSurvey: (playerId, projectId) => dispatch(lockSurvey({playerId, projectId})),
   }
 }
 
