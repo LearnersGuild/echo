@@ -10,7 +10,7 @@ import ContentHeader from 'src/common/components/ContentHeader'
 import ContentTable from 'src/common/components/ContentTable'
 import ProjectUserSummary from 'src/common/components/ProjectUserSummary'
 import {Flex} from 'src/common/components/Layout'
-import {roundDecimal, safeUrl, objectValuesAreAllNull} from 'src/common/util'
+import {safeUrl, objectValuesAreAllNull, getStatRenderer} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 
 import styles from './index.scss'
@@ -22,8 +22,6 @@ const ProjectEvaluationModel = {
   quality: {title: 'Quality', type: Number},
   completeness: {title: 'Completeness', type: Number},
 }
-
-const BLANK = '--'
 
 class ProjectDetail extends Component {
   constructor(props) {
@@ -39,13 +37,6 @@ class ProjectDetail extends Component {
 
   handleChangeTab(tabIndex) {
     this.setState({tabIndex})
-  }
-
-  renderStat(stat, suffix = '') {
-    const projectStats = (this.props.project || {}).stats || {}
-    const statValue = Number.isFinite(projectStats[stat]) ? roundDecimal(projectStats[stat]) : BLANK
-    const suffixValue = statValue !== BLANK ? suffix : ''
-    return `${statValue}${suffixValue}`
   }
 
   renderHeader() {
@@ -92,8 +83,9 @@ class ProjectDetail extends Component {
   }
 
   renderDetails() {
-    const {project, projectUserSummaries} = this.props
-    const {chapter = {}, cycle = {}} = project
+    const {project = {}, projectUserSummaries} = this.props
+    const {chapter = {}, cycle = {}, stats = {}} = project
+    const renderStat = getStatRenderer(stats)
 
     const memberList = projectUserSummaries.map((projectUserSummary, index) => {
       const {user} = projectUserSummary
@@ -127,9 +119,9 @@ class ProjectDetail extends Component {
               <div>{moment(project.createdAt).format('MMM DD, YYYY')}</div>
               <div>{moment(project.updatedAt).format('MMM DD, YYYY')}</div>
               <div>&nbsp;</div>
-              <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_QUALITY, '%')}</div>
-              <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_COMPLETENESS, '%')}</div>
-              <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)}</div>
+              <div>{renderStat(STAT_DESCRIPTORS.PROJECT_QUALITY, '%')}</div>
+              <div>{renderStat(STAT_DESCRIPTORS.PROJECT_COMPLETENESS, '%')}</div>
+              <div>{renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)}</div>
             </Flex>
           </Flex>
         </div>

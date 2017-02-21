@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import StatDifference from 'src/common/components/UserProjectSummary/StatDifference'
 import {Flex} from 'src/common/components/Layout'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
-import {roundDecimal} from 'src/common/util'
+import {getStatRenderer} from 'src/common/util'
 import {userStatsPropType} from 'src/common/components/UserProjectSummary'
 import styles from './index.scss'
 
@@ -10,8 +10,8 @@ const BLANK = '--'
 
 export default function ProjectStatColumn(props) {
   const {columnType, className, columnName, columnStats, overallStats} = props
+  const renderStat = getStatRenderer(columnStats)
 
-  const renderStat = name => Number.isFinite(columnStats[name]) ? roundDecimal(columnStats[name]) : BLANK
   const renderStatDifference = (name, i, target) => {
     const value = columnStats[name]
     if (Number.isFinite(value) && value !== 0) {

@@ -4,7 +4,7 @@ import moment from 'moment-timezone'
 
 import {Flex} from 'src/common/components/Layout'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
-import {objectValuesAreAllNull, roundDecimal} from 'src/common/util'
+import {objectValuesAreAllNull, roundDecimal, getStatRenderer} from 'src/common/util'
 import ProjectStatColumn from 'src/common/components/UserProjectSummary/ProjectStatColumn'
 
 import styles from './index.scss'
@@ -16,11 +16,6 @@ export default class UserProjectSummary extends Component {
     super(props)
     this.renderSummary = this.renderSummary.bind(this)
     this.renderFeedback = this.renderFeedback.bind(this)
-  }
-
-  renderStat(stat) {
-    const userStats = this.props.userProjectStats || {}
-    return Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
   }
 
   renderUserProjectStats() {
@@ -58,14 +53,14 @@ export default class UserProjectSummary extends Component {
   }
 
   renderHoursContributionAndLevel() {
-    const {project} = this.props
-    const userStats = this.props.userProjectStats || {}
+    const {project, userProjectStats = {}} = this.props
     const projectHours = (project.stats || {})[STAT_DESCRIPTORS.PROJECT_HOURS] || BLANK
+    const renderStat = getStatRenderer(userProjectStats)
 
-    return !objectValuesAreAllNull(userStats) ? (
+    return !objectValuesAreAllNull(userProjectStats) ? (
       <div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(projectHours)}]</div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION)}% contribution</div>
+        <div>{renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(projectHours)}]</div>
+        <div>{renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION)}% contribution</div>
         <div>Player Level: {this.renderLevelProgress()}</div>
       </div>
     ) : <div/>

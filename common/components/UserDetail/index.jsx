@@ -8,13 +8,11 @@ import UserProjectSummary from 'src/common/components/UserProjectSummary'
 import {Flex} from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
-import {objectValuesAreAllNull, roundDecimal} from 'src/common/util'
+import {objectValuesAreAllNull, getStatRenderer} from 'src/common/util'
 import {mergeOverallStatsAndDeltas} from 'src/common/util/userProjectStatsCalculations'
 
 import styles from './index.scss'
 import theme from './theme.scss'
-
-const BLANK = '--'
 
 class UserDetail extends Component {
   constructor(props) {
@@ -28,13 +26,6 @@ class UserDetail extends Component {
 
   handleChangeTab(tabIndex) {
     this.setState({tabIndex})
-  }
-
-  renderStat(stat, suffix = '') {
-    const userStats = (this.props.user || {}).stats || {}
-    const statValue = Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
-    const suffixValue = statValue !== BLANK ? suffix : ''
-    return `${statValue}${suffixValue}`
   }
 
   renderSidebarStatNames(stats) {
@@ -52,15 +43,17 @@ class UserDetail extends Component {
   }
 
   renderSidebarStatValues(stats) {
+    const renderStat = getStatRenderer(stats)
+
     return !objectValuesAreAllNull(stats) ? (
       <div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.LEVEL)}</div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.ELO)}</div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, '%')}</div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, '%')}</div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
-        <div>{this.renderStat(STAT_DESCRIPTORS.NUM_PROJECTS_REVIEWED)}</div>
+        <div>{renderStat(STAT_DESCRIPTORS.LEVEL)}</div>
+        <div>{renderStat(STAT_DESCRIPTORS.ELO)}</div>
+        <div>{renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
+        <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, '%')}</div>
+        <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, '%')}</div>
+        <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
+        <div>{renderStat(STAT_DESCRIPTORS.NUM_PROJECTS_REVIEWED)}</div>
       </div>
     ) : <div/>
   }

@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react'
 import {Link} from 'react-router'
 
 import {Flex} from 'src/common/components/Layout'
-import {roundDecimal} from 'src/common/util'
+import {roundDecimal, getStatRenderer} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {userStatsPropType} from 'src/common/components/UserProjectSummary'
 
@@ -17,17 +17,11 @@ export default class ProjectUserSummary extends Component {
     this.renderFeedback = this.renderFeedback.bind(this)
   }
 
-  renderStat(stat, suffix = '') {
-    const userStats = this.props.userProjectStats || {}
-    const statValue = Number.isFinite(userStats[stat]) ? roundDecimal(userStats[stat]) : BLANK
-    const suffixValue = statValue !== BLANK ? suffix : ''
-    return `${statValue}${suffixValue}`
-  }
-
   renderSummary() {
-    const {user, userProjectStats: userStats, totalProjectHours} = this.props
+    const {user, userProjectStats, totalProjectHours} = this.props
     const userProfilePath = `/users/${user.handle}`
-    const userStartingLevel = (userStats[STAT_DESCRIPTORS.LEVEL] || {}).starting || BLANK
+    const userStartingLevel = (userProjectStats[STAT_DESCRIPTORS.LEVEL] || {}).starting || BLANK
+    const renderStat = getStatRenderer(userProjectStats)
 
     return (
       <Flex className={styles.summary}>
@@ -44,9 +38,9 @@ export default class ProjectUserSummary extends Component {
               </Link>
             </div>
             <div>{user.name}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION, '%')} {'Contribution'}</div>
+            <div>{renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION, '%')} {'Contribution'}</div>
             <div>Level {userStartingLevel}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(totalProjectHours)}]</div>
+            <div>{renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(totalProjectHours)}]</div>
           </div>
         </Flex>
         <Flex className={styles.column} fill>
@@ -58,11 +52,11 @@ export default class ProjectUserSummary extends Component {
             <div>{'Challenge'}</div>
           </Flex>
           <Flex className={styles.subcolumn} column>
-            <div>{this.renderStat(STAT_DESCRIPTORS.ELO)}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, '%')}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, '%')}</div>
-            <div>{this.renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
+            <div>{renderStat(STAT_DESCRIPTORS.ELO)}</div>
+            <div>{renderStat(STAT_DESCRIPTORS.EXPERIENCE_POINTS)}</div>
+            <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_ACCURACY, '%')}</div>
+            <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, '%')}</div>
+            <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
           </Flex>
         </Flex>
       </Flex>
