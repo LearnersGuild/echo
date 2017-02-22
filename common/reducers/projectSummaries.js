@@ -2,6 +2,10 @@ import {
   GET_PROJECT_SUMMARY_REQUEST,
   GET_PROJECT_SUMMARY_SUCCESS,
   GET_PROJECT_SUMMARY_FAILURE,
+  LOCK_SURVEY_REQUEST,
+  LOCK_SURVEY_SUCCESS,
+  UNLOCK_SURVEY_REQUEST,
+  UNLOCK_SURVEY_SUCCESS,
 } from 'src/common/actions/types'
 
 const initialState = {
@@ -16,7 +20,14 @@ export default function projectSummaries(state = initialState, action) {
         isBusy: true,
       })
 
+    case LOCK_SURVEY_REQUEST:
+    case UNLOCK_SURVEY_REQUEST:
+      // FIXME: figure out how to have the UI feel snappier
+      return state
+
     case GET_PROJECT_SUMMARY_SUCCESS:
+    case LOCK_SURVEY_SUCCESS:
+    case UNLOCK_SURVEY_SUCCESS:
       {
         const projectSummary = action.response || {}
         const {project} = projectSummary || {}

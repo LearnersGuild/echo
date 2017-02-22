@@ -61,37 +61,3 @@ export function setSurveyGroup(groupIndex) {
 export function surveyParseFailure(error) {
   return {type: types.SURVEY_PARSE_FAILURE, error}
 }
-
-export function unlockSurvey(responses) {
-  return {
-    types: [
-      types.UNLOCK_SURVEY_REQUEST,
-      types.UNLOCK_SURVEY_SUCCESS,
-      types.UNLOCK_SURVEY_FAILURE,
-    ],
-    shouldCallAPI: () => true,
-    callAPI: (dispatch, getState) => {
-      const query = queries.unlockSurvey(responses)
-      return getGraphQLFetcher(dispatch, getState().auth)(query)
-        .then(graphQLResponse => graphQLResponse.data.unlockSurvey)
-    },
-    payload: {},
-  }
-}
-
-export function lockSurvey(responses) {
-  return {
-    types: [
-      types.LOCK_SURVEY_REQUEST,
-      types.LOCK_SURVEY_SUCCESS,
-      types.LOCK_SURVEY_FAILURE,
-    ],
-    shouldCallAPI: () => true,
-    callAPI: (dispatch, getState) => {
-      const query = queries.lockSurvey(responses)
-      return getGraphQLFetcher(dispatch, getState().auth)(query)
-        .then(graphQLResponse => graphQLResponse.data.lockSurvey)
-    },
-    payload: {},
-  }
-}

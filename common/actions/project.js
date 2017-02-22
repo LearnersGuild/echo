@@ -92,3 +92,37 @@ export function importProject(values) {
     redirect: project => (project && project.name ? `/projects/${project.name}` : '/projects'),
   }
 }
+
+export function unlockSurvey(playerId, projectId) {
+  return {
+    types: [
+      types.UNLOCK_SURVEY_REQUEST,
+      types.UNLOCK_SURVEY_SUCCESS,
+      types.UNLOCK_SURVEY_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      const query = queries.unlockSurvey(playerId, projectId)
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.unlockRetroSurveyForUser)
+    },
+    payload: {},
+  }
+}
+
+export function lockSurvey(playerId, projectId) {
+  return {
+    types: [
+      types.LOCK_SURVEY_REQUEST,
+      types.LOCK_SURVEY_SUCCESS,
+      types.LOCK_SURVEY_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      const query = queries.lockSurvey(playerId, projectId)
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.lockRetroSurveyForUser)
+    },
+    payload: {},
+  }
+}
