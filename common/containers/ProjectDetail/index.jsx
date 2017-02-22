@@ -3,8 +3,7 @@ import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
 
 import {showLoad, hideLoad} from 'src/common/actions/app'
-import {getProjectSummary} from 'src/common/actions/project'
-import {unlockSurvey, lockSurvey} from 'src/common/actions/survey'
+import {unlockSurvey, lockSurvey, getProjectSummary} from 'src/common/actions/project'
 import ProjectDetail from 'src/common/components/ProjectDetail'
 import {userCan} from 'src/common/util'
 
@@ -109,8 +108,8 @@ function mapDispatchToProps(dispatch, props) {
     navigate: path => dispatch(push(path)),
     showLoad: () => dispatch(showLoad()),
     hideLoad: () => dispatch(hideLoad()),
-    unlockPlayerSurvey: (playerId, projectId) => dispatch(unlockSurvey({playerId, projectId})),
-    lockPlayerSurvey: (playerId, projectId) => dispatch(lockSurvey({playerId, projectId})),
+    unlockPlayerSurvey: (playerId, projectId) => dispatch(unlockSurvey(playerId, projectId)),
+    lockPlayerSurvey: (playerId, projectId) => dispatch(lockSurvey(playerId, projectId)),
   }
 }
 

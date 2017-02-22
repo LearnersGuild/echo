@@ -15,36 +15,46 @@ export default class ProjectUserSummary extends Component {
   constructor(props) {
     super(props)
 
-    const {unlockPlayerSurvey, lockPlayerSurvey, userRetrospectiveUnlocked} = this.props
-
-    this.state = {
-      lockStatus: userRetrospectiveUnlocked ? 'UNLOCKED' : 'LOCKED'
-    }
     this.renderSummary = this.renderSummary.bind(this)
     this.renderFeedback = this.renderFeedback.bind(this)
-    this.handleUnlockSurvey = this.setSurveyStatus(unlockPlayerSurvey, 'UNLOCKED').bind(this)
-    this.handleLockSurvey = this.setSurveyStatus(lockPlayerSurvey, 'LOCKED').bind(this)
+    this.handleUnlockSurveyClick = this.handleUnlockSurveyClick.bind(this)
+    this.handleLockSurveyClick = this.handleLockSurveyClick.bind(this)
   }
 
-  setSurveyStatus(changeSurveyStatus, lockStatus) {
-    return function () {
-      changeSurveyStatus().then(() => this.setState({lockStatus}))
-    }
+  handleUnlockSurveyClick(e) {
+    const {
+      onUnlockPlayerSurvey,
+    } = this.props
+
+    e.preventDefault()
+    onUnlockPlayerSurvey()
   }
 
-  surveyStatus() {
-    const {userRetrospectiveComplete} = this.props
+  handleLockSurveyClick(e) {
+    const {
+      onLockPlayerSurvey,
+    } = this.props
+
+    e.preventDefault()
+    onLockPlayerSurvey()
+  }
+
+  renderSurveyLockUnlock() {
+    const {
+      userRetrospectiveComplete,
+      userRetrospectiveUnlocked,
+    } = this.props
 
     if (userRetrospectiveComplete) {
-      return this.state.lockStatus === 'LOCKED' ?
-        <div className={styles.lock_buttons}>
-          <a onClick={this.handleUnlockSurvey}>
-            <IconButton icon="lock_open"/>{'Unlock Survey'}
+      return userRetrospectiveUnlocked ?
+        <div className={styles.lockButtons}>
+          <a onClick={this.handleLockSurveyClick}>
+            <IconButton icon="lock_outline"/>{'Lock Survey'}
           </a>
         </div> :
-        <div className={styles.lock_buttons}>
-          <a onClick={this.handleLockSurvey}>
-            <IconButton icon="lock_outline"/>{'Lock Survey'}
+        <div className={styles.lockButtons}>
+          <a onClick={this.handleUnlockSurveyClick}>
+            <IconButton icon="lock_open"/>{'Unlock Survey'}
           </a>
         </div>
     }
@@ -75,7 +85,7 @@ export default class ProjectUserSummary extends Component {
             <div>{renderStat(STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION, '%')} {'Contribution'}</div>
             <div>Level {userStartingLevel}</div>
             <div>{renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)} hours [team total: {roundDecimal(totalProjectHours)}]</div>
-            {this.surveyStatus()}
+            {this.renderSurveyLockUnlock()}
           </div>
         </Flex>
         <Flex className={styles.column} fill>
@@ -139,8 +149,8 @@ ProjectUserSummary.propTypes = {
   })),
   userProjectStats: PropTypes.shape(userStatsPropType),
   totalProjectHours: PropTypes.number,
-  unlockPlayerSurvey: PropTypes.func,
-  lockPlayerSurvey: PropTypes.func,
+  onUnlockPlayerSurvey: PropTypes.func.isRequired,
+  onLockPlayerSurvey: PropTypes.func.isRequired,
   userRetrospectiveComplete: PropTypes.bool,
   userRetrospectiveUnlocked: PropTypes.bool,
 }

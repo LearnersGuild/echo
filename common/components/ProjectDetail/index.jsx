@@ -173,8 +173,8 @@ class ProjectDetail extends Component {
           <ProjectUserSummary
             key={i} {...userSummary}
             totalProjectHours={totalProjectHours}
-            unlockPlayerSurvey={onUnlockPlayerSurvey}
-            lockPlayerSurvey={onLockPlayerSurvey}
+            onUnlockPlayerSurvey={onUnlockPlayerSurvey}
+            onLockPlayerSurvey={onLockPlayerSurvey}
             />
         )
       })
