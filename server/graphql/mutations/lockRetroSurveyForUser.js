@@ -2,11 +2,12 @@ import {GraphQLNonNull, GraphQLID} from 'graphql'
 import {GraphQLError} from 'graphql/error'
 import {lockRetroSurveyForUser} from 'src/server/actions/retroSurveyLockUnlock'
 import userCan from 'src/common/util/userCan'
+import {Project} from 'src/server/services/dataService/models'
 
-import {BooleanSuccess} from 'src/server/graphql/schemas'
+import {ProjectSummary} from 'src/server/graphql/schemas'
 
 export default {
-  type: BooleanSuccess,
+  type: ProjectSummary,
   args: {
     playerId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -17,12 +18,14 @@ export default {
       description: 'The projects id of the survey to lock for this given player',
     },
   },
-  async resolve(source, args, {rootValue: {currentUser}}) {
+  async resolve(source, {playerId, projectId}, {rootValue: {currentUser}}) {
     if (!userCan(currentUser, 'lockAndUnlockSurveys')) {
       throw new GraphQLError('You are not authorized to do that')
     }
 
-    await lockRetroSurveyForUser(args.playerId, args.projectId)
-    return {success: true}
+    await lockRetroSurveyForUser(playerId, projectId)
+    return {
+      project: await Project.get(projectId)
+    }
   }
 }
