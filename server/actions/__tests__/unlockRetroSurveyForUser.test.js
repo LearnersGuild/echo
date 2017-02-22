@@ -1,9 +1,8 @@
 /* eslint-env mocha */
 /* global expect testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
-import {withDBCleanup, useFixture} from 'src/test/helpers'
-import {Survey, Response} from 'src/server/services/dataService'
-import saveSurveyResponses from '../saveSurveyResponses'
+import {useFixture} from 'src/test/helpers'
+import {Survey} from 'src/server/services/dataService'
 import {lockRetroSurveyForUser, unlockRetroSurveyForUser} from 'src/server/actions/unlockRetroSurveyForUser'
 
 describe.only(testContext(__filename), function () {
