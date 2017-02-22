@@ -50,10 +50,6 @@ export function surveyProgress(fullSurveyForPlayer) {
 }
 
 export function surveyLockedFor(survey, playerId) {
-  if (!surveyCompletedBy(survey, playerId)) {
-    return null
-  }
-
   return !(survey.unlockedFor || []).includes(playerId)
 }
 
