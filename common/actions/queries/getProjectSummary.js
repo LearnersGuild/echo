@@ -66,6 +66,8 @@ export default function getProjectSummary(identifier) {
             ${STAT_DESCRIPTORS.PROJECT_HOURS}
             ${STAT_DESCRIPTORS.RELATIVE_CONTRIBUTION}
           }
+          userRetrospectiveComplete
+          userRetrospectiveUnlocked
         }
       }
     }`,

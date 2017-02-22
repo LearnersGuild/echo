@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import StatDifference from 'src/common/components/UserProjectSummary/StatDifference'
+import StatDifference from 'src/common/components/UserProjectSummary/StatDifference.jsx'
 import {Flex} from 'src/common/components/Layout'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {getStatRenderer} from 'src/common/util'

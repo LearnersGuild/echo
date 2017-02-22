@@ -26,6 +26,7 @@ const ProjectEvaluationModel = {
 class ProjectDetail extends Component {
   constructor(props) {
     super(props)
+
     this.state = {tabIndex: 0}
     this.renderHeader = this.renderHeader.bind(this)
     this.renderDetails = this.renderDetails.bind(this)
@@ -158,15 +159,20 @@ class ProjectDetail extends Component {
   }
 
   renderUserSummaries() {
-    const {projectUserSummaries, project} = this.props
-    const totalProjectHours = (project.stats || {})[STAT_DESCRIPTORS.PROJECT_HOURS]
+    const {projectUserSummaries, project, unlockPlayerSurvey, lockPlayerSurvey} = this.props
+
     const memberSummaries = (projectUserSummaries || [])
       .filter(summary => (
         summary.userProjectStats !== null
       ))
       .map((userSummary, i) => (
-        <ProjectUserSummary key={i} {...userSummary} totalProjectHours={totalProjectHours}/>
+        <ProjectUserSummary
+          key={i} {...userSummary}
+          unlockPlayerSurvey={() => unlockPlayerSurvey(userSummary.user.id, project.id)}
+          lockPlayerSurvey={() => lockPlayerSurvey(userSummary.user.id, project.id)}
+          />
       ))
+
     return (
       <div>
         {memberSummaries.length > 0 ?
@@ -251,6 +257,8 @@ ProjectDetail.propTypes = {
   projectUserSummaries: PropTypes.array,
   allowEdit: PropTypes.bool,
   onClickEdit: PropTypes.func,
+  unlockPlayerSurvey: PropTypes.func,
+  lockPlayerSurvey: PropTypes.func,
 }
 
 export default ProjectDetail

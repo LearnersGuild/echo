@@ -5,7 +5,7 @@ import moment from 'moment-timezone'
 import {Flex} from 'src/common/components/Layout'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {objectValuesAreAllNull, roundDecimal, getStatRenderer} from 'src/common/util'
-import ProjectStatColumn from 'src/common/components/UserProjectSummary/ProjectStatColumn'
+import ProjectStatColumn from 'src/common/components/UserProjectSummary/ProjectStatColumn.jsx'
 
 import styles from './index.scss'
 
