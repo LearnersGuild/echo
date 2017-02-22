@@ -33,10 +33,7 @@ export default class ProjectUserSummary extends Component {
   }
 
   surveyStatus() {
-    const {
-      userRetrospectiveComplete,
-      userRetrospectiveUnlocked,
-    } = this.props
+    const {userRetrospectiveComplete} = this.props
 
     if (userRetrospectiveComplete) {
       return this.state.lockStatus === 'LOCKED' ?

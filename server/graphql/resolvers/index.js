@@ -232,9 +232,14 @@ async function getUserProjectSummary(user, project, projectUserMap, currentUser)
     evaluation.submittedBy = projectUserMap.get(evaluation.submittedById)
   })
 
-  const survey = await Survey.get(project.retrospectiveSurveyId)
-  const userRetrospectiveComplete = surveyCompletedBy(survey, user.id)
-  const userRetrospectiveUnlocked = !surveyLockedFor(survey, user.id)
+  let userRetrospectiveComplete
+  let userRetrospectiveUnlocked
+
+  if (project.retrospectiveSurveyId) {
+    const survey = await Survey.get(project.retrospectiveSurveyId)
+    userRetrospectiveComplete = surveyCompletedBy(survey, user.id)
+    userRetrospectiveUnlocked = !surveyLockedFor(survey, user.id)
+  }
 
   return {
     userProjectStats: extractUserProjectStats(user, project),

@@ -41,15 +41,15 @@ function _filterOpenProjectsForPlayer(playerId) {
           project('cycleId').default('')
         ).default({})('state')
       )
-    const hasNotBeenCompletedByPlayer = project =>
+    const hasNotBeenUnlockForPlayer = project =>
       r.table('surveys')
-        .get(project('retrospectiveSurveyId'))('completedBy')
+        .get(project('retrospectiveSurveyId'))('unlockedFor')
         .contains(playerId).not()
     return r.and(
       containsPlayer(project),
       hasRetroSurvey(project),
       isInOpenCycle(project),
-      hasNotBeenCompletedByPlayer(project)
+      hasNotBeenUnlockForPlayer(project)
     )
   }
 }
