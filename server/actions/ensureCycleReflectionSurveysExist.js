@@ -40,6 +40,7 @@ async function buildSurvey(project, surveyDescriptor) {
     .then(questionRefs => saveSurvey({
       questionRefs,
       completedBy: [],
+      unlockedFor: [],
     }))
     .then(result => result.generated_keys[0])
 }

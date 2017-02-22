@@ -10,6 +10,7 @@ export default function define(factory) {
     id: cb => cb(null, faker.random.uuid()),
     questionRefs: [],
     completedBy: [],
+    unlockedFor: [],
     // This doesn't work =(
     // questionRefs: [
     //   {
