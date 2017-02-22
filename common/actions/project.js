@@ -106,7 +106,7 @@ export function unlockSurvey(playerId, projectId) {
       return getGraphQLFetcher(dispatch, getState().auth)(query)
         .then(graphQLResponse => graphQLResponse.data.unlockRetroSurveyForUser)
     },
-    payload: {},
+    payload: {playerId, projectId},
   }
 }
 
@@ -123,6 +123,6 @@ export function lockSurvey(playerId, projectId) {
       return getGraphQLFetcher(dispatch, getState().auth)(query)
         .then(graphQLResponse => graphQLResponse.data.lockRetroSurveyForUser)
     },
-    payload: {},
+    payload: {playerId, projectId},
   }
 }

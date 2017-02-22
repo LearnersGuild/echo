@@ -6,6 +6,7 @@ import {roundDecimal, getStatRenderer} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {userStatsPropType} from 'src/common/components/UserProjectSummary'
 import {IconButton} from 'react-toolbox/lib/button'
+import {ProgressBar} from 'react-toolbox/lib/progress_bar'
 
 import styles from './index.scss'
 
@@ -39,6 +40,18 @@ export default class ProjectUserSummary extends Component {
     onLockPlayerSurvey()
   }
 
+  renderLockButton(onClick, icon, actionName) {
+    const {isLockingOrUnlocking} = this.props
+
+    const button = <IconButton icon={icon}/>
+    const widget = isLockingOrUnlocking ? (
+      <span><ProgressBar type="circular" mode="indeterminate" className={styles.lockButtonsWait}/>{'Please wait ...'}</span>
+    ) : (
+      <a onClick={onClick}>{button}{`${actionName} Survey`}</a>
+    )
+    return <div className={styles.lockButtons}>{widget}</div>
+  }
+
   renderSurveyLockUnlock() {
     const {
       userRetrospectiveComplete,
@@ -47,16 +60,8 @@ export default class ProjectUserSummary extends Component {
 
     if (userRetrospectiveComplete) {
       return userRetrospectiveUnlocked ?
-        <div className={styles.lockButtons}>
-          <a onClick={this.handleLockSurveyClick}>
-            <IconButton icon="lock_outline"/>{'Lock Survey'}
-          </a>
-        </div> :
-        <div className={styles.lockButtons}>
-          <a onClick={this.handleUnlockSurveyClick}>
-            <IconButton icon="lock_open"/>{'Unlock Survey'}
-          </a>
-        </div>
+        this.renderLockButton(this.handleLockSurveyClick, 'lock_outline', 'Lock') :
+        this.renderLockButton(this.handleUnlockSurveyClick, 'lock_open', 'Unlock')
     }
   }
 
@@ -149,6 +154,7 @@ ProjectUserSummary.propTypes = {
   })),
   userProjectStats: PropTypes.shape(userStatsPropType),
   totalProjectHours: PropTypes.number,
+  isLockingOrUnlocking: PropTypes.bool,
   onUnlockPlayerSurvey: PropTypes.func.isRequired,
   onLockPlayerSurvey: PropTypes.func.isRequired,
   userRetrospectiveComplete: PropTypes.bool,

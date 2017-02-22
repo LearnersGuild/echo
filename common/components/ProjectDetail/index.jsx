@@ -159,7 +159,7 @@ class ProjectDetail extends Component {
   }
 
   renderUserSummaries() {
-    const {projectUserSummaries, project, unlockPlayerSurvey, lockPlayerSurvey} = this.props
+    const {projectUserSummaries, project, unlockPlayerSurvey, lockPlayerSurvey, isLockingOrUnlocking} = this.props
     const totalProjectHours = (project.stats || {})[STAT_DESCRIPTORS.PROJECT_HOURS]
 
     const memberSummaries = (projectUserSummaries || [])
@@ -172,6 +172,7 @@ class ProjectDetail extends Component {
         return (
           <ProjectUserSummary
             key={i} {...userSummary}
+            isLockingOrUnlocking={isLockingOrUnlocking}
             totalProjectHours={totalProjectHours}
             onUnlockPlayerSurvey={onUnlockPlayerSurvey}
             onLockPlayerSurvey={onLockPlayerSurvey}
@@ -261,6 +262,7 @@ ProjectDetail.propTypes = {
     createdAt: PropTypes.date,
   })),
   projectUserSummaries: PropTypes.array,
+  isLockingOrUnlocking: PropTypes.bool,
   allowEdit: PropTypes.bool,
   onClickEdit: PropTypes.func,
   unlockPlayerSurvey: PropTypes.func,

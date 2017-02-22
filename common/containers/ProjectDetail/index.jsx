@@ -36,6 +36,7 @@ class ProjectDetailContainer extends Component {
     const {
       currentUser,
       isBusy,
+      isLockingOrUnlocking,
       project,
       projectEvaluations,
       projectUserSummaries,
@@ -50,6 +51,7 @@ class ProjectDetailContainer extends Component {
         projectUserSummaries={projectUserSummaries}
         allowEdit={userCan(currentUser, 'importProject')}
         onClickEdit={this.handleClickEdit}
+        isLockingOrUnlocking={isLockingOrUnlocking}
         unlockPlayerSurvey={unlockPlayerSurvey}
         lockPlayerSurvey={lockPlayerSurvey}
         />
@@ -62,6 +64,7 @@ ProjectDetailContainer.propTypes = {
   projectEvaluations: PropTypes.array,
   projectUserSummaries: PropTypes.array,
   isBusy: PropTypes.bool.isRequired,
+  isLockingOrUnlocking: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   currentUser: PropTypes.object,
   fetchData: PropTypes.func.isRequired,
@@ -83,7 +86,7 @@ function fetchData(dispatch, props) {
 function mapStateToProps(state, ownProps) {
   const {identifier} = ownProps.params
   const {app, auth, projectSummaries} = state
-  const {projectSummaries: projectSummariesByProjectId} = projectSummaries
+  const {isLockingOrUnlocking, projectSummaries: projectSummariesByProjectId} = projectSummaries
 
   const projectSummary = Object.values(projectSummariesByProjectId).find(projectSummary => {
     return projectSummary.project && (
@@ -97,6 +100,7 @@ function mapStateToProps(state, ownProps) {
     projectEvaluations: projectSummary.projectEvaluations,
     projectUserSummaries: projectSummary.projectUserSummaries,
     isBusy: projectSummaries.isBusy,
+    isLockingOrUnlocking,
     loading: app.showLoading,
     currentUser: auth.currentUser,
   }

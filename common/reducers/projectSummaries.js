@@ -11,6 +11,7 @@ import {
 const initialState = {
   projectSummaries: {},
   isBusy: false,
+  isLockingOrUnlocking: false,
 }
 
 export default function projectSummaries(state = initialState, action) {
@@ -22,8 +23,7 @@ export default function projectSummaries(state = initialState, action) {
 
     case LOCK_SURVEY_REQUEST:
     case UNLOCK_SURVEY_REQUEST:
-      // FIXME: figure out how to have the UI feel snappier
-      return state
+      return Object.assign({}, state, {isLockingOrUnlocking: true})
 
     case GET_PROJECT_SUMMARY_SUCCESS:
     case LOCK_SURVEY_SUCCESS:
@@ -33,6 +33,7 @@ export default function projectSummaries(state = initialState, action) {
         const {project} = projectSummary || {}
         const projectSummaries = Object.assign({}, state.projectSummaries, {[project.id]: projectSummary})
         return Object.assign({}, state, {
+          isLockingOrUnlocking: false,
           isBusy: false,
           projectSummaries,
         })
