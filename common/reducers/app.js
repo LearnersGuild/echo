@@ -6,6 +6,7 @@ import {
   FETCH_DATA_REQUEST,
   FETCH_DATA_FAILURE,
   FETCH_DATA_SUCCESS,
+  UNLOCK_SURVEY_FAILURE,
 } from 'src/common/actions/types'
 
 const initialState = {
@@ -30,6 +31,7 @@ export default function app(state = initialState, action) {
 
     case AUTHORIZATION_ERROR:
     case FETCH_DATA_FAILURE:
+    case UNLOCK_SURVEY_FAILURE:
       {
         console.error(action.type, action.error)
         return {
