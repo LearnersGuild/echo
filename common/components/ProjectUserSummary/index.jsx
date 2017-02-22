@@ -53,7 +53,6 @@ export default class ProjectUserSummary extends Component {
   renderSummary() {
     const {user, userProjectStats, totalProjectHours} = this.props
 
-    const userStats = userProjectStats || {}
     const userProfilePath = `/users/${user.handle}`
     const userStartingLevel = (userProjectStats[STAT_DESCRIPTORS.LEVEL] || {}).starting || BLANK
     const renderStat = getStatRenderer(userProjectStats)

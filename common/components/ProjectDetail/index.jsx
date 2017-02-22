@@ -160,7 +160,6 @@ class ProjectDetail extends Component {
 
   renderUserSummaries() {
     const {projectUserSummaries, project, unlockPlayerSurvey, lockPlayerSurvey} = this.props
-    const totalProjectHours = (project.stats || {})[STAT_DESCRIPTORS.PROJECT_HOURS]
 
     const memberSummaries = (projectUserSummaries || [])
       .filter(summary => (
