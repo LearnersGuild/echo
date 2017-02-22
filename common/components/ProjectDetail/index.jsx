@@ -166,13 +166,18 @@ class ProjectDetail extends Component {
       .filter(summary => (
         summary.userProjectStats !== null
       ))
-      .map((userSummary, i) => (
-        <ProjectUserSummary
-          key={i} {...userSummary} totalProjectHours={totalProjectHours}
-          unlockPlayerSurvey={() => unlockPlayerSurvey(userSummary.user.id, project.id)}
-          lockPlayerSurvey={() => lockPlayerSurvey(userSummary.user.id, project.id)}
-          />
-      ))
+      .map((userSummary, i) => {
+        const onUnlockPlayerSurvey = () => unlockPlayerSurvey(userSummary.user.id, project.id)
+        const onLockPlayerSurvey = () => lockPlayerSurvey(userSummary.user.id, project.id)
+        return (
+          <ProjectUserSummary
+            key={i} {...userSummary}
+            totalProjectHours={totalProjectHours}
+            unlockPlayerSurvey={onUnlockPlayerSurvey}
+            lockPlayerSurvey={onLockPlayerSurvey}
+            />
+        )
+      })
 
     return (
       <div>

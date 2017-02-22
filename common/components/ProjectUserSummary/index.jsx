@@ -22,8 +22,8 @@ export default class ProjectUserSummary extends Component {
     }
     this.renderSummary = this.renderSummary.bind(this)
     this.renderFeedback = this.renderFeedback.bind(this)
-    this.unlockSurvey = this.setSurveyStatus(unlockPlayerSurvey, 'UNLOCKED').bind(this)
-    this.lockSurvey = this.setSurveyStatus(lockPlayerSurvey, 'LOCKED').bind(this)
+    this.handleUnlockSurvey = this.setSurveyStatus(unlockPlayerSurvey, 'UNLOCKED').bind(this)
+    this.handleLockSurvey = this.setSurveyStatus(lockPlayerSurvey, 'LOCKED').bind(this)
   }
 
   setSurveyStatus(changeSurveyStatus, lockStatus) {
@@ -38,12 +38,12 @@ export default class ProjectUserSummary extends Component {
     if (userRetrospectiveComplete) {
       return this.state.lockStatus === 'LOCKED' ?
         <div className={styles.lock_buttons}>
-          <a onClick={this.unlockSurvey}>
+          <a onClick={this.handleUnlockSurvey}>
             <IconButton icon="lock_open"/>{'Unlock Survey'}
           </a>
         </div> :
         <div className={styles.lock_buttons}>
-          <a onClick={this.lockSurvey}>
+          <a onClick={this.handleLockSurvey}>
             <IconButton icon="lock_outline"/>{'Lock Survey'}
           </a>
         </div>
