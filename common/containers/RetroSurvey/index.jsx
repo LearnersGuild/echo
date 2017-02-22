@@ -212,7 +212,7 @@ class RetroSurveyContainer extends Component {
           <h5>Retrospectives</h5>
         </div>
         <hr className={styles.headerDivider}/>
-        <div className={styles.projectListPrompt}>Select an open project</div>
+        <div className={styles.projectListPrompt}>Available Retrospectives</div>
         <div>
           {this.props.projects.map((project, i) => (
             <div key={i} className={styles.projectListItem}>
