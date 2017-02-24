@@ -51,6 +51,7 @@ module.exports = {
       },
     },
     github: {
+      baseURL: 'https://api.github.com',
       tokens: {
         admin: process.env.GITHUB_ORG_ADMIN_TOKEN,
       },
