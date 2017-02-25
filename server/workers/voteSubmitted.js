@@ -4,7 +4,7 @@ import {connect} from 'src/db'
 import {getCycleById} from 'src/server/db/cycle'
 import {getChapterById} from 'src/server/db/chapter'
 import {getPoolById} from 'src/server/db/pool'
-import fetchGoalInfo from 'src/server/actions/fetchGoalInfo'
+import {fetchGoalInfo} from 'src/server/services/gitHub'
 import getCycleVotingResults from 'src/server/actions/getCycleVotingResults'
 
 const r = connect()
