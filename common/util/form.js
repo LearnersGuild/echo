@@ -16,7 +16,6 @@ export const FORM_TYPES = {
 }
 
 export function renderInput(field) {
-  // this is where I will start my investigation
   return <Input {..._values(field)}/>
 }
 renderInput.propTypes = propTypes
