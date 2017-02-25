@@ -1,6 +1,6 @@
 import logger from 'src/server/util/logger'
 import findUsers from 'src/server/actions/findUsers'
-import fetchGoalInfo from 'src/server/actions/fetchGoalInfo'
+import {fetchGoalInfo} from 'src/server/services/gitHub'
 import generateProjectName from 'src/server/actions/generateProjectName'
 import initializeProject from 'src/server/actions/initializeProject'
 import {Project} from 'src/server/services/dataService'

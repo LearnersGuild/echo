@@ -25,7 +25,7 @@ export class APIError extends Error {
   }
 }
 
-function apiFetchRaw(url, opts = {}) {
+export function apiFetchRaw(url, opts = {}) {
   const options = {...opts, headers: headers(opts.headers)}
   return fetch(url, options)
 }
