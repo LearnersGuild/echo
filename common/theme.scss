@@ -1,3 +1,36 @@
-$color-primary: #00A3DF;
-$color-primary-dark: #00A3DF;
-$input-text-error-color: #00A3DF;
+// primary colors
+$color-blue: #00A3DF;
+$color-green: #97C93D;
+$color-red: #ED3F60;
+$color-yellow: #F2BB1A;
+
+// secondary colors
+$color-dark-blue: #4A539F;
+$color-dark-green: #1B8C5C;
+$color-dark-red: #981C4D;
+$color-orange: #E47226;
+
+// text and background colors
+$color-slate-grey: #252531;
+$color-light-grey: #E2E3E4;
+
+//-- react-toolbox theme variables
+
+$color-divider: $color-light-grey;
+// $color-background: $color-white !default;
+$color-text: $color-slate-grey;
+// $color-text-secondary: $palette-grey-600 !default;
+
+$color-primary: $color-blue;
+$color-primary-dark: $color-dark-blue;
+$color-accent: $color-red;
+$color-accent-dark: $color-dark-red;
+// $color-primary-contrast: $color-dark-contrast !default;
+// $color-accent-contrast: $color-dark-contrast !default;
+
+$input-text-error-color: $color-red;
+
+// globals
+a {
+  color: $color-dark-blue;
+}
