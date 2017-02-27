@@ -4,7 +4,7 @@ import {connect} from 'src/db'
 import {getCycleById} from 'src/server/db/cycle'
 import {getChapterById} from 'src/server/db/chapter'
 import {getPoolById} from 'src/server/db/pool'
-import {fetchGoalInfo} from 'src/server/services/gitHub'
+import {getGoalInfo} from 'src/server/services/gitHub'
 import getCycleVotingResults from 'src/server/actions/getCycleVotingResults'
 
 const r = connect()
@@ -41,7 +41,7 @@ async function fetchGoalsInfo(vote) {
   const chapterExpr = getChapterById(cycleExpr('chapterId'))
   const goalRepositoryURL = await chapterExpr('goalRepositoryURL')
   return Promise.map(vote.notYetValidatedGoalDescriptors,
-    goalDescriptor => fetchGoalInfo(goalRepositoryURL, goalDescriptor)
+    goalDescriptor => getGoalInfo(goalRepositoryURL, goalDescriptor)
   )
 }
 

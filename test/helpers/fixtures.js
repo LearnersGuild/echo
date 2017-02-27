@@ -194,7 +194,7 @@ export const useFixture = {
         },
       })
   },
-  nockFetchGoalInfo(goalNumber, {times = 1} = {}) {
+  nockGetGoalInfo(goalNumber, {times = 1} = {}) {
     this.apiScope = nock('https://api.github.com')
       .get(`/repos/GuildCraftsTesting/web-development-js-testing/issues/${goalNumber}`)
       .times(times)

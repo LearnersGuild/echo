@@ -4,10 +4,10 @@
 
 import nock from 'nock'
 
-import fetchGoalInfo from '../fetchGoalInfo'
+import getGoalInfo from '../getGoalInfo'
 
 describe(testContext(__filename), function () {
-  describe('fetchGoalInfo()', function () {
+  describe('getGoalInfo()', function () {
     before(function () {
       this.orgAndRepo = 'org/goal-repo'
       this.goalRepoURL = `https://github.com/${this.orgAndRepo}`
@@ -20,7 +20,7 @@ describe(testContext(__filename), function () {
         .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
         .reply(500, 'Internal Server Error')
 
-      expect(fetchGoalInfo(this.goalRepoURL, this.goalNumber)).to.be.rejected
+      expect(getGoalInfo(this.goalRepoURL, this.goalNumber)).to.be.rejected
     })
 
     it('returns null if there is no such goal', async function () {
@@ -28,7 +28,7 @@ describe(testContext(__filename), function () {
         .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
         .reply(404, 'Not Found')
 
-      const goalInfo = await fetchGoalInfo(this.goalRepoURL, this.goalURL)
+      const goalInfo = await getGoalInfo(this.goalRepoURL, this.goalURL)
 
       expect(goalInfo).to.equal(null)
     })
@@ -49,7 +49,7 @@ describe(testContext(__filename), function () {
         .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
         .reply(200, mockIssue)
 
-      const goalInfo = await fetchGoalInfo(this.goalRepoURL, this.goalURL)
+      const goalInfo = await getGoalInfo(this.goalRepoURL, this.goalURL)
 
       expect(goalInfo).to.deep.equal(mockGoalInfo)
     })

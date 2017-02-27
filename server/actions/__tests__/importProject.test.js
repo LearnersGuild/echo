@@ -50,7 +50,7 @@ describe(testContext(__filename), function () {
 
     it('creates a new project a projectIdentifier is not specified', async function () {
       useFixture.nockIDMFindUsers(this.users)
-      useFixture.nockFetchGoalInfo(this.goalNumber, {times: 3})
+      useFixture.nockGetGoalInfo(this.goalNumber, {times: 3})
 
       const importedProject = await importProject(this.importData)
 
@@ -62,7 +62,7 @@ describe(testContext(__filename), function () {
 
     it('creates a new project with specified projectIdentifier when existing project not matched', async function () {
       useFixture.nockIDMFindUsers(this.users)
-      useFixture.nockFetchGoalInfo(this.goalNumber)
+      useFixture.nockGetGoalInfo(this.goalNumber)
 
       const projectIdentifier = 'new-project'
       const modifiedImportData = Object.assign({}, this.importData, {projectIdentifier})
@@ -78,7 +78,7 @@ describe(testContext(__filename), function () {
       const newGoalNumber = 2
 
       useFixture.nockIDMFindUsers(newPlayers)
-      useFixture.nockFetchGoalInfo(newGoalNumber)
+      useFixture.nockGetGoalInfo(newGoalNumber)
 
       const importedProject = await importProject({
         ...this.importData,

@@ -1,6 +1,6 @@
 import logger from 'src/server/util/logger'
 import findUsers from 'src/server/actions/findUsers'
-import {fetchGoalInfo} from 'src/server/services/gitHub'
+import {getGoalInfo} from 'src/server/services/gitHub'
 import generateProjectName from 'src/server/actions/generateProjectName'
 import initializeProject from 'src/server/actions/initializeProject'
 import {Project} from 'src/server/services/dataService'
@@ -87,7 +87,7 @@ async function _parseProjectInput(data) {
   let goal
   if (goalIdentifier && !goal) {
     const goalNumber = parseInt(goalIdentifier, 10)
-    goal = await fetchGoalInfo(chapter.goalRepositoryURL, goalNumber)
+    goal = await getGoalInfo(chapter.goalRepositoryURL, goalNumber)
     if (!goal) {
       throw new Error(`Goal not found with identifier: ${goalIdentifier}`)
     }

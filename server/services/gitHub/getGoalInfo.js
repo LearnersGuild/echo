@@ -4,7 +4,7 @@ import {apiURL, apiFetchRaw, APIError} from './util'
 
 const TEAM_SIZE_LABEL_PREFIX = 'team-size-'
 
-export default function fetchGoalInfo(goalRepositoryURL, goalDescriptor) {
+export default function getGoalInfo(goalRepositoryURL, goalDescriptor) {
   const issueURL = _githubIssueURL(goalRepositoryURL, goalDescriptor)
   if (!issueURL) {
     return Promise.resolve(null)
