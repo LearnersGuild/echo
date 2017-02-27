@@ -25,7 +25,10 @@ async function createGitHubTeamWithAccessToGoalRepo(chapter) {
   }
 
   console.log(`Creating GitHub team ${owner}/${chapter.channelName}`)
-  return await createTeam(chapter.channelName, chapter.name, owner, [repo], 'push')
+  return await createTeam(chapter.channelName, chapter.name, owner, {
+    repoNames: [repo],
+    permission: 'push',
+  })
 }
 
 async function addTeamIdToChapter(chapter, team) {

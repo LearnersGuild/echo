@@ -19,7 +19,10 @@ describe(testContext(__filename), function () {
         .post('/orgs/owner/teams')
         .reply(201, mockTeam)
 
-      const team = await createTeam(mockTeam.name, mockTeam.description, 'owner', ['repo1, repo2'], 'push')
+      const team = await createTeam(mockTeam.name, mockTeam.description, 'owner', {
+        repoNames: ['repo1, repo2'],
+        permission: 'push',
+      })
 
       expect(team).to.deep.equal(mockTeam)
     })
