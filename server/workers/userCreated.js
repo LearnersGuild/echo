@@ -4,6 +4,9 @@ import {connect} from 'src/db'
 import {replace as replacePlayer} from 'src/server/db/player'
 import {replace as replaceModerator} from 'src/server/db/moderator'
 import {addUserToTeam} from 'src/server/services/gitHub'
+import {getLatestCycleForChapter} from 'src/server/db/cycle'
+import {findPoolsByCycleId, getPlayersInPool, addPlayerIdsToPool, getPlayersCountForPools} from 'src/server/db/pool'
+import {GOAL_SELECTION} from 'src/common/models/cycle'
 
 const r = connect()
 
@@ -20,10 +23,18 @@ export function start() {
   jobService.processJobs('userCreated', processUserCreated)
 }
 
-async function processUserCreated(user) {
+export async function processUserCreated(user) {
   const gameUser = await addUserToDatabase(user)
-  await addUserToChapterGitHubTeam(user, gameUser)
-  await notifyCRMSystemOfPlayerSignUp(user)
+  // await addUserToChapterGitHubTeam(user, gameUser)
+  // await notifyCRMSystemOfPlayerSignUp(user)
+  // const cycle = await getLatestCycleForChapter(gameUser.chapterId)
+  // if (cycle.state === GOAL_SELECTION) {
+  //   const poolsWithCount = await getPlayersCountForPools(cycle.id)
+  //     .filter({level: 0}).sort((previousPool, currentPool) => {
+  //       return previousPool.count - currentPool.count
+  //     })
+  //   await addPlayerIdsToPool(poolsWithCount[0].id, [gameUser.id])
+  // }
 }
 
 async function addUserToDatabase(user) {
