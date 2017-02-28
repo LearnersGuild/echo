@@ -5,7 +5,7 @@ import {shuffle, range} from 'src/server/util'
 import {LEVELS} from 'src/server/util/stats'
 import findActiveVotingPlayersInChapter from 'src/server/actions/findActiveVotingPlayersInChapter'
 
-const MAX_POOL_SIZE = 15
+export const MAX_POOL_SIZE = 15
 const POOL_NAMES = [
   'Red',
   'Orange',

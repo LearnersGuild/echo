@@ -54,6 +54,13 @@ export function addPlayerIdsToPool(poolId, playerIds) {
   )
 }
 
+export function getPoolsForCycleWithPlayerCount(cycleId) {
+  return poolsTable.getAll(cycleId, {index: 'cycleId'})
+    .map(pool => pool.merge({
+      count: playersPoolsTable.getAll(pool('id'), {index: 'poolId'}).count()
+    }))
+}
+
 export function getPoolByCycleIdAndPlayerId(cycleId, playerId, {returnNullIfNoneFound = false} = {}) {
   return poolsTable.filter({cycleId})
     .eqJoin('id', playersPoolsTable, {index: 'poolId'})
