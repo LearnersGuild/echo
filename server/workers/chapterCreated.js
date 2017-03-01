@@ -1,6 +1,6 @@
 import {connect} from 'src/db'
 import {getOwnerAndRepoFromGitHubURL} from 'src/common/util'
-import {getTeam, createTeam} from 'src/server/services/gitHub'
+import {getTeam, createTeam} from 'src/server/services/gitHubService'
 
 const r = connect()
 
