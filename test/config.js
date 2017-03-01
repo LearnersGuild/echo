@@ -32,6 +32,7 @@ global.testContext = function (filename) {
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
 global.expect = chai.expect
+global.assert = chai.assert
 
 // CSS modules setup
 require('src/server/configureCSSModules')()

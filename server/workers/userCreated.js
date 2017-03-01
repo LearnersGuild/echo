@@ -18,7 +18,7 @@ const upsertToDatabase = {
   player: gameUser => replacePlayer({...gameUser, ...DEFAULT_PLAYER_STATS}, {returnChanges: 'always'}),
 }
 
-export function start() {
+export default function start() {
   const jobService = require('src/server/services/jobService')
   jobService.processJobs('userCreated', processUserCreated)
 }
@@ -27,14 +27,19 @@ export async function processUserCreated(user) {
   const gameUser = await addUserToDatabase(user)
   // await addUserToChapterGitHubTeam(user, gameUser)
   // await notifyCRMSystemOfPlayerSignUp(user)
-  // const cycle = await getLatestCycleForChapter(gameUser.chapterId)
-  // if (cycle.state === GOAL_SELECTION) {
-  //   const poolsWithCount = await getPlayersCountForPools(cycle.id)
-  //     .filter({level: 0}).sort((previousPool, currentPool) => {
-  //       return previousPool.count - currentPool.count
-  //     })
-  //   await addPlayerIdsToPool(poolsWithCount[0].id, [gameUser.id])
-  // }
+
+  const cycle = await getLatestCycleForChapter(gameUser.chapterId)
+  if (cycle.state === GOAL_SELECTION) {
+    await addNewPlayerToPool(gameUser, cycle)
+  }
+}
+
+async function addNewPlayerToPool(gameUser, cycle) {
+   const poolsWithCount = await getPlayersCountForPools(cycle.id)
+      .filter({level: 0})
+
+    poolsWithCount.sort((previousPool, currentPool) => previousPool.count - currentPool.count)
+    await addPlayerIdsToPool(poolsWithCount[0].id, [gameUser.id])
 }
 
 async function addUserToDatabase(user) {
