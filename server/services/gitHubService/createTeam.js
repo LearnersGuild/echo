@@ -1,4 +1,6 @@
-import {apiURL, apiFetch} from './util'
+import {apiFetch} from 'src/server/util/api'
+
+import {apiURL, headers} from './util'
 
 export default function createTeam(name, description, owner, options = {}) {
   const createTeamURL = apiURL(`/orgs/${owner}/teams`)
@@ -13,7 +15,7 @@ export default function createTeam(name, description, owner, options = {}) {
 
   return apiFetch(createTeamURL, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: headers({'Content-Type': 'application/json'}),
     body: JSON.stringify(body),
   })
 }

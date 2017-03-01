@@ -1,6 +1,8 @@
 import url from 'url'
 
-import {apiURL, apiFetchRaw, APIError} from './util'
+import {apiFetchRaw, APIError} from 'src/server/util/api'
+
+import {apiURL, headers} from './util'
 
 const TEAM_SIZE_LABEL_PREFIX = 'team-size-'
 
@@ -10,7 +12,7 @@ export default function getGoalInfo(goalRepositoryURL, goalDescriptor) {
     return Promise.resolve(null)
   }
 
-  return apiFetchRaw(issueURL)
+  return apiFetchRaw(issueURL, {headers: headers()})
     .then(resp => {
       if (!resp.ok) {
         // if no issue is found at the given URL, return null
