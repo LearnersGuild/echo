@@ -59,6 +59,9 @@ module.exports = {
         crafts: process.env.GITHUB_CRAFTS_REPO,
       }
     },
+    heroku: {
+      apiToken: process.env.HEROKU_API_TOKEN,
+    },
   },
   app: {
     baseURL: process.env.APP_BASE_URL,
@@ -68,6 +71,38 @@ module.exports = {
     hotReload: true,
     devTools: true,
     noErrors: true,
+  },
+  levels: {
+    permissions: {
+      3: {
+        github: {
+          repositories: [
+            'LearnersGuild/idm',
+          ],
+        },
+      },
+      4: {
+        github: {
+          repositories: [
+            'LearnersGuild/bin',
+            'LearnersGuild/echo-chat',
+            'LearnersGuild/game',
+            'LearnersGuild/game-cli',
+            'LearnersGuild/graphiql',
+            'LearnersGuild/idm',
+            'LearnersGuild/idm-jwt-auth',
+            'LearnersGuild/rethinkdb-changefeed-reconnect',
+            'LearnersGuild/subcli',
+          ],
+        },
+        heroku: {
+          apps: [
+            'lg-game',
+            'lg-idm',
+          ],
+        },
+      },
+    },
   },
   smtp: {
     user: process.env.SMTP_USER,
