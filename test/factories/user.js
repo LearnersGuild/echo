@@ -15,6 +15,7 @@ export default function define(factory) {
     phone: cb => cb(null, faker.phone.phoneNumber('(###) ###-####')),
     dateOfBirth: cb => cb(null, faker.date.past(21).toISOString().slice(0, 10)),
     timezone: cb => cb(null, faker.random.arrayElement(VALID_TIMEZONES)),
+    active: true,
     roles: ['player'],
     inviteCode: 'test',
     authProviders: {},
