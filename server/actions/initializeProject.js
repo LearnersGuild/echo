@@ -16,22 +16,32 @@ export default async function initializeProject(project) {
 
 async function _initializeProjectChannel(project) {
   const chatService = require('src/server/services/chatService')
-
   const {goal, name: channelName} = project
   const players = await getPlayerInfo(project.playerIds)
   const goalIssueNum = goal.url.replace(/.*\/(\d+)$/, '$1')
   const goalLink = `[${goalIssueNum}: ${goal.title}](${goal.url})`
+  const channelUserNames = players.map(p => p.handle).concat(config.server.chat.userName)
 
   try {
-    const channelUserNames = players.map(p => p.handle).concat(config.server.chat.userName)
     await chatService.createChannel(channelName, channelUserNames, goalLink)
-
     // split welcome message into 2 so the goal link preview appears after the goal link
     await chatService.sendChannelMessage(channelName, _welcomeMessage1(channelName, goalLink))
     await chatService.sendChannelMessage(channelName, _welcomeMessage2(players))
   } catch (err) {
     if (_isDuplicateChannelError(err)) {
       console.log(`Project channel ${channelName} already exists; initialization skipped`)
+    } else {
+      throw err
+    }
+  }
+  const goalChannelName = String(goal.githubIssue.number)
+
+  try {
+    await chatService.createChannel(goalChannelName, channelUserNames, goalLink)
+    await chatService.sendChannelMessage(goalChannelName, _welcomeMessage1(goalChannelName, goalLink))
+  } catch (err) {
+    if (_isDuplicateChannelError(err)) {
+      await chatService.joinChannel(goalChannelName, channelUserNames)
     } else {
       throw err
     }
