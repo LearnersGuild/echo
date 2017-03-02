@@ -9,7 +9,7 @@ This is the game service.
 
 ## GETTING STARTED
 
-Welcome to [The Game](http://i.giphy.com/MGU6B1h1jSfja.gif). 
+Welcome to [The Game](http://i.giphy.com/MGU6B1h1jSfja.gif).
 
 Before you can run game you need:
 - To install and set up the [IDM service](https://github.com/LearnersGuild/idm)
@@ -19,7 +19,7 @@ Before you can run game you need:
 ### SET UP THE GAME
 #####1. Fork and clone the repository.
 
-#####2. Setup and run [mehserve][mehserve]. 
+#####2. Setup and run [mehserve][mehserve].
 
 Figure out which port you intend to use and create the mehserve config file:
 ```bash
@@ -34,22 +34,26 @@ export NODE_ENV=development
 
 #####4. [Install RethinkDB][install-rethinkdb].
 
-#####5. Create your `.env.development` file for your environment. 
-Take out all comments in your final version. 
+#####5. Create your `.env.development` file for your environment.
+Take out all comments in your final version.
 Example:
 ```
 PORT=9005
 APP_BASE_URL=http://game.learnersguild.dev
 REDIS_URL=redis://localhost:6379
 RETHINKDB_URL=rethinkdb://localhost:28015/game_development
-# To support extending JWT sessions:
+# IDM / JWT settings, including session extension
 IDM_BASE_URL=http://idm.learnersguild.dev
-CHAT_BASE_URL=http://echo.learnersguild.dev
-CHAT_API_USER_SECRET='s3cr3t-p@ssw0rd'
-CHAT_API_WEBHOOK_TOKEN_DM="<get from custom echo-chat webhook integration>"
 JWT_PRIVATE_KEY="<get from IDM service>"
 JWT_PUBLIC_KEY="<get from IDM service>"
+# echo API settings
+CHAT_BASE_URL=http://echo.learnersguild.dev
+CHAT_API_USER_SECRET='s3cr3t-p@ssw0rd'
 CHAT_API_WEBHOOK_TOKEN_DM="<from when you setup the DM webhook as explained here: https://github.com/LearnersGuild/echo-chat/issues/50>"
+# external API settings
+GITHUB_ORG_ADMIN_TOKEN="<GitHub token with permissions in LearnersGuild, GuildCrafts, and GuildCraftsTesting>"
+GITHUB_CRAFTS_REPO="https://github.com/GuildCraftsTesting/web-development-js-testing"
+HEROKU_API_TOKEN="<Heroku API token with permissions on all of our apps>"
 ```
 
 ##### 6. Install dependencies:
@@ -80,12 +84,12 @@ heroku access -a lg-game
 
 Use the Resync command to sync the live game and idm data to your local environment. You must have [LG bin](https://github.com/LearnersGuild/bin) cloned and running for this to work.
 
-To ensure the bin environments are ready for syncing with the database: 
+To ensure the bin environments are ready for syncing with the database:
 ```bash
 ls -l /usr/local/bin/rethinkdb-export
 ```
 
-If you don't have `/usr/local/bin/rethinkdb-export` you'll need to install `pip` and then use it to install the [python rethinkdb drivers](https://www.rethinkdb.com/docs/install-drivers/python/) 
+If you don't have `/usr/local/bin/rethinkdb-export` you'll need to install `pip` and then use it to install the [python rethinkdb drivers](https://www.rethinkdb.com/docs/install-drivers/python/)
 
 ```bash
 brew install pip
