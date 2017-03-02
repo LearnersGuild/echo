@@ -30,6 +30,7 @@
     "import:projects": "npm run symlinks && ./node_modules/.bin/babel-node scripts/importProjects.js",
     "lint": "./node_modules/.bin/xo",
     "postinstall": "npm run build",
+    "players:collaboration": "npm run symlinks && ./node_modules/.bin/babel-node scripts/ensurePlayersCanCollaborate",
     "preview:projects": "npm run symlinks && ./node_modules/.bin/babel-node scripts/previewProjects",
     "print:levels": "npm run symlinks && ./node_modules/.bin/babel-node scripts/printLevels",
     "print:projects": "npm run symlinks && ./node_modules/.bin/babel-node scripts/printProjects",
