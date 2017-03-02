@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import addCollaboratorToApp from '../addCollaboratorToApp'
 
 describe(testContext(__filename), function () {
@@ -16,7 +17,7 @@ describe(testContext(__filename), function () {
         app: {name: 'my-app'},
         user: {email: user},
       }
-      nock('https://api.heroku.com')
+      nock(config.server.heroku.baseURL)
         .post(path, {user})
         .reply(201, mockResponse)
 
@@ -29,7 +30,7 @@ describe(testContext(__filename), function () {
       const user = 'me@example.com'
       const app = 'my-app'
       const path = `/apps/${app}/collaborators`
-      nock('https://api.heroku.com')
+      nock(config.server.heroku.baseURL)
         .post(path, {user})
         .reply(500)
 

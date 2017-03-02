@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import getCollaboratorsForApp from '../getCollaboratorsForApp'
 
 describe(testContext(__filename), function () {
@@ -18,7 +19,7 @@ describe(testContext(__filename), function () {
         app: {name: 'my-app'},
         user: {email: 'her@example.com'}
       }]
-      nock('https://api.heroku.com')
+      nock(config.server.heroku.baseURL)
         .get(path)
         .reply(200, mockResponse)
 
@@ -30,7 +31,7 @@ describe(testContext(__filename), function () {
     it('throws an error if the app does not exist', async function () {
       const app = 'invalid-app'
       const path = `/apps/${app}/collaborators`
-      nock('https://api.heroku.com')
+      nock(config.server.heroku.baseURL)
         .get(path)
         .reply(404)
 

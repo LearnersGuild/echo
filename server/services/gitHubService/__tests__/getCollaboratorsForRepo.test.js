@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import getCollaboratorsForRepo from '../getCollaboratorsForRepo'
 
 describe(testContext(__filename), function () {
@@ -17,7 +18,7 @@ describe(testContext(__filename), function () {
       }, {
         login: 'anyone',
       }]
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .get(path)
         .reply(200, mockResponse)
 
@@ -30,7 +31,7 @@ describe(testContext(__filename), function () {
       const owner = 'my-org'
       const repo = 'invalid-repo'
       const path = `/repos/${owner}/${repo}/collaborators`
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .put(path)
         .reply(404)
 

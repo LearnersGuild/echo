@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import getGoalInfo from '../getGoalInfo'
 
 describe(testContext(__filename), function () {
@@ -16,7 +17,7 @@ describe(testContext(__filename), function () {
     })
 
     it('throws an error if unsuccessful', function () {
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
         .reply(500, 'Internal Server Error')
 
@@ -24,7 +25,7 @@ describe(testContext(__filename), function () {
     })
 
     it('returns null if there is no such goal', async function () {
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
         .reply(404, 'Not Found')
 
@@ -45,7 +46,7 @@ describe(testContext(__filename), function () {
         teamSize: 2,
         githubIssue: mockIssue,
       }
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
         .reply(200, mockIssue)
 

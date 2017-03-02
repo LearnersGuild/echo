@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import createTeam from '../createTeam'
 
 describe(testContext(__filename), function () {
@@ -15,7 +16,7 @@ describe(testContext(__filename), function () {
         description: 'something',
         repos_count: 2, // eslint-disable-line camelcase
       }
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .post('/orgs/owner/teams')
         .reply(201, mockTeam)
 

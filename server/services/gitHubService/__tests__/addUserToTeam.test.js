@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import addUserToTeam from '../addUserToTeam'
 
 describe(testContext(__filename), function () {
@@ -17,7 +18,7 @@ describe(testContext(__filename), function () {
         role: 'member',
         state: 'active',
       }
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .put(path)
         .reply(201, mockResponse)
 

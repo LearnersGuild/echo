@@ -4,6 +4,7 @@
 
 import url from 'url'
 
+import config from 'src/config'
 import {
   apiURL,
   headers,
@@ -19,7 +20,7 @@ describe(testContext(__filename), function () {
     })
 
     it('is a GitHub URL', function () {
-      expect(apiURL('/foo/bar')).to.match(/github\.com/)
+      expect(apiURL('/foo/bar')).to.match(new RegExp(config.server.github.baseURL))
     })
   })
 

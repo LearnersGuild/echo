@@ -20,6 +20,12 @@ module.exports = {
         DM: process.env.CHAT_API_WEBHOOK_TOKEN_DM || 'whatevs',
       }
     },
+    github: {
+      baseURL: process.env.GITHUB_BASE_URL || 'http://api.github.test'
+    },
+    heroku: {
+      baseURL: process.env.HEROKU_BASE_URL || 'http://api.github.test'
+    },
     jwt: {
       privateKey: process.env.JWT_PRIVATE_KEY || `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA4tX/DJwwrJsPWn9nGPKU9A8veSI+JQY2g/FhM+gdGKwARy1q

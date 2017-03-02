@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import getTeam from '../getTeam'
 
 describe(testContext(__filename), function () {
@@ -22,7 +23,7 @@ describe(testContext(__filename), function () {
     })
 
     it('returns null if there is no such team', async function () {
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .get(`/orgs/${this.owner}/teams`)
         .reply(200, this.mockTeamsNotFound)
 
@@ -32,7 +33,7 @@ describe(testContext(__filename), function () {
     })
 
     it('returns the correct team if it is found', async function () {
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .get(`/orgs/${this.owner}/teams`)
         .reply(200, this.mockTeamsFound)
 

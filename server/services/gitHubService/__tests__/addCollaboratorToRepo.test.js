@@ -4,6 +4,7 @@
 
 import nock from 'nock'
 
+import config from 'src/config'
 import addCollaboratorToRepo from '../addCollaboratorToRepo'
 
 describe(testContext(__filename), function () {
@@ -13,7 +14,7 @@ describe(testContext(__filename), function () {
       const repo = 'my-repo'
       const username = 'someuser'
       const path = `/repos/${owner}/${repo}/collaborators/${username}`
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .put(path)
         .reply(204)
 
@@ -27,7 +28,7 @@ describe(testContext(__filename), function () {
       const repo = 'my-repo'
       const username = '-this-username-is-invalid-'
       const path = `/repos/${owner}/${repo}/collaborators/${username}`
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .put(path)
         .reply(404)
 
@@ -47,7 +48,7 @@ describe(testContext(__filename), function () {
           message: 'User has already been invited',
         }],
       }
-      nock('https://api.github.com')
+      nock(config.server.github.baseURL)
         .put(path)
         .reply(422, errObj)
 
