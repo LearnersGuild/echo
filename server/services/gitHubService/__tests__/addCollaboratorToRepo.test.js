@@ -33,5 +33,25 @@ describe(testContext(__filename), function () {
 
       return expect(addCollaboratorToRepo(username, owner, repo)).to.be.rejected
     })
+
+    it('gracefully recovers if the user was already invited', async function () {
+      const owner = 'my-org'
+      const repo = 'my-repo'
+      const username = 'already-invited-user'
+      const path = `/repos/${owner}/${repo}/collaborators/${username}`
+      const errObj = {
+        message: 'Validation Failed',
+        errors: [{
+          resource: 'Repository',
+          code: 'custom',
+          message: 'User has already been invited',
+        }],
+      }
+      nock('https://api.github.com')
+        .put(path)
+        .reply(422, errObj)
+
+      return expect(addCollaboratorToRepo(username, owner, repo)).to.not.be.rejected
+    })
   })
 })
