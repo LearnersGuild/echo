@@ -3,12 +3,15 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
 import factory from 'src/test/factories'
-import {withDBCleanup} from 'src/test/helpers'
+import {useFixture, withDBCleanup} from 'src/test/helpers'
 import {getUserById} from 'src/server/db/user'
 import {processUserCreated} from 'src/server/workers/userCreated'
 import {getPlayersInPool, getPlayersCountForPools} from 'src/server/db/pool'
 import {COMPLETE, GOAL_SELECTION} from 'src/common/models/cycle'
 import updateCycleState from 'src/server/actions/updateCycleState'
+
+import nock from 'nock'
+import config from 'src/config'
 
 describe(testContext(__filename), function() {
   withDBCleanup()
@@ -32,10 +35,27 @@ describe(testContext(__filename), function() {
           level: 2,
           cycleId: this.cycle.id
         })
+        this.nockGitHub = (replyCallback = () => ({})) => {
+          useFixture.nockClean()
+          nock(config.server.github.baseURL)
+            .persist()
+            .put(`/teams/${this.chapter.githubTeamId}/memberships/${this.user.handle}`)
+            .reply(200, replyCallback)
+        }
       })
 
       describe('creates a new player', function () {
+        it('adds the player to the github team', async function() {
+          const replyCallback = arg => {
+            expect(arg).to.eql(`/teams/${this.chapter.githubTeamId}/memberships/${this.user.handle}`)
+            return JSON.stringify({})
+          }
+          this.nockGitHub(replyCallback)
+          await processUserCreated(this.user)
+        })
+
         it('inserts the new player into the database', async function() {
+          this.nockGitHub()
           await processUserCreated(this.user)
           const user = await getUserById(this.user.id)
 
@@ -45,6 +65,7 @@ describe(testContext(__filename), function() {
         // TODO: look at sinon to try and mock-out the external API calls
 
         it('inserts the new player into a level 0 pool', async function() {
+          this.nockGitHub()
           await processUserCreated(this.user)
           const pool = await getPlayersInPool(this.pool.id)
 
@@ -52,6 +73,7 @@ describe(testContext(__filename), function() {
         })
 
         it('replaces the given player if their ID already exists', async function() {
+          this.nockGitHub()
           await processUserCreated(this.user)
           const oldUser = await getUserById(this.user.id)
 
@@ -59,17 +81,16 @@ describe(testContext(__filename), function() {
             await processUserCreated(this.user)
           }, Error)
 
-
           //TODO: Figure out how to compare the player before and after
 
-          // await processUserCreated(this.user)
+          await processUserCreated({...this.user, name: 'new name'})
 
-          // const updatedUser = await getUserById(this.user.id)
+          const updatedUser = await getUserById(this.user.id)
 
-          // console.log(Date.parse(oldUser.createdAt))
-          // console.log(Date.parse(updatedUser.createdAt))
+          console.log(Date.parse(oldUser.createdAt))
+          console.log(Date.parse(updatedUser.createdAt))
 
-          // expect(updatedUser.createdAt).to.not.eql(oldUser.createdAt)
+          expect(updatedUser.createdAt).to.not.eql(oldUser.createdAt)
         })
 
         it('creates a large pool if necessary', async function() {

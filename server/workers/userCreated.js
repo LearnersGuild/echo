@@ -25,8 +25,8 @@ export default function start() {
 
 export async function processUserCreated(user) {
   const gameUser = await addUserToDatabase(user)
-  // await addUserToChapterGitHubTeam(user, gameUser)
-  // await notifyCRMSystemOfPlayerSignUp(user)
+  await addUserToChapterGitHubTeam(user, gameUser)
+  await notifyCRMSystemOfPlayerSignUp(user)
 
   const cycle = await getLatestCycleForChapter(gameUser.chapterId)
   if (cycle.state === GOAL_SELECTION) {
