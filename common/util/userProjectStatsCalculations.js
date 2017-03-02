@@ -42,9 +42,22 @@ export function addDeltaToStats(summariesWithOverallStats) {
     const isPlayersFirstProject = i === summariesWithOverallStats.length - 1
 
     if (!isPlayersFirstProject) {
-      const previousOverallStats = summariesWithOverallStats[i + 1].overallStats
-      const getDiff = stat => ((overallStats[stat] === null) || (previousOverallStats[stat] === null))
-        ? null : overallStats[stat] - previousOverallStats[stat]
+      const getPreviousValueForStat = stat => {
+        for (let j = i + 1; j < summariesWithOverallStats.length; ++j) {
+          const previousOverallStats = summariesWithOverallStats[j].overallStats
+          if (previousOverallStats[stat] !== null) {
+            return previousOverallStats[stat]
+          }
+        }
+        return null
+      }
+      const getDiff = stat => {
+        const prevStatValue = getPreviousValueForStat(stat)
+        if (overallStats[stat] === null || prevStatValue === null) {
+          return null
+        }
+        return overallStats[stat] - prevStatValue
+      }
 
       projectStatNames.forEach(stat => {
         statsDifference[stat] = getDiff(stat)

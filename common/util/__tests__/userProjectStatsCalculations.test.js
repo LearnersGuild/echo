@@ -182,16 +182,16 @@ describe(testContext(__filename), () => {
       const projectsWithOverallStats = addPointInTimeOverallStats(projectSummaries)
       const projectsWithDeltas = addDeltaToStats(projectsWithOverallStats)
 
+      const currentStatsDiff = projectsWithDeltas[1].statsDifference
+
+      const latestProjectOverallStats = projectsWithDeltas[1].overallStats
+      const previousProjectOverallStats = projectsWithDeltas[2].overallStats
+
+      const inProgressProjectOverallStats = projectsWithDeltas[0].overallStats
+      const inProgressProjectStatsDiff = projectsWithDeltas[0].statsDifference
+
       expect(projectsWithDeltas).to.be.an('array')
       projectStatNames.forEach(stat => {
-        const currentStatsDiff = projectsWithDeltas[1].statsDifference
-
-        const latestProjectOverallStats = projectsWithDeltas[1].overallStats
-        const previousProjectOverallStats = projectsWithDeltas[2].overallStats
-
-        const inProgressProjectOverallStats = projectsWithDeltas[0].overallStats
-        const inProgressProjectStatsDiff = projectsWithDeltas[0].statsDifference
-
         expect(latestProjectOverallStats[stat] - previousProjectOverallStats[stat]).to.eql(currentStatsDiff[stat])
 
         expect(inProgressProjectOverallStats[stat]).to.be.null
