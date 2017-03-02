@@ -7,7 +7,7 @@ import nock from 'nock'
 import addCollaboratorToApp from '../addCollaboratorToApp'
 
 describe(testContext(__filename), function () {
-  describe('addCollaboratorToRepo()', function () {
+  describe('addCollaboratorToApp()', function () {
     it('returns true on success', async function () {
       const user = 'me@example.com'
       const app = 'my-app'
