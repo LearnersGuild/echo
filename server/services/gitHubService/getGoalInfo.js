@@ -51,6 +51,9 @@ function _githubIssueURL(goalRepositoryURL, goalDescriptor) {
 }
 
 function _getTeamSizeFromLabels(labels) {
+  const teamSizeRegExp = /^\d$/
   const teamSizeLabel = (labels || []).find(label => (label || '').toLowerCase().startsWith(TEAM_SIZE_LABEL_PREFIX))
-  return teamSizeLabel ? parseInt(teamSizeLabel.split(TEAM_SIZE_LABEL_PREFIX)[1], 10) : null
+  const teamSize = teamSizeLabel.split(TEAM_SIZE_LABEL_PREFIX)[1]
+
+  return teamSizeRegExp.test(teamSize) ? parseInt(teamSize, 10) : null
 }
