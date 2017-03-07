@@ -65,9 +65,9 @@ class ChapterForm extends Component {
     this.props.onSaveInviteCode(inviteCodeFormData)
   }
 
-  handleChangeName(value) {
-    this.props.change('name', value)
-    this.props.change('channelName', slugify(value || ''))
+  handleChangeName(event, newValue) {
+    this.props.change('name', event)
+    this.props.change('channelName', slugify(newValue || ''))
   }
 
   handleChangeTimezone(value) {
