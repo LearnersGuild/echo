@@ -14,7 +14,7 @@ export function start() {
   jobService.processJobs('voteSubmitted', processVoteSubmitted)
 }
 
-async function processVoteSubmitted(vote) {
+export async function processVoteSubmitted(vote) {
   const goals = await fetchGoalsInfo(vote)
   const goalDescriptorIsInvalid = (goalDescriptor, i) => goals[i] === null
 
@@ -40,6 +40,7 @@ async function fetchGoalsInfo(vote) {
   const cycleExpr = getCycleById(poolExpr('cycleId'))
   const chapterExpr = getChapterById(cycleExpr('chapterId'))
   const goalRepositoryURL = await chapterExpr('goalRepositoryURL')
+
   return Promise.map(vote.notYetValidatedGoalDescriptors,
     goalDescriptor => getGoalInfo(goalRepositoryURL, goalDescriptor)
   )
@@ -56,12 +57,20 @@ function formatGoals(prefix, goals) {
 
 function notifyUser(vote) {
   const notificationService = require('src/server/services/notificationService')
+  const invalidTeamSizes = vote.goals.reduce((acc, goal) => {
+    if (goal.teamSize == null) {
+      acc.push(goal.title)
+    }
+    return acc
+  }, [])
 
   if (vote.invalidGoalDescriptors && vote.invalidGoalDescriptors.length > 0) {
     notificationService.notifyUser(vote.playerId, `The following goals are invalid: ${vote.invalidGoalDescriptors.join(', ')}`)
     if (vote.goals) {
       notificationService.notifyUser(vote.playerId, formatGoals('Falling back to previous vote', vote.goals))
     }
+  } else if (invalidTeamSizes.length > 0) {
+    notificationService.notifyUser(vote.playerId, `Invalid team size for: ${invalidTeamSizes.join(', ')}. Notify a moderator.`)
   } else {
     notificationService.notifyUser(vote.playerId, formatGoals('Votes submitted for', vote.goals))
   }
