@@ -17,7 +17,6 @@ const CAPABILITY_ROLES = {
   createCycle: ['moderator'],
   launchCycle: ['moderator'],
   updateCycle: ['moderator'],
-  editCycleDuration: ['moderator'],
   viewCycleVotingResults: GAME_PLAY,
 
   importProject: ['moderator'],

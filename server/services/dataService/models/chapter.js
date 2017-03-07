@@ -26,12 +26,6 @@ export default function chapterModel(thinky) {
         .allowNull(true)
         .default(null),
 
-      cycleDuration: string()
-        .allowNull(false),
-
-      cycleEpoch: date()
-        .allowNull(false),
-
       inviteCodes: array()
         .allowNull(false),
 

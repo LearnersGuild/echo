@@ -10,8 +10,6 @@ export default function reassignPlayersToChapter(playerIds, chapterId) {
             name
             channelName
             timezone
-            cycleDuration
-            cycleEpoch
             inviteCodes
           }
         }

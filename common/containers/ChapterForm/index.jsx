@@ -74,9 +74,7 @@ function mapStateToProps(state, props) {
   const inviteCodes = chapter && chapter.inviteCodes
   const sortedInviteCodes = (inviteCodes || []).sort()
   const timezone = (chapter || {}).timezone || moment.tz.guess()
-  const cycleEpochDate = chapter && chapter.cycleEpoch ? new Date(chapter.cycleEpoch) : undefined
-  const cycleEpochTime = chapter && chapter.cycleEpoch ? new Date(chapter.cycleEpoch) : undefined
-  const initialValues = Object.assign({}, {id, timezone, cycleEpochDate, cycleEpochTime}, chapter)
+  const initialValues = Object.assign({}, {id, timezone}, chapter)
 
   let formType = chapter ? FORM_TYPES.UPDATE : FORM_TYPES.CREATE
   if (id && !chapter && !isBusy) {
@@ -108,7 +106,7 @@ function mapDispatchToProps(dispatch, props) {
 const formOptions = {
   form: FORM_NAMES.CHAPTER,
   enableReinitialize: true,
-  asyncBlurFields: ['name', 'channelName', 'timezone', 'goalRepositoryURL', 'cycleDuration', 'cycleEpochDate', 'cycleEpochTime'],
+  asyncBlurFields: ['name', 'channelName', 'timezone', 'goalRepositoryURL'],
   asyncValidate: asyncValidate(chapterSchema, {abortEarly: false}),
 }
 

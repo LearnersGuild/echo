@@ -30,9 +30,6 @@ describe(testContext(__filename), function () {
       channelName: false,
       timezone: false,
       goalRepositoryURL: false,
-      cycleDuration: false,
-      cycleEpochDate: false,
-      cycleEpochTime: false,
     }
 
     this.mockFields = {
@@ -41,9 +38,6 @@ describe(testContext(__filename), function () {
       channelName: Object.assign({}, mockField, {name: 'channelName', onChange: changeField('channelName')}),
       timezone: Object.assign({}, mockField, {name: 'timezone', onChange: changeField('timezone')}),
       goalRepositoryURL: Object.assign({}, mockField, {name: 'timezone', onChange: changeField('goalRepositoryURL')}),
-      cycleDuration: Object.assign({}, mockField, {name: 'cycleDuration', onChange: changeField('cycleDuration')}),
-      cycleEpochDate: Object.assign({}, mockField, {name: 'cycleEpochDate', onChange: changeField('cycleEpochDate')}),
-      cycleEpochTime: Object.assign({}, mockField, {name: 'cycleEpochTime', onChange: changeField('cycleEpochTime')}),
     }
 
     this.mockAuth = {
@@ -84,7 +78,6 @@ describe(testContext(__filename), function () {
         id: true,
         name: true,
         channelName: true,
-        cycleDuration: true
       }
 
       const props = this.getProps()

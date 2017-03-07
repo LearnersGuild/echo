@@ -7,8 +7,6 @@ export default function findChapters() {
           id
           name
           channelName
-          cycleEpoch
-          cycleDuration
           goalRepositoryURL
           inviteCodes
           activeProjectCount

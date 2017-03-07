@@ -10,7 +10,7 @@ import InviteCodeForm from 'src/common/containers/InviteCodeForm'
 import ContentHeader from 'src/common/components/ContentHeader'
 import NotFound from 'src/common/components/NotFound'
 import {Flex} from 'src/common/components/Layout'
-import {FORM_TYPES, renderInput, renderDatePicker, renderTimePicker} from 'src/common/util/form'
+import {FORM_TYPES, renderInput} from 'src/common/util/form'
 import {slugify} from 'src/common/util'
 
 import styles from './index.scss'
@@ -25,10 +25,6 @@ class ChapterForm extends Component {
     this.handleSaveInviteCode = this.handleSaveInviteCode.bind(this)
     this.handleChangeName = this.handleChangeName.bind(this)
     this.handleChangeTimezone = this.handleChangeTimezone.bind(this)
-    this.handleChangeCycleEpochDate = this.handleChangeCycleEpochDate.bind(this)
-    this.handleChangeCycleEpochTime = this.handleChangeCycleEpochTime.bind(this)
-    this.handleParseCycleEpochDate = this.handleParseCycleEpochDate.bind(this)
-    this.handleParseCycleEpochTime = this.handleParseCycleEpochTime.bind(this)
     this.generateTimezoneDropdownValues()
   }
 
@@ -72,22 +68,6 @@ class ChapterForm extends Component {
 
   handleChangeTimezone(value) {
     this.props.change('timezone', value)
-  }
-
-  handleChangeCycleEpochDate(value) {
-    this.props.change('cycleEpochDate', value ? new Date(value) : new Date())
-  }
-
-  handleChangeCycleEpochTime(value) {
-    this.props.change('cycleEpochTime', value ? new Date(value) : new Date())
-  }
-
-  handleParseCycleEpochDate(value) {
-    return moment(value, 'D MMMM YYYY').toDate()
-  }
-
-  handleParseCycleEpochTime(value) {
-    return moment(value, 'h:mm a').toDate()
   }
 
   renderInviteCodeDialog() {
@@ -191,33 +171,6 @@ class ChapterForm extends Component {
             label="Goal Repository URL"
             hint="https://github.com/GuildCrafts/awesome-stuffs"
             component={renderInput}
-            required
-            />
-          <Field
-            name="cycleDuration"
-            type="tel"
-            icon="av_timer"
-            label="Cycle Duration"
-            hint="e.g., '1 week', '3 hours', etc."
-            component={renderInput}
-            required
-            />
-          <Field
-            name="cycleEpochDate"
-            icon="today"
-            label="Cycle Epoch Date"
-            component={renderDatePicker}
-            parse={this.handleParseCycleEpochDate}
-            onChange={this.handleChangeCycleEpochDate}
-            required
-            />
-          <Field
-            name="cycleEpochTime"
-            icon="watch_later"
-            label="Cycle Epoch Time"
-            component={renderTimePicker}
-            parse={this.handleParseCycleEpochTime}
-            onChange={this.handleChangeCycleEpochTime}
             required
             />
           {inviteCodeField}

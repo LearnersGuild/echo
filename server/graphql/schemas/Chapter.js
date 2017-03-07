@@ -21,8 +21,6 @@ export default new GraphQLObjectType({
       timezone: {type: new GraphQLNonNull(GraphQLString), description: 'The user timezone'},
       goalRepositoryURL: {type: new GraphQLNonNull(GraphQLURL), description: 'The GitHub goal repository URL'},
       githubTeamId: {type: GraphQLInt, description: 'The GitHub team id'},
-      cycleDuration: {type: new GraphQLNonNull(GraphQLString), description: 'Duration of the cycle'},
-      cycleEpoch: {type: new GraphQLNonNull(GraphQLDateTime), description: 'The timestamp when the first cycle begins'},
       inviteCodes: {type: new GraphQLList(GraphQLString), description: 'The invite codes associated with this chapter'},
       latestCycle: {type: Cycle, resolve: resolveChapterLatestCycle, description: 'The latest cycle in the chapter'},
       activeProjectCount: {type: GraphQLInt, resolve: resolveChapterActiveProjectCount, description: 'The number of active projects associated with this chapter'},

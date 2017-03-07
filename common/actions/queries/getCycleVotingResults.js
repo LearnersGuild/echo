@@ -16,8 +16,6 @@ export default function getCycleVotingResults() {
               timezone
               goalRepositoryURL
               githubTeamId
-              cycleDuration
-              cycleEpoch
             }
           }
           pools {

@@ -9,8 +9,6 @@ export default function getChapterById(id) {
           channelName
           timezone
           goalRepositoryURL
-          cycleDuration
-          cycleEpoch
           inviteCodes
         }
       }

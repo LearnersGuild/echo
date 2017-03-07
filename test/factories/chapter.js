@@ -13,8 +13,6 @@ export default function define(factory) {
     timezone: 'America/Los_Angeles',
     goalRepositoryURL: cb => cb(null, 'https://github.com/GuildCraftsTesting/web-development-js-testing'),
     githubTeamId: factory.sequence(n => n),
-    cycleDuration: '1 week',
-    cycleEpoch: cb => cb(null, now),
     inviteCodes: [],
     createdAt: cb => cb(null, now),
     updatedAt: cb => cb(null, now),

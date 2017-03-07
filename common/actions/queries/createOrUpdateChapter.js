@@ -8,8 +8,6 @@ export default function createOrUpdateChapter(chapter) {
           name
           channelName
           timezone
-          cycleDuration
-          cycleEpoch
           inviteCodes
         }
       }

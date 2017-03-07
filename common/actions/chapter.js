@@ -42,16 +42,6 @@ export function getChapter(id) {
 }
 
 export function saveChapter(chapter) {
-  const {cycleEpochDate, cycleEpochTime} = chapter
-  const cycleEpoch = new Date(cycleEpochDate)
-  cycleEpoch.setUTCHours(cycleEpochTime.getUTCHours())
-  cycleEpoch.setUTCMinutes(cycleEpochTime.getUTCMinutes())
-  cycleEpoch.setUTCSeconds(0)
-  cycleEpoch.setUTCMilliseconds(0)
-  const chapterData = Object.assign({}, chapter, {cycleEpoch})
-  delete chapterData.cycleEpochDate
-  delete chapterData.cycleEpochTime
-
   return {
     types: [
       types.SAVE_CHAPTER_REQUEST,
@@ -60,7 +50,7 @@ export function saveChapter(chapter) {
     ],
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {
-      const mutation = queries.createOrUpdateChapter(chapterData)
+      const mutation = queries.createOrUpdateChapter(chapter)
       return getGraphQLFetcher(dispatch, getState().auth)(mutation)
         .then(graphQLResponse => graphQLResponse.data.createOrUpdateChapter)
         .then(chapter => normalize(chapter, schemas.chapter))

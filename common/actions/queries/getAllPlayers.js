@@ -10,8 +10,6 @@ export default function getAllPlayers() {
             name
             channelName
             timezone
-            cycleDuration
-            cycleEpoch
             inviteCodes
           }
           createdAt
