@@ -1,0 +1,22 @@
+@import "../../theme";
+
+.dialog {
+  button:last-child {
+    background-color: #c06187;
+  }
+}
+
+.button {
+  background-color: $color-dark-red;
+  color: white;
+  display: flex;
+  align-items: center;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 3px;
+}
+
+.button:hover {
+  background-color: lighten( $color-dark-red, 3% );
+  cursor: pointer;
+}

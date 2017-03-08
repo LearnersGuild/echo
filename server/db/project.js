@@ -134,3 +134,7 @@ export async function findActiveProjectsForChapter(chapterId, options = {}) {
   }
   return activeProjects || []
 }
+
+export async function deleteProjectById(projectId) {
+  return await table.get(projectId).delete({returnChanges: true})
+}

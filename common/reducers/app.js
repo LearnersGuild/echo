@@ -7,12 +7,17 @@ import {
   FETCH_DATA_FAILURE,
   FETCH_DATA_SUCCESS,
   UNLOCK_SURVEY_FAILURE,
+  SUCCESS_MESSAGE,
+  DISMISS_MESSAGE,
+  TOGGLE_DELETE_DIALOG,
 } from 'src/common/actions/types'
 
 const initialState = {
   isBusy: false,
   showLoading: false,
+  showingDeleteDialog: false,
   errors: [],
+  messages: [],
 }
 
 export default function app(state = initialState, action) {
@@ -37,26 +42,52 @@ export default function app(state = initialState, action) {
         return {
           ...state,
           isBusy: false,
-          errors: appendErrorMessage(state, action.error),
+          errors: appendMessage(state, 'errors', action.error),
         }
       }
 
     case DISMISS_ERROR:
       return Object.assign({}, state, {
-        errors: removeErrorMessage(state, action.index),
+        errors: removeMessage(state, 'errors', action.index),
       })
+
+    case SUCCESS_MESSAGE:
+      return Object.assign({}, state, {
+        messages: appendMessage(state, 'messages', action.message),
+      })
+
+    case DISMISS_MESSAGE:
+      return Object.assign({}, state, {
+        messages: removeMessage(state, 'messages', action.index),
+      })
+
+    case TOGGLE_DELETE_DIALOG:
+      {
+        if (!/IN_PROGRESS/.test(action.project.state)) {
+          return Object.assign({}, state, {
+            errors: appendMessage(
+              state,
+              'errors',
+              'Projects not IN_PROGRESS cannot be deleted.'
+            ),
+          })
+        }
+        return Object.assign({}, state, {
+          showingDeleteDialog: !state.showingDeleteDialog,
+        })
+      }
 
     default:
       return state
   }
 }
 
-function appendErrorMessage(state, errorMessage) {
-  return [...state.errors, errorMessage]
+function appendMessage(state, key, message) {
+  return [...state[key], message]
 }
 
-function removeErrorMessage(state, errorMessageIndex) {
-  const errorMessages = [...state.errors]
-  errorMessages.splice(errorMessageIndex, 1)
-  return errorMessages
+function removeMessage(state, key, messageIndex) {
+  const messages = [...state[key]]
+  messages.splice(messageIndex, 1)
+  return messages
 }

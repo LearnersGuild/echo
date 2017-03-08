@@ -6,6 +6,9 @@ export default keyMirror({
   UNAUTHENTICATED_ERROR: null,
   DISMISS_ERROR: null,
 
+  SUCCESS_MESSAGE: null,
+  DISMISS_MESSAGE: null,
+
   APP_SHOW_LOADING: null,
   APP_HIDE_LOADING: null,
 
@@ -88,4 +91,10 @@ export default keyMirror({
   LOCK_SURVEY_REQUEST: null,
   LOCK_SURVEY_SUCCESS: null,
   LOCK_SURVEY_FAILURE: null,
+
+  DELETE_PROJECT_REQUEST: null,
+  DELETE_PROJECT_SUCCESS: null,
+  DELETE_PROJECT_FAILURE: null,
+
+  TOGGLE_DELETE_DIALOG: null,
 })

@@ -8,9 +8,9 @@ import Avatar from 'react-toolbox/lib/avatar'
 import FontIcon from 'react-toolbox/lib/font_icon'
 import {IconMenu, MenuItem, MenuDivider} from 'react-toolbox/lib/menu'
 
-import ErrorBar from 'src/common/components/ErrorBar'
+import StatusBar from 'src/common/components/StatusBar'
 import {Flex} from 'src/common/components/Layout'
-import {dismissError} from 'src/common/actions/app'
+import {dismissError, dismissMessage} from 'src/common/actions/app'
 import {userCan} from 'src/common/util'
 
 import styles from './index.scss'
@@ -132,16 +132,25 @@ export class App extends Component {
   }
 
   renderFooter() {
-    const {dismissError, app: {errors}} = this.props
+    const {dismissError, dismissMessage, app: {errors, messages}} = this.props
+    const message = messages.map((message, i) => {
+      const handleDismiss = () => dismissMessage(i)
+      return (
+        <StatusBar key={i} onDismiss={handleDismiss} message={message} type="accept"/>
+      )
+    })
+    const error = errors.map((errorMessage, i) => {
+      const handleDismiss = () => dismissError(i)
+      return (
+        <StatusBar key={i} onDismiss={handleDismiss} message={errorMessage} type="warning"/>
+      )
+    })
+
     return (
       <div className={styles.footer}>
         <div className={styles.container}>
-          {errors.map((errorMessage, i) => {
-            const handleDismiss = () => dismissError(i)
-            return (
-              <ErrorBar key={i} onDismiss={handleDismiss} message={errorMessage}/>
-            )
-          })}
+          {message}
+          {error}
         </div>
       </div>
     )
@@ -170,6 +179,7 @@ App.propTypes = {
   }),
   children: PropTypes.any,
   dismissError: PropTypes.func.isRequired,
+  dismissMessage: PropTypes.func.isRequired,
 }
 
 function mapStateToProps(state) {
@@ -183,6 +193,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     dismissError: error => dispatch(dismissError(error)),
+    dismissMessage: message => dispatch(dismissMessage(message)),
   }
 }
 

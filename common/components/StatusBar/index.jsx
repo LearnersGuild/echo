@@ -1,20 +1,20 @@
 import React, {PropTypes} from 'react'
 import {Snackbar} from 'react-toolbox'
 
-export default function ErrorBar(props) {
+export default function StatusBar(props) {
   return (
     <Snackbar
       label={props.message.toString()}
       active
       action="Dismiss"
-      icon="error"
       onClick={props.onDismiss}
-      type="warning"
+      type={props.type.toString()}
       />
   )
 }
 
-ErrorBar.propTypes = {
+StatusBar.propTypes = {
   message: PropTypes.any.isRequired,
   onDismiss: PropTypes.func.isRequired,
+  type: PropTypes.string.isRequired,
 }
