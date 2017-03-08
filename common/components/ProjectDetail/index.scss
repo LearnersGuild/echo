@@ -1,4 +1,5 @@
 @import "node_modules/react-toolbox/lib/_colors";
+@import "../../theme";
 
 .projectDetail {
   .sidebar {
@@ -38,5 +39,25 @@
 
   .nowrap {
     white-space: nowrap;
+  }
+
+  .footerContainer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .delete {
+    background-color: $color-dark-red;
+    color: white;
+    display: flex;
+    align-items: center;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 3px;
+  }
+
+  .delete:hover {
+    background-color: lighten( $color-dark-red, 3% );
+    cursor: pointer;
   }
 }

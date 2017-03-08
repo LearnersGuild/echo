@@ -2,6 +2,7 @@
 import React, {Component, PropTypes} from 'react'
 import {Link} from 'react-router'
 import {IconButton} from 'react-toolbox/lib/button'
+import Button from 'react-toolbox/lib/button/Button'
 import FontIcon from 'react-toolbox/lib/font_icon'
 import moment from 'moment-timezone'
 import {Tab, Tabs} from 'react-toolbox'
@@ -34,10 +35,18 @@ class ProjectDetail extends Component {
     this.renderUserSummaries = this.renderUserSummaries.bind(this)
     this.renderReviews = this.renderReviews.bind(this)
     this.handleChangeTab = this.handleChangeTab.bind(this)
+    this.handleDeleteProject = this.handleDeleteProject.bind(this)
   }
 
   handleChangeTab(tabIndex) {
     this.setState({tabIndex})
+  }
+
+  handleDeleteProject(e) {
+    const {project, deleteProject, navigate} = this.props
+
+    if (e) e.preventDefault()
+    deleteProject(project.id).then( _ => navigate('/projects'))
   }
 
   renderHeader() {
@@ -213,6 +222,19 @@ class ProjectDetail extends Component {
     ) : <div/>
   }
 
+  renderFooter() {
+    const button = this.props.showDeleteButton ?
+      <Button icon="delete" className={styles.delete} onClick={this.handleDeleteProject}>
+        Delete Project
+      </Button> : null
+
+    return (
+      <div className={styles.footerContainer}>
+        {button}
+      </div>
+    )
+  }
+
   render() {
     if (!this.props.project) {
       return null
@@ -223,6 +245,7 @@ class ProjectDetail extends Component {
         {this.renderHeader()}
         {this.renderDetails()}
         {this.renderTabs()}
+        {this.renderFooter()}
       </Flex>
     )
   }
@@ -267,6 +290,9 @@ ProjectDetail.propTypes = {
   onClickEdit: PropTypes.func,
   unlockPlayerSurvey: PropTypes.func,
   lockPlayerSurvey: PropTypes.func,
+  deleteProject: PropTypes.func,
+  showDeleteButton: PropTypes.bool,
+  navigate: PropTypes.func,
 }
 
 export default ProjectDetail

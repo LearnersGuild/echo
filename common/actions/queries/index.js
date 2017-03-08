@@ -18,4 +18,5 @@ export default {
   saveRetrospectiveSurveyResponses: require('./saveRetrospectiveSurveyResponses'),
   unlockSurvey: require('./unlockSurvey'),
   lockSurvey: require('./lockSurvey'),
+  deleteProject: require('./deleteProject'),
 }
