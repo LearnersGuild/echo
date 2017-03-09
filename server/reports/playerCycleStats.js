@@ -15,8 +15,12 @@ const {
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
   EXPERIENCE_POINTS,
+  EXTERNAL_PROJECT_REVIEW_COUNT,
+  INTERNAL_PROJECT_REVIEW_COUNT,
   LEVEL,
   PROJECT_HOURS,
+  PROJECT_REVIEW_ACCURACY,
+  PROJECT_REVIEW_EXPERIENCE,
   RELATIVE_CONTRIBUTION,
   TEAM_PLAY,
   TECHNICAL_HEALTH,
@@ -52,6 +56,15 @@ async function cyclesForPlayer(player, fetcher) {
     handle: userSummary.user.handle,
     active: userSummary.user.active,
     id: player.id.split('-')[0],
+    [LEVEL]: userSummary.user.stats[LEVEL],
+    [CHALLENGE]: userSummary.user.stats[CHALLENGE],
+    [ELO]: userSummary.user.stats[ELO],
+    [ESTIMATION_ACCURACY]: userSummary.user.stats[ESTIMATION_ACCURACY],
+    [ESTIMATION_BIAS]: userSummary.user.stats[ESTIMATION_BIAS],
+    [PROJECT_REVIEW_EXPERIENCE]: userSummary.user.stats[PROJECT_REVIEW_EXPERIENCE],
+    [PROJECT_REVIEW_ACCURACY]: userSummary.user.stats[PROJECT_REVIEW_ACCURACY],
+    [EXTERNAL_PROJECT_REVIEW_COUNT]: userSummary.user.stats[EXTERNAL_PROJECT_REVIEW_COUNT],
+    [INTERNAL_PROJECT_REVIEW_COUNT]: userSummary.user.stats[INTERNAL_PROJECT_REVIEW_COUNT],
   }
 
   return summariesWithPointInTimeStats.map(summary => ({
@@ -87,7 +100,7 @@ function _presentProjectSummary(projectSummary) {
   }
   statNames.forEach(statName => {
     columns[`project_${statName}`] = projectSummary.userProjectStats[statName]
-    if (projectOnlyStatNames.indexOf(statName) < 0) {
+    if (!projectOnlyStatNames.includes(statName)) {
       columns[`overall_${statName}`] = projectSummary.overallStats[statName]
     }
   })
