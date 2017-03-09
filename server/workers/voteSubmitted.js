@@ -2,9 +2,8 @@ import Promise from 'bluebird'
 
 import {connect} from 'src/db'
 import {getCycleById} from 'src/server/db/cycle'
-import {getChapterById} from 'src/server/db/chapter'
 import {getPoolById} from 'src/server/db/pool'
-import {getGoalInfo} from 'src/server/services/gitHubService'
+import {getGoalInfo} from 'src/server/services/goalLibraryService'
 import getCycleVotingResults from 'src/server/actions/getCycleVotingResults'
 
 const r = connect()
@@ -36,12 +35,8 @@ async function processVoteSubmitted(vote) {
 }
 
 async function fetchGoalsInfo(vote) {
-  const poolExpr = getPoolById(vote.poolId)
-  const cycleExpr = getCycleById(poolExpr('cycleId'))
-  const chapterExpr = getChapterById(cycleExpr('chapterId'))
-  const goalRepositoryURL = await chapterExpr('goalRepositoryURL')
   return Promise.map(vote.notYetValidatedGoalDescriptors,
-    goalDescriptor => getGoalInfo(goalRepositoryURL, goalDescriptor)
+    goalDescriptor => getGoalInfo(goalDescriptor)
   )
 }
 

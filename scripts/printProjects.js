@@ -68,7 +68,7 @@ async function run() {
     console.log('::: PROJECTS BY TEAM :::')
     sortedProjectsWithPlayers.forEach(p => {
       console.log(`\n\n#${p.name}`)
-      console.log(`${p.goal.githubIssue.title}`)
+      console.log(`${p.goal.title}`)
       console.log('----------')
       p.players.forEach(pl => console.log(`${pl.handle} (${pl.name})`))
     })
@@ -98,8 +98,6 @@ function _sortProjectsByGoalName(projects) {
   return projects.sort((projA, projB) => {
     const {goal: goalA} = projA
     const {goal: goalB} = projB
-    const {githubIssue: githubIssueA} = goalA || {}
-    const {githubIssue: githubIssueB} = goalB || {}
-    return ((githubIssueA || {}).title || '').localeCompare(((githubIssueB || {}).title || ''))
+    return (goalA.title || '').localeCompare(goalB.title || '')
   })
 }

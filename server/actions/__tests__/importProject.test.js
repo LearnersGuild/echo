@@ -54,7 +54,7 @@ describe(testContext(__filename), function () {
 
       const importedProject = await importProject(this.importData)
 
-      expect(importedProject.goal.githubIssue.number).to.eq(this.goalNumber)
+      expect(importedProject.goal.issueNumber).to.eq(this.goalNumber)
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
       expectArraysToContainTheSameElements(importedProject.playerIds, this.players.map(p => p.id))
@@ -69,7 +69,7 @@ describe(testContext(__filename), function () {
       const importedProject = await importProject(modifiedImportData)
 
       expect(importedProject.name).to.eq(modifiedImportData.projectIdentifier)
-      expect(importedProject.goal.githubIssue.number).to.eq(modifiedImportData.goalIdentifier)
+      expect(importedProject.goal.issueNumber).to.eq(modifiedImportData.goalIdentifier)
     })
 
     it('updates goal and users when a valid project identifier is specified', async function () {
@@ -91,7 +91,7 @@ describe(testContext(__filename), function () {
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
       expect(importedProject.playerIds.length).to.eq(newPlayers.length)
-      expect(importedProject.goal.githubIssue.number).to.eq(newGoalNumber)
+      expect(importedProject.goal.issueNumber).to.eq(newGoalNumber)
       expectArraysToContainTheSameElements(importedProject.playerIds, newPlayers.map(p => p.id))
     })
   })

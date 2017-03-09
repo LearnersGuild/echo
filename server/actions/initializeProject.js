@@ -34,7 +34,7 @@ async function _initializeProjectChannel(project) {
       throw err
     }
   }
-  const goalChannelName = String(goal.githubIssue.number)
+  const goalChannelName = String(goal.issueNumber)
 
   try {
     await chatService.createChannel(goalChannelName, channelUserNames, goalLink)

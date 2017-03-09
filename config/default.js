@@ -59,6 +59,9 @@ module.exports = {
         crafts: process.env.GITHUB_CRAFTS_REPO,
       }
     },
+    goalLibrary: {
+      baseURL: 'http://jsdev.learnersguild.org',
+    },
     heroku: {
       baseURL: 'https://api.heroku.com',
       apiToken: process.env.HEROKU_API_TOKEN,
