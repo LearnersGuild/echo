@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
 
 import {showLoad, hideLoad} from 'src/common/actions/app'
-import {unlockSurvey, lockSurvey, getProjectSummary} from 'src/common/actions/project'
+import {unlockSurvey, lockSurvey, getProjectSummary, deleteProject} from 'src/common/actions/project'
 import ProjectDetail from 'src/common/components/ProjectDetail'
 import {userCan} from 'src/common/util'
 
@@ -42,7 +42,10 @@ class ProjectDetailContainer extends Component {
       projectUserSummaries,
       unlockPlayerSurvey,
       lockPlayerSurvey,
+      deleteProject,
     } = this.props
+
+    const showDeleteButton = currentUser.roles.includes('moderator')
 
     return isBusy ? null : (
       <ProjectDetail
@@ -54,6 +57,9 @@ class ProjectDetailContainer extends Component {
         isLockingOrUnlocking={isLockingOrUnlocking}
         unlockPlayerSurvey={unlockPlayerSurvey}
         lockPlayerSurvey={lockPlayerSurvey}
+        deleteProject={deleteProject}
+        showDeleteButton={showDeleteButton}
+        navigate={this.props.navigate}
         />
     )
   }
@@ -73,6 +79,7 @@ ProjectDetailContainer.propTypes = {
   hideLoad: PropTypes.func.isRequired,
   unlockPlayerSurvey: PropTypes.func.isRequired,
   lockPlayerSurvey: PropTypes.func.isRequired,
+  deleteProject: PropTypes.func,
 }
 
 ProjectDetailContainer.unlockPlayerSurvey = unlockSurvey
@@ -114,6 +121,7 @@ function mapDispatchToProps(dispatch, props) {
     hideLoad: () => dispatch(hideLoad()),
     unlockPlayerSurvey: (playerId, projectId) => dispatch(unlockSurvey(playerId, projectId)),
     lockPlayerSurvey: (playerId, projectId) => dispatch(lockSurvey(playerId, projectId)),
+    deleteProject: projectId => dispatch(deleteProject(projectId)),
   }
 }
 

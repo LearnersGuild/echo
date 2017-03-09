@@ -17,6 +17,7 @@ import {
   updateProject,
   findProjectByPlayerIdAndCycleId,
   findActiveProjectsForChapter,
+  deleteProjectById,
 } from '../project'
 
 describe(testContext(__filename), function () {
@@ -266,6 +267,31 @@ describe(testContext(__filename), function () {
       await Cycle.get(this.cycle.id).update({state: PRACTICE})
       const activeProjectCount = await findActiveProjectsForChapter(this.chapter.id, {count: true})
       expect(activeProjectCount).to.eq(this.projects.length)
+    })
+  })
+
+  describe('deleteProjectById', function () {
+    beforeEach('set up chapter, cycle, project', async function () {
+      this.chapter = await factory.create('chapter')
+      this.cycle = await factory.create('cycle', {chapterId: this.chapter.id})
+      this.projects = await factory.createMany('project', {
+        chapterId: this.chapter.id,
+        cycleId: this.cycle.id,
+      }, 3)
+    })
+
+    it('deletes nothing if no project with the id exists', async function () {
+      const noProject = await deleteProjectById('hello')
+      expect(noProject.deleted).to.eql(0)
+    })
+
+    it('deletes the correct project if the id exists', async function () {
+      const projectId = this.projects[0].id
+      const deletedProject = await deleteProjectById(projectId)
+
+      expect(deletedProject.deleted).to.eql(1)
+      expect(deletedProject.changes[0].old_val.id).to.eql(projectId)
+      expect(deletedProject.changes[0].new_val).to.be.null
     })
   })
 })

@@ -92,4 +92,8 @@ export default keyMirror({
   LOCK_SURVEY_REQUEST: null,
   LOCK_SURVEY_SUCCESS: null,
   LOCK_SURVEY_FAILURE: null,
+
+  DELETE_PROJECT_REQUEST: null,
+  DELETE_PROJECT_SUCCESS: null,
+  DELETE_PROJECT_FAILURE: null,
 })
