@@ -7,13 +7,15 @@ import {
   range,
   attrCompareFn,
 } from 'src/common/util'
-import {STAT_DESCRIPTORS} from 'src/common/models/stat'
+import {
+  STAT_DESCRIPTORS,
+  RELEVANT_EXTERNAL_REVIEW_COUNT,
+  MIN_EXTERNAL_REVIEW_COUNT_FOR_ACCURACY,
+} from 'src/common/models/stat'
 
 export const LIKERT_SCORE_NA = 0
 export const LIKERT_SCORE_MIN = 1
 export const LIKERT_SCORE_MAX = 7
-
-const RELEVANT_EXTERNAL_REVIEW_COUNT = 20
 
 const {
   CULTURE_CONTRIBUTION,
@@ -333,7 +335,6 @@ function _compareByMostExperiencedReviewer(a, b) {
 }
 
 export function calculateProjectReviewStatsForPlayer(player, projectReviewInfoList) {
-  const minReviewsRequired = 8
   const statNames = [PROJECT_COMPLETENESS, PROJECT_QUALITY]
   const isExternal = reviewInfo => !reviewInfo.project.playerIds.includes(player.id)
   const externalReviewInfoList = projectReviewInfoList.filter(isExternal)
@@ -352,7 +353,7 @@ export function calculateProjectReviewStatsForPlayer(player, projectReviewInfoLi
   stats[EXTERNAL_PROJECT_REVIEW_COUNT] = externalReviewInfoList.length + externalCountBaseline
   stats[INTERNAL_PROJECT_REVIEW_COUNT] = (projectReviewInfoList.length - externalReviewInfoList.length) + internalCountBaseline
 
-  if (stats[EXTERNAL_PROJECT_REVIEW_COUNT] >= minReviewsRequired) {
+  if (stats[EXTERNAL_PROJECT_REVIEW_COUNT] >= MIN_EXTERNAL_REVIEW_COUNT_FOR_ACCURACY) {
     const externalReviewAccuracies =
       recentExternalReviewInfoList.map(({project, projectReviews}) => {
         const thisPlayersReview = projectReviews.find(_ => _.player.id === player.id)
