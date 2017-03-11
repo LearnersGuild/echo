@@ -7,7 +7,7 @@ import ContentSidebar from 'src/common/components/ContentSidebar'
 import UserProjectSummary from 'src/common/components/UserProjectSummary'
 import {Flex} from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
-import {STAT_DESCRIPTORS} from 'src/common/models/stat'
+import {STAT_DESCRIPTORS, MIN_EXTERNAL_REVIEW_COUNT_FOR_ACCURACY} from 'src/common/models/stat'
 import {objectValuesAreAllNull, getStatRenderer} from 'src/common/util'
 import {mergeOverallStatsAndDeltas} from 'src/common/util/userProjectStatsCalculations'
 
@@ -46,6 +46,11 @@ class UserDetail extends Component {
   renderSidebarStatValues(stats) {
     const renderStat = getStatRenderer(stats)
 
+    const extReviewCount = stats[STAT_DESCRIPTORS.EXTERNAL_PROJECT_REVIEW_COUNT]
+    const reviewAccuracy = extReviewCount >= MIN_EXTERNAL_REVIEW_COUNT_FOR_ACCURACY ?
+      renderStat(STAT_DESCRIPTORS.PROJECT_REVIEW_ACCURACY, '%') :
+      '--'
+
     return !objectValuesAreAllNull(stats) ? (
       <div>
         <div>{renderStat(STAT_DESCRIPTORS.LEVEL)}</div>
@@ -55,7 +60,7 @@ class UserDetail extends Component {
         <div>{renderStat(STAT_DESCRIPTORS.ESTIMATION_BIAS, '%')}</div>
         <div>{renderStat(STAT_DESCRIPTORS.CHALLENGE)}</div>
         <div>{renderStat(STAT_DESCRIPTORS.EXTERNAL_PROJECT_REVIEW_COUNT)}</div>
-        <div>{renderStat(STAT_DESCRIPTORS.PROJECT_REVIEW_ACCURACY, '%')}</div>
+        <div>{reviewAccuracy}</div>
       </div>
     ) : <div/>
   }
