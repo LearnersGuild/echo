@@ -478,7 +478,7 @@ describe(testContext(__filename), function () {
     })
 
     describe('calculateProjectReviewStatsForPlayer', function () {
-      const player = {id: 'p1'}
+      const player = {id: 'p1', stats: {[ELO]: {rating: 1000}}}
       let i = 0
       const buildProjectReviewInfo = ({playerResponses, projectStats, closedAt = new Date('2017-01-01')}) => {
         i += 1
@@ -512,7 +512,7 @@ describe(testContext(__filename), function () {
         })
       })
 
-      it('assigns no experience or accuracy if there are fewer than 7 projects', function () {
+      it('returns Elo-based accuracy if there are fewer than 7 projects', function () {
         const projectReviewInfoList = range(1, 6).map(() =>
           buildProjectReviewInfo({playerResponses: {q: 80, c: 80}, projectStats: {q: 90, c: 90}})
         )
@@ -520,6 +520,8 @@ describe(testContext(__filename), function () {
         expect(stats).to.deep.eq({
           [INTERNAL_PROJECT_REVIEW_COUNT]: 0,
           [EXTERNAL_PROJECT_REVIEW_COUNT]: 6,
+          [PROJECT_REVIEW_ACCURACY]: 10,
+          [PROJECT_REVIEW_EXPERIENCE]: 10.3,
         })
       })
 
