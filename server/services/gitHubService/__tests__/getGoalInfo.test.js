@@ -34,25 +34,70 @@ describe(testContext(__filename), function () {
       expect(goalInfo).to.equal(null)
     })
 
-    it('returns the correct goal info if it is found', async function () {
-      const mockIssue = {
-        html_url: this.goalURL, // eslint-disable-line camelcase
-        title: 'goal title',
-        labels: [{name: 'team-size-2'}],
-      }
-      const mockGoalInfo = {
-        url: this.goalURL,
-        title: mockIssue.title,
-        teamSize: 2,
-        githubIssue: mockIssue,
-      }
-      nock(config.server.github.baseURL)
-        .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
-        .reply(200, mockIssue)
+    describe('when there is a goal', async function () {
+      beforeEach(function () {
+        this.mockIssue = {
+          html_url: this.goalURL, // eslint-disable-line camelcase
+          title: 'goal title',
+          labels: [{name: 'team-size-2'}],
+        }
+        this.mockGoalInfo = {
+          url: this.goalURL,
+          title: this.mockIssue.title,
+          teamSize: 2,
+          githubIssue: this.mockIssue,
+        }
+        this.nockGitHub = function (issue) {
+          nock(config.server.github.baseURL)
+            .get(`/repos/${this.orgAndRepo}/issues/${this.goalNumber}`)
+            .reply(200, issue)
+        }
+      })
 
-      const goalInfo = await getGoalInfo(this.goalRepoURL, this.goalURL)
+      it('returns the correct goal info if it is found', async function () {
+        this.nockGitHub(this.mockIssue)
+        const goalInfo = await getGoalInfo(this.goalRepoURL, this.goalURL)
 
-      expect(goalInfo).to.deep.equal(mockGoalInfo)
+        expect(goalInfo).to.deep.equal(this.mockGoalInfo)
+      })
+
+      context('rejects an invalid team size', function () {
+        it('returns null if team size is negative', async function () {
+          const invalidMockIssue = {
+            html_url: this.goalURL,
+            title: 'goal title',
+            labels: [{name: 'team-size--2'}]
+          }
+          this.nockGitHub(invalidMockIssue)
+          const invalidGoalInfo = await getGoalInfo(this.goalRepoURL, this.goalURL)
+
+          expect(invalidGoalInfo.teamSize).to.be.null
+        })
+
+        it('returns null if team size is NaN', async function () {
+          const invalidMockIssue = {
+            html_url: this.goalURL,
+            title: 'goal title',
+            labels: [{name: 'team-size-A'}]
+          }
+          this.nockGitHub(invalidMockIssue)
+          const invalidGoalInfo = await getGoalInfo(this.goalRepoURL, this.goalURL)
+
+          expect(invalidGoalInfo.teamSize).to.be.null
+        })
+
+        it('returns null if the team size is greater than nine', async function () {
+          const invalidMockIssue = {
+            html_url: this.goalURL,
+            title: 'goal title',
+            labels: [{name: 'team-size-10'}]
+          }
+          this.nockGitHub(invalidMockIssue)
+          const invalidGoalInfo = await getGoalInfo(this.goalRepoURL, this.goalURL)
+
+          expect(invalidGoalInfo.teamSize).to.be.null
+        })
+      })
     })
   })
 })
