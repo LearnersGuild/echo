@@ -333,3 +333,23 @@
     integer: true
   subjectType: player
   active: false
+-
+  id: 767609ac-3e92-4c57-9d58-8e211891eec1
+  body: |
+    Rate your agreement with the following statement:
+
+    "This goal was well suited for my ZPD and I would recommend this it to others at my skill level."
+  responseType: likert7Agreement
+  validationOptions:
+    min: 0
+    max: 7
+    integer: true
+  subjectType: project
+  active: true
+-
+  id: ac3c2fa4-3baa-4343-8bc9-490202006adc
+  body: |
+    If you have feedback on the goal for the goal author(s), please share: (1) in what ways the goal provided a relevant and appropriate challenge for you and (2) how the goal could be improved, clarified, or adjusted.
+  responseType: text
+  subjectType: project
+  active: true
