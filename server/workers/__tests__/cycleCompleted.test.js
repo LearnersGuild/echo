@@ -31,7 +31,7 @@ describe(testContext(__filename), function () {
       it('sends a message to the chapter chatroom', async function () {
         await processCycleCompleted(this.cycle)
         expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.chapter.channelName, `Cycle ${this.cycle.cycleNumber} is complete`)
+          .calledWithMatch(this.chapter.channelName, "Cycle is complete")
       })
     })
   })
