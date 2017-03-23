@@ -36,7 +36,7 @@ describe(testContext(__filename), function () {
         expect(chatService.sendChannelMessage.callCount).to.eq(1)
 
         expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.chapter.channelName, "Voting is now open for the new cycle.")
+          .calledWithMatch(this.chapter.channelName, 'Voting is now open for the new cycle.')
 
         expect(chatService.sendChannelMessage).to.have.been
           .calledWithMatch(this.chapter.channelName, `[the goal library](${this.chapter.goalRepositoryURL}/issues)`)

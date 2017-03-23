@@ -15,7 +15,7 @@ export async function processCycleCompleted(cycle) {
   // send completion announcement
   return r.table('chapters').get(cycle.chapterId).run()
     .then(chapter => {
-      const announcement = "✅ *Cycle is complete*."
+      const announcement = '✅ *Cycle is complete*.'
       return chatService.sendChannelMessage(chapter.channelName, announcement)
     })
 }
