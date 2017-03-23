@@ -29,7 +29,7 @@ describe(testContext(__filename), function () {
         await initializeProject(this.project)
 
         expect(chatService.createChannel).to.have.been.calledWith(this.project.name, [...memberHandles, 'echo'])
-        expect(chatService.createChannel).to.have.been.calledWith(String(this.project.goal.githubIssue.number), [...memberHandles, 'echo'])
+        expect(chatService.createChannel).to.have.been.calledWith(String(this.project.goal.issueNumber), [...memberHandles, 'echo'])
         expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Welcome to the')
         expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Your team is')
       })
@@ -46,9 +46,9 @@ describe(testContext(__filename), function () {
       it('adds the new project\'s members to the goal channel', async function () {
         await initializeProject(this.project)
         const secondTeamProject = await factory.create('project')
-        secondTeamProject.goal.githubIssue.number = this.project.goal.githubIssue.number
+        secondTeamProject.goal.issueNumber = this.project.goal.issueNumber
 
-        const expectedChannelName = String(secondTeamProject.goal.githubIssue.number)
+        const expectedChannelName = String(secondTeamProject.goal.issueNumber)
         const secondTeamUsers = await mockIdmUsersById(secondTeamProject.playerIds)
         const secondTeamHandles = secondTeamUsers.map(u => u.handle)
 

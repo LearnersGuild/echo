@@ -1,6 +1,6 @@
 import logger from 'src/server/util/logger'
 import findUsers from 'src/server/actions/findUsers'
-import {getGoalInfo} from 'src/server/services/gitHubService'
+import {getGoalInfo} from 'src/server/services/goalLibraryService'
 import generateProjectName from 'src/server/actions/generateProjectName'
 import initializeProject from 'src/server/actions/initializeProject'
 import {Project} from 'src/server/services/dataService'
@@ -88,7 +88,7 @@ async function _parseProjectInput(data) {
   let goal
   if (goalIdentifier && !goal) {
     const goalNumber = parseInt(goalIdentifier, 10)
-    goal = await getGoalInfo(chapter.goalRepositoryURL, goalNumber)
+    goal = await getGoalInfo(goalNumber)
     if (!goal) {
       throw new LGBadRequestError(`Goal not found with identifier: ${goalIdentifier}`)
     }

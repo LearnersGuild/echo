@@ -88,16 +88,15 @@ export function resolveProjectGoal(project) {
   if (!project.goal) {
     return null
   }
-  const {githubIssue} = project.goal
-  if (!githubIssue) {
+  const {level, url, title, issueNumber} = project.goal
+  if (!level || !url || !title || !issueNumber) {
     return project.goal
   }
-  const level = (githubIssue.milestone || {}).title || 'Level ?'
   return {
-    number: githubIssue.number,
-    url: githubIssue.url,
-    title: githubIssue.title,
-    level: level.replace('Level ', ''),
+    number: issueNumber,
+    url,
+    title,
+    level,
   }
 }
 
