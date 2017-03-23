@@ -27,7 +27,7 @@ function sendVotingAnnouncement(cycle) {
 
   return r.table('chapters').get(cycle.chapterId).run()
     .then(chapter => {
-      const banner = `🗳 *Voting is now open for cycle ${cycle.cycleNumber}*.`
+      const banner = '🗳 *Voting is now open for the new cycle.'
       const votingInstructions = `Have a look at [the goal library](${chapter.goalRepositoryURL}/issues), then to get started check out \`/vote --help.\``
       const announcement = [banner, votingInstructions].join('\n')
       return chatService.sendChannelMessage(chapter.channelName, announcement)
