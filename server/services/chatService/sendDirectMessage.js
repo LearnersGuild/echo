@@ -4,6 +4,4 @@ import {apiFetch} from 'src/server/util/api'
 import config from 'src/config'
 
 export default function sendDirectMessage() {
-  .catch(err => {
-  })
 }

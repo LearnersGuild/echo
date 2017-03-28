@@ -4,6 +4,5 @@ import {apiFetch} from 'src/server/util/api'
 import config from 'src/config'
 
 export default function sendChannelMessage() {
-  .catch(err => {
-  })
+
 }
