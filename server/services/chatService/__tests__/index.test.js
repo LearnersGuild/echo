@@ -40,25 +40,25 @@ describe(testContext(__filename), function () {
 
     describe('createChannel()', function () {
       beforeEach(function () {
-        this.channelName = 'perfect-penguin'
+        this.name = 'perfect-penguin'
         this.topic = '[Goal 1: lorem ipsum](http://example.com)'
         this.members = ['echo']
         this.responses.createChannel = {
-          rid: 'BFWXgKacy8e4vjXJL',
-          name: this.channelName,
-          topic: this.topic,
+          id: 'BFWXgKacy8e4vjXJL',
+          name: this.name,
           members: this.members,
+          topic: this.topic,
         }
         this.apiScope
-          .post('/api/lg/rooms')
+          .post('/api/channels.create')
           .reply(200, {
-            status: 'success',
-            room: this.responses.createChannel,
+            ok: true,
+            channel: this.responses.createChannel,
           })
       })
 
       it('returns the parsed response on success', function () {
-        const result = createChannel(this.channelName, this.members, this.topic)
+        const result = createChannel(this.name, this.members, this.topic)
         return expect(result).to.eventually.deep.equal(this.responses.createChannel)
       })
     })
