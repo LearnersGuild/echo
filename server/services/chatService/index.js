@@ -18,7 +18,7 @@
 //   '/api/channels.join'    {token, name} --> {ok, channel:{...}}
 //   '/api/channels.archive' {token, channel} --> {ok:true}
 //   '/api/chat.postMessage' {token, channel, text} --> {ok, channel:"...", ts}
-//   // dm?
+//   '/api/im.open'          {token, user} --> {ok, channel:{id}}
 // }
 
 export {default as createChannel} from './createChannel'
