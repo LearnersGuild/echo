@@ -1,7 +1,3 @@
-/* eslint-env mocha */
-/* global expect, testContext */
-/* eslint-disable prefer-arrow-callback, no-unused-expressions */
-
 import nock from 'nock'
 
 import config from 'src/config'
@@ -29,31 +25,22 @@ describe(testContext(__filename), function () {
     const jobService = require('src/server/services/jobService')
 
     const {
-      createChannel,
+      createChannelMessage,
     } = require('../index')
 
-    describe('createChannel()', function () {
+    describe('createChannelMessage()', function () {
       beforeEach(function () {
-        this.name = 'perfect-penguin'
-        this.topic = '[Goal 1: lorem ipsum](http://example.com)'
-        this.members = ['echo']
-        this.responses.createChannel = {
-          id: 'BFWXgKacy8e4vjXJL',
-          name: this.name,
-          members: this.members,
-          topic: this.topic,
-        }
         this.apiScope
-          .post('/api/channels.create')
+          .post('/api/chat.postMessage')
           .reply(200, {
             ok: true,
-            channel: this.responses.createChannel,
+            channel: '12345',
           })
       })
 
-      it('returns the parsed response on success', function () {
-        const result = createChannel(this.name, this.members, this.topic)
-        return expect(result).to.eventually.deep.equal(this.responses.createChannel)
+    it('returns the parsed response on success', function () {
+        const result = createChannelMessage('channelName', 'message')
+        return expect(result).to.eventually.deep.equal('12345')
       })
     })
   })

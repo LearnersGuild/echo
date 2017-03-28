@@ -29,31 +29,29 @@ describe(testContext(__filename), function () {
     const jobService = require('src/server/services/jobService')
 
     const {
-      createChannel,
+      createDirectMessage,
     } = require('../index')
 
-    describe('createChannel()', function () {
+    describe('createDirectMessage()', function () {
       beforeEach(function () {
-        this.name = 'perfect-penguin'
-        this.topic = '[Goal 1: lorem ipsum](http://example.com)'
-        this.members = ['echo']
-        this.responses.createChannel = {
-          id: 'BFWXgKacy8e4vjXJL',
-          name: this.name,
-          members: this.members,
-          topic: this.topic,
-        }
         this.apiScope
-          .post('/api/channels.create')
+          .post('/api/im.open')
+          .reply(200, {
+            user: 'pllearns'
+          })
+
+        this.apiScope
+          .post('/api/chat.postMessage')
           .reply(200, {
             ok: true,
-            channel: this.responses.createChannel,
+            channel: '12345',
+            text: 'Rubber Baby Buggy Bumpers'
           })
       })
 
       it('returns the parsed response on success', function () {
-        const result = createChannel(this.name, this.members, this.topic)
-        return expect(result).to.eventually.deep.equal(this.responses.createChannel)
+        const result = createDirectMessage(this.name, this.members, this.topic)
+        return expect(result).to.eventually.deep.equal(true)
       })
     })
   })

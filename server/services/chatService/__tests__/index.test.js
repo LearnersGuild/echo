@@ -38,7 +38,7 @@ describe(testContext(__filename), function () {
       sendDirectMessage,
     } = require('../index')
 
-    describe.only('createChannel()', function () {
+    describe('createChannel()', function () {
       beforeEach(function () {
         this.name = 'perfect-penguin'
         this.topic = '[Goal 1: lorem ipsum](http://example.com)'
