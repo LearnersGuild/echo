@@ -36,3 +36,23 @@ export {default as deleteChannel} from './deleteChannel'
 export {default as joinChannel} from './joinChannel'
 export {default as sendChannelMessage} from './sendChannelMessage'
 export {default as sendDirectMessage} from './sendDirectMessage'
+
+
+function sendChannelMessage(channelName, message, options) {
+  return _queueMessage('channel', channelName, message, options)
+}
+
+function sendDirectMessage(userName, message, options) {
+  return _queueMessage('user', userName, message, options)
+}
+
+function _queueMessage(type, target, message, options = {}) {
+  const jobService = require('src/server/services/jobService')
+
+  const payload = {type, target, msg: message}
+  return jobService.createJob(queues.messageSent, payload, {
+    attempts: config.server.chat.retries.message,
+    backoff: {type: 'exponential'},
+    ...options
+  })
+}
