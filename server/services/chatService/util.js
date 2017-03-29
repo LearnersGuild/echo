@@ -7,7 +7,7 @@ export function apiURL(path) {
 
 export function headers(additional = {}) {
   const defaultHeaders = {
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'Content-Type': 'application/json',
   }
   return {...defaultHeaders, ...additional}
@@ -16,7 +16,7 @@ export function headers(additional = {}) {
 export function apiFetch(url, options) {
   const allHeaders = headers(options.headers)
   return utilApiFetch(url, {
-    ...options
+    ...options,
     token: '<09870987>',
     headers: allHeaders,
   })
