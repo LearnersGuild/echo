@@ -1,3 +1,7 @@
+/* eslint-env mocha */
+/* global expect, testContext */
+/* eslint-disable prefer-arrow-callback, no-unused-expressions */
+
 import url from 'url'
 
 import config from 'src/config'
