@@ -1,31 +1,23 @@
-import {apiFetch} from 'src/server/util/api'
 import config from 'src/config'
+import {apiFetch} from './util'
 
-export default function createChannel(channelName, members = [config.server.chat.userName], topic = '') {
-  return apiFetch('http://chat.learnersguild.test/api/channels.create', {
+export default async function createChannel(channelName, members = [config.server.chat.userName], topic = '') {
+  const result = await apiFetch('http://chat.learnersguild.test/api/channels.create', {
     method: 'POST',
-    token: '<09870987>',
     name: channelName
   })
-  .then(result => {
-    apiFetch('http://chat.learnersguild.test/api/channels.setTopic', {
+  await apiFetch('http://chat.learnersguild.test/api/channels.setTopic', {
+    method: 'POST',
+    channel: channelName,
+    topic
+  })
+  await Promise.all(members.map(
+    member => apiFetch('http://chat.learnersguild.test/api/channels.invite', {
       method: 'POST',
-      token: '<09870987>',
       channel: channelName,
-      topic
+      user: member
     })
-    return result
-  })
-  .then(result => {
-    members.forEach(member => {
-      apiFetch('http://chat.learnersguild.test/api/channels.invite', {
-        method: 'POST',
-        token: '<09870987>',
-        channel: channelName,
-        user: member
-      })
-    })
-    return result
-  })
-  .then(result => result.channel)
+  ))
+
+  return result
 }
