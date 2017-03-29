@@ -42,8 +42,17 @@ describe(testContext(__filename), function () {
         this.apiScope
           .post('/api/channels.create')
           .reply(200, {
-            ok: true,
             channel: this.responses.createChannel,
+          })
+          .post('/api/channels.setTopic')
+          .reply(200, {
+            channel: this.responses.createChannel,
+            topic: this.responses.createChannel,
+          })
+          .post('/api/channels.invite')
+          .reply(200, {
+            channel: this.responses.createChannel,
+            user: this.responses.createChannel,
           })
       })
 
