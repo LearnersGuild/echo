@@ -1,3 +1,7 @@
+/* eslint-env mocha */
+/* global expect, testContext */
+/* eslint-disable prefer-arrow-callback, no-unused-expressions */
+
 import nock from 'nock'
 
 import config from 'src/config'
@@ -22,11 +26,7 @@ describe(testContext(__filename), function () {
   })
 
   describe('chatService', function () {
-    const jobService = require('src/server/services/jobService')
-
-    const {
-      createChannelMessage,
-    } = require('../index')
+    const {createChannelMessage} = require('../index')
 
     describe('createChannelMessage()', function () {
       beforeEach(function () {
@@ -38,7 +38,7 @@ describe(testContext(__filename), function () {
           })
       })
 
-    it('returns the parsed response on success', function () {
+      it('returns the parsed response on success', function () {
         const result = createChannelMessage('channelName', 'message')
         return expect(result).to.eventually.deep.equal('12345')
       })

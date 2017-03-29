@@ -7,7 +7,7 @@ import nock from 'nock'
 import config from 'src/config'
 import stubs from 'src/test/stubs'
 
-describe.only(testContext(__filename), function () {
+describe(testContext(__filename), function () {
   beforeEach(function () {
     this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)
@@ -28,7 +28,7 @@ describe.only(testContext(__filename), function () {
   describe('chatService', function () {
     const jobService = require('src/server/services/jobService')
 
-    const { sendChannelMessage } = require('../index')
+    const {sendChannelMessage} = require('../index')
 
     describe('sendChannelMessage()', function () {
       beforeEach(function () {
@@ -56,7 +56,6 @@ describe.only(testContext(__filename), function () {
           })
         })
       })
-
     })
   })
 })

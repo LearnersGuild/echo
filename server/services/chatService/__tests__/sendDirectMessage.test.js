@@ -28,7 +28,7 @@ describe(testContext(__filename), function () {
   describe('chatService', function () {
     const jobService = require('src/server/services/jobService')
 
-    const { sendDirectMessage } = require('../index')
+    const {sendDirectMessage} = require('../index')
 
     describe('sendDirectMessage()', function () {
       beforeEach(function () {
@@ -62,7 +62,6 @@ describe(testContext(__filename), function () {
           })
         })
       })
-
     })
   })
 })

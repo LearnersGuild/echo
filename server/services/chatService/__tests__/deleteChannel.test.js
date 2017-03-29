@@ -26,9 +26,7 @@ describe(testContext(__filename), function () {
   })
 
   describe('chatService', function () {
-    const jobService = require('src/server/services/jobService')
-
-    const { deleteChannel } = require('../index')
+    const {deleteChannel} = require('../index')
 
     describe('deleteChannel()', function () {
       beforeEach(function () {

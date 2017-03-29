@@ -1,5 +1,3 @@
-import fetch from 'isomorphic-fetch'
-
 import {apiFetch} from 'src/server/util/api'
 import config from 'src/config'
 
@@ -14,10 +12,9 @@ export default function createChannel(channelName, members = [config.server.chat
       method: 'POST',
       token: '<09870987>',
       channel: channelName,
-      topic: topic
+      topic
     })
     return result
-    console.log('results?', result)
   })
   .then(result => {
     members.forEach(member => {

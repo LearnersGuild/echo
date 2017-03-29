@@ -26,11 +26,7 @@ describe(testContext(__filename), function () {
   })
 
   describe('chatService', function () {
-    const jobService = require('src/server/services/jobService')
-
-    const {
-      createDirectMessage,
-    } = require('../index')
+    const {createDirectMessage} = require('../index')
 
     describe('createDirectMessage()', function () {
       beforeEach(function () {
