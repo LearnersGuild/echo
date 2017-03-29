@@ -7,7 +7,7 @@ import nock from 'nock'
 import config from 'src/config'
 import stubs from 'src/test/stubs'
 
-describe.only(testContext(__filename), function () {
+describe(testContext(__filename), function () {
   beforeEach(function () {
     this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)

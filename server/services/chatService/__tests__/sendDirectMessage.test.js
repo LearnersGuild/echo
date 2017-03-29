@@ -7,7 +7,7 @@ import nock from 'nock'
 import config from 'src/config'
 import stubs from 'src/test/stubs'
 
-describe.only(testContext(__filename), function () {
+describe(testContext(__filename), function () {
   beforeEach(function () {
     this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)
@@ -28,31 +28,37 @@ describe.only(testContext(__filename), function () {
   describe('chatService', function () {
     const jobService = require('src/server/services/jobService')
 
-    const { sendChannelMessage } = require('../index')
+    const { sendDirectMessage } = require('../index')
 
-    describe('sendChannelMessage()', function () {
+    describe('sendDirectMessage()', function () {
       beforeEach(function () {
         this.name = 'perfect-penguin'
-        this.responses.sendChannelMessage = {
+        this.responses.sendDirectMessage = {
           name: this.name
         }
         this.apiScope
           .post('/api/chat.postMessage')
           .reply(200, {
             ok: true,
-            channel: this.responses.sendChannelMessage
+            channel: this.responses.sendDirectMessage
+          })
+
+        this.apiScope
+          .post('/api/im.open')
+          .reply(200, {
+            user: 'pllearns'
           })
       })
 
-      describe('sendChannelMessage()', function () {
+      describe('sendDirectMessage()', function () {
         it('queues the correct chat message job', async function () {
-          const channelName = 'supachannel'
-          const channelMessage = 'this is mah channel msg'
-          await sendChannelMessage(channelName, channelMessage)
+          const userName = 'supausah'
+          const userMessage = 'this is mah usah msg'
+          await sendDirectMessage(userName, userMessage)
           expect(jobService.createJob).to.have.been.calledWith('chatMessageSent', {
-            type: 'channel',
-            target: channelName,
-            msg: channelMessage,
+            type: 'user',
+            target: userName,
+            msg: userMessage,
           })
         })
       })

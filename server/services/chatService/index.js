@@ -1,14 +1,14 @@
 // import fetch from 'isomorphic-fetch'
 //
-// import config from 'src/config'
+import config from 'src/config'
 //
 // if (!config.server.chat.baseURL) {
 //   throw new Error('Chat base URL must be set in config')
 // }
 // //
-// const queues = {
-//   messageSent: 'chatMessageSent',
-// }
+const queues = {
+  messageSent: 'chatMessageSent',
+}
 //
 // const paths = {
 //   // channel is {id,name,members,topic,...}
@@ -28,21 +28,17 @@
  */
 
 
-
 export {default as createChannel} from './createChannel'
 export {default as createChannelMessage} from './createChannelMessage'
 export {default as createDirectMessage} from './createDirectMessage'
 export {default as deleteChannel} from './deleteChannel'
 export {default as joinChannel} from './joinChannel'
-export {default as sendChannelMessage} from './sendChannelMessage'
-export {default as sendDirectMessage} from './sendDirectMessage'
 
-
-function sendChannelMessage(channelName, message, options) {
+export function sendChannelMessage(channelName, message, options) {
   return _queueMessage('channel', channelName, message, options)
 }
 
-function sendDirectMessage(userName, message, options) {
+export function sendDirectMessage(userName, message, options) {
   return _queueMessage('user', userName, message, options)
 }
 
