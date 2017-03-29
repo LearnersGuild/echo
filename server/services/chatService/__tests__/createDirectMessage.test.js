@@ -35,8 +35,6 @@ describe(testContext(__filename), function () {
           .reply(200, {
             user: 'pllearns'
           })
-
-        this.apiScope
           .post('/api/chat.postMessage')
           .reply(200, {
             ok: true,
