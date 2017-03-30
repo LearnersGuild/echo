@@ -1,15 +1,16 @@
-import {apiFetch} from 'src/server/util/api'
+import config from 'src/config'
+import {apiFetch} from './util'
 
 export default function createDirectMessage(userName, msg) {
-  return apiFetch('http://chat.learnersguild.test/api/im.open', {
+  return apiFetch('/api/im.open', {
     method: 'POST',
-    token: '<09870987>',
+    token: config.server.chat.token,
     user: userName,
   })
   .then(result => {
-    return apiFetch('http://chat.learnersguild.test/api/chat.postMessage', {
+    return apiFetch('/api/chat.postMessage', {
       method: 'POST',
-      token: '<09870987>',
+      token: config.server.chat.token,
       channel: result.channelName,
       text: msg,
     })
