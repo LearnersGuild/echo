@@ -6,19 +6,13 @@ import nock from 'nock'
 
 import config from 'src/config'
 import stubs from 'src/test/stubs'
+import {useFixture} from 'src/test/helpers'
 
 describe(testContext(__filename), function () {
   beforeEach(function () {
+    useFixture.nockClean()
     this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)
-      .post('/api/login')
-      .reply(200, {
-        status: 'success',
-        data: {
-          authToken: 'L7Cf5bJAcNXkRuo0ZRyu0QmjzSIcFCO1QBpKYM0nE3g',
-          userId: 'L9Dnu2G2NSWm8cQpr'
-        },
-      })
     stubs.jobService.enable()
   })
   afterEach(function () {

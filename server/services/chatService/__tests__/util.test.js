@@ -4,6 +4,7 @@
 
 import url from 'url'
 
+import {useFixture} from 'src/test/helpers'
 import config from 'src/config'
 import {
   apiURL,
@@ -12,6 +13,7 @@ import {
 
 describe(testContext(__filename), function () {
   describe('apiURL()', function () {
+    useFixture.nockClean()
     it('returns a valid URL', function () {
       const path = '/some/path'
       const myURL = apiURL(path)
@@ -26,10 +28,9 @@ describe(testContext(__filename), function () {
 
   describe('headers()', function () {
     it('merges the additional headers', function () {
-      const additional = {'Content-Type': 'application/json'}
+      const additional = {foo: 'bar'}
       const allHeaders = headers(additional)
-      expect(allHeaders).to.contain.all.keys('Content-Type')
-      expect(allHeaders['Content-Type']).to.equal(additional['Content-Type'])
+      expect(allHeaders).to.contain.all.keys('foo')
     })
 
     it('has Authorization and Accept headers', function () {
