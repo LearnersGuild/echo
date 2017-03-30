@@ -17,7 +17,7 @@ export function apiFetch(url, options) {
   const allHeaders = headers(options.headers)
   return utilApiFetch(url, {
     ...options,
-    token: '<09870987>',
+    token: config.server.chat.token,
     headers: allHeaders,
   })
 }
