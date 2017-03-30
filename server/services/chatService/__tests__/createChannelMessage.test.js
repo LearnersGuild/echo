@@ -10,6 +10,7 @@ import stubs from 'src/test/stubs'
 describe(testContext(__filename), function () {
   beforeEach(function () {
     this.responses = {}
+    this.apiScope = nock(config.server.chat.baseURL)
     stubs.jobService.enable()
   })
   afterEach(function () {
