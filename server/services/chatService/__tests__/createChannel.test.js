@@ -11,14 +11,6 @@ describe(testContext(__filename), function () {
   beforeEach(function () {
     this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)
-      .post('/api/login')
-      .reply(200, {
-        status: 'success',
-        data: {
-          authToken: 'L7Cf5bJAcNXkRuo0ZRyu0QmjzSIcFCO1QBpKYM0nE3g',
-          userId: 'L9Dnu2G2NSWm8cQpr'
-        },
-      })
     stubs.jobService.enable()
   })
   afterEach(function () {
