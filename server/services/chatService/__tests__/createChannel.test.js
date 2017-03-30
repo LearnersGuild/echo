@@ -6,9 +6,11 @@ import nock from 'nock'
 
 import config from 'src/config'
 import stubs from 'src/test/stubs'
+import {useFixture} from 'src/test/helpers'
 
 describe(testContext(__filename), function () {
   beforeEach(function () {
+    useFixture.nockClean()
     this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)
     stubs.jobService.enable()
@@ -38,13 +40,13 @@ describe(testContext(__filename), function () {
           })
           .post('/api/channels.setTopic')
           .reply(200, {
-            channel: this.responses.createChannel,
-            topic: this.responses.createChannel,
+            ok: true,
+            topic: this.topic,
           })
           .post('/api/channels.invite')
           .reply(200, {
             channel: this.responses.createChannel,
-            user: this.responses.createChannel,
+            members: this.members,
           })
       })
 
