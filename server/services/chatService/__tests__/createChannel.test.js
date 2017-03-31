@@ -11,7 +11,6 @@ import {useFixture} from 'src/test/helpers'
 describe(testContext(__filename), function () {
   beforeEach(function () {
     useFixture.nockClean()
-    this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)
     stubs.jobService.enable()
   })
@@ -27,7 +26,7 @@ describe(testContext(__filename), function () {
         this.name = 'perfect-penguin'
         this.topic = '[Goal 1: lorem ipsum](http://example.com)'
         this.members = ['echo']
-        this.responses.createChannel = {
+        this.createChannelResponse = {
           id: 'BFWXgKacy8e4vjXJL',
           name: this.name,
           members: this.members,
@@ -35,9 +34,7 @@ describe(testContext(__filename), function () {
         }
         this.apiScope
           .post('/api/channels.create')
-          .reply(200, {
-            channel: this.responses.createChannel,
-          })
+          .reply(200, this.createChannelResponse)
           .post('/api/channels.setTopic')
           .reply(200, {
             ok: true,
@@ -45,14 +42,14 @@ describe(testContext(__filename), function () {
           })
           .post('/api/channels.invite')
           .reply(200, {
-            channel: this.responses.createChannel,
+            channel: this.name,
             members: this.members,
           })
       })
 
       it('returns the parsed response on success', function () {
         const result = createChannel(this.name, this.members, this.topic)
-        return expect(result).to.eventually.deep.equal(this.responses.createChannel)
+        return expect(result).to.eventually.deep.equal(this.createChannelResponse)
       })
     })
   })

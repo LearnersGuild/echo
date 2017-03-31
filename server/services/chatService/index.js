@@ -1,26 +1,20 @@
 import config from 'src/config'
 
+import {default as createChannel} from './createChannel'
+import {default as createChannelMessage} from './createChannelMessage'
+import {default as createDirectMessage} from './createDirectMessage'
+import {default as deleteChannel} from './deleteChannel'
+import {default as joinChannel} from './joinChannel'
+
 const queues = {
   messageSent: 'chatMessageSent',
 }
 
-/**
- * NOTE: this service's functions are exported the way they are to enable
- * certain stubbing functionality functionality for testing that relies on the
- * way the module is cached and later required by dependent modules.
- */
-
-export {default as createChannel} from './createChannel'
-export {default as createChannelMessage} from './createChannelMessage'
-export {default as createDirectMessage} from './createDirectMessage'
-export {default as deleteChannel} from './deleteChannel'
-export {default as joinChannel} from './joinChannel'
-
-export function sendChannelMessage(channelName, message, options) {
+function sendChannelMessage(channelName, message, options) {
   return _queueMessage('channel', channelName, message, options)
 }
 
-export function sendDirectMessage(userName, message, options) {
+function sendDirectMessage(userName, message, options) {
   return _queueMessage('user', userName, message, options)
 }
 
@@ -33,4 +27,20 @@ function _queueMessage(type, target, message, options = {}) {
     backoff: {type: 'exponential'},
     ...options
   })
+}
+
+/**
+* NOTE: this service's functions are exported the way they are to enable
+* certain stubbing functionality functionality for testing that relies on the
+* way the module is cached and later required by dependent modules.
+*/
+
+export default {
+  createChannel,
+  createChannelMessage,
+  createDirectMessage,
+  deleteChannel,
+  joinChannel,
+  sendChannelMessage,
+  sendDirectMessage
 }
