@@ -33,7 +33,7 @@ describe(testContext(__filename), function () {
       expect(allHeaders).to.contain.all.keys('foo')
     })
 
-    it('has Authorization and Accept headers', function () {
+    it('has Accept and Content-Type headers', function () {
       expect(headers({foo: 'bar'})).to.contain.all.keys('Accept', 'Content-Type')
     })
   })
