@@ -47,6 +47,9 @@ module.exports = {
         message: 3,
       },
     },
+    cli: {
+      token: process.env.CLI_COMMAND_TOKEN,
+    },
     github: {
       baseURL: 'https://api.github.com',
       tokens: {

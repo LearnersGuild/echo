@@ -65,6 +65,7 @@
   },
   "homepage": "https://github.com/LearnersGuild/game#readme",
   "dependencies": {
+    "@learnersguild/game-cli": "^2.0.3",
     "@learnersguild/idm-jwt-auth": "^2.0.1",
     "animal-id": "0.0.1",
     "auto-loader": "^0.2.0",
@@ -81,6 +82,7 @@
     "babel-runtime": "^6.20.0",
     "basic-auth": "^1.0.4",
     "bluebird": "^3.3.5",
+    "body-parser": "^1.17.1",
     "bourbon": "^4.2.6",
     "bourbon-neat": "^1.7.4",
     "bull": "^1.0.0-rc1",
