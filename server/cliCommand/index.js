@@ -5,7 +5,7 @@ import config from 'src/config'
 import getUser from 'src/server/actions/getUser'
 import {LGNotAuthorizedError} from 'src/server/util/error'
 
-import {parseCommand, CLICommandNotFoundError} from './util'
+import {getCommand, parseCommand} from './util'
 
 const sentry = new raven.Client(config.server.sentryDSN)
 
@@ -25,7 +25,7 @@ async function authenticateCommand(req, res, next) {
 async function invokeCommand(req, res, next) {
   const {command, argv, responseURL} = parseCommand(req.body)
   try {
-    const {commandSpec, commandImpl} = _getCommand(command)
+    const {commandSpec, commandImpl} = getCommand(command)
     const args = commandSpec.parse(argv)
     let result = commandSpec.usage(args)
     if (result) {
@@ -42,27 +42,12 @@ async function invokeCommand(req, res, next) {
   }
 }
 
-function _getCommand(command) {
-  let commandSpec
-  let commandImpl
-  try {
-    commandSpec = require('@learnersguild/game-cli')[command]
-    commandImpl = require(`./commands/${command}`)
-  } catch (err) {
-    if (err.code !== 'MODULE_NOT_FOUND') {
-      throw err
-    }
-    throw new CLICommandNotFoundError(command)
-  }
-  return {commandSpec, commandImpl}
-}
-
 const app = new express.Router()
 app.post('/command', authenticateCommand, invokeCommand)
 
 // Slack expects a certain style of error message to be returned, so we
 // won't propagate errors to the catch-all server handler
-app.use('/command', (err, req, res) => {
+app.use('/command', (err, req, res, next) => { // eslint-disable-line no-unused-vars
   const result = {
     text: err.message || 'Unknown error while executing CLI command. Please try again.'
   }

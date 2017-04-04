@@ -210,4 +210,13 @@ export const useFixture = {
         labels: [],
       })
   },
+  ensureNoGlobalWindow() {
+    before(function () {
+      this.window = global.window
+      global.window = undefined
+    })
+    after(function () {
+      global.window = this.window
+    })
+  }
 }

@@ -23,6 +23,21 @@ export class CLIUsageError extends CLICommandError {
   }
 }
 
+export function getCommand(command) {
+  let commandSpec
+  let commandImpl
+  try {
+    commandSpec = require('@learnersguild/game-cli')[command]
+    commandImpl = require(`src/server/cliCommand/commands/${command}`)
+  } catch (err) {
+    if (err.code !== 'MODULE_NOT_FOUND') {
+      throw err
+    }
+    throw new CLICommandNotFoundError(command)
+  }
+  return {commandSpec, commandImpl}
+}
+
 export function parseCommand(commandBody) {
   const {
     command,
