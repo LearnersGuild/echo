@@ -36,7 +36,7 @@ async function _initializeProjectChannel(project) {
       throw err
     }
   }
-  const goalChannelName = renderGoalChannelName(goal)
+  const goalChannelName = renderGoalChannelName(goal.number)
 
   try {
     await chatService.createChannel(goalChannelName, channelUserNames, goalLink)
