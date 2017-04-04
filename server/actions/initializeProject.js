@@ -1,5 +1,6 @@
 import config from 'src/config'
 import {escapeMarkdownLinkTitle} from 'src/common/util'
+import {renderGoalChannelName} from 'src/common/models/goal'
 import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 import {LGBadRequestError} from 'src/server/util/error'
 
@@ -35,7 +36,7 @@ async function _initializeProjectChannel(project) {
       throw err
     }
   }
-  const goalChannelName = String(goal.goalMetadata.goal_id) // eslint-disable-line camelcase
+  const goalChannelName = renderGoalChannelName(goal.goalMetadata.goal_id) // eslint-disable-line camelcase
 
   try {
     await chatService.createChannel(goalChannelName, channelUserNames, goalLink)
