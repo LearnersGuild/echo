@@ -93,23 +93,12 @@ describe(testContext(__filename), function () {
     })
   })
 
-  describe('goalChannelName()', function () {
-    it('returns a goal name that is slugged', function () {
-      const goal = {number: 144, level: 2, title: 'goal-title'}
-      const rendered = renderGoalChannelName(goal)
-      expect(rendered).to.contain(`${goal.number}-${goal.title}`)
-    })
-
+  describe('renderGoalChannelName()', function () {
     it('returns a goal name that is slugged and under 21 characters', function () {
-      const goal = {number: 144, level: 2, title: 'goal title jeffreywescott'}
+      const goal = {number: 144, level: 2, title: 'A random random goal title (kind of)'}
       const rendered = renderGoalChannelName(goal)
-      expect(rendered).to.not.contain(`${goal.number}-${goal.title}`)
-    })
-
-    it('returns a goal name that is slugged and under 21 characters', function () {
-      const goal = {number: 144, level: 2, title: 'goal-title-jeffre'}
-      const rendered = renderGoalChannelName(goal)
-      expect(rendered).to.contain(`${goal.number}-${goal.title}`)
+      const sluggedGoal = '144-a-random-random-go'
+      expect(rendered).to.contain(sluggedGoal)
     })
   })
 })
