@@ -1,14 +1,42 @@
 /* eslint-disable react/jsx-handler-names */
 import React, {Component, PropTypes} from 'react'
-import {Button} from 'react-toolbox/lib/button'
+import Button from 'react-toolbox/lib/button'
+import Tooltip from 'react-toolbox/lib/tooltip'
 import {Field} from 'redux-form'
 
+import ConfirmationDialog from 'src/common/components/ConfirmationDialog'
 import ContentHeader from 'src/common/components/ContentHeader'
 import NotFound from 'src/common/components/NotFound'
+import WrappedButton from 'src/common/components/WrappedButton'
 import {Flex} from 'src/common/components/Layout'
+import {PROJECT_STATES} from 'src/common/models/project'
 import {FORM_TYPES, renderInput} from 'src/common/util/form'
 
+import styles from './index.scss'
+
+const TooltipButton = Tooltip(WrappedButton) // eslint-disable-line new-cap
+
 class ProjectForm extends Component {
+  constructor(props) {
+    super(props)
+    this.handleClickDelete = this.handleClickDelete.bind(this)
+    this.handleClickDeleteCancel = this.handleClickDeleteCancel.bind(this)
+    this.handleClickDeleteConfirm = this.handleClickDeleteConfirm.bind(this)
+    this.state = {showDeleteDialog: false}
+  }
+
+  handleClickDelete() {
+    this.setState({showDeleteDialog: true})
+  }
+
+  handleClickDeleteCancel() {
+    this.setState({showDeleteDialog: false})
+  }
+
+  handleClickDeleteConfirm() {
+    this.props.onDelete()
+  }
+
   render() {
     const {
       pristine,
@@ -24,10 +52,40 @@ class ProjectForm extends Component {
       return <NotFound/>
     }
 
+    const projectName = project ? project.name : null
+    const projectState = project ? project.state : null
+
     const submitDisabled = Boolean(pristine || submitting || invalid)
-    const title = formType === FORM_TYPES.CREATE ?
-      'Create Project' :
-      `Edit Project${project ? `: ${project.name}` : ''}`
+    const deleteDisabled = Boolean(projectState !== PROJECT_STATES.IN_PROGRESS)
+    const deleteDisabledTooltip = deleteDisabled ? 'Cannot delete a project that is not in progress' : null
+
+    const title = formType === FORM_TYPES.CREATE ? 'Create Project' : `Edit Project: ${projectName}`
+
+    const deleteConfirmationDialog = FORM_TYPES.UPDATE ? (
+      <ConfirmationDialog
+        active={this.state.showDeleteDialog}
+        confirmLabel="Yes, Delete"
+        onClickCancel={this.handleClickDeleteCancel}
+        onClickConfirm={this.handleClickDeleteConfirm}
+        title=" "
+        >
+        <Flex className={styles.confirmation} justifyContent="center" alignItems="center">
+          Delete #{projectName}?
+        </Flex>
+      </ConfirmationDialog>
+    ) : null
+
+    const deleteButton = FORM_TYPES.UPDATE ? (
+      <TooltipButton
+        label="Delete"
+        disabled={deleteDisabled}
+        onClick={this.handleClickDelete}
+        tooltip={deleteDisabledTooltip}
+        tooltipDelay={1000}
+        accent
+        raised
+        />
+    ) : <div/>
 
     return (
       <Flex column>
@@ -78,7 +136,8 @@ class ProjectForm extends Component {
             label="Coach Handle"
             component={renderInput}
             />
-          <Flex justifyContent="flex-end">
+          <Flex className={styles.footer} justifyContent="space-between">
+            {deleteButton}
             <Button
               type="submit"
               label="Save"
@@ -88,6 +147,7 @@ class ProjectForm extends Component {
               />
           </Flex>
         </form>
+        {deleteConfirmationDialog}
       </Flex>
     )
   }
@@ -100,6 +160,7 @@ ProjectForm.propTypes = {
   submitting: PropTypes.bool.isRequired,
   formType: PropTypes.oneOf(Object.values(FORM_TYPES)).isRequired,
   onSave: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
   project: PropTypes.object,
 }
 

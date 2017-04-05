@@ -127,3 +127,21 @@ export function lockSurvey(playerId, projectId) {
     payload: {playerId, projectId},
   }
 }
+
+export function deleteProject(identifier) {
+  return {
+    types: [
+      types.DELETE_PROJECT_REQUEST,
+      types.DELETE_PROJECT_SUCCESS,
+      types.DELETE_PROJECT_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      const query = queries.deleteProject(identifier)
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.deleteProjectById)
+    },
+    payload: {},
+    redirect: '/projects',
+  }
+}

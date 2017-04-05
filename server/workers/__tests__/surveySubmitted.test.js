@@ -117,7 +117,7 @@ describe(testContext(__filename), function () {
       describe('when the survey has been submitted', function () {
         beforeEach(async function () {
           const respondentId = this.project.playerIds[0]
-          const overwriteObjs = [this.questionCompleteness, this.questionQuality].map((question, i) => ({
+          const overwriteObjs = [this.questionCompleteness].map((question, i) => ({
             respondentId,
             questionId: question.id,
             surveyId: this.survey.id,

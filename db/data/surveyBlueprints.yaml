@@ -15,8 +15,6 @@
     -
       questionId: cacefe2b-9193-41e1-9886-a0dd61fe9159
     -
-      questionId: 2c335ce5-ed0b-4068-92c8-56666fb7fdad
-    -
       questionId: 65cad3c5-e9e9-4284-999b-3a72c481c55e
     -
       questionId: cd350a14-8a70-4593-9801-30cedab3dc75
@@ -46,9 +44,6 @@
   id: 106c8683-4936-4c9b-b874-a70cfdd8ce20
   descriptor: projectReview
   defaultQuestionRefs:
-    -
-      name: quality
-      questionId: 2c335ce5-ed0b-4068-92c8-56666fb7fdad
     -
       name: completeness
       questionId: 65cad3c5-e9e9-4284-999b-3a72c481c55e

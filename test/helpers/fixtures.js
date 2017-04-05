@@ -75,13 +75,10 @@ export const useFixture = {
         this.cycle = await getCycleById(this.project.cycleId)
         if (!questionRefs) {
           const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
-          const statQuality = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_QUALITY})
           const question = {responseType: 'percentage', subjectType: 'project'}
           this.questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
-          this.questionQuality = await factory.create('question', {...question, body: 'quality', statId: statQuality.id})
           questionRefs = [
             {name: 'completeness', questionId: this.questionCompleteness.id, subjectIds: [this.project.id]},
-            {name: 'quality', questionId: this.questionQuality.id, subjectIds: [this.project.id]},
           ]
         }
         this.survey = await factory.create('survey', {questionRefs})
@@ -110,7 +107,6 @@ export const useFixture = {
             const questionData = {responseType: 'percentage', subjectType: 'project'}
             const questions = await factory.createMany('question', [
               Object.assign({}, questionData, {body: 'completeness'}),
-              Object.assign({}, questionData, {body: 'quality'}),
             ], 2)
             const questionRefs = questions.map(question => ({
               name: question.body,

@@ -8,7 +8,6 @@ const {
   ESTIMATION_ACCURACY,
   ESTIMATION_BIAS,
   PROJECT_COMPLETENESS,
-  PROJECT_QUALITY,
   RELATIVE_CONTRIBUTION_OTHER,
   RELATIVE_CONTRIBUTION_SELF,
   TEAM_PLAY,
@@ -17,7 +16,6 @@ const {
 
 const QUESTIONS = {
   completeness: '65cad3c5-e9e9-4284-999b-3a72c481c55e',
-  quality: '2c335ce5-ed0b-4068-92c8-56666fb7fdad',
 }
 
 // map stat names to their properties in the db
@@ -28,7 +26,6 @@ const STAT_MAPPING = {
   est_bias: ESTIMATION_BIAS,
   est_accuracy: ESTIMATION_ACCURACY,
   avg_proj_comp: PROJECT_COMPLETENESS,
-  avg_proj_qual: PROJECT_QUALITY,
   challenge: CHALLENGE,
 }
 

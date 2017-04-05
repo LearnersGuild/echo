@@ -1,4 +1,4 @@
-import {GraphQLBoolean} from 'graphql'
+import {GraphQLNonNull, GraphQLBoolean} from 'graphql'
 import {GraphQLObjectType} from 'graphql/type'
 
 export default new GraphQLObjectType({
@@ -6,7 +6,7 @@ export default new GraphQLObjectType({
   description: 'The status of a response',
   fields: () => {
     return {
-      success: {type: GraphQLBoolean, description: 'The request was successful'},
+      success: {type: new GraphQLNonNull(GraphQLBoolean), description: 'The request was successfully processed'},
     }
   },
 })

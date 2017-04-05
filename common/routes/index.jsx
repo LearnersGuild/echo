@@ -62,7 +62,7 @@ const routes = store => {
       <Route path="/not-found" component={NotFound}/>
       <Route path="/profile" component={Profile}/>
       <Route path="/projects" component={Blank}>
-        <IndexRoute component={ProjectList}/>
+        <IndexRoute component={userCanVisit('listProjects', store)(ProjectList)}/>
         <Route path="new" component={userCanVisit('importProject', store)(ProjectForm)}/>
         <Route path=":identifier/edit" component={userCanVisit('importProject', store)(ProjectForm)}/>
         <Route path=":identifier" component={userCanVisit('viewProjectSummary', store)(ProjectDetail)}/>

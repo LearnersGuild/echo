@@ -35,7 +35,6 @@ const {
   PROJECT_REVIEW_ACCURACY,
   EXTERNAL_PROJECT_REVIEW_COUNT,
   INTERNAL_PROJECT_REVIEW_COUNT,
-  PROJECT_QUALITY,
   PROJECT_COMPLETENESS,
 } = STAT_DESCRIPTORS
 
@@ -386,7 +385,7 @@ describe(testContext(__filename), function () {
   })
 
   describe('project review stats', function () {
-    const buildReview = ({q, c, rxp, accuracy, playerId}) => ({
+    const buildReview = ({c, rxp, accuracy, playerId}) => ({
       player: {
         id: playerId,
         stats: {
@@ -397,7 +396,6 @@ describe(testContext(__filename), function () {
         },
       },
       responses: {
-        [PROJECT_QUALITY]: q,
         [PROJECT_COMPLETENESS]: c,
       },
     })
@@ -416,7 +414,6 @@ describe(testContext(__filename), function () {
         ])
         const stats = calculateProjectReviewStats(project, projectReviews)
         expect(stats).to.deep.eq({
-          [PROJECT_QUALITY]: 90,
           [PROJECT_COMPLETENESS]: 90,
         })
       })
@@ -430,7 +427,6 @@ describe(testContext(__filename), function () {
         ])
         const stats = calculateProjectReviewStats(project, projectReviews)
         expect(stats).to.deep.eq({
-          [PROJECT_QUALITY]: 90,
           [PROJECT_COMPLETENESS]: 90,
         })
       })
@@ -444,7 +440,6 @@ describe(testContext(__filename), function () {
         ])
         const stats = calculateProjectReviewStats(project, projectReviews)
         expect(stats).to.deep.eq({
-          [PROJECT_QUALITY]: 80,
           [PROJECT_COMPLETENESS]: 80,
         })
       })
@@ -457,7 +452,6 @@ describe(testContext(__filename), function () {
         ])
         const stats = calculateProjectReviewStats(project, projectReviews)
         expect(stats).to.deep.eq({
-          [PROJECT_QUALITY]: null,
           [PROJECT_COMPLETENESS]: null,
         })
       })
@@ -473,7 +467,6 @@ describe(testContext(__filename), function () {
             ...project,
             id: `project${i}`,
             stats: {
-              [PROJECT_QUALITY]: projectStats.q,
               [PROJECT_COMPLETENESS]: projectStats.c,
             },
             closedAt,
@@ -487,7 +480,7 @@ describe(testContext(__filename), function () {
 
       it('determines a players accuracy and RXP based on how close their reviews were to the "correct" answer', function () {
         const projectReviewInfoList = range(1, 20).map(() =>
-          buildProjectReviewInfo({playerResponses: {q: 80, c: 80}, projectStats: {q: 90, c: 90}})
+          buildProjectReviewInfo({playerResponses: {c: 80}, projectStats: {c: 90}})
         )
         const stats = calculateProjectReviewStatsForPlayer(player, projectReviewInfoList)
         expect(stats).to.deep.eq({
@@ -500,7 +493,7 @@ describe(testContext(__filename), function () {
 
       it('returns Elo-based accuracy if there are fewer than 7 projects', function () {
         const projectReviewInfoList = range(1, 6).map(() =>
-          buildProjectReviewInfo({playerResponses: {q: 80, c: 80}, projectStats: {q: 90, c: 90}})
+          buildProjectReviewInfo({playerResponses: {c: 80}, projectStats: {c: 90}})
         )
         const stats = calculateProjectReviewStatsForPlayer(player, projectReviewInfoList)
         expect(stats).to.deep.eq({
@@ -521,7 +514,7 @@ describe(testContext(__filename), function () {
           }
         }
         const projectReviewInfoList = range(1, 5).map(() =>
-          buildProjectReviewInfo({playerResponses: {q: 85, c: 85}, projectStats: {q: 100, c: 100}})
+          buildProjectReviewInfo({playerResponses: {c: 85}, projectStats: {c: 100}})
         )
         const stats = calculateProjectReviewStatsForPlayer(playerWithBaseline, projectReviewInfoList)
         expect(stats).to.deep.eq({
@@ -534,7 +527,7 @@ describe(testContext(__filename), function () {
 
       it('uses an average of the deltas between the player\'s reviews and the "correct" one', function () {
         const projectReviewInfoList = range(1, 10).map(i =>
-          buildProjectReviewInfo({playerResponses: {q: i * 10, c: i * 10}, projectStats: {q: 100, c: 100}})
+          buildProjectReviewInfo({playerResponses: {c: i * 10}, projectStats: {c: 100}})
         )
         const stats = calculateProjectReviewStatsForPlayer(player, projectReviewInfoList)
         expect(stats).to.deep.eq({
@@ -549,15 +542,15 @@ describe(testContext(__filename), function () {
         const projectReviewInfoList = [
           ...range(1, 10).map(i =>
             buildProjectReviewInfo({
-              playerResponses: {q: 90, c: 90},
-              projectStats: {q: 90, c: 90},
+              playerResponses: {c: 90},
+              projectStats: {c: 90},
               closedAt: new Date(`1999-01-${i}`),
             })
           ),
           ...range(1, 20).map(i =>
             buildProjectReviewInfo({
-              playerResponses: {q: 80, c: 80},
-              projectStats: {q: 90, c: 90},
+              playerResponses: {c: 80},
+              projectStats: {c: 90},
               closedAt: new Date(`2017-01-${i}`),
             })
           ),

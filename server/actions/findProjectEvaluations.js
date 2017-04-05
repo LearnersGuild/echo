@@ -4,7 +4,7 @@ import {findValueForReponseQuestionStat} from 'src/server/util/stats'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {LGBadRequestError} from 'src/server/util/error'
 
-const {PROJECT_COMPLETENESS, PROJECT_QUALITY} = STAT_DESCRIPTORS
+const {PROJECT_COMPLETENESS} = STAT_DESCRIPTORS
 
 export default async function findProjectEvaluations(projectIdentifier) {
   const project = await (typeof projectIdentifier === 'string' ?
@@ -20,8 +20,7 @@ export default async function findProjectEvaluations(projectIdentifier) {
     .getAll(project.id, {index: 'subjectId'})
     .getJoin({question: {stat: true}})
     .filter(_ =>
-      _('question')('stat')('descriptor').eq(PROJECT_COMPLETENESS).or(
-      _('question')('stat')('descriptor').eq(PROJECT_QUALITY))
+      _('question')('stat')('descriptor').eq(PROJECT_COMPLETENESS)
     )
   const responsesByRespondentId = groupById(projectReviewResponses, 'respondentId')
 
@@ -37,7 +36,6 @@ export default async function findProjectEvaluations(projectIdentifier) {
       createdAt,
       submittedById: respondentId,
       [STAT_DESCRIPTORS.PROJECT_COMPLETENESS]: findValueForReponseQuestionStat(responses, PROJECT_COMPLETENESS),
-      [STAT_DESCRIPTORS.PROJECT_QUALITY]: findValueForReponseQuestionStat(responses, PROJECT_QUALITY),
     })
   })
 

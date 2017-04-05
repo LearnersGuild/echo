@@ -10,7 +10,6 @@ import {userCan} from 'src/common/util'
 class ProjectDetailContainer extends Component {
   constructor(props) {
     super(props)
-
     this.handleClickEdit = this.handleClickEdit.bind(this)
   }
 

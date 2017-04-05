@@ -14,6 +14,7 @@ const SENSITIVE_REPORTS = [
   'projectTeams',
   'playerStats',
   'playerCycleStats',
+  'playerRetroFeedback',
 ]
 const PUBLIC_REPORTS = [
   'countActivePlayersByLevel',

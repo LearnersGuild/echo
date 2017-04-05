@@ -41,12 +41,11 @@ describe(testContext(__filename), function () {
         this.questions = await factory.createMany('question', {
           subjectType: 'project',
           responseType: 'percentage'
-        }, 2)
+        }, 1)
         this.surveyBlueprint = await factory.create('surveyBlueprint', {
           descriptor: PROJECT_REVIEW_DESCRIPTOR,
           defaultQuestionRefs: [
             {name: 'completeness', questionId: this.questions[0].id},
-            {name: 'quality', questionId: this.questions[1].id},
           ]
         })
       })

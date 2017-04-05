@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import {reduxForm} from 'redux-form'
 
 import {showLoad, hideLoad} from 'src/common/actions/app'
-import {getProject, importProject} from 'src/common/actions/project'
+import {getProject, importProject, deleteProject} from 'src/common/actions/project'
 import {projectSchema, asyncValidate} from 'src/common/validations'
 import ProjectForm from 'src/common/components/ProjectForm'
 import {findAny} from 'src/common/util'
@@ -54,6 +54,12 @@ function handleSubmit(dispatch) {
   }
 }
 
+function handleDelete(dispatch, props) {
+  return () => {
+    return dispatch(deleteProject(props.params.identifier))
+  }
+}
+
 function mapStateToProps(state, props) {
   const {identifier} = props.params
   const {app, projects} = state
@@ -88,6 +94,7 @@ function mapStateToProps(state, props) {
 function mapDispatchToProps(dispatch, props) {
   return {
     onSave: handleSubmit(dispatch),
+    onDelete: handleDelete(dispatch, props),
     fetchData: () => fetchData(dispatch, props),
     showLoad: () => dispatch(showLoad()),
     hideLoad: () => dispatch(hideLoad()),

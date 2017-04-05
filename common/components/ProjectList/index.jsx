@@ -13,7 +13,6 @@ const ProjectModel = {
   coachHandle: {title: 'Coach', type: String},
   memberHandles: {title: 'Members', type: String},
   projectHours: {title: 'Hours', type: String},
-  quality: {title: 'Quality', type: String},
   completeness: {title: 'Completeness', type: String},
 }
 
@@ -24,7 +23,6 @@ export default class ProjectList extends Component {
       const memberHandles = (project.members || []).map(member => member.handle).join(', ')
       const stats = project.stats || {}
       const completeness = stats[STAT_DESCRIPTORS.PROJECT_COMPLETENESS]
-      const quality = stats[STAT_DESCRIPTORS.PROJECT_QUALITY]
       const hours = stats[STAT_DESCRIPTORS.PROJECT_HOURS]
       return {
         memberHandles,
@@ -32,7 +30,6 @@ export default class ProjectList extends Component {
         coachHandle: (project.coach || {}).handle,
         goalTitle: (project.goal || {}).title,
         projectHours: !hours || isNaN(hours) ? '--' : String(hours),
-        quality: !quality || isNaN(quality) ? '--' : `${roundDecimal(quality)}%`,
         completeness: !completeness || isNaN(completeness) ? '--' : `${roundDecimal(completeness)}%`,
         cycleNumber: (project.cycle || {}).cycleNumber,
       }
@@ -77,7 +74,6 @@ ProjectList.propTypes = {
     })),
     stats: PropTypes.shape({
       [STAT_DESCRIPTORS.PROJECT_COMPLETENESS]: PropTypes.number,
-      [STAT_DESCRIPTORS.PROJECT_QUALITY]: PropTypes.number,
       [STAT_DESCRIPTORS.PROJECT_HOURS]: PropTypes.number,
     }),
     createdAt: PropTypes.date,

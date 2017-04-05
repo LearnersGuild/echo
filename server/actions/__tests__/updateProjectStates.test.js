@@ -19,7 +19,6 @@ import updateProjectStates from 'src/server/actions/updateProjectStates'
 
 const {
   PROJECT_COMPLETENESS,
-  PROJECT_QUALITY,
   PROJECT_TIME_OFF_HOURS,
 } = STAT_DESCRIPTORS
 
@@ -73,7 +72,6 @@ describe(testContext(__filename), function () {
     await reloadSurveyAndQuestionData()
     const questionIdsForStat = {
       [PROJECT_COMPLETENESS]: await getQId(PROJECT_COMPLETENESS),
-      [PROJECT_QUALITY]: await getQId(PROJECT_QUALITY),
       [PROJECT_TIME_OFF_HOURS]: await getQId(PROJECT_TIME_OFF_HOURS),
     }
 
@@ -88,7 +86,6 @@ describe(testContext(__filename), function () {
       await Promise.map(reviews, async review => {
         review = {
           [PROJECT_COMPLETENESS]: 100,
-          [PROJECT_QUALITY]: 100,
           [PROJECT_TIME_OFF_HOURS]: 38,
           ...review,
         }

@@ -144,7 +144,6 @@ UserProjectSummary.propTypes = {
     }),
     stats: PropTypes.shape({
       [STAT_DESCRIPTORS.PROJECT_COMPLETENESS]: PropTypes.number,
-      [STAT_DESCRIPTORS.PROJECT_QUALITY]: PropTypes.number,
       [STAT_DESCRIPTORS.PROJECT_HOURS]: PropTypes.number,
     }),
   }),

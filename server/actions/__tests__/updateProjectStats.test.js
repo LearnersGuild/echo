@@ -14,7 +14,6 @@ import updateProjectStats from 'src/server/actions/updateProjectStats'
 
 const {
   PROJECT_COMPLETENESS,
-  PROJECT_QUALITY,
   PROJECT_HOURS,
   PROJECT_TIME_OFF_HOURS,
 } = STAT_DESCRIPTORS
@@ -25,9 +24,9 @@ describe(testContext(__filename), function () {
 
   it('updates the project record', async function () {
     await this.saveReviews([
-      {[PROJECT_COMPLETENESS]: 50, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 28},
-      {[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 18},
-      {[PROJECT_COMPLETENESS]: 30, [PROJECT_QUALITY]: 30, [PROJECT_TIME_OFF_HOURS]: 8},
+      {[PROJECT_COMPLETENESS]: 50, [PROJECT_TIME_OFF_HOURS]: 28},
+      {[PROJECT_COMPLETENESS]: 40, [PROJECT_TIME_OFF_HOURS]: 18},
+      {[PROJECT_COMPLETENESS]: 30, [PROJECT_TIME_OFF_HOURS]: 8},
     ])
     await updateProjectStats(this.project.id)
     await this.expectProjectStatsAfterUpdateToEqual({
@@ -37,9 +36,9 @@ describe(testContext(__filename), function () {
 
   it('includes external reviews', async function () {
     await this.saveReviews([
-      {[PROJECT_COMPLETENESS]: 50, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 33},
-      {[PROJECT_COMPLETENESS]: 40, [PROJECT_QUALITY]: 60, [PROJECT_TIME_OFF_HOURS]: 32},
-      {[PROJECT_COMPLETENESS]: 30, [PROJECT_QUALITY]: 30, [PROJECT_TIME_OFF_HOURS]: 31, external: true},
+      {[PROJECT_COMPLETENESS]: 50, [PROJECT_TIME_OFF_HOURS]: 33},
+      {[PROJECT_COMPLETENESS]: 40, [PROJECT_TIME_OFF_HOURS]: 32},
+      {[PROJECT_COMPLETENESS]: 30, [PROJECT_TIME_OFF_HOURS]: 31, external: true},
     ])
     await updateProjectStats(this.project.id)
     await this.expectProjectStatsAfterUpdateToEqual({
@@ -56,7 +55,6 @@ describe(testContext(__filename), function () {
     await reloadSurveyAndQuestionData()
     const questions = {
       [PROJECT_COMPLETENESS]: await getQId(PROJECT_COMPLETENESS),
-      [PROJECT_QUALITY]: await getQId(PROJECT_QUALITY),
       [PROJECT_TIME_OFF_HOURS]: await getQId(PROJECT_TIME_OFF_HOURS),
     }
 

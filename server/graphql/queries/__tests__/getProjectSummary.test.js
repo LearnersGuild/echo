@@ -18,14 +18,12 @@ const query = `
         stats {
           ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
           ${STAT_DESCRIPTORS.PROJECT_HOURS}
-          ${STAT_DESCRIPTORS.PROJECT_QUALITY}
         }
       }
       projectEvaluations {
         submittedBy { id handle }
         createdAt
         ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
-        ${STAT_DESCRIPTORS.PROJECT_QUALITY}
       }
       projectUserSummaries {
         user { id handle }
@@ -70,7 +68,6 @@ describe(testContext(__filename), function () {
     expect(returned.project.chapter.id).to.equal(this.project.chapterId)
     expect(returned.project.stats).to.have.property(STAT_DESCRIPTORS.PROJECT_COMPLETENESS)
     expect(returned.project.stats).to.have.property(STAT_DESCRIPTORS.PROJECT_HOURS)
-    expect(returned.project.stats).to.have.property(STAT_DESCRIPTORS.PROJECT_QUALITY)
     expect(returned.projectUserSummaries).to.be.an('array')
   })
 

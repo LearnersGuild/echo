@@ -26,7 +26,6 @@ export default function getProjectSummary(identifier) {
           stats {
             ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
             ${STAT_DESCRIPTORS.PROJECT_HOURS}
-            ${STAT_DESCRIPTORS.PROJECT_QUALITY}
           }
           chapter {
             id
@@ -48,7 +47,6 @@ export default function getProjectSummary(identifier) {
             name
           }
           ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
-          ${STAT_DESCRIPTORS.PROJECT_QUALITY}
         }
         projectUserSummaries {
           user {
