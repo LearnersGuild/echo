@@ -31,6 +31,7 @@ describe(testContext(__filename), function () {
     const {
       sendChannelMessage,
       sendDirectMessage,
+      sendResponseMessage,
     } = require('../index')
 
     describe('sendChannelMessage()', function () {
@@ -55,6 +56,19 @@ describe(testContext(__filename), function () {
           type: 'user',
           target: userName,
           msg: userMessage,
+        })
+      })
+    })
+
+    describe('sendResponseMessage()', function () {
+      it('queues the correct chat message job', async function () {
+        const responseURL = 'https://hooks.exmaple.com/commands/ABCD1234/ABCD1234ZYXW9876'
+        const response = {text: 'this is mah usah msg'}
+        await sendResponseMessage(responseURL, response)
+        expect(jobService.createJob).to.have.been.calledWith('chatMessageSent', {
+          type: 'response',
+          target: responseURL,
+          msg: response,
         })
       })
     })
