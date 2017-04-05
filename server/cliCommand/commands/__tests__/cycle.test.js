@@ -7,6 +7,8 @@ import {withDBCleanup, useFixture} from 'src/test/helpers'
 
 import {getCommand} from 'src/server/cliCommand/util'
 
+import {concatResults} from './helpers'
+
 describe(testContext(__filename), function () {
   withDBCleanup()
   useFixture.ensureNoGlobalWindow()
@@ -17,20 +19,19 @@ describe(testContext(__filename), function () {
     this.commandImpl = commandImpl
     this.moderatorUser = await factory.build('user', {roles: ['moderator']})
     this.moderator = await factory.create('moderator', {id: this.moderatorUser.id})
-    this.fullResults = result => [result.text].concat((result.attachments || []).map(att => att.text).join('\n'))
   })
 
   describe('cycle init', function () {
     it('returns an "Initializing" message on success', async function () {
       const args = this.commandSpec.parse(['init'])
       const result = await this.commandImpl.invoke(args, {user: this.moderatorUser})
-      expect(this.fullResults(result)).to.match(/Initializing/i)
+      expect(concatResults(result)).to.match(/Initializing/i)
     })
 
     it('reports the default project hours when requested', async function () {
       const args = this.commandSpec.parse(['init', '--hours=32'])
       const result = await this.commandImpl.invoke(args, {user: this.moderatorUser})
-      expect(this.fullResults(result)).to.match(/32/)
+      expect(concatResults(result)).to.match(/32/)
     })
   })
 
@@ -42,7 +43,7 @@ describe(testContext(__filename), function () {
     it('returns a "Launch" message on success', async function () {
       const args = this.commandSpec.parse(['launch'])
       const result = await this.commandImpl.invoke(args, {user: this.moderatorUser})
-      expect(this.fullResults(result)).to.match(/Launch/)
+      expect(concatResults(result)).to.match(/Launch/)
     })
   })
 
@@ -54,7 +55,7 @@ describe(testContext(__filename), function () {
     it('returns a "Reflection" message on success', async function () {
       const args = this.commandSpec.parse(['reflect'])
       const result = await this.commandImpl.invoke(args, {user: this.moderatorUser})
-      expect(this.fullResults(result)).to.match(/Reflection/)
+      expect(concatResults(result)).to.match(/Reflection/)
     })
   })
 })
