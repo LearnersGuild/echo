@@ -36,7 +36,7 @@ async function _initializeProjectChannel(project) {
       throw err
     }
   }
-  const goalChannelName = renderGoalChannelName(goal.goalMetadata.goal_id) // eslint-disable-line camelcase
+  const goalChannelName = renderGoalChannelName(goal)
 
   try {
     await chatService.createChannel(goalChannelName, channelUserNames, goalLink)
