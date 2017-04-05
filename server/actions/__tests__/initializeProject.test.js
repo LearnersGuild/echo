@@ -1,8 +1,11 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
-import stubs from 'src/test/stubs'
 import {stub} from 'sinon'
+
+import {renderGoalChannelName} from 'src/common/models/goal'
+
+import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {withDBCleanup, mockIdmUsersById} from 'src/test/helpers'
 
@@ -29,7 +32,7 @@ describe(testContext(__filename), function () {
         await initializeProject(this.project)
 
         expect(chatService.createChannel).to.have.been.calledWith(this.project.name, [...memberHandles, 'echo'])
-        expect(chatService.createChannel).to.have.been.calledWith(String(this.project.goal.goalMetadata.goal_id), [...memberHandles, 'echo']) // eslint-disable-line camelcase
+        expect(chatService.createChannel).to.have.been.calledWith(renderGoalChannelName(this.project.goal), [...memberHandles, 'echo']) // eslint-disable-line camelcase
         expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Welcome to the')
         expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Your team is')
       })
@@ -46,9 +49,9 @@ describe(testContext(__filename), function () {
       it('adds the new project\'s members to the goal channel', async function () {
         await initializeProject(this.project)
         const secondTeamProject = await factory.create('project')
-        secondTeamProject.goal.goalMetadata.goal_id = this.project.goal.goalMetadata.goal_id // eslint-disable-line camelcase
+        secondTeamProject.goal = this.project.goal
 
-        const expectedChannelName = String(secondTeamProject.goal.goalMetadata.goal_id) // eslint-disable-line camelcase
+        const expectedChannelName = renderGoalChannelName(this.project.goal)
         const secondTeamUsers = await mockIdmUsersById(secondTeamProject.playerIds)
         const secondTeamHandles = secondTeamUsers.map(u => u.handle)
 
