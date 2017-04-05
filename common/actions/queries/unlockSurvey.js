@@ -20,7 +20,6 @@ export default function unlockSurvey(playerId, projectId) {
             stats {
               ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
               ${STAT_DESCRIPTORS.PROJECT_HOURS}
-              ${STAT_DESCRIPTORS.PROJECT_QUALITY}
             }
             chapter {
               id
@@ -42,7 +41,6 @@ export default function unlockSurvey(playerId, projectId) {
               name
             }
             ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
-            ${STAT_DESCRIPTORS.PROJECT_QUALITY}
           }
           projectUserSummaries {
             user {

@@ -31,7 +31,6 @@ const {
   PROJECT_REVIEW_ACCURACY,
   EXTERNAL_PROJECT_REVIEW_COUNT,
   INTERNAL_PROJECT_REVIEW_COUNT,
-  PROJECT_QUALITY,
   PROJECT_COMPLETENESS,
 } = STAT_DESCRIPTORS
 
@@ -325,7 +324,7 @@ export function calculateProjectReviewStats(project, projectReviews) {
 
   return mostAccurateExternalReview ?
     mostAccurateExternalReview.responses :
-    {[PROJECT_QUALITY]: null, [PROJECT_COMPLETENESS]: null}
+    {[PROJECT_COMPLETENESS]: null}
 }
 
 function _compareByMostExperiencedReviewer(a, b) {
@@ -337,7 +336,7 @@ function _compareByMostExperiencedReviewer(a, b) {
 }
 
 export function calculateProjectReviewStatsForPlayer(player, projectReviewInfoList) {
-  const statNames = [PROJECT_COMPLETENESS, PROJECT_QUALITY]
+  const statNames = [PROJECT_COMPLETENESS]
   const isExternal = reviewInfo => !reviewInfo.project.playerIds.includes(player.id)
   const projectHasStats = reviewInfo => statNames.every(stat => Number.isFinite((reviewInfo.project.stats || {})[stat]))
   const externalReviewInfoList = projectReviewInfoList.filter(projectReview => (

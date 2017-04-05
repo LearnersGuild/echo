@@ -30,7 +30,6 @@ const {
   LEVEL,
   PROJECT_COMPLETENESS,
   PROJECT_HOURS,
-  PROJECT_QUALITY,
   PROJECT_REVIEW_ACCURACY,
   RELATIVE_CONTRIBUTION,
   RELATIVE_CONTRIBUTION_DELTA,
@@ -118,7 +117,6 @@ export function resolveProjectStats(project) {
   return {
     [PROJECT_COMPLETENESS]: projectStats[PROJECT_COMPLETENESS] || null,
     [PROJECT_HOURS]: projectStats[PROJECT_HOURS] || null,
-    [PROJECT_QUALITY]: projectStats[PROJECT_QUALITY] || null,
   }
 }
 

@@ -19,7 +19,6 @@ const {
   EXPERIENCE_POINTS,
   LEVEL,
   PROJECT_COMPLETENESS,
-  PROJECT_QUALITY,
   PROJECT_HOURS,
   RELATIVE_CONTRIBUTION,
   TEAM_PLAY,
@@ -42,7 +41,7 @@ const projectSummaries = [
         endTimestamp: null
       },
       goal: {title: 'Core Data Structures', number: 128},
-      stats: {[PROJECT_COMPLETENESS]: null, [PROJECT_HOURS]: null, [PROJECT_QUALITY]: null}
+      stats: {[PROJECT_COMPLETENESS]: null, [PROJECT_HOURS]: null}
     },
     userProjectEvaluations: [],
     userProjectStats: {
@@ -74,7 +73,7 @@ const projectSummaries = [
         endTimestamp: '2017-01-23T14:41:22.041Z'
       },
       goal: {title: 'Simple Book Store', number: 69},
-      stats: {[PROJECT_COMPLETENESS]: 80, [PROJECT_HOURS]: 94, [PROJECT_QUALITY]: 83.5}
+      stats: {[PROJECT_COMPLETENESS]: 80, [PROJECT_HOURS]: 94}
     },
     userProjectEvaluations: [
       {generalFeedback: 'some feedback'},
@@ -110,7 +109,7 @@ const projectSummaries = [
         endTimestamp: '2017-01-17T17:09:49.925Z'
       },
       goal: {title: 'To Do List App', number: 64},
-      stats: {[PROJECT_COMPLETENESS]: 98, [PROJECT_HOURS]: 70, [PROJECT_QUALITY]: 98}
+      stats: {[PROJECT_COMPLETENESS]: 98, [PROJECT_HOURS]: 70}
     },
     userProjectEvaluations: [
       {generalFeedback: 'some feedback'},

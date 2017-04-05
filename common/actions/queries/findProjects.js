@@ -22,7 +22,6 @@ export default function findProjects(identifiers) {
           stats {
             ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
             ${STAT_DESCRIPTORS.PROJECT_HOURS}
-            ${STAT_DESCRIPTORS.PROJECT_QUALITY}
           }
         }
       }

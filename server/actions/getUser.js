@@ -15,6 +15,6 @@ export default function getUser(identifier, options) {
     query: `query ($identifier: String!) {getUser(identifier: $identifier) {${queryFields}}}`,
     variables: {identifier},
   })
-  .then(result => (result.data.getUser ? mergeUsers([result.data.getUser], {skipNoMatch: true}) : []))
+  .then(result => (result && result.data.getUser ? mergeUsers([result.data.getUser], {skipNoMatch: true}) : []))
   .then(users => users[0])
 }

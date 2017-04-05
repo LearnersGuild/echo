@@ -17,10 +17,8 @@ describe(testContext(__filename), function () {
     this.project = await factory.create('project')
 
     const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
-    const statQuality = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_QUALITY})
     const question = {responseType: 'percentage', subjectType: 'project'}
     this.questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
-    this.questionQuality = await factory.create('question', {...question, body: 'quality', statId: statQuality.id})
   })
 
   it('returns correct evaluations for project', async function () {
@@ -30,7 +28,6 @@ describe(testContext(__filename), function () {
       const response = {respondentId: player.id, subjectId: this.project.id}
       return Promise.all([
         factory.create('response', {...response, questionId: this.questionCompleteness.id, value: 80 + i}),
-        factory.create('response', {...response, questionId: this.questionQuality.id, value: 90 + i}),
       ])
     })
 
@@ -42,7 +39,6 @@ describe(testContext(__filename), function () {
     sortedEvaluations.forEach((evaluation, i) => {
       expect(evaluation.submittedById).to.eq(sortedPlayers[i].id)
       expect(evaluation[STAT_DESCRIPTORS.PROJECT_COMPLETENESS]).to.eq(80 + i)
-      expect(evaluation[STAT_DESCRIPTORS.PROJECT_QUALITY]).to.eq(90 + i)
     })
   })
 })

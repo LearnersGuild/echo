@@ -20,7 +20,6 @@ import theme from './theme.scss'
 const ProjectEvaluationModel = {
   submittedByHandle: {title: 'Handle', type: String},
   submittedByName: {title: 'Name', type: String},
-  quality: {title: 'Quality', type: Number},
   completeness: {title: 'Completeness', type: Number},
 }
 
@@ -111,7 +110,6 @@ class ProjectDetail extends Component {
               <div>Updated on</div>
               <div>Closed on</div>
               <div>&nbsp;</div>
-              <div>Quality</div>
               <div>Completeness</div>
               <div>Hours</div>
             </Flex>
@@ -125,7 +123,6 @@ class ProjectDetail extends Component {
               <div>{moment(project.updatedAt).format('MMM DD, YYYY')}</div>
               <div>{project.closedAt ? moment(project.closedAt).format('MMM DD, YYYY') : '--'}</div>
               <div>&nbsp;</div>
-              <div>{renderStat(STAT_DESCRIPTORS.PROJECT_QUALITY, '%')}</div>
               <div>{renderStat(STAT_DESCRIPTORS.PROJECT_COMPLETENESS, '%')}</div>
               <div>{renderStat(STAT_DESCRIPTORS.PROJECT_HOURS)}</div>
             </Flex>
@@ -144,8 +141,6 @@ class ProjectDetail extends Component {
         // table is not editable. So we have to conver these stats to strings to make sure that
         // 0 gets displayed properly. =(
         completeness: evaluation[STAT_DESCRIPTORS.PROJECT_COMPLETENESS].toString(),
-        quality: evaluation[STAT_DESCRIPTORS.PROJECT_QUALITY].toString(),
-
         submittedByHandle: user.handle,
         submittedByName: user.name,
       }
@@ -259,7 +254,6 @@ ProjectDetail.propTypes = {
     }),
     stats: PropTypes.shape({
       [STAT_DESCRIPTORS.PROJECT_COMPLETENESS]: PropTypes.number,
-      [STAT_DESCRIPTORS.PROJECT_QUALITY]: PropTypes.number,
       [STAT_DESCRIPTORS.PROJECT_HOURS]: PropTypes.number,
     }),
   }),
@@ -269,7 +263,6 @@ ProjectDetail.propTypes = {
       handle: PropTypes.string,
     }),
     completeness: PropTypes.number,
-    quality: PropTypes.number,
     createdAt: PropTypes.date,
   })),
   projectUserSummaries: PropTypes.array,

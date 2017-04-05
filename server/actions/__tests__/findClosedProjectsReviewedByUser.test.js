@@ -18,16 +18,13 @@ describe(testContext(__filename), function () {
 
   before(async function () {
     const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
-    const statQuality = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_QUALITY})
     const question = {responseType: 'percentage', subjectType: 'project'}
     const questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
-    const questionQuality = await factory.create('question', {...question, body: 'quality', statId: statQuality.id})
 
     this.createReview = (player, project, responseAttrs = {}) => {
       const response = {...responseAttrs, respondentId: player.id, subjectId: project.id, value: 80}
       return factory.createMany('response', [
         {...response, questionId: questionCompleteness.id},
-        {...response, questionId: questionQuality.id},
       ])
     }
   })

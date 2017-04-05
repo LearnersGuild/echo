@@ -209,38 +209,10 @@ describe(testContext(__filename), function () {
       })
     })
 
-    describe('when the review is in progress', function () {
-      beforeEach(function () {
-        const responses = [{questionName: 'completeness', responseParams: ['8']}]
-        const projectName = this.project.name
-        return resolveSaveProjectReviewCLISurveyResponses(
-          null,
-          {responses, projectName},
-          {rootValue: {currentUser: this.currentUser}}
-        )
-      })
-
-      it('returns the status showing the review in progress', function () {
-        return this.invokeAPI().then(result => {
-          const status = result.data.getProjectReviewSurveyStatus
-          expect(status).to.deep.eq({
-            completed: false,
-            project: {
-              artifactURL: this.project.artifactURL
-            },
-            responses: [
-              {questionName: 'completeness', values: [{subjectId: this.project.id, value: '8'}]}
-            ],
-          })
-        })
-      })
-    })
-
     describe('when player has completed the review', function () {
       beforeEach(function () {
         const responses = [
           {questionName: 'completeness', responseParams: ['8']},
-          {questionName: 'quality', responseParams: ['9']},
         ]
         const projectName = this.project.name
         return resolveSaveProjectReviewCLISurveyResponses(
@@ -260,7 +232,6 @@ describe(testContext(__filename), function () {
             },
             responses: [
               {questionName: 'completeness', values: [{subjectId: this.project.id, value: '8'}]},
-              {questionName: 'quality', values: [{subjectId: this.project.id, value: '9'}]},
             ],
           })
         })

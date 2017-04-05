@@ -17,7 +17,6 @@ const query = `
       stats {
         ${STAT_DESCRIPTORS.PROJECT_COMPLETENESS}
         ${STAT_DESCRIPTORS.PROJECT_HOURS}
-        ${STAT_DESCRIPTORS.PROJECT_QUALITY}
       }
     }
   }
@@ -45,7 +44,6 @@ describe(testContext(__filename), function () {
     expect(returnedProject.cycle.id).to.equal(project.cycleId)
     expect(returnedProject.stats).to.have.property(STAT_DESCRIPTORS.PROJECT_COMPLETENESS)
     expect(returnedProject.stats).to.have.property(STAT_DESCRIPTORS.PROJECT_HOURS)
-    expect(returnedProject.stats).to.have.property(STAT_DESCRIPTORS.PROJECT_QUALITY)
   })
 
   it('throws an error if project is not found', function () {

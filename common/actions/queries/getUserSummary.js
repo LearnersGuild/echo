@@ -12,7 +12,6 @@ const {
   LEVEL,
   PROJECT_COMPLETENESS,
   PROJECT_HOURS,
-  PROJECT_QUALITY,
   PROJECT_REVIEW_ACCURACY,
   PROJECT_REVIEW_EXPERIENCE,
   RELATIVE_CONTRIBUTION,
@@ -70,7 +69,6 @@ export default function getUserSummary(identifier) {
             stats {
               ${PROJECT_COMPLETENESS}
               ${PROJECT_HOURS}
-              ${PROJECT_QUALITY}
             }
           }
           userProjectEvaluations {

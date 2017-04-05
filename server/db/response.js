@@ -84,7 +84,7 @@ export function findProjectReviewsForPlayer(playerId, projects = projectsTable) 
           }))
       })
   }
-  const reviewIsComplete = review => review.count().eq(2)
+  const reviewIsComplete = review => review.count().eq(1)
 
   return projects
     .hasFields('projectReviewSurveyId')
@@ -106,7 +106,6 @@ export function findProjectReviewsForPlayer(playerId, projects = projectsTable) 
         'projectId', reviewResponses.nth(0)('projectId'),
         'projectName', reviewResponses.nth(0)('projectName'),
         reviewResponses.nth(0)('name'), reviewResponses.nth(0)('value'),
-        reviewResponses.nth(1)('name'), reviewResponses.nth(1)('value')
       )
     )
 }

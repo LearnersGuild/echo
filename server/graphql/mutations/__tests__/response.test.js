@@ -139,7 +139,6 @@ describe(testContext(__filename), function () {
       this.invokeAPI = function (projectName = this.project.name, responses) {
         responses = responses || [
           {questionName: 'completeness', responseParams: ['80']},
-          {questionName: 'quality', responseParams: ['75']},
         ]
         return runGraphQLMutation(
           `mutation($projectName: String!, $responses: [CLINamedSurveyResponse]!) {
@@ -157,13 +156,13 @@ describe(testContext(__filename), function () {
 
     it('returns new response ids for all responses created in REFLECTION state', function () {
       return this.invokeAPI()
-        .then(result => expect(result.data.saveProjectReviewCLISurveyResponses.createdIds).have.length(2))
+        .then(result => expect(result.data.saveProjectReviewCLISurveyResponses.createdIds).have.length(1))
     })
 
     it('returns new response ids for all responses created in COMPLETE', async function () {
       await updateCycle({id: this.cycle.id, state: COMPLETE})
       return this.invokeAPI()
-        .then(result => expect(result.data.saveProjectReviewCLISurveyResponses.createdIds).have.length(2))
+        .then(result => expect(result.data.saveProjectReviewCLISurveyResponses.createdIds).have.length(1))
     })
 
     it('returns helpful error messages for invalid values', function () {

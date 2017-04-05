@@ -14,7 +14,6 @@ export default new GraphQLObjectType({
       submittedBy: {type: UserProfile, description: 'The evaluation submitter'},
       createdAt: {type: GraphQLDateTime, description: 'The datetime of the evaluation creation'},
       [STAT_DESCRIPTORS.PROJECT_COMPLETENESS]: {type: GraphQLFloat, description: 'The completeness rating'},
-      [STAT_DESCRIPTORS.PROJECT_QUALITY]: {type: GraphQLFloat, description: 'The quality rating'},
     }
   },
 })
