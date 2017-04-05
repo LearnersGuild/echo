@@ -11,6 +11,7 @@ export default {
     if (!userCan(currentUser, 'findProjectsToReview')) {
       throw new LGNotAuthorizedError()
     }
+    console.log('currentUser /GraphQL/queries/findProjectsToReview', currentUser)
     const projects = await findProjectsToReview(currentUser.id)
     return projects.map(project => ({project}))
   },
