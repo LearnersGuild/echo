@@ -3,6 +3,7 @@ import config from 'src/config'
 import {default as createChannel} from './createChannel'
 import {default as createChannelMessage} from './createChannelMessage'
 import {default as createDirectMessage} from './createDirectMessage'
+import {default as createResponseMessage} from './createResponseMessage'
 import {default as deleteChannel} from './deleteChannel'
 import {default as joinChannel} from './joinChannel'
 
@@ -16,6 +17,10 @@ function sendChannelMessage(channelName, message, options) {
 
 function sendDirectMessage(userName, message, options) {
   return _queueMessage('user', userName, message, options)
+}
+
+function sendResponseMessage(responseURL, response, options) {
+  return _queueMessage('response', responseURL, response, options)
 }
 
 function _queueMessage(type, target, message, options = {}) {
@@ -39,8 +44,10 @@ export default {
   createChannel,
   createChannelMessage,
   createDirectMessage,
+  createResponseMessage,
   deleteChannel,
   joinChannel,
   sendChannelMessage,
-  sendDirectMessage
+  sendDirectMessage,
+  sendResponseMessage,
 }
