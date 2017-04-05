@@ -1,20 +1,26 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
+
 import {connect} from 'src/db'
 import factory from 'src/test/factories'
-import {withDBCleanup, runGraphQLMutation} from 'src/test/helpers'
+import {withDBCleanup} from 'src/test/helpers'
 import {addPlayerIdsToPool} from 'src/server/db/pool'
 
-import fields from '../index'
+import {getCommand} from 'src/server/cliCommand/util'
+
+import {concatResults} from './helpers'
 
 const r = connect()
 
 describe(testContext(__filename), function () {
   withDBCleanup()
 
-  describe('voteForGoals', function () {
+  describe('vote', function () {
     beforeEach(async function () {
+      const {commandSpec, commandImpl} = getCommand('vote')
+      this.commandSpec = commandSpec
+      this.commandImpl = commandImpl
       this.chapter = await factory.create('chapter')
       this.cycle = await factory.create('cycle', {chapterId: this.chapter.id, state: 'GOAL_SELECTION'})
       this.pool = await factory.create('pool', {cycleId: this.cycle.id})
@@ -27,20 +33,11 @@ describe(testContext(__filename), function () {
       ]
     })
 
-    let voteForGoals = function () {
-      const {voteGoals, player} = this
-
-      return runGraphQLMutation(
-        `mutation($goalDescriptors: [String]!) {
-          voteForGoals(
-            goalDescriptors: $goalDescriptors
-          )
-          { id }
-        }`,
-        fields,
-        {goalDescriptors: voteGoals},
-        {currentUser: {id: player.id, roles: ['player']}},
-      )
+    const voteForGoals = async function () {
+      const args = this.commandSpec.parse(this.voteGoals)
+      const result = await this.commandImpl.invoke(args, {user: this.player})
+      const fullResult = concatResults(result)
+      return fullResult
     }
 
     const assertVoteRecorded = function () {
@@ -49,20 +46,18 @@ describe(testContext(__filename), function () {
 
         expect(vote.poolId).to.equal(this.pool.id)
         expect(vote.playerId).to.equal(this.player.id)
-        expect(vote.notYetValidatedGoalDescriptors).to.deep.equal(this.voteGoals)
+        expect(vote.notYetValidatedGoalDescriptors).to.deep.equal([parseInt(this.voteGoals[0], 10), this.voteGoals[1]])
       })
     }
 
-    const assertCorrectIdInResponse = function (result) {
-      return r.table('votes').limit(1).run().then(votes => {
-        const vote = votes[0]
-        expect(result.data.voteForGoals.id).to.equal(vote.id)
-      })
+    const assertValidResponse = function (result) {
+      expect(result).to.match(/cycle voting results/i)
+      expect(result).to.contain(this.voteGoals.join(', '))
     }
 
     it('records the vote', function () {
       return voteForGoals.call(this)
-        .then(result => assertCorrectIdInResponse.call(this, result))
+        .then(result => assertValidResponse.call(this, result))
         .then(() => assertVoteRecorded.call(this))
     })
 
@@ -81,7 +76,7 @@ describe(testContext(__filename), function () {
 
       it('updates the vote', function () {
         return voteForGoals.call(this)
-          .then(result => assertCorrectIdInResponse.call(this, result))
+          .then(result => assertValidResponse.call(this, result))
           .then(() => assertVoteRecorded.call(this))
           .then(() => r.table('votes').limit(1).run())
           .then(votes => votes[0])
@@ -95,34 +90,5 @@ describe(testContext(__filename), function () {
           })
       })
     })
-
-    describe('when voting for another player', function () {
-      voteForGoals = function () {
-        const {player, voteGoals} = this
-        return factory.create('player').then(currentUser => runGraphQLMutation(
-          `mutation($goalDescriptors: [String]!, $playerId: ID){
-            voteForGoals(
-              goalDescriptors: $goalDescriptors,
-              playerId: $playerId,
-            ),
-            { id }
-          }`,
-          fields,
-          {goalDescriptors: voteGoals, playerId: player.id},
-          {currentUser: {id: currentUser.id, roles: ['player']}},
-        ))
-      }
-
-      it('records the vote', function () {
-        return voteForGoals.call(this)
-          .then(result => assertCorrectIdInResponse.call(this, result))
-          .then(() => assertVoteRecorded.call(this))
-      })
-    })
-
-    it('behaves correctly when user not logged in')
-    it('behaves correctly when user not authorized')
-    it('behaves correctly when no cycle is in GOAL_SELECTION')
-    it('behaves correctly when multiple cycles are in GOAL_SELECTION')
   })
 })
