@@ -1,7 +1,6 @@
 import Promise from 'bluebird'
 
 import {connect} from 'src/db'
-import {escapeMarkdownLinkTitle} from 'src/common/util'
 import {getCycleById} from 'src/server/db/cycle'
 import {getPoolById} from 'src/server/db/pool'
 import {getGoalInfo} from 'src/server/services/goalLibraryService'
@@ -41,24 +40,34 @@ async function fetchGoalsInfo(vote) {
   )
 }
 
-function formatGoals(prefix, goals) {
-  const goalLinks = goals.map((goal, i) => {
+function formatGoals(goals) {
+  return goals.map((goal, i) => {
     const rank = i === 0 ? '1st' : '2nd'
-    return `[(${goal.number}) ${escapeMarkdownLinkTitle(goal.title)}](${goal.url}) [${rank} choice]`
+    return {
+      title: `${goal.number}: ${goal.title} [${rank} choice]`,
+      title_link: goal.url, // eslint-disable-line camelcase
+    }
   })
-  return `${prefix}:\n - ${goalLinks.join('\n- ')}`
 }
 
 function notifyUser(vote) {
-  const notificationService = require('src/server/services/notificationService')
+  const chatService = require('src/server/services/chatService')
 
   if (vote.invalidGoalDescriptors && vote.invalidGoalDescriptors.length > 0) {
-    notificationService.notifyUser(vote.playerId, `The following goals are invalid: ${vote.invalidGoalDescriptors.join(', ')}`)
+    chatService.sendResponseMessage(vote.responseURL, {
+      text: `The following goals are invalid: ${vote.invalidGoalDescriptors.join(', ')}`,
+    })
     if (vote.goals) {
-      notificationService.notifyUser(vote.playerId, formatGoals('Falling back to previous vote', vote.goals))
+      chatService.sendResponseMessage(vote.responseURL, {
+        text: 'Falling back to previous vote',
+        attachments: formatGoals(vote.goals),
+      })
     }
   } else {
-    notificationService.notifyUser(vote.playerId, formatGoals('Votes submitted for', vote.goals))
+    chatService.sendResponseMessage(vote.responseURL, {
+      text: 'Votes submitted for',
+      attachments: formatGoals(vote.goals),
+    })
   }
 }
 
