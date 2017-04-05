@@ -65,7 +65,7 @@
   },
   "homepage": "https://github.com/LearnersGuild/game#readme",
   "dependencies": {
-    "@learnersguild/game-cli": "^2.0.3",
+    "@learnersguild/game-cli": "^2.0.6",
     "@learnersguild/idm-jwt-auth": "^2.0.1",
     "animal-id": "0.0.1",
     "auto-loader": "^0.2.0",
