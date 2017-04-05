@@ -27,6 +27,7 @@ describe(testContext(__filename), function () {
         this.topic = '[Goal 1: lorem ipsum](http://example.com)'
         this.members = ['echo']
         this.createChannelResponse = {
+          ok: true,
           id: 'BFWXgKacy8e4vjXJL',
           name: this.name,
           members: this.members,
@@ -42,6 +43,7 @@ describe(testContext(__filename), function () {
           })
           .post('/api/channels.invite')
           .reply(200, {
+            ok: true,
             channel: this.name,
             members: this.members,
           })

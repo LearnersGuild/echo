@@ -27,13 +27,14 @@ describe(testContext(__filename), function () {
         this.apiScope
           .post('/api/im.open')
           .reply(200, {
-            user: 'pllearns'
+            ok: true,
+            user: 'pllearns',
           })
           .post('/api/chat.postMessage')
           .reply(200, {
             ok: true,
             channel: '12345',
-            text: 'Rubber Baby Buggy Bumpers'
+            text: 'Rubber Baby Buggy Bumpers',
           })
       })
 
