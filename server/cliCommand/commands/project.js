@@ -2,9 +2,9 @@ import config from 'src/config'
 
 import {userCan} from 'src/common/util'
 import {update as updateProject, findProjectByNameForPlayer} from 'src/server/db/project'
-import {LGNotAuthorizedError, LGInternalServerError} from 'src/server/util/error'
+import {LGCLIUsageError, LGNotAuthorizedError, LGInternalServerError} from 'src/server/util/error'
 
-import {CLIUsageError, deprecatedCommand} from '../util'
+import {deprecatedCommand} from '../util'
 
 async function _setProjectArtifactURL(user, projectName, url) {
   if (!userCan(user, 'setProjectArtifact')) {
@@ -49,5 +49,5 @@ export async function invoke(args, options) {
     return await subcommands[subcommand](args.$[subcommand], options)
   }
 
-  throw new CLIUsageError()
+  throw new LGCLIUsageError()
 }

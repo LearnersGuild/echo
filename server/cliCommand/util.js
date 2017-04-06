@@ -1,27 +1,4 @@
-export class CLICommandError extends Error {
-  constructor(message, statusCode = 500) {
-    super(message)
-    this.name = 'CLICommandError'
-    this.statusCode = statusCode
-  }
-}
-
-export class CLICommandNotFoundError extends CLICommandError {
-  constructor(command, statusCode = 404) {
-    const message = command ?
-      `Command '${command}' not configured on server.` :
-      'Command not configured on server.'
-    super(message, statusCode)
-    this.name = 'CLICommandNotFoundError'
-  }
-}
-
-export class CLIUsageError extends CLICommandError {
-  constructor(message, statusCode = 200) {
-    super(message || 'Invalid arguments. Try `--help` for usage.', statusCode)
-    this.name = 'CLIUsageError'
-  }
-}
+import {LGCLICommandNotFoundError} from 'src/server/util/error'
 
 export function getCommand(command) {
   let commandSpec
@@ -33,7 +10,7 @@ export function getCommand(command) {
     if (err.code !== 'MODULE_NOT_FOUND') {
       throw err
     }
-    throw new CLICommandNotFoundError(command)
+    throw new LGCLICommandNotFoundError(command)
   }
   return {commandSpec, commandImpl}
 }
