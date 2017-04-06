@@ -21,14 +21,13 @@ async function _initializeProjectChannel(project) {
   const chatService = require('src/server/services/chatService')
   const {goal, name: channelName} = project
   const players = await getPlayerInfo(project.playerIds)
-  const goalLink = `[${goal.number}: ${escapeMarkdownLinkTitle(goal.title)}](${goal.url})`
+  const goalLink = `${goal.number}`
+  console.log({goalLink})
   const channelUserNames = players.map(p => p.handle).concat(config.server.chat.userName)
 
   try {
     await chatService.createChannel(channelName, channelUserNames, goalLink)
-    // split welcome message into 2 so the goal link preview appears after the goal link
-    await chatService.sendChannelMessage(channelName, _welcomeMessage1(channelName, goalLink))
-    await chatService.sendChannelMessage(channelName, _welcomeMessage2(players))
+    await chatService.sendChannelMessage(channelName, _welcomeMessage(channelName, goalLink, players))
   } catch (err) {
     if (_isDuplicateChannelError(err)) {
       console.log(`Project channel ${channelName} already exists; initialization skipped`)
@@ -36,14 +35,13 @@ async function _initializeProjectChannel(project) {
       throw err
     }
   }
-  const goalChannelName = renderGoalChannelName(goal)
 
   try {
-    await chatService.createChannel(goalChannelName, channelUserNames, goalLink)
-    await chatService.sendChannelMessage(goalChannelName, _welcomeMessage1(goalChannelName, goalLink))
+    await chatService.createChannel(channelName, channelUserNames, goalLink)
+    await chatService.sendMultiPartyDirectMessage(channelName, _welcomeMessage(goalLink, players))
   } catch (err) {
     if (_isDuplicateChannelError(err)) {
-      await chatService.joinChannel(goalChannelName, channelUserNames)
+      await chatService.joinChannel(goalLink, channelUserNames)
     } else {
       throw err
     }
@@ -54,22 +52,18 @@ function _isDuplicateChannelError(error) {
   return (error.message || '').includes('error-duplicate-channel-name')
 }
 
-function _welcomeMessage1(channelName, goalLink) {
+function _welcomeMessage(goalLink, players) {
   return `
-🎊 *Welcome to the ${channelName} project channel!* 🎊
+  🎊 *Welcome to the ${goalLink} project channel!* 🎊
 
-*Your goal is:* ${goalLink}`
-}
+  *Your goal is:* ${goalLink}
+  *Your team is:*
+  ${channelUserNames}
 
-function _welcomeMessage2(players) {
-  return `
-*Your team is:*
-${players.map(p => `• _${p.name}_ - @${p.handle}`).join('\n  ')}
+  *Time to start work on your project!*
 
-*Time to start work on your project!*
+  The first step is to create an appropriate project artifact.
+  Once you've created the artifact, connect it to your project with the \`/project set-artifact\` command.
 
-The first step is to create an appropriate project artifact.
-Once you've created the artifact, connect it to your project with the \`/project set-artifact\` command.
-
-Run \`/project set-artifact --help\` for more guidance.`
+  Run \`/project set-artifact --help\` for more guidance.`
 }

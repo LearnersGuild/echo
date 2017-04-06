@@ -21,6 +21,9 @@ export async function processChatMessageSent({msg, target, type}) {
     case 'user':
       await Promise.each(msgs, msg => chatService.createDirectMessage(target, msg))
       break
+    case 'group':
+      await Promise.each(msgs, msg => chatService.createMultiPartyDirectMessage(target, msg))
+      break
     default:
       log.error(`Invalid Message Type: ${type}`)
       break

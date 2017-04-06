@@ -11,6 +11,7 @@ export default {
     stub(chatService, 'joinChannel', () => Promise.resolve({}))
     stub(chatService, 'sendChannelMessage', () => Promise.resolve({}))
     stub(chatService, 'sendDirectMessage', () => Promise.resolve({}))
+    stub(chatService, 'sendMultiPartyDirectMessage', () => Promise.resolve({}))
   },
 
   disable() {
@@ -21,5 +22,6 @@ export default {
     chatService.joinChannel.restore()
     chatService.sendChannelMessage.restore()
     chatService.sendDirectMessage.restore()
+    chatService.sendMultiPartyDirectMessage.restore()
   },
 }
