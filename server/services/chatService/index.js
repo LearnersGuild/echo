@@ -2,7 +2,7 @@ import config from 'src/config'
 
 import {default as createChannel} from './createChannel'
 import {default as createChannelMessage} from './createChannelMessage'
-import {default as createGoalPartyMessage} from './createGoalPartyMessage'
+import {default as createMultiPartyDirectMessage} from './createMultiPartyDirectMessage'
 import {default as createDirectMessage} from './createDirectMessage'
 import {default as deleteChannel} from './deleteChannel'
 import {default as joinChannel} from './joinChannel'
@@ -19,10 +19,9 @@ function sendDirectMessage(userName, message, options) {
   return _queueMessage('user', userName, message, options)
 }
 
-// function sendGoalPartyMessage(members, options) {
-//   return _queueMessage('members', members, message, options)
-// } will need to export once the createGoalPartyMessage is working
-// and will need to plug this in replacing sendChannelMessage
+function sendMultiPartyDirectMessage(users, message, options) {
+  return _queueMessage('group', users, message, options)
+}
 
 function _queueMessage(type, target, message, options = {}) {
   const jobService = require('src/server/services/jobService')
@@ -45,9 +44,10 @@ export default {
   createChannel,
   createChannelMessage,
   createDirectMessage,
+  createMultiPartyDirectMessage,
   deleteChannel,
   joinChannel,
   sendChannelMessage,
   sendDirectMessage,
-  createGoalPartyMessage,
+  sendMultiPartyDirectMessage,
 }

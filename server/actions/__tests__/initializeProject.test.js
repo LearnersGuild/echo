@@ -3,8 +3,6 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import {stub} from 'sinon'
 
-import {renderGoalChannelName} from 'src/common/models/goal'
-
 import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {withDBCleanup, mockIdmUsersById} from 'src/test/helpers'
@@ -31,10 +29,10 @@ describe(testContext(__filename), function () {
         const memberHandles = this.users.map(u => u.handle)
         await initializeProject(this.project)
 
-        expect(chatService.createChannel).to.have.been.calledWith(this.project.name, [...memberHandles, 'echo'])
-        expect(chatService.createChannel).to.have.been.calledWith(renderGoalChannelName(this.project.goal), [...memberHandles, 'echo']) // eslint-disable-line camelcase
-        expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Welcome to the')
-        expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'Your team is')
+        expect(chatService.createChannel).to.have.been.calledWith(channelName, [...memberHandles, 'echo'])
+        expect(chatService.createChannel).to.have.been.calledWith((this.project.goal), [...memberHandles, 'echo']) // eslint-disable-line camelcase
+        expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(this.project.name, 'Welcome to the')
+        expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(this.project.name, 'Your team is')
       })
     })
 
@@ -51,7 +49,7 @@ describe(testContext(__filename), function () {
         const secondTeamProject = await factory.create('project')
         secondTeamProject.goal = this.project.goal
 
-        const expectedChannelName = renderGoalChannelName(this.project.goal)
+        const expectedChannelName = (this.project.goal)
         const secondTeamUsers = await mockIdmUsersById(secondTeamProject.playerIds)
         const secondTeamHandles = secondTeamUsers.map(u => u.handle)
 
