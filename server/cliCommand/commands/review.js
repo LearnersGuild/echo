@@ -7,9 +7,7 @@ import handleSubmitSurveyResponses from 'src/server/actions/handleSubmitSurveyRe
 import {getProjectByName} from 'src/server/db/project'
 import {getFullSurveyForPlayerById} from 'src/server/db/survey'
 import {Survey} from 'src/server/services/dataService'
-import {LGBadRequestError, LGNotAuthorizedError} from 'src/server/util/error'
-
-import {CLIUsageError} from '../util'
+import {LGCLIUsageError, LGBadRequestError, LGNotAuthorizedError} from 'src/server/util/error'
 
 export async function _saveReview(user, projectName, namedResponses) {
   if (!user || !userCan(user, 'saveResponse')) {
@@ -73,7 +71,7 @@ function _assertProjectIsInState(project, targetStates) {
 
 export async function invoke(args, {user}) {
   if (args._.length < 2) {
-    throw new CLIUsageError()
+    throw new LGCLIUsageError()
   }
 
   const [projectNameOrChannel, score] = args._

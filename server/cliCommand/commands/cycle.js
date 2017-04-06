@@ -5,9 +5,12 @@ import {getModeratorById} from 'src/server/db/moderator'
 import {getCyclesInStateForChapter} from 'src/server/db/cycle'
 import createNextCycleForChapter from 'src/server/actions/createNextCycleForChapter'
 import updateCycleState from 'src/server/actions/updateCycleState'
-import {LGNotAuthorizedError, LGForbiddenError, LGBadRequestError} from 'src/server/util/error'
-
-import {CLIUsageError} from '../util'
+import {
+  LGCLIUsageError,
+  LGNotAuthorizedError,
+  LGForbiddenError,
+  LGBadRequestError,
+} from 'src/server/util/error'
 
 const subcommands = {
   async init(args, {user}) {
@@ -18,7 +21,7 @@ const subcommands = {
       attachments.push({text: `Expected hours per project: ${args.hours}`})
     }
     return {
-      text: 'Initializing Cycle ... stand by.',
+      text: '🔃  Initializing Cycle ... stand by.',
       attachments,
     }
   },
@@ -46,7 +49,7 @@ export async function invoke(args, options) {
     return await subcommands[subcommand](args.$[subcommand], options)
   }
 
-  throw new CLIUsageError()
+  throw new LGCLIUsageError()
 }
 
 async function _createCycle(user, hours) {
