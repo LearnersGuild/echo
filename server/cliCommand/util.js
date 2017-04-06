@@ -60,6 +60,23 @@ export function parseCommand(commandBody) {
   }
 }
 
+export const GUILD_COLORS = {
+  WARNING: '#F2BB1A',
+  ERROR: '#ED3F60',
+  SUCCESS: '#97C93D',
+  INFO: '#00A3DF',
+}
+export function deprecatedCommand(command, url) {
+  return {
+    text: `Go here instead: ${url}`,
+    attachments: [{
+      color: GUILD_COLORS.WARNING,
+      text: `The \`${command}\` command has been deprecated.`,
+      mrkdwn_in: ['text'], // eslint-disable-line camelcase
+    }],
+  }
+}
+
 const SPACE = ' '.charCodeAt(0)
 const DOUBLE_QUOTE = '"'.charCodeAt(0)
 const SINGLE_QUOTE = "'".charCodeAt(0)

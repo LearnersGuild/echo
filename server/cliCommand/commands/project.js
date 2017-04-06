@@ -1,8 +1,10 @@
+import config from 'src/config'
+
 import {userCan} from 'src/common/util'
 import {update as updateProject, findProjectByNameForPlayer} from 'src/server/db/project'
 import {LGNotAuthorizedError, LGInternalServerError} from 'src/server/util/error'
 
-import {CLIUsageError} from '../util'
+import {CLIUsageError, deprecatedCommand} from '../util'
 
 async function _setProjectArtifactURL(user, projectName, url) {
   if (!userCan(user, 'setProjectArtifact')) {
@@ -33,6 +35,11 @@ const subcommands = {
     return {
       text: `Thanks! The artifact for #${projectName} is now set to ${url}`,
     }
+  },
+
+  list: async () => {
+    const url = `${config.app.baseURL}/projects`
+    return deprecatedCommand('/project list', url)
   },
 }
 
