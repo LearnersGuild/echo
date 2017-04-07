@@ -7,7 +7,6 @@ import {
   goalFromGoalLibraryMetadata,
   goalFromMetadata,
   renderGoalAsString,
-  renderGoalChannelName
 } from '../goal'
 
 /* eslint-disable camelcase */
@@ -90,15 +89,6 @@ describe(testContext(__filename), function () {
       const rendered = renderGoalAsString(goal)
       expect(rendered).to.contain(`#${goal.number}`)
       expect(rendered).to.contain(`${goal.title}`)
-    })
-  })
-
-  describe('renderGoalChannelName()', function () {
-    it('returns a goal name that is slugged and under 21 characters', function () {
-      const goal = {number: 144, level: 2, title: 'A random random goal title (kind of)'}
-      const rendered = renderGoalChannelName(goal)
-      const sluggedGoal = '144-a-random-random-go'
-      expect(rendered).to.contain(sluggedGoal)
     })
   })
 })

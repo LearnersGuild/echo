@@ -31,6 +31,7 @@ describe(testContext(__filename), function () {
     const {
       sendChannelMessage,
       sendDirectMessage,
+      sendMultiPartyDirectMessage,
       sendResponseMessage,
     } = require('../index')
 
@@ -55,6 +56,19 @@ describe(testContext(__filename), function () {
         expect(jobService.createJob).to.have.been.calledWith('chatMessageSent', {
           type: 'user',
           target: userName,
+          msg: userMessage,
+        })
+      })
+    })
+
+    describe('sendMultiPartyDirectMessage()', function () {
+      it('queues the correct chat message job', async function () {
+        const userNames = ['supausah', 'supsuckah']
+        const userMessage = 'this is mah usah msg'
+        await sendMultiPartyDirectMessage(userNames, userMessage)
+        expect(jobService.createJob).to.have.been.calledWith('chatMessageSent', {
+          type: 'group',
+          target: userNames,
           msg: userMessage,
         })
       })
