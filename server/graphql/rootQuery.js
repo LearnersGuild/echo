@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
+import {instrumentResolvers} from './util'
 
 import rootFields from './queries'
 
 export default new GraphQLObjectType({
   name: 'RootQuery',
-  fields: () => rootFields
+  fields: instrumentResolvers(rootFields, 'query')
 })
