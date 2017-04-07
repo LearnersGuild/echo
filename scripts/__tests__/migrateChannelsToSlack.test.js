@@ -4,20 +4,9 @@
 
 import nock from 'nock'
 
-// import config from 'src/config'
-// import stubs from 'src/test/stubs'
-import {useFixture} from 'src/test/helpers'
 import {fetchTeamChannels} from '../migrateChannelsToSlack'
 
 describe(testContext(__filename), () => {
-  beforeEach(() => {
-    useFixture.nockClean()
-    // stubs.jobService.enable()
-  })
-  afterEach(function () {
-    // stubs.jobService.disable()
-  })
-
   describe('Migrate Channels To Slack Scripts', () => {
     describe('createChannel()', () => {
       const response = {
@@ -28,12 +17,15 @@ describe(testContext(__filename), () => {
           {goal_id: 14, published: true},
         ]
       }
+
       nock('http://jsdev.learnersguild.org/')
-        .post('api/goals/index.json')
+        .get('api/goals/index.json')
         .reply(200, response)
 
-      it('returns an array of published goal Numbers', function () {
-        return expect(fetchTeamChannels()).to.eventually.deep.equal([110, 128, 14])
+      it('returns an array of published goal Numbers', async () => {
+        const actualResult = await fetchTeamChannels()
+        const channelList = [110, 128, 14]
+        expect(actualResult).to.eql(channelList)
       })
     })
   })
