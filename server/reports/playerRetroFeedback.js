@@ -53,6 +53,11 @@ async function generateReport(user) {
 
     const reportRows = retroSurveyResponses.map(response => {
       const respondent = projectMembersById.get(response.respondentId)
+      if (!respondent) {
+        console.warn('Survey response found for user no longer a member of project')
+        return result
+      }
+
       return {
         subject_handle: user.handle,
         subject_name: user.name,

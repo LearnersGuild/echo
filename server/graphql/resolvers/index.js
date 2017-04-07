@@ -134,7 +134,11 @@ export async function resolveProjectEvaluations(projectSummary, args, {rootValue
     await findProjectEvaluations(project),
     'submittedById',
     'submittedBy'
-  ).filter(({submittedById}) => submittedById === currentUser.id || userCan(currentUser, 'viewProjectEvaluation'))
+  ).filter(({submittedById}) => (
+    project.state === PROJECT_STATES.CLOSED ||
+    submittedById === currentUser.id ||
+    userCan(currentUser, 'viewProjectEvaluation')
+  ))
 }
 
 export async function resolveProjectUserSummaries(projectSummary, args, {rootValue: {currentUser}}) {
