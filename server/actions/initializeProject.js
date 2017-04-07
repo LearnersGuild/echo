@@ -58,12 +58,12 @@ function _welcomeMessage(goalLink, players) {
 
   *Your goal is:* ${goalLink}
   *Your team is:*
-  ${channelUserNames}
+  ${players}
 
   *Time to start work on your project!*
 
-  The first step is to create an appropriate project artifact.
-  Once you've created the artifact, connect it to your project with the \`/project set-artifact\` command.
+  >The first step is to create an appropriate project artifact.
+  >Once you've created the artifact, connect it to your project with the \`/project set-artifact\` command.
 
   Run \`/project set-artifact --help\` for more guidance.`
 }

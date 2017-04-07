@@ -4,7 +4,7 @@ import {connect} from 'src/db'
 import {mapById} from 'src/common/util'
 import {findProjects} from 'src/server/db/project'
 import {findModeratorsForChapter} from 'src/server/db/moderator'
-import findUsers from 'src/server/actions/findUsers'
+import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 import ensureCycleReflectionSurveysExist from 'src/server/actions/ensureCycleReflectionSurveysExist'
 import reloadSurveyAndQuestionData from 'src/server/actions/reloadSurveyAndQuestionData'
 
@@ -59,7 +59,7 @@ async function _createReflectionAnnoucements(chapter, cycle, message) {
     return result
   }, [])
   const allUsersById = mapById(
-    await findUsers(allPlayerIds)
+    await getPlayerInfo(allPlayerIds)
   )
 
   const multiPartyDMPromises = projects.map(project => {
