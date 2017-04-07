@@ -29,10 +29,8 @@ describe(testContext(__filename), function () {
         const memberHandles = this.users.map(u => u.handle)
         await initializeProject(this.project)
 
-        expect(chatService.createChannel).to.have.been.calledWith(channelName, [...memberHandles, 'echo'])
-        expect(chatService.createChannel).to.have.been.calledWith((this.project.goal), [...memberHandles, 'echo']) // eslint-disable-line camelcase
-        expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(goalLink, 'Welcome to the')
-        expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(goalLink, 'Your team is')
+        expect(chatService.createChannel).to.have.been.calledWith(String(this.project.goal.number), [...memberHandles, 'echo']) // eslint-disable-line camelcase
+        expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch([...memberHandles, 'echo'], 'Welcome to the')
       })
     })
 
@@ -46,15 +44,15 @@ describe(testContext(__filename), function () {
 
       it('adds the new project\'s members to the goal channel', async function () {
         await initializeProject(this.project)
+
         const secondTeamProject = await factory.create('project')
         secondTeamProject.goal = this.project.goal
 
-        const expectedChannelName = (this.project.goal)
         const secondTeamUsers = await mockIdmUsersById(secondTeamProject.playerIds)
         const secondTeamHandles = secondTeamUsers.map(u => u.handle)
 
         await initializeProject(secondTeamProject)
-        expect(chatService.joinChannel).to.have.been.calledWith(goalLink, [...secondTeamHandles, 'echo'])
+        expect(chatService.joinChannel).to.have.been.calledWith(String(secondTeamProject.goal.number), [...secondTeamHandles, 'echo'])
       })
     })
   })

@@ -1,4 +1,3 @@
-import Promise from 'bluebird'
 import moment from 'moment-timezone'
 
 import {findProjectBySurveyId} from 'src/server/db/project'
