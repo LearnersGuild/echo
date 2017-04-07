@@ -1,5 +1,3 @@
-import {slugify} from '../util'
-
 const DEFAULT_TEAM_SIZE = 2
 
 /* eslint-disable camelcase */
@@ -66,9 +64,4 @@ export function goalFromGoalLibraryMetadata(goalMetadata) {
 export function renderGoalAsString(goal) {
   const goalLevel = goal.level ? ` [L${goal.level}]` : ''
   return `#${goal.number}${goalLevel}: ${goal.title}`
-}
-
-export function renderGoalChannelName(goal) {
-  const sluggedTitle = goal.number + '-' + slugify(goal.title)
-  return sluggedTitle.substring(0, 22)
 }
