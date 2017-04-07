@@ -76,13 +76,14 @@ function mapStateToProps(state) {
   const {projects: projectsById} = projects
   const {users: usersById} = users
 
-  const projectsWithMembers = Object.values(projectsById).map(project => {
+  const projectsWithUsers = Object.values(projectsById).map(project => {
+    const coach = usersById[project.coachId]
     const members = (project.playerIds || []).map(userId => (usersById[userId] || {}))
-    return {...project, members}
+    return {...project, members, coach}
   })
 
   // sort by cycle, title, name
-  const projectList = projectsWithMembers.sort((p1, p2) => {
+  const projectList = projectsWithUsers.sort((p1, p2) => {
     return (((p2.cycle || {}).cycleNumber || 0) - ((p1.cycle || {}).cycleNumber || 0)) ||
       (((p1.goal || {}).title || '').localeCompare((p2.goal || {}).title || '')) ||
       p1.name.localeCompare(p2.name)

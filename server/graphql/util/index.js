@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql/error'
+import newrelic from 'newrelic'
 
 import {parseQueryError} from 'src/server/db/errors'
 
@@ -22,4 +23,19 @@ export function pruneAutoLoad(loadedModules) {
     }
     return result
   }, {})
+}
+
+export function instrumentResolvers(fields, prefix) {
+  return Object.entries(fields).map(([queryName, schema]) => {
+    const originalResolver = schema.resolve
+    return {
+      [queryName]: {
+        ...schema,
+        resolve: (...args) => {
+          newrelic.setTransactionName(`graphql ${prefix} ${queryName}`)
+          return originalResolver(...args)
+        }
+      }
+    }
+  }).reduce((result, next) => ({...result, ...next}), {})
 }

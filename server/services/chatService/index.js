@@ -2,6 +2,7 @@ import config from 'src/config'
 
 import {default as createChannel} from './createChannel'
 import {default as createChannelMessage} from './createChannelMessage'
+import {default as createMultiPartyDirectMessage} from './createMultiPartyDirectMessage'
 import {default as createDirectMessage} from './createDirectMessage'
 import {default as deleteChannel} from './deleteChannel'
 import {default as joinChannel} from './joinChannel'
@@ -16,6 +17,10 @@ function sendChannelMessage(channelName, message, options) {
 
 function sendDirectMessage(userName, message, options) {
   return _queueMessage('user', userName, message, options)
+}
+
+function sendMultiPartyDirectMessage(users, message, options) {
+  return _queueMessage('group', users, message, options)
 }
 
 function _queueMessage(type, target, message, options = {}) {
@@ -39,8 +44,10 @@ export default {
   createChannel,
   createChannelMessage,
   createDirectMessage,
+  createMultiPartyDirectMessage,
   deleteChannel,
   joinChannel,
   sendChannelMessage,
-  sendDirectMessage
+  sendDirectMessage,
+  sendMultiPartyDirectMessage,
 }

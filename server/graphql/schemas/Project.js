@@ -30,6 +30,7 @@ export default new GraphQLObjectType({
       expectedHours: {type: new GraphQLNonNull(GraphQLInt), description: 'Expected working hours in this project'},
       stats: {type: ProjectStats, description: 'The project stats', resolve: resolveProjectStats},
       playerIds: {type: new GraphQLList(GraphQLID), description: 'The project member UUIDs'},
+      coachId: {type: GraphQLID, description: "The project's coach's id"},
       coach: {type: UserProfile, description: 'The project coach', resolve: resolveProjectCoach},
       players: {type: new GraphQLList(UserProfile), description: 'The project members', resolve: resolveProjectPlayers},
       artifactURL: {type: GraphQLURL, description: 'The URL pointing to the output of this project'},
