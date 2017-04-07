@@ -1,8 +1,9 @@
-import Promise from 'bluebird'
 import moment from 'moment-timezone'
 
 import {findProjectBySurveyId} from 'src/server/db/project'
 import {Project, Survey} from 'src/server/services/dataService'
+import {mapById} from 'src/common/util'
+import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 import sendRetroCompletedNotification from 'src/server/actions/sendRetroCompletedNotification'
 import updatePlayerStatsForProject from 'src/server/actions/updatePlayerStatsForProject'
 import updateProjectStats from 'src/server/actions/updateProjectStats'
@@ -37,12 +38,12 @@ export async function processSurveySubmitted(event) {
         await sendRetroCompletedNotification(project)
       }
       await updateProjectState(project)
-      await announce([project.name], buildRetroAnnouncement(project, survey))
+      await announce(project, buildRetroAnnouncement(project, survey))
       break
 
     case project.projectReviewSurveyId:
       await updateProjectStats(project.id)
-      await announce([project.name], buildProjectReviewAnnouncement(project, survey))
+      await announce(project, buildProjectReviewAnnouncement(project, survey))
       break
 
     default:
@@ -76,9 +77,10 @@ function buildProjectReviewAnnouncement(project, survey) {
   return [banner, progress].join('\n')
 }
 
-function announce(channels, announcement) {
+async function announce(project, announcement) {
   const chatService = require('src/server/services/chatService')
-  return Promise.map(channels, channel => (
-    chatService.sendChannelMessage(channel, announcement)
-  ))
+  const projectUsersById = mapById(await getPlayerInfo(project.playerIds))
+  const handles = project.playerIds.map(playerId => projectUsersById.get(playerId).handle)
+
+  chatService.sendMultiPartyDirectMessage(handles, announcement)
 }
