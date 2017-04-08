@@ -40,7 +40,7 @@ describe(testContext(__filename), function () {
           .calledWithMatch(this.chapter.channelName, `Voting is now open for cycle ${this.cycle.cycleNumber}`)
 
         expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.chapter.channelName, `[the goal library](${config.server.goalLibrary.baseURL})`)
+          .calledWithMatch(this.chapter.channelName, `<${config.server.goalLibrary.baseURL}|the goal library>`)
 
         expect(chatService.sendChannelMessage).to.have.been
           .calledWithMatch(this.chapter.channelName, '/vote --help')

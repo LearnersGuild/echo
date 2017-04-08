@@ -1,8 +1,10 @@
 import Promise from 'bluebird'
 
 import {connect} from 'src/db'
+import {mapById} from 'src/common/util'
 import {findProjects} from 'src/server/db/project'
 import {findModeratorsForChapter} from 'src/server/db/moderator'
+import getPlayerInfo from 'src/server/actions/getPlayerInfo'
 import ensureCycleReflectionSurveysExist from 'src/server/actions/ensureCycleReflectionSurveysExist'
 import reloadSurveyAndQuestionData from 'src/server/actions/reloadSurveyAndQuestionData'
 
@@ -47,15 +49,26 @@ function _notifyModerators(chapterId, message) {
   })
 }
 
-function _createReflectionAnnoucements(chapter, cycle, message) {
+async function _createReflectionAnnoucements(chapter, cycle, message) {
   const chatService = require('src/server/services/chatService')
+  const projects = await findProjects({chapterId: cycle.chapterId, cycleId: cycle.id})
+
+  // get all user info from IDM in one fell swoop
+  const allPlayerIds = projects.reduce((result, project) => {
+    result = result.concat(project.playerIds)
+    return result
+  }, [])
+  const allUsersById = mapById(
+    await getPlayerInfo(allPlayerIds)
+  )
+
+  const multiPartyDMPromises = projects.map(project => {
+    const handles = project.playerIds.map(playerId => allUsersById.get(playerId).handle)
+    return chatService.sendMultiPartyDirectMessage(handles, message)
+  })
 
   return Promise.all([
     chatService.sendChannelMessage(chapter.channelName, message),
-
-    findProjects({chapterId: cycle.chapterId, cycleId: cycle.id})
-      .then(projects => Promise.map(projects, project => (
-        chatService.sendChannelMessage(project.name, message)
-      )))
+    ...multiPartyDMPromises,
   ])
 }

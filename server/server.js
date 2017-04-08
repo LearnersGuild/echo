@@ -4,6 +4,7 @@ import path from 'path'
 import Express from 'express'
 import serveStatic from 'serve-static'
 import {HTTPS as https} from 'express-sslify'
+import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import raven from 'raven'
 
@@ -25,8 +26,10 @@ export function start() {
 
   configureApp(app)
 
-  // parse cookies
+  // parse cookies and forms
   app.use(cookieParser())
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({extended: true}))
 
   // ensure secure connection
   if (config.server.secure) {
@@ -51,6 +54,11 @@ export function start() {
   // handle GraphQL requests
   app.use((req, res, next) => {
     require('./graphql')(req, res, next)
+  })
+
+  // handle CLI commands (from Slack, terminal, etc.)
+  app.use((req, res, next) => {
+    require('./cliCommand')(req, res, next)
   })
 
   // handle requests to look at job queues

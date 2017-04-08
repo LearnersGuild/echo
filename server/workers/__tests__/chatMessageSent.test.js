@@ -1,6 +1,8 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
+import nock from 'nock'
+
 import stubs from 'src/test/stubs'
 
 describe(testContext(__filename), function () {
@@ -26,6 +28,18 @@ describe(testContext(__filename), function () {
       const event = {type: 'user', target: 'steve', msg: 'this is the direct message'}
       await processChatMessageSent(event)
       expect(chatService.createDirectMessage).to.have.been.calledWith(event.target, event.msg)
+    })
+
+    it('sends a response', async function () {
+      const responseBaseURL = 'http://hooks.example.com'
+      const responsePath = '/commands/FOO/BAR'
+      const responseURL = `${responseBaseURL}${responsePath}`
+      nock(responseBaseURL)
+        .post(responsePath)
+        .reply(200, {ok: true})
+      const event = {type: 'response', target: responseURL, msg: {text: 'this is the response'}}
+      await processChatMessageSent(event)
+      expect(chatService.createResponseMessage).to.have.been.calledWith(event.target, event.msg)
     })
 
     it('accepts an array of messages', async function () {

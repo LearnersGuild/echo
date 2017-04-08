@@ -3,7 +3,7 @@ import {apiFetch} from './util'
 export default function joinChannel(userName) {
   return apiFetch('/api/channels.join', {
     method: 'POST',
-    user: userName,
+    body: {user: userName},
   })
-  .then(result => result.channel)
+    .then(result => result.channel)
 }

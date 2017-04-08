@@ -1,15 +1,17 @@
 import {apiFetch} from './util'
 
-export default async function createDirectMessage(userName, msg) {
-  return apiFetch('/api/im.open', {
+export default function createMultiPartyDirectMessage(users, msg) {
+  return apiFetch('/api/mpim.open', {
     method: 'POST',
-    user: userName,
+    body: {
+      users: users.join(',')
+    }
   })
     .then(result => {
       return apiFetch('/api/chat.postMessage', {
         method: 'POST',
         body: {
-          channel: result.channelName,
+          channel: result.group.id,
           text: msg,
           as_user: true, // eslint-disable-line camelcase
         },

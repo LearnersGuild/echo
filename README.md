@@ -55,10 +55,10 @@ RETHINKDB_URL=rethinkdb://localhost:28015/game_development
 IDM_BASE_URL=http://idm.learnersguild.dev
 JWT_PRIVATE_KEY="<get from IDM service>"
 JWT_PUBLIC_KEY="<get from IDM service>"
-# echo API settings
-CHAT_BASE_URL=http://echo.learnersguild.dev
-CHAT_API_USER_SECRET='s3cr3t-p@ssw0rd'
-CHAT_API_WEBHOOK_TOKEN_DM="<from when you setup the DM webhook as explained here: https://github.com/LearnersGuild/echo-chat/issues/50>"
+# Slack / command CLI settings
+CHAT_BASE_URL=https://slack.com
+CHAT_API_TOKEN=<get from dev slack instance>
+CLI_COMMAND_TOKEN=<get from echo slash commands app>
 # external API settings
 GITHUB_ORG_ADMIN_TOKEN="<GitHub token with permissions in LearnersGuild, GuildCrafts, and GuildCraftsTesting>"
 GITHUB_CRAFTS_REPO="https://github.com/GuildCraftsTesting/web-development-js-testing"
@@ -116,7 +116,7 @@ In your `bin` folder:
 
 ### RUN THE SERVER
 
-NOTE: you'll need [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
+**NOTE:** you'll need [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
 
 ```bash
 npm start
@@ -132,6 +132,13 @@ Start the workers
 ```bash
 npm run workers
 npm run workers:cycleLaunched
+```
+
+**NOTE:** If you want to use `/slash` commands from the development Slack instance, you'll need to set up localtunnel, as well:
+
+```bash
+npm install -g localtunnel
+lt --port $(cat ~/.mehserve/game.learnersguild) --subdomain slackslash
 ```
 
 ## CONTINUOUS INTEGRATION

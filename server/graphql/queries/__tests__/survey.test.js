@@ -7,7 +7,9 @@ import nock from 'nock'
 import {connect} from 'src/db'
 import factory from 'src/test/factories'
 import {withDBCleanup, runGraphQLQuery, useFixture, mockIdmUsersById} from 'src/test/helpers'
-import {resolveSaveProjectReviewCLISurveyResponses} from 'src/server/graphql/resolvers'
+
+// FIXME: this is horrible -- result of the Slack migration
+import {_saveReview} from 'src/server/cliCommand/commands/review'
 
 import fields from '../index'
 
@@ -215,11 +217,7 @@ describe(testContext(__filename), function () {
           {questionName: 'completeness', responseParams: ['8']},
         ]
         const projectName = this.project.name
-        return resolveSaveProjectReviewCLISurveyResponses(
-          null,
-          {responses, projectName},
-          {rootValue: {currentUser: this.currentUser}}
-        )
+        return _saveReview(this.currentUser, projectName, responses)
       })
 
       it('returns the status showing the completed review', function () {

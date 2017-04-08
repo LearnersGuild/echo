@@ -2,10 +2,9 @@ import Promise from 'bluebird'
 
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {PROJECT_STATES} from 'src/common/models/project'
-import {surveyCompletedBy, surveyLockedFor, surveyProgress} from 'src/common/models/survey'
-import {getProjectByName, findActiveProjectsForChapter, findProjectsForUser} from 'src/server/db/project'
+import {surveyCompletedBy, surveyLockedFor} from 'src/common/models/survey'
+import {findActiveProjectsForChapter, findProjectsForUser} from 'src/server/db/project'
 import {getLatestCycleForChapter} from 'src/server/db/cycle'
-import {getFullSurveyForPlayerById} from 'src/server/db/survey'
 import findActivePlayersInChapter from 'src/server/actions/findActivePlayersInChapter'
 import findProjectEvaluations from 'src/server/actions/findProjectEvaluations'
 import getUser from 'src/server/actions/getUser'
@@ -13,7 +12,6 @@ import findUsers from 'src/server/actions/findUsers'
 import findUserProjectEvaluations from 'src/server/actions/findUserProjectEvaluations'
 import handleSubmitSurvey from 'src/server/actions/handleSubmitSurvey'
 import handleSubmitSurveyResponses from 'src/server/actions/handleSubmitSurveyResponses'
-import handleCompleteSurvey from 'src/server/actions/handleCompleteSurvey'
 import {Chapter, Cycle, Project, Survey} from 'src/server/services/dataService'
 import {LGBadRequestError, LGNotAuthorizedError} from 'src/server/util/error'
 import {mapById, roundDecimal, userCan} from 'src/common/util'
@@ -302,44 +300,9 @@ export async function resolveSaveRetrospectiveSurveyResponses(source, {responses
   return handleSubmitSurveyResponses(responses)
 }
 
-export async function resolveSaveProjectReviewCLISurveyResponses(source, {responses: namedResponses, projectName}, {rootValue: {currentUser}}) {
-  _assertUserAuthorized(currentUser, 'saveResponse')
-
-  const project = await getProjectByName(projectName)
-  _assertIsExternalReview(currentUser, project)
-  _assertProjectIsInState(project, [PROJECT_STATES.REVIEW])
-
-  const responses = await _buildResponsesFromNamedResponses(namedResponses, project, currentUser.id)
-  await _assertCurrentUserCanSubmitResponsesForRespondent(currentUser, responses)
-
-  const savedResponseIds = await handleSubmitSurveyResponses(responses)
-  const projectReviewSurveyId = responses[0].surveyId
-
-  // unlike with the retro survey, project review responses submitted via the CLI
-  // are checked to automatically trigger survey completion handling
-  const fullSurvey = await getFullSurveyForPlayerById(currentUser.id, projectReviewSurveyId)
-  if (surveyProgress(fullSurvey).completed) {
-    await handleCompleteSurvey(projectReviewSurveyId, currentUser.id)
-  }
-
-  return savedResponseIds
-}
-
 function _assertUserAuthorized(user, action) {
   if (!user || !userCan(user, action)) {
     throw new LGNotAuthorizedError()
-  }
-}
-
-function _assertIsExternalReview(currentUser, project) {
-  if (project.playerIds.includes(currentUser.id)) {
-    throw new LGBadRequestError(`Whoops! You are on team #${project.name}. To review your own project, use the /retro command.`)
-  }
-}
-
-function _assertProjectIsInState(project, targetStates) {
-  if (!targetStates.includes(project.state)) {
-    throw new LGBadRequestError(`The ${project.name} project is closed and can no longer be reviewed.`)
   }
 }
 
@@ -347,21 +310,6 @@ function _assertCurrentUserCanSubmitResponsesForRespondent(currentUser, response
   responses.forEach(response => {
     if (currentUser.id !== response.respondentId) {
       throw new LGBadRequestError('You cannot submit responses for other players.')
-    }
-  })
-}
-
-async function _buildResponsesFromNamedResponses(namedResponses, project, respondentId) {
-  const survey = await Survey.get(project.projectReviewSurveyId)
-
-  return namedResponses.map(namedResponse => {
-    const {questionName, responseParams} = namedResponse
-    const {questionId, subjectIds} = survey.questionRefs.find(ref => ref.name === questionName) || {}
-    return {
-      respondentId,
-      questionId,
-      surveyId: survey.id,
-      values: [{subjectId: subjectIds[0], value: responseParams[0]}]
     }
   })
 }

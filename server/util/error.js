@@ -77,6 +77,41 @@ export class LGInternalServerError extends LGError {
   }
 }
 
+export class LGCLICommandError extends LGError {
+  constructor(message, statusCode = 500) {
+    super(message, {
+      name: 'LGCLICommandError',
+      message: 'An unknown error occured while executing command.',
+      statusCode,
+    })
+  }
+}
+
+export class LGCLICommandNotFoundError extends LGCLICommandError {
+  constructor(command, statusCode = 404) {
+    const message = command ?
+      `Command '${command}' not configured on server.` :
+      'Command not configured on server.'
+
+    super(message, statusCode, {
+      name: 'LGCLICommandNotFoundError',
+      message,
+      statusCode,
+    })
+  }
+}
+
+export class LGCLIUsageError extends LGCLICommandError {
+  constructor(errMsg, statusCode = 200) {
+    const message = `${errMsg || 'Invalid arguments'}. Try \`--help\` for usage.`
+    super(message, statusCode, {
+      name: 'LGCLIUsageError',
+      message,
+      statusCode,
+    })
+  }
+}
+
 export function formatServerError(error) {
   const parsedError = parseQueryError(error && error.originalError ? error.originalError : error)
 

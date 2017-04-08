@@ -11,7 +11,6 @@ import {useFixture} from 'src/test/helpers'
 describe(testContext(__filename), function () {
   beforeEach(function () {
     useFixture.nockClean()
-    this.responses = {}
     this.apiScope = nock(config.server.chat.baseURL)
     stubs.jobService.enable()
   })
@@ -20,15 +19,16 @@ describe(testContext(__filename), function () {
   })
 
   describe('chatService', function () {
-    const {createDirectMessage} = require('../index')
+    const {createMultiPartyDirectMessage} = require('../index')
 
-    describe('createDirectMessage()', function () {
+    describe('createMultiPartyDirectMessage()', function () {
       beforeEach(function () {
         this.apiScope
-          .post('/api/im.open')
+          .post('/api/mpim.open')
           .reply(200, {
             ok: true,
-            user: 'pllearns',
+            group: {id: '12345'},
+            members: ['echo', 'pllearns'],
           })
           .post('/api/chat.postMessage')
           .reply(200, {
@@ -39,7 +39,7 @@ describe(testContext(__filename), function () {
       })
 
       it('returns the parsed response on success', function () {
-        const result = createDirectMessage(this.name, this.members, this.topic)
+        const result = createMultiPartyDirectMessage(['echo', 'pllearns'], 'Rubber Baby Buggy Bumpers')
         return expect(result).to.eventually.deep.equal(true)
       })
     })

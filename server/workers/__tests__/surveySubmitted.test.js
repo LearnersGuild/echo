@@ -36,6 +36,7 @@ describe(testContext(__filename), function () {
           projectState: PROJECT_STATES.IN_PROGRESS,
         })
         this.users = await mockIdmUsersById(this.project.playerIds, null, {times: 3})
+        this.handles = this.users.map(user => user.handle)
       })
       afterEach(function () {
         useFixture.nockClean()
@@ -61,9 +62,9 @@ describe(testContext(__filename), function () {
         })
 
         it('sends a message to the project chatroom', function () {
-          expect(chatService.sendChannelMessage.callCount).to.eq(1)
-          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'submitted their reflections')
-          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'completed')
+          expect(chatService.sendMultiPartyDirectMessage.callCount).to.eq(1)
+          expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(this.handles, 'submitted their reflections')
+          expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(this.handles, 'completed')
         })
 
         it('updates the project state', async function () {
@@ -76,7 +77,7 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             survey: {id: this.survey.id},
           })
-          expect(chatService.sendChannelMessage.callCount).to.eq(2)
+          expect(chatService.sendMultiPartyDirectMessage.callCount).to.eq(2)
         })
       })
 
@@ -110,8 +111,11 @@ describe(testContext(__filename), function () {
     describe('for project review surveys', function () {
       useFixture.createProjectReviewSurvey()
 
-      beforeEach('setup test data', function () {
-        return this.createProjectReviewSurvey()
+      beforeEach('setup test data', async function () {
+        await this.createProjectReviewSurvey()
+        useFixture.nockClean()
+        this.users = await mockIdmUsersById(this.project.playerIds, null, {times: 4})
+        this.handles = this.users.map(user => user.handle)
       })
 
       describe('when the survey has been submitted', function () {
@@ -135,9 +139,9 @@ describe(testContext(__filename), function () {
             respondentId: this.project.playerIds[0],
             survey: {id: this.survey.id},
           })
-          expect(chatService.sendChannelMessage.callCount).to.eq(1)
-          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'project review has just been completed')
-          expect(chatService.sendChannelMessage).to.have.been.calledWithMatch(this.project.name, 'reviewed by 1 player')
+          expect(chatService.sendMultiPartyDirectMessage.callCount).to.eq(1)
+          expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(this.handles, 'project review has just been completed')
+          expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWithMatch(this.handles, 'reviewed by 1 player')
         })
 
         it('updates the project stats', async function () {
@@ -157,8 +161,8 @@ describe(testContext(__filename), function () {
           }
           await processSurveySubmitted(event)
           await processSurveySubmitted(event)
-          expect(chatService.sendChannelMessage.callCount).to.eq(2)
-          expect(chatService.sendChannelMessage).to.have.been.calledWith(this.project.name)
+          expect(chatService.sendMultiPartyDirectMessage.callCount).to.eq(2)
+          expect(chatService.sendMultiPartyDirectMessage).to.have.been.calledWith(this.handles)
         })
       })
     })
