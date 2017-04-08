@@ -970,4 +970,4 @@ const animalChannels = [
 "zonked-stilt"
 ]
 
-module.exports = animalChannels
+export default animalChannels

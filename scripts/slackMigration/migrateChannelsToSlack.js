@@ -1,9 +1,9 @@
 // import csvWriter from 'csv-write-stream'
 import fetch from 'isomorphic-fetch'
-import animalChannels from './migrateChannelsToSlack-animalList'
-import createChannel from '../server/services/chatService/createChannel'
-import {apiFetch} from './util'
 
+import createChannel from '../../server/services/chatService/createChannel'
+import animalChannels from './migrateChannelsToSlack-animalList'
+import channelList from './migrateChannels-channelList'
 
 export function fetchTeamChannels() {
   return fetch('https://jsdev.learnersguild.org/api/goals/index.json')
@@ -20,55 +20,35 @@ export function fetchTeamChannels() {
     })
 }
 
-async function _createTeamChannels () {
-  const teamChannels = fetchTeamChannels()
-  await teamChannels.forEach(team => createChannel(team.ChannelName, undefined, team.title))
+export function migrateAllChannels() {
+  // pull all channels from mongo as json
+  const formattedSlackRooms = mapIDMRoomForSlack(channelList)
+    .map(room => {
+      if (room.name !== room.name.toLowerCase()) {
+        room.name = room.name.replace(/([A-Z])/g, $1 => '-' + $1.toLowerCase()).slice(1)
+      }
+      return room
+    })
+    // createChannel("testing", 'rachel-ftw', "such a test, so wow")
+  const roomsSubmittedToSlack = formattedSlackRooms.forEach(room => {
+    createChannel(room.name, room.members, room.topic)
+  })
 }
 
-function extractSlackRoomData(room) {
-  const members = room.usernames.map(username => ({value: username}))
-  // if first letter is upper case, convert
-  const displayName = room.name[0] !== room.name[0].toLowerCase() ?
-    room.name.replace(/([A-Z])/g, $1 => '-' + $1.toLowerCase()).slice(1) :
-    room.name
-  return {displayName, members}
-}
-
-function migrateAllChannels() {
-  _createTeamChannels()
-  // pull all channels from mongo
-    // if overallChannel list contains something from animalChannels SKIP
-      // change any camel case to snake case
-    // create: los-support
-
-
-}
-
-//create function importCSVCHAT
+// create function importCSVCHAT
   // collapse game-mechanics and los-support into one channel: los-support
   // collapse moderation and significant-updates into one channel: moderation
 
-export async function createChannel(channelName, members = [config.server.chat.userName], topic = '') {
-  const result = await apiFetch('https://slack.com/api/api/channels.create', {
-    method: 'POST',
-    name: channelName
-  })
-  await apiFetch('https://slack.com/api/api/channels.setTopic', {
-    method: 'POST',
-    channel: channelName,
-    topic
-  })
-  return result
-}
-
-async function addUsersToChannel(channel, user) {
-  await Promise.all(members.map(
-    member => apiFetch('https://slack.com/api/api/channels.invite', {
-      method: 'POST',
-      channel: channelName,
-      user: member
-    })
-  ))
+function mapIDMRoomForSlack(channelList) {
+  const teamChannels = fetchTeamChannels()
+  return channelList.reduce((memo, room) => {
+    if (room.name && !animalChannels.includes(room.name) && !room.name.includes('test')) {
+      memo.push(room.topic ?
+        {uid: room._id, members: room.usernames, name: room.name, topic: room.topic} :
+        {uid: room._id, members: room.usernames, name: room.name})
+    }
+    return memo
+  }, [])
 }
 
 // export default function requestHandler(req, res) {
