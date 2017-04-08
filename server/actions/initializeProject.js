@@ -51,8 +51,8 @@ ${players.map(p => `• _${p.name}_ - @${p.handle}`).join('\n  ')}
 
 *Time to start work on your project!*
 
-The first step is to create an appropriate project artifact.
-Once you've created the artifact, connect it to your project with the \`/project set-artifact\` command.
+>The first step is to create an appropriate project artifact.
+>Once you've created the artifact, connect it to your project with the \`/project set-artifact\` command.
 
 Run \`/project set-artifact --help\` for more guidance.`
 }
