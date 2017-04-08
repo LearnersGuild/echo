@@ -11,9 +11,9 @@ function _buildAnnouncement(projects) {
   let announcement = '🚀  *The cycle has been launched!*\n'
   if (projects.length > 0) {
     const projectListString = projects.map(p => `  • #${p.name} - _${p.goal.title}_`).join('\n')
-    announcement += `The following projects have been created:\n${projectListString}`
+    announcement += `>The following projects have been created:\n${projectListString}`
   } else {
-    announcement += 'No projects created'
+    announcement += '>No projects created'
   }
   return announcement
 }
