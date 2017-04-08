@@ -35,7 +35,7 @@ describe(testContext(__filename), function () {
         await processProjectArtifactChanged(this.project)
 
         expect(chatService.sendMultiPartyDirectMessage).to.have.been
-          .calledWithMatch(this.handles, `[artifact](${this.project.artifactURL})`)
+          .calledWithMatch(this.handles, `<${this.project.artifactURL}|artifact>`)
 
         expect(chatService.sendMultiPartyDirectMessage).to.have.been
           .calledWithMatch(this.handles, `#${this.project.name} has been updated`)
