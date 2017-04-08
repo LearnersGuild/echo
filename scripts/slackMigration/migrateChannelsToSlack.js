@@ -3,7 +3,9 @@ import fetch from 'isomorphic-fetch'
 
 import createChannel from '../../server/services/chatService/createChannel'
 import animalChannels from './migrateChannelsToSlack-animalList'
-import channelList from './migrateChannels-channelList'
+import {default as theChannelList} from './migrateChannels-channelList'
+
+export const channelList = theChannelList
 
 export function fetchTeamChannels() {
   return fetch('https://jsdev.learnersguild.org/api/goals/index.json')
@@ -30,7 +32,7 @@ export function migrateAllChannels() {
       return room
     })
     // createChannel("testing", 'rachel-ftw', "such a test, so wow")
-  const roomsSubmittedToSlack = formattedSlackRooms.forEach(room => {
+  formattedSlackRooms.forEach(room => {
     createChannel(room.name, room.members, room.topic)
   })
 }
@@ -40,7 +42,7 @@ export function migrateAllChannels() {
   // collapse moderation and significant-updates into one channel: moderation
 
 function mapIDMRoomForSlack(channelList) {
-  const teamChannels = fetchTeamChannels()
+  fetchTeamChannels()
   return channelList.reduce((memo, room) => {
     if (room.name && !animalChannels.includes(room.name) && !room.name.includes('test')) {
       memo.push(room.topic ?

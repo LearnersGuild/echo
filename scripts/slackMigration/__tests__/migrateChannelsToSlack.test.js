@@ -5,7 +5,7 @@
 import nock from 'nock'
 
 import {useFixture} from 'src/test/helpers'
-import {fetchTeamChannels, migrateAllChannels, channelList} from '../slackMigration/migrateChannelsToSlack'
+import {fetchTeamChannels, migrateAllChannels, channelList} from '../migrateChannelsToSlack'
 
 describe(testContext(__filename), () => {
   useFixture.nockClean()
@@ -14,10 +14,12 @@ describe(testContext(__filename), () => {
       it('returns an array of published goal Numbers', async () => {
         const response = {
           goals: [
+            /* eslint-disable camelcase */
             {goal_id: 110, title: 'Project 110', published: true},
             {goal_id: 98, title: 'Project 98', published: false},
             {goal_id: 128, title: 'Project 128', published: true},
             {goal_id: 14, title: 'Project 14', published: true},
+            /* eslint-enable camelcase */
           ]
         }
 
@@ -37,7 +39,7 @@ describe(testContext(__filename), () => {
 
     describe('createChannel()', () => {
       it('returns an array of published goal Numbers', async () => {
-        const result = migrateAllChannels(channelList)
+        migrateAllChannels(channelList)
         // expect(result).to.eql(true)
       })
     })
