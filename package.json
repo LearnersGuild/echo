@@ -119,6 +119,7 @@
     "minimist": "^1.2.0",
     "moment": "^2.12.0",
     "moment-timezone": "^0.5.3",
+    "mongodb": "^2.2.25",
     "newrelic": "^1.28.2",
     "nock": "https://registry.npmjs.org/nock/-/nock-8.2.1.tgz",
     "node-sass": "^3.13.0",
