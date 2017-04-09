@@ -25,6 +25,23 @@ async function getProjectChannelNames() {
   return projectChannelNames
 }
 
+function camelToKebab(str) {
+  return str
+    .replace(/([A-Z])/g, match => `-${match.toLowerCase()}`)
+    .replace(/^-/, '')
+}
+
+function mergedChannelName(channel) {
+  switch (channel) {
+    case 'game-mechanics':
+      return 'los-support'
+    case 'significant-updates':
+      return 'moderation'
+    default:
+      return channel
+  }
+}
+
 async function dumpMessages(mongodbURL, csvFilename) {
   const projectChannelNames = await getProjectChannelNames()
   const channelNamesById = await getChannelNamesById(mongodbURL)
@@ -39,18 +56,19 @@ async function dumpMessages(mongodbURL, csvFilename) {
     const stream = db.collection('rocketchat_message').find().stream()
     stream.on('data', doc => {
       const {ts, rid, u: {username}, msg} = doc
-      const channel = channelNamesById.get(rid)
+      const channelName = channelNamesById.get(rid)
       if (
         !ts ||
         !rid ||
-        !channel ||
+        !channelName ||
         !username ||
         !msg ||
-        projectChannelNames.has(channel)
+        projectChannelNames.has(channelName)
       ) {
         return
       }
       const timestamp = Math.round(ts.getTime() / 1000)
+      const channel = camelToKebab(mergedChannelName(channelName))
       const text = msg.replace(/"/g, '\\"')
       csv.write(`"${timestamp}","${channel}","${username}","${text}"\n`)
     })
