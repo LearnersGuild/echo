@@ -22,6 +22,5 @@ export default async function createChannel(channelName, members = [config.serve
       },
     })
   ))
-
   return result
 }
