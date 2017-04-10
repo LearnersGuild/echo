@@ -15,10 +15,7 @@ module.exports = {
     },
     chat: {
       baseURL: process.env.CHAT_BASE_URL || 'http://chat.learnersguild.test',
-      userSecret: process.env.CHAT_API_USER_SECRET || 'chat',
-      webhookTokens: {
-        DM: process.env.CHAT_API_WEBHOOK_TOKEN_DM || 'whatevs',
-      }
+      token: process.env.CHAT_API_TOKEN || 'chat',
     },
     github: {
       baseURL: process.env.GITHUB_BASE_URL || 'http://api.github.test'
