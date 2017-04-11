@@ -6,7 +6,7 @@ import {truncateDBTables} from 'src/test/helpers'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {PROJECT_STATES} from 'src/common/models/project'
 
-import findProjectsToReview from '../findProjectsToReview'
+import {findProjectsToReview} from '../findProjectsToReview'
 
 const {
   CLOSED,
@@ -31,7 +31,7 @@ describe(testContext(__dirname), function () {
     }
   })
 
-  it('returns projects in Review State', async function () {
+  it('should list out the projects with the current users coach id.', async function () {
     const [player1, player2, coach] = await factory.createMany('player', 3)
     const [openProject1, openProject2] = await factory.createMany('project', {state: REVIEW, coachId: coach.id}, 2)
     const closedProject = await factory.create('project', {state: CLOSED})
@@ -43,12 +43,41 @@ describe(testContext(__dirname), function () {
     await this.createReview(coach, openProject1)
 
     // Should the function return a different result if user is a coach???
-    const projectsToReviewForCoach = await findProjectsToReview(coach.id)
-    console.log('projectsToReviewForCoach', projectsToReviewForCoach)
-    console.log('closedProject', closedProject)
-    console.log('openProject2', openProject2)
-    console.log('coach', coach)
+    const projectsToReviewForCoach = await findProjectsToReview({coachId: coach.id})
+
     expect(projectNames(projectsToReviewForCoach)).to.be.an('array')
     expect(openProject2).to.be.an('object')
+
+    projectsToReviewForCoach.forEach(project =>
+      expect(project.coachId).to.eql(coach.id)
+    )
+  })
+
+  beforeEach(truncateDBTables)
+
+  it('should return no projects if the are none to review.', async function() {
+    const [player1, player2, coach] = await factory.createMany('player', 3)
+    const [openProject1, openProject2] = await factory.createMany('project', {state: CLOSED, coachId: coach.id}, 2)
+    const projectNames = projects => projects.map(_ => _.name).sort()
+
+    const projectsToReviewForCoach = await findProjectsToReview({coachId: coach.id})
+    const uncompleteReviews = projectsToReviewForCoach
+      .filter(project => project.state === REVIEW)
+
+    expect(uncompleteReviews.length).to.eql(0)
+  })
+
+  it('should return 1 projects out of three', async function() {
+    const [coach] = await factory.createMany('player', 1)
+    const [openProject1, openProject2] = await factory.createMany('project', {state: CLOSED, coachId: coach.id}, 2)
+    const closedProject2 = await factory.create('project', {state: REVIEW})
+
+    const projectNames = projects => projects.map(_ => _.name).sort()
+
+    const projectsToReviewForCoach = await findProjectsToReview({coachId: coach.id})
+    const uncompleteReviews = projectsToReviewForCoach
+      .filter(project => project.state === REVIEW)
+
+    expect(uncompleteReviews.length).to.eql(1)
   })
 })
