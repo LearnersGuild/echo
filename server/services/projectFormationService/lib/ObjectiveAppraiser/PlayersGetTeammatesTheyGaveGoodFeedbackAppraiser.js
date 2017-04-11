@@ -14,8 +14,8 @@ export const STAT_WEIGHTS = {
   [FEEDBACK_STAT_DESCRIPTORS.TECHNICAL_HEALTH]: 1
 }
 
-export const NOVELTY_WEIGHT = 1
-export const PERFECT_SCORE = sum([...Object.values(STAT_WEIGHTS), NOVELTY_WEIGHT])
+export const NOVELTY_WEIGHT = 0.5
+export const PERFECT_SCORE = sum([...Object.values(STAT_WEIGHTS)])
 
 export default class PlayersGetTeammatesTheyGaveGoodFeedbackAppraiser {
   constructor(pool) {
@@ -62,7 +62,7 @@ export default class PlayersGetTeammatesTheyGaveGoodFeedbackAppraiser {
     const stats = this.getFeedbackStats({respondentId, subjectId})
 
     if (!stats) {
-      return 1
+      return NOVELTY_WEIGHT
     }
 
     const weightedScores = Object.entries(stats).map(([stat, value]) => STAT_WEIGHTS[stat] * (value / 100))
