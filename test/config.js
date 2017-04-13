@@ -1,4 +1,4 @@
-/* eslint-disable import/no-unassigned-import, prefer-arrow-callback */
+1/* eslint-disable import/no-unassigned-import, prefer-arrow-callback */
 require('babel-core/register')
 require('babel-polyfill')
 

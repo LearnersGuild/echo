@@ -89,6 +89,46 @@ export const useFixture = {
       }
     })
   },
+  createManyProjectThatNeedReview({projectsWithCoachIdCount, externalProjectsCount, coachId}) {
+    beforeEach(function () {
+      this.chapter = await factory.create('chapter')
+
+      for (let i = 0; i < projectsWithCurrentCoachId; i++) {
+        this.createProjectThatNeedReview({coachId, chapterId: this.chapter.id})
+      }
+      for (var i = 0; i < externalProjectsCount; i++) {
+        this.createProjectThatNeedReview({chapterId: this.chapter.id})
+      }
+    })
+  },
+  createProjectThatNeedReview({coachId, chapterId}) {
+    this.createProjectsWithReviews = async function() {
+      this.project = await factory.create('project', {
+        chapterId,
+        state: PROJECT_STATES.REVIEW,
+      })
+
+      this.survey = await factory.create('survey')
+      this.cycle = await getCycleById(this.project.cycleId)
+      await updateProject({
+        id: this.project.id,
+        projectReviewSurveyId: this.survey.id
+        coachId: coachId ? coachId : factory.create('player').id
+      })
+
+      for (let i = 0; i < Math.ceil(Math.random() * 5); i++) {
+        let player = await factory.create('player')
+        await this.createReview(player, this.project, this.survey)
+      }
+    }
+  },
+  createReview(player, project, survey, responseAttrs = {}) {
+    const response = {...responseAttrs, respondentId: player.id, surveyId: survey.id, subjectId: project.id, value: 88}
+    return factory.create('response', {
+      ...response,
+      questionId: questionCompleteness.id
+    })
+  }
   createChapterInReflectionState() {
     beforeEach(function () {
       this.createChapterInReflectionState = async function () {

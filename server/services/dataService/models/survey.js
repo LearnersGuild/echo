@@ -34,6 +34,7 @@ export default function surveyModel(thinky) {
     },
     associate: (Survey, models) => {
       Survey.hasMany(models.Question, 'questions', 'id', 'surveyId', {init: false})
+      Survey.hasMany(models.Response, 'responses', 'id', 'surveyId', {init: false})
     },
   }
 }
