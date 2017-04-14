@@ -106,6 +106,13 @@ export function relativeContributionEffectiveCycles(relativeContributionAggregat
   return relativeContributionAggregateCycles * relativeContribution
 }
 
+export function relativeContributionOther(contributionRatingsFromTeammates) {
+  if (contributionRatingsFromTeammates.length === 0) {
+    return 100
+  }
+  return roundDecimal(avg(contributionRatingsFromTeammates)) || 0
+}
+
 export const technicalHealth = likert7Average
 export const cultureContribution = likert7Average
 export const cultureContributionStructure = likert7Average

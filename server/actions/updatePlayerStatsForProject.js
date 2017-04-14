@@ -9,7 +9,7 @@ import {findQuestionsByIds} from 'src/server/db/question'
 import {findResponsesBySurveyId} from 'src/server/db/response'
 import {savePlayerProjectStats, findPlayersByIds} from 'src/server/db/player'
 import {statsByDescriptor} from 'src/server/db/stat'
-import {avg, sum, mapById, safePushInt, toPairs} from 'src/server/util'
+import {sum, mapById, safePushInt, toPairs} from 'src/server/util'
 import {userCan, roundDecimal} from 'src/common/util'
 import {
   relativeContributionAggregateCycles,
@@ -17,6 +17,7 @@ import {
   relativeContributionExpected,
   relativeContributionDelta,
   relativeContributionEffectiveCycles,
+  relativeContributionOther,
   eloRatings,
   experiencePoints,
   technicalHealth,
@@ -295,7 +296,7 @@ function _computeStatsClosure(project, teamPlayersById, retroResponses, statsQue
     stats[RELATIVE_CONTRIBUTION_AGGREGATE_CYCLES] = relativeContributionAggregateCycles(teamPlayersById.size)
     stats[RELATIVE_CONTRIBUTION_EFFECTIVE_CYCLES] = relativeContributionEffectiveCycles(stats[RELATIVE_CONTRIBUTION_AGGREGATE_CYCLES], stats[RELATIVE_CONTRIBUTION])
     stats[RELATIVE_CONTRIBUTION_HOURLY] = stats[PROJECT_HOURS] && stats[RELATIVE_CONTRIBUTION] ? roundDecimal(stats[RELATIVE_CONTRIBUTION] / stats[PROJECT_HOURS]) : 0
-    stats[RELATIVE_CONTRIBUTION_OTHER] = roundDecimal(avg(scores[RELATIVE_CONTRIBUTION].other)) || 0
+    stats[RELATIVE_CONTRIBUTION_OTHER] = relativeContributionOther(scores[RELATIVE_CONTRIBUTION].other)
     stats[RELATIVE_CONTRIBUTION_SELF] = scores[RELATIVE_CONTRIBUTION].self || 0
     stats[ESTIMATION_BIAS] = stats[RELATIVE_CONTRIBUTION_SELF] - stats[RELATIVE_CONTRIBUTION_OTHER]
     stats[ESTIMATION_ACCURACY] = 100 - Math.abs(stats[ESTIMATION_BIAS])
