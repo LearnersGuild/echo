@@ -2,11 +2,11 @@ import {GraphQLNonNull, GraphQLID} from 'graphql'
 
 import deactivateUser from 'src/server/actions/deactivateUser'
 import {userCan} from 'src/common/util'
-import {User} from 'src/server/graphql/schemas'
+import {UserProfile} from 'src/server/graphql/schemas'
 import {LGNotAuthorizedError} from 'src/server/util/error'
 
 export default {
-  type: User,
+  type: UserProfile,
   args: {
     identifier: {type: new GraphQLNonNull(GraphQLID), description: 'The user ID'}
   },
