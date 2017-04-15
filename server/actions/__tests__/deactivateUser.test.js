@@ -20,17 +20,25 @@ describe(testContext(__filename), function () {
       nock(config.server.idm.baseURL)
         .persist()
         .intercept('/graphql', 'POST')
-        .reply(200, () => ({id: this.user.id, active: false, handle: this.user.handle}))
+        .reply(200, () => ({
+          data: {
+            deactivateUser: {
+              id: this.user.id,
+              active: false,
+              handle: this.user.handle,
+            },
+          },
+        }))
     }
     stubs.herokuService.enableOne('removeCollaboratorFromApps')
     stubs.gitHubService.enableOne('removeUserFromOrganizations')
-    stubs.chatService.enableOne('deactivateSlackUser')
+    stubs.chatService.enableOne('deactivateUser')
   })
 
   afterEach(function () {
     stubs.herokuService.disableOne('removeCollaboratorFromApps')
     stubs.gitHubService.disableOne('removeUserFromOrganizations')
-    stubs.chatService.disableOne('deactivateSlackUser')
+    stubs.chatService.disableOne('deactivateUser')
   })
 
   it('calls heroku, github, and slack and deactivates the user in idm', async function () {
@@ -47,7 +55,7 @@ describe(testContext(__filename), function () {
 
     expect(gitHubService.removeUserFromOrganizations).to.have.been.calledWith(this.user.handle, config.server.github.organizations)
     expect(herokuService.removeCollaboratorFromApps).to.have.been.calledWith(userWithStats, config.levels.permissions[userWithStats.stats.level].heroku.apps)
-    expect(chatService.deactivateSlackUser).to.have.been.calledWith(this.user.id)
+    expect(chatService.deactivateUser).to.have.been.calledWith(this.user.id)
     expect(result.active).to.eql(false)
   })
 })

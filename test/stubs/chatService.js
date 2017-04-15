@@ -6,13 +6,13 @@ const stubbedAPIs = stubServiceAPIs(chatService, {
   createChannelMessage: () => Promise.resolve({}),
   createDirectMessage: () => Promise.resolve({}),
   createResponseMessage: () => Promise.resolve({}),
+  deactivateUser: () => Promise.resolve(true),
   deleteChannel: () => Promise.resolve(true),
   inviteToChannel: () => Promise.resolve({}),
   sendChannelMessage: () => Promise.resolve({}),
   sendDirectMessage: () => Promise.resolve({}),
   sendResponseMessage: () => Promise.resolve({}),
   sendMultiPartyDirectMessage: () => Promise.resolve({}),
-  deactivateSlackUser: () => Promise.resolve(true),
 })
 
 export default stubbedAPIs
