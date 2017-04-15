@@ -267,6 +267,23 @@ describe(testContext(__filename), () => {
       expect(_getAvgClosure(list, 6)('a')).to.eq(4.5)
       expect(_getAvgClosure(list, 7)('a')).to.eq(5.5)
     })
+
+    it('averages the last 6 non-null values if there are nulls', () => {
+      const list2 = [
+        {userProjectStats: {a: 1}},
+        {userProjectStats: {a: null}},
+        {userProjectStats: {a: 3}},
+        {userProjectStats: {a: null}},
+        {userProjectStats: {a: 5}},
+        {userProjectStats: {a: 6}},
+        {userProjectStats: {a: 7}},
+        {userProjectStats: {a: 8}},
+        {userProjectStats: {a: 9}},
+        {userProjectStats: {a: 10}},
+      ]
+
+      expect(_getAvgClosure(list2, 5)('a')).to.eq(5)
+    })
   })
 
   describe('_getSumClosure()', () => {

@@ -105,10 +105,10 @@ export function addPointInTimeOverallStats(projectSummaries) {
 export function _getAvgClosure(list, i) {
   const endIndex = i + 1
   const startIndex = Math.max(0, endIndex - 6)
-  const values = list.slice(startIndex, endIndex)
-  return name => avg(
-    values.map(_ => _.userProjectStats[name])
-  )
+  return name => {
+    const values = list.filter(project => project.userProjectStats[name] !== null).slice(startIndex, endIndex)
+    return avg(values.map(_ => _.userProjectStats[name]))
+  }
 }
 
 export function _getSumClosure(list, i) {
