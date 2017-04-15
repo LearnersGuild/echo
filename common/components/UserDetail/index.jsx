@@ -2,7 +2,6 @@
 import React, {Component, PropTypes} from 'react'
 import moment from 'moment-timezone'
 import {Tab, Tabs} from 'react-toolbox'
-import Tooltip from 'react-toolbox/lib/tooltip'
 
 import ConfirmationDialog from 'src/common/components/ConfirmationDialog'
 import WrappedButton from 'src/common/components/WrappedButton'
@@ -16,8 +15,6 @@ import {mergeOverallStatsAndDeltas} from 'src/common/util/userProjectStatsCalcul
 
 import styles from './index.scss'
 import theme from './theme.scss'
-
-const TooltipButton = Tooltip(WrappedButton) // eslint-disable-line new-cap
 
 class UserDetail extends Component {
   constructor(props) {
@@ -47,6 +44,7 @@ class UserDetail extends Component {
   handleDeactivateUser() {
     const {onDeactivateUser} = this.props
     onDeactivateUser(this.props.user.id)
+    this.setState({showingDeactivateUserDialog: false})
   }
 
   renderSidebarStatNames(stats) {
@@ -102,7 +100,8 @@ class UserDetail extends Component {
       </a>
     ) : null
 
-    const deactivateUserDialog = (userCan(currentUser, 'deactivateUser')) ? (
+    const canBeDeactivated = user.active && userCan(currentUser, 'deactivateUser')
+    const deactivateUserDialog = canBeDeactivated ? (
       <ConfirmationDialog
         active={this.state.showingDeactivateUserDialog}
         confirmLabel="Yes, Deactivate"
@@ -111,18 +110,16 @@ class UserDetail extends Component {
         title=" "
         >
         <Flex justifyContent="center" alignItems="center">
-          Deactivate #{user.handle}?
+          Are you sure you want to deactivate {user.name} ({user.handle})?
         </Flex>
       </ConfirmationDialog>
     ) : null
 
-    const deactivateUserButton = (userCan(currentUser, 'deactivateUser')) ? (
-      <TooltipButton
+    const deactivateUserButton = canBeDeactivated ? (
+      <WrappedButton
         label="Deactivate"
         disabled={false}
         onClick={this.showDeactivateUserDialog}
-        tooltip=" "
-        tooltipDelay={1000}
         accent
         raised
         />
