@@ -1,5 +1,4 @@
-import {Response, Project, Player} from 'src/server/services/dataService'
-import {groupById} from 'src/server/util'
+import {Project, Player} from 'src/server/services/dataService'
 import {PROJECT_STATES} from 'src/common/models/project'
 
 export async function findProjectsToReview({coachId}) {
@@ -31,8 +30,6 @@ export async function findProjectsToReview({coachId}) {
 
   const allReviewableProjects = coachProjects
     .concat(otherProjects)
-
-  console.log(require('util').inspect({allReviewableProjects}, {depth: 5}))
 
   return allReviewableProjects
 }

@@ -89,20 +89,18 @@ export const useFixture = {
       }
     })
   },
-  createManyProjectThatNeedReview({projectsWithCoachIdCount, externalProjectsCount, coachId}) {
-    beforeEach(function () {
-      this.chapter = await factory.create('chapter')
-
-      for (let i = 0; i < projectsWithCurrentCoachId; i++) {
-        this.createProjectThatNeedReview({coachId, chapterId: this.chapter.id})
+  createManyProjectsThatNeedReviews({projectsWithCoachIdCount = 5, externalProjectsCount = 3, coachId, chapterId}) {
+    this.createManyProjectsThatNeedReviews = async function () {
+      for (let i = 0; i < projectsWithCoachIdCount; i++) {
+        await this.createProjectThatNeedReviews({coachId, chapterId})
       }
-      for (var i = 0; i < externalProjectsCount; i++) {
-        this.createProjectThatNeedReview({chapterId: this.chapter.id})
+      for (let i = 0; i < externalProjectsCount; i++) {
+        await this.createProjectThatNeedReviews({chapterId})
       }
-    })
+    }
   },
-  createProjectThatNeedReview({coachId, chapterId}) {
-    this.createProjectsWithReviews = async function() {
+  createProjectThatNeedReviews({coachId, chapterId}) {
+    this.createProjectThatNeedReviews = async function () {
       this.project = await factory.create('project', {
         chapterId,
         state: PROJECT_STATES.REVIEW,
@@ -112,23 +110,29 @@ export const useFixture = {
       this.cycle = await getCycleById(this.project.cycleId)
       await updateProject({
         id: this.project.id,
-        projectReviewSurveyId: this.survey.id
+        projectReviewSurveyId: this.survey.id,
         coachId: coachId ? coachId : factory.create('player').id
       })
 
-      for (let i = 0; i < Math.ceil(Math.random() * 5); i++) {
-        let player = await factory.create('player')
+      for (let i = 0; i < 3; i++) {
+        const player = await factory.create('player', {chapterId})
         await this.createReview(player, this.project, this.survey)
       }
     }
   },
   createReview(player, project, survey, responseAttrs = {}) {
-    const response = {...responseAttrs, respondentId: player.id, surveyId: survey.id, subjectId: project.id, value: 88}
-    return factory.create('response', {
-      ...response,
-      questionId: questionCompleteness.id
-    })
-  }
+    this.createReview = async function () {
+      const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
+      const question = {responseType: 'percentage', subjectType: 'project'}
+      const questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
+      const response = {...responseAttrs, respondentId: player.id, surveyId: survey.id, subjectId: project.id, value: 88}
+
+      return factory.create('response', {
+        ...response,
+        questionId: questionCompleteness.id
+      })
+    }
+  },
   createChapterInReflectionState() {
     beforeEach(function () {
       this.createChapterInReflectionState = async function () {
