@@ -1,10 +1,13 @@
 import React, {Component, PropTypes} from 'react'
+import {Tab, Tabs} from 'react-toolbox'
 
 import ContentHeader from 'src/common/components/ContentHeader'
 import ContentTable from 'src/common/components/ContentTable'
 import {Flex} from 'src/common/components/Layout'
 import {roundDecimal} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
+import {PROJECT_STATES} from 'src/common/models/project'
+
 
 const ProjectModel = {
   name: {type: String},
@@ -17,23 +20,41 @@ const ProjectModel = {
 }
 
 export default class ProjectList extends Component {
+  constructor(props){
+    super(props)
+    this.state = { index: 0 }
+    this.handleChangeTab = this.handleChangeTab = this.handleChangeTab.bind(this)
+  }
+
+  handleChangeTab(index){
+    this.setState({index})
+  }
+
+  buildProjectRow(project){
+    const memberHandles = (project.members || []).map(member => member.handle).join(', ')
+    const stats = project.stats || {}
+    const completeness = stats[STAT_DESCRIPTORS.PROJECT_COMPLETENESS]
+    const hours = stats[STAT_DESCRIPTORS.PROJECT_HOURS]
+    return {
+      memberHandles,
+      name: project.name,
+      coachHandle: (project.coach || {}).handle,
+      goalTitle: (project.goal || {}).title,
+      projectHours: !hours || isNaN(hours) ? '--' : String(hours),
+      completeness: !completeness || isNaN(completeness) ? '--' : `${roundDecimal(completeness)}%`,
+      cycleNumber: (project.cycle || {}).cycleNumber,
+    }
+  }
+
   render() {
     const {projects, allowSelect, allowImport, onClickImport, onSelectRow} = this.props
-    const projectData = projects.map(project => {
-      const memberHandles = (project.members || []).map(member => member.handle).join(', ')
-      const stats = project.stats || {}
-      const completeness = stats[STAT_DESCRIPTORS.PROJECT_COMPLETENESS]
-      const hours = stats[STAT_DESCRIPTORS.PROJECT_HOURS]
-      return {
-        memberHandles,
-        name: project.name,
-        coachHandle: (project.coach || {}).handle,
-        goalTitle: (project.goal || {}).title,
-        projectHours: !hours || isNaN(hours) ? '--' : String(hours),
-        completeness: !completeness || isNaN(completeness) ? '--' : `${roundDecimal(completeness)}%`,
-        cycleNumber: (project.cycle || {}).cycleNumber,
-      }
-    })
+
+    const projectsNeedingReviewData = projects
+      .filter(project => project.state === PROJECT_STATES.REVIEW)
+      .map(this.buildProjectRow)
+
+    const projectData = projects.map(this.buildProjectRow)
+
     const header = (
       <ContentHeader
         title="Projects"
@@ -41,7 +62,7 @@ export default class ProjectList extends Component {
         onClickButton={allowImport ? onClickImport : null}
         />
     )
-    const content = projectData.length > 0 ? (
+    const allProjects = projectData.length > 0 ? (
       <ContentTable
         model={ProjectModel}
         source={projectData}
@@ -51,11 +72,22 @@ export default class ProjectList extends Component {
     ) : (
       <div>No projects found.</div>
     )
+    const projectsNeedingReview = projectsNeedingReviewData.length > 0 ? (
+      <ContentTable
+      model={ProjectModel}
+      source={projectsNeedingReviewData}
+      allowSelect={allowSelect}
+      onSelectRow={allowSelect ? onSelectRow : null}
+      />
+    ) : (
+      <div>No projects currently need a review.</div>
+    )
+    console.log({projects})
     return (
-      <Flex column>
-        {header}
-        {content}
-      </Flex>
+      <Tabs index={this.state.index} onChange={this.handleChangeTab}>
+        <Tab label="Projects">{allProjects}</Tab>
+        <Tab label="Needs Review">{projectsNeedingReview}</Tab>
+      </Tabs>
     )
   }
 }

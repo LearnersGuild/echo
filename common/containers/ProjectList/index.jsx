@@ -4,7 +4,7 @@ import {push} from 'react-router-redux'
 
 import ProjectList from 'src/common/components/ProjectList'
 import {showLoad, hideLoad} from 'src/common/actions/app'
-import {findMyProjects, findProjects} from 'src/common/actions/project'
+import {findMyProjects, findProjects, findProjectsNeedingReview} from 'src/common/actions/project'
 import {findUsers} from 'src/common/actions/user'
 import {userCan} from 'src/common/util'
 
@@ -63,6 +63,10 @@ ProjectListContainer.fetchData = fetchData
 
 function fetchData(dispatch, props) {
   dispatch(findUsers())
+
+  if (userCan(props.currentUser, 'findProjectsToReview')) {
+    dispatch(findProjectsNeedingReview(props.currentUser.id))
+  }
 
   if (userCan(props.currentUser, 'listProjects')) {
     dispatch(findProjects())

@@ -20,4 +20,5 @@ export default {
   unlockSurvey: require('./unlockSurvey'),
   lockSurvey: require('./lockSurvey'),
   deleteProject: require('./deleteProject'),
+  findProjectsNeedingReview: require('./findProjectsNeedingReview')
 }

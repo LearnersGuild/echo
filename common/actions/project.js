@@ -13,6 +13,23 @@ export function findProjects(identifiers) {
   return _findProjects('findProjects', identifiers)
 }
 
+export function findProjectsNeedingReview(coachId) {
+  return {
+    types: [
+      types.FIND_PROJECTS_NEEDING_REVIEW_REQUEST,
+      types.FIND_PROJECTS_NEEDING_REVIEW_SUCCESS,
+      types.FIND_PROJECTS_NEEDING_REVIEW_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      return getGraphQLFetcher(dispatch, getState())(queries.findProjectsNeedingReview(coachId))
+        .then(graphQLResponse => graphQLResponse.data.findProjectsToReview)
+        .then(projects => normalize(projects, schemas.projects))
+    },
+    payload: {},
+  }
+}
+
 function _findProjects(queryName, variables) {
   return {
     types: [
