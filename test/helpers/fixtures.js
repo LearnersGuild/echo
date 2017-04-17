@@ -4,6 +4,7 @@ import Promise from 'bluebird'
 import nock from 'nock'
 
 import config from 'src/config'
+import {range} from 'src/common/util'
 import {
   getProjectById,
   updateProject,
@@ -89,49 +90,13 @@ export const useFixture = {
       }
     })
   },
-  createManyProjectsThatNeedReviews({projectsWithCoachIdCount = 5, externalProjectsCount = 3, coachId, chapterId}) {
-    this.createManyProjectsThatNeedReviews = async function () {
-      for (let i = 0; i < projectsWithCoachIdCount; i++) {
-        await this.createProjectThatNeedReviews({coachId, chapterId})
-      }
-      for (let i = 0; i < externalProjectsCount; i++) {
-        await this.createProjectThatNeedReviews({chapterId})
-      }
-    }
-  },
-  createProjectThatNeedReviews({coachId, chapterId}) {
-    this.createProjectThatNeedReviews = async function () {
-      this.project = await factory.create('project', {
-        chapterId,
-        state: PROJECT_STATES.REVIEW,
-      })
-
-      this.survey = await factory.create('survey')
-      this.cycle = await getCycleById(this.project.cycleId)
-      await updateProject({
-        id: this.project.id,
-        projectReviewSurveyId: this.survey.id,
-        coachId: coachId ? coachId : factory.create('player').id
-      })
-
-      for (let i = 0; i < 3; i++) {
-        const player = await factory.create('player', {chapterId})
-        await this.createReview(player, this.project, this.survey)
-      }
-    }
-  },
-  createReview(player, project, survey, responseAttrs = {}) {
-    this.createReview = async function () {
-      const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
-      const question = {responseType: 'percentage', subjectType: 'project'}
-      const questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
-      const response = {...responseAttrs, respondentId: player.id, surveyId: survey.id, subjectId: project.id, value: 88}
-
-      return factory.create('response', {
-        ...response,
-        questionId: questionCompleteness.id
-      })
-    }
+  createManyProjectsThatNeedReviews: async function ({coachId, chapterId, projectsWithCoachIdCount = 2, externalProjectsCount = 3}) {
+    await Promise.all(
+      range(0, projectsWithCoachIdCount).map(() => _createProjectThatNeedReviews({coachId, chapterId}))
+    )
+    await Promise.all(
+      range(0, externalProjectsCount).map(() => _createProjectThatNeedReviews({coachId, chapterId}))
+    )
   },
   createChapterInReflectionState() {
     beforeEach(function () {
@@ -254,4 +219,37 @@ export const useFixture = {
         labels: [],
       })
   },
+}
+
+async function _createProjectThatNeedReviews({coachId, chapterId}) {
+  const project = await factory.create('project', {
+    chapterId,
+    state: PROJECT_STATES.REVIEW
+  })
+
+  const survey = await factory.create('survey')
+  const cycle = await getCycleById(project.cycleId)
+  await updateProject({
+    id: project.id,
+    projectReviewSurveyId: survey.id,
+    coachId
+  })
+
+  const players = await factory.createMany('player', {chapterId}, 3)
+
+  await Promise.all(
+    players.map(player => _createReview(player, project, survey))
+  )
+}
+
+async function _createReview(player, project, survey, responseAttrs = {}) {
+  const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
+  const question = {responseType: 'percentage', subjectType: 'project'}
+  const questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
+  const response = {...responseAttrs, respondentId: player.id, surveyId: survey.id, subjectId: project.id, value: 88}
+
+  return factory.create('response', {
+    ...response,
+    questionId: questionCompleteness.id
+  })
 }

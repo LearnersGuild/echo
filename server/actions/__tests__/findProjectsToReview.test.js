@@ -9,17 +9,14 @@ import {truncateDBTables, useFixture} from 'src/test/helpers'
 
 import {findProjectsToReview} from '../findProjectsToReview'
 
-// const {
-//   CLOSED,
-//   REVIEW,
-// } = PROJECT_STATES
-
 describe(testContext(__dirname), function () {
   before(truncateDBTables)
   before(async function () {
+    this.timeout(10000)
     this.chapter = await factory.create('chapter')
-    this.coach = await factory.create('player', {chapterId: this.chapterId})
-    useFixture.createManyProjectsThatNeedReviews({
+    this.coach = await factory.create('player', {chapterId: this.chapter.id})
+
+    return useFixture.createManyProjectsThatNeedReviews({
       coachId: this.coach.id,
       chapterId: this.chapter.id
     })
@@ -36,7 +33,9 @@ describe(testContext(__dirname), function () {
     //   expect(project.coachId).to.eql(coach.id)
     // )
 
-    console.log(require('util').inspect({projectsToReviewForCoach}, {depth: 5}))
+    console.log('Coach id ====>', this.coach.id)
+    console.log('=======>', require('util').inspect({projectsToReviewForCoach}, {depth: 5}))
+
     expect(true).to.be.true
   })
 
