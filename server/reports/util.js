@@ -29,8 +29,8 @@ export async function lookupLatestCycleInChapter(chapterId) {
                 .max('cycleNumber')('cycleNumber')
 }
 
-export function writeCSV(rows, outStream, opts) {
-  const writer = csvWriter(opts || {})
+export function writeCSV(outStream, rows, options) {
+  const writer = csvWriter(options || {})
   writer.pipe(outStream)
   rows.forEach(row => writer.write(row))
   writer.end()

@@ -1,4 +1,3 @@
-import csvWriter from 'csv-write-stream'
 import Promise from 'bluebird'
 
 import config from 'src/config'
@@ -26,27 +25,20 @@ const {
   TECHNICAL_HEALTH,
 } = STAT_DESCRIPTORS
 
-export default function requestHandler(req, res) {
+export default async function playerCycleStats(req) {
   const {chapter} = req.query
-  const writer = csvWriter()
-  writer.pipe(res)
-
-  return runReport(writer, chapter)
-    .then(() => writer.end())
+  const rows = await createReportRows(chapter)
+  return {rows}
 }
 
-async function runReport(writer, chapterName = 'Oakland') {
+async function createReportRows(chapterName = 'Oakland') {
   const fetcher = graphQLFetcher(config.server.baseURL)
   const [chapter] = await Chapter.filter(row => row('name').match(`(?i)${chapterName}`))
   const players = await Player.filter({chapterId: chapter.id})
-
-  await Promise.mapSeries(players, async player => {
-    const playerCycles = await cyclesForPlayer(player, fetcher)
-    playerCycles.forEach(cycle => writer.write(cycle))
-  })
+  return Promise.mapSeries(players, async player => cycleStatsForPlayer(player, fetcher))
 }
 
-async function cyclesForPlayer(player, fetcher) {
+async function cycleStatsForPlayer(player, fetcher) {
   const result = await fetcher(getUserSummary(player.id))
   const {getUserSummary: userSummary} = result.data
   const {userProjectSummaries: projectSummaries} = userSummary

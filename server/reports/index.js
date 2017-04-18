@@ -2,13 +2,7 @@ import express from 'express'
 
 import {userCan} from 'src/common/util'
 import {LGNotAuthorizedError, LGBadRequestError} from 'src/server/util/error'
-import logger from 'src/server/util/logger'
-
-const app = new express.Router()
-
-app.get('/reports/:reportName', requestHandler)
-
-export default app
+import {writeCSV} from './util'
 
 const SENSITIVE_REPORTS = [
   'projectTeams',
@@ -20,23 +14,35 @@ const PUBLIC_REPORTS = [
   'countActivePlayersByLevel',
 ]
 
-function requestHandler(req, res, next) {
+const app = new express.Router()
+
+app.get('/reports/:reportName', async (req, res, next) => {
   const {reportName} = req.params
 
-  assertReportNameIsValid(reportName)
-  assertUserCanViewReport(req.user)
+  _assertReportNameIsValid(reportName)
+  _assertUserCanViewReport(req.user)
 
-  const reportHandler = require(`./${reportName}`)
-  const handleReport = typeof reportHandler === 'function' ? reportHandler : reportHandler.default
+  try {
+    let createReport = require(`./${reportName}`)
+    if (typeof createReport !== 'function') {
+      createReport = createReport.default
+    }
 
-  res.set('Content-Type', 'text/csv')
-  return handleReport(req, res).catch(err => {
-    logger.error(err)
-    next()
-  })
-}
+    const {rows, headers, filename} = await createReport(req, res)
+    const options = headers ? {headers} : null
 
-function assertUserCanViewReport(user, reportName) {
+    res.set('Content-Type', 'text/csv')
+    if (filename) {
+      res.setHeader('Content-disposition', `attachment; filename=${filename}`)
+    }
+
+    return writeCSV(res, rows, options)
+  } catch (err) {
+    next(err)
+  }
+})
+
+function _assertUserCanViewReport(user, reportName) {
   if (SENSITIVE_REPORTS.includes(reportName)) {
     if (!user || !userCan(user, 'viewSensitiveReports')) {
       throw new LGNotAuthorizedError()
@@ -44,9 +50,11 @@ function assertUserCanViewReport(user, reportName) {
   }
 }
 
-function assertReportNameIsValid(name) {
+function _assertReportNameIsValid(name) {
   const validReportNames = SENSITIVE_REPORTS.concat(PUBLIC_REPORTS)
   if (!validReportNames.includes(name)) {
     throw new LGBadRequestError(`Invalid report name: "${name}". Valid reports are ${validReportNames.join(', ')}`)
   }
 }
+
+export default app

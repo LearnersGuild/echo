@@ -6,7 +6,6 @@ import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {
   lookupChapterId,
   lookupLatestCycleInChapter,
-  writeCSV,
   shortenedPlayerId,
 } from './util'
 import {
@@ -47,26 +46,19 @@ const DEFAULT_CHAPTER = 'Oakland'
 
 const r = connect()
 
-export default function requestHandler(req, res) {
-  return runReport(req.query, res)
-    .then(result => writeCSV(result, res, {headers: HEADERS}))
-}
-
-async function runReport(args) {
-  const {chapterName} = args
-
+export default async function playerStats(req) {
+  const {chapterName} = req.query
   const chapterId = await lookupChapterId(chapterName || DEFAULT_CHAPTER)
   const cycleNumber = await lookupLatestCycleInChapter(chapterId)
-
-  return await statReport({chapterId, cycleNumber})
+  const rows = await createReportRows({chapterId, cycleNumber})
+  return {rows, headers: HEADERS}
 }
 
-async function statReport(params) {
-  const {chapterId, cycleNumber} = params
+function createReportRows({chapterId, cycleNumber}) {
   const latestProjIds = recentProjectIds(recentCycleIds(chapterId, cycleNumber))
   const reviewCount = projReviewCounts()
 
-  return await r.table('players')
+  return r.table('players')
     .filter(r.row('chapterId').eq(chapterId)
              .and(r.row('active').eq(true)
              .and(r.row('stats').hasFields('projects'))))

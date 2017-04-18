@@ -2,29 +2,29 @@ import {connect} from 'src/db'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {findVotesForCycle} from 'src/server/db/vote'
 import {getPoolByCycleIdAndPlayerId} from 'src/server/db/pool'
-import {lookupChapterId, lookupCycleId, writeCSV, getPlayerInfoByIds, parseCycleReportArgs} from './util'
+import {lookupChapterId, lookupCycleId, getPlayerInfoByIds, parseCycleReportArgs} from './util'
 
 const r = connect()
 
-export default function requestHandler(req, res) {
-  return runReport(req.query, res)
-    .then(result => writeCSV(result, res))
-}
+export default async function playerTeams(req) {
+  const options = parseCycleReportArgs(req.query)
 
-export async function runReport(args) {
-  const options = parseCycleReportArgs(args)
   const {cycleNumber, chapterName} = options
   let {chapterId} = options
-
   if (!chapterId) {
     chapterId = await lookupChapterId(chapterName)
   }
   const cycleId = await lookupCycleId(chapterId, cycleNumber)
 
+  const rows = await createReportRows({chapterId, cycleId, cycleNumber})
+  return {rows}
+}
+
+export async function createReportRows({chapterId, cycleId, cycleNumber}) {
   const playerIds = await r.table('players').filter({chapterId})('id')
   const playerInfo = await getPlayerInfoByIds(playerIds)
 
-  const query = r.expr(playerInfo).do(playerInfoExpr => {
+  return r.expr(playerInfo).do(playerInfoExpr => {
     const getInfo = id => playerInfoExpr(id).default({id, name: '?', email: '?', handle: '?'})
     return r.table('projects')
       .filter({chapterId})
@@ -59,8 +59,6 @@ export async function runReport(args) {
       .merge(row => ({playerId: row('id')})).without('id')
       .orderBy('projectName')
   })
-
-  return await query
 }
 
 function _mergePoolName(cycleId) {

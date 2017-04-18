@@ -1,5 +1,3 @@
-import csvWriter from 'csv-write-stream'
-
 import config from 'src/config'
 import graphQLFetcher from 'src/server/util/graphql'
 import {Player} from 'src/server/services/dataService'
@@ -7,16 +5,12 @@ import {mapById} from 'src/server/util'
 
 const NO_LEVEL = 'N/A'
 
-export default function requestHandler(req, res) {
-  const {chapter} = req.query
-  const writer = csvWriter()
-  writer.pipe(res)
-
-  return runReport(writer, chapter)
-    .then(() => writer.end())
+export default async function countActivePlayersByLevel() {
+  const rows = await createReportRows()
+  return {rows}
 }
 
-async function runReport(writer) {
+async function createReportRows() {
   const playerLevelGroups = (await Player.group(row => row('stats')('level')))
     .reduce((result, group) => {
       const {group: level, reduction: players} = group
@@ -24,12 +18,14 @@ async function runReport(writer) {
       return result
     }, new Map())
 
+  const result = []
   const activePlayerLevelGroups = await removeInactivePlayers(playerLevelGroups)
   for (const [level, players] of activePlayerLevelGroups.entries()) {
     if (level !== NO_LEVEL) {
-      writer.write({level, count: players.length})
+      result.push({level, count: players.length})
     }
   }
+  return result
 }
 
 async function removeInactivePlayers(playerLevelGroups) {

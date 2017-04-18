@@ -6,7 +6,6 @@ import findUsers from 'src/server/actions/findUsers'
 import {Project, Response} from 'src/server/services/dataService'
 import {mapById} from 'src/server/util'
 import {LGBadRequestError} from 'src/server/util/error'
-import {writeCSV} from './util'
 
 const HEADERS = [
   'subject_handle',
@@ -21,7 +20,7 @@ const HEADERS = [
   'question_body',
 ]
 
-export default async function handleRequest(req, res) {
+export default async function playerRetroFeedback(req) {
   const {handle} = req.query
   if (!handle) {
     throw new LGBadRequestError('Must provide user handle (ex: ?handle=supercooluser)')
@@ -33,13 +32,15 @@ export default async function handleRequest(req, res) {
     throw new LGBadRequestError(`User not found for handle ${userHandle}`)
   }
 
-  const reportRows = await generateReport(user)
-
-  res.setHeader('Content-disposition', `attachment; filename=playerRetroFeedback_${userHandle}.csv`)
-  return writeCSV(reportRows, res, {headers: HEADERS})
+  const rows = await createReportRows(user)
+  return {
+    rows,
+    headers: HEADERS,
+    filename: `playerRetroFeedback_${userHandle}.csv`
+  }
 }
 
-async function generateReport(user) {
+async function createReportRows(user) {
   const projects = await findUserProjects(user.id)
 
   return Promise.reduce(projects, async (result, project) => {
