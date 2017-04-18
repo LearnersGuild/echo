@@ -90,12 +90,12 @@ export const useFixture = {
       }
     })
   },
-  createManyProjectsThatNeedReviews: async function ({coachId, chapterId, projectsWithCoachIdCount = 2, externalProjectsCount = 3}) {
+  createManyProjectsThatNeedReviews: async function ({coachId, chapterId, projectsWithCoachIdCount = 2, externalProjectsCount = 3}) { // eslint-disable-line object-shorthand
     await Promise.all(
-      range(0, projectsWithCoachIdCount).map(() => _createProjectThatNeedReviews({coachId, chapterId}))
+      range(0, projectsWithCoachIdCount).map((x, projectReviewCount) => _createProjectThatNeedReviews({coachId, chapterId, projectReviewCount}))
     )
     await Promise.all(
-      range(0, externalProjectsCount).map(() => _createProjectThatNeedReviews({coachId, chapterId}))
+      range(0, externalProjectsCount).map((x, projectReviewCount) => _createProjectThatNeedReviews({chapterId, projectReviewCount}))
     )
   },
   createChapterInReflectionState() {
@@ -221,21 +221,20 @@ export const useFixture = {
   },
 }
 
-async function _createProjectThatNeedReviews({coachId, chapterId}) {
+async function _createProjectThatNeedReviews({coachId, chapterId, projectReviewCount}) {
   const project = await factory.create('project', {
     chapterId,
     state: PROJECT_STATES.REVIEW
   })
 
   const survey = await factory.create('survey')
-  const cycle = await getCycleById(project.cycleId)
   await updateProject({
     id: project.id,
     projectReviewSurveyId: survey.id,
     coachId
   })
 
-  const players = await factory.createMany('player', {chapterId}, 3)
+  const players = await factory.createMany('player', {chapterId}, projectReviewCount)
 
   await Promise.all(
     players.map(player => _createReview(player, project, survey))

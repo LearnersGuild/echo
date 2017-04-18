@@ -3,16 +3,13 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import factory from 'src/test/factories'
 import {truncateDBTables, useFixture} from 'src/test/helpers'
-// import {STAT_DESCRIPTORS} from 'src/common/models/stat'
-// import {PROJECT_STATES} from 'src/common/models/project'
-// import {updateProject} from 'src/server/db/project'
-
 import {findProjectsToReview} from '../findProjectsToReview'
+import {PROJECT_STATES} from 'src/common/models/project'
+const {CLOSED, REVIEW} = PROJECT_STATES
 
 describe(testContext(__dirname), function () {
   before(truncateDBTables)
   before(async function () {
-    this.timeout(10000)
     this.chapter = await factory.create('chapter')
     this.coach = await factory.create('player', {chapterId: this.chapter.id})
 
@@ -22,55 +19,50 @@ describe(testContext(__dirname), function () {
     })
   })
 
-  it('should list out the projects with the current users coach id.', async function () {
+  it('should sort projects by coachId first then external review count(least to most)', async function () {
     const projectsToReviewForCoach = await findProjectsToReview({coachId: this.coach.id})
+    const eachProjectsReponseCount = [0, 1, 0, 1, 2]
 
-    // Should the function return a different result if user is a coach???
-    // expect(projectNames(projectsToReviewForCoach)).to.be.an('array')
-    // expect(openProject2).to.be.an('object')
-    //
-    // projectsToReviewForCoach.forEach(project =>
-    //   expect(project.coachId).to.eql(coach.id)
-    // )
+    expect(projectsToReviewForCoach[0].coachId).to.eql(this.coach.id)
+    expect(projectsToReviewForCoach[1].coachId).to.eql(this.coach.id)
 
-    console.log('Coach id ====>', this.coach.id)
-    console.log('=======>', require('util').inspect({projectsToReviewForCoach}, {depth: 5}))
+    projectsToReviewForCoach.forEach((project, i) => {
+      // check that the rest of the projects don't have the current user as a coach
+      if (i > 1) expect(projectsToReviewForCoach[i].coachId).to.not.eql(this.coach.id)
 
-    expect(true).to.be.true
+      expect(project.projectReviewSurvey.responses.length).to.eql(eachProjectsReponseCount[i])
+      expect(project.playerIds).to.not.include(this.coach.id)
+    })
   })
 
-  // beforeEach(truncateDBTables)
-  //
-  // it('should return no projects if the are none to review.', async function () {
-  //   const [coach] = await factory.createMany('player', 1)
-  //   await factory.createMany('project', {state: CLOSED, coachId: coach.id}, 2)
-  //
-  //   const projectsToReviewForCoach = await findProjectsToReview({coachId: coach.id})
-  //   const uncompleteReviews = projectsToReviewForCoach
-  //     .filter(project => project.state === REVIEW)
-  //
-  //   expect(uncompleteReviews.length).to.eql(0)
-  // })
-  //
-  // it('should return 1 projects out of three', async function () {
-  //   const [coach] = await factory.createMany('player', 1)
-  //   await factory.createMany('project', {state: CLOSED, coachId: coach.id}, 2)
-  //
-  //   const projectsToReviewForCoach = await findProjectsToReview({coachId: coach.id})
-  //   const uncompleteReviews = projectsToReviewForCoach
-  //     .filter(project => project.state === REVIEW)
-  //
-  //   expect(uncompleteReviews.length).to.eql(1)
-  // })
-  //
-  // it('should return the projects that the user coached first.', async function () {
-  //   const [coach] = await factory.createMany('player', 1)
-  //   await factory.createMany('project', {state: REVIEW}, 5)
-  //   await factory.createMany('project', {state: REVIEW, coachId: coach.id}, 2)
-  //
-  //   const projectsToReviewForCoach = await findProjectsToReview({coachId: coach.id})
-  //
-  //   expect(projectsToReviewForCoach[0].coachId).to.eql(coach.id)
-  //   expect(projectsToReviewForCoach[1].coachId).to.eql(coach.id)
-  // })
+  it('should not return a project that a coach was on', async function () {
+    const projectsToReviewForCoach = await findProjectsToReview({coachId: this.coach.id})
+    await factory.create('project', {state: REVIEW, playerIds: [this.coach.id]})
+
+    projectsToReviewForCoach.forEach(project =>
+      expect(project.playerIds).to.not.deep.include(this.coach.id)
+    )
+  })
+
+  it('should not return closed projects', async function () {
+    const projectsToReviewForCoach = await findProjectsToReview({coachId: this.coach.id})
+    const closedProject = await factory.create('project', {state: CLOSED})
+
+    projectsToReviewForCoach.forEach(project =>
+      expect(project.id).to.not.eql(closedProject.id)
+    )
+  })
+
+  it('should not return projects from other chapters', async function () {
+    const projectsToReviewForCoach = await findProjectsToReview({coachId: this.coach.id})
+    const chapter = await factory.create('chapter')
+    const projectFromOtherChapter = await factory.create('project', {
+      state: CLOSED,
+      chapterId: chapter.id
+    })
+
+    projectsToReviewForCoach.forEach(project =>
+      expect(project.chapterId).to.not.eql(projectFromOtherChapter.chapterId)
+    )
+  })
 })
