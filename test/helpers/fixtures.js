@@ -4,6 +4,7 @@ import Promise from 'bluebird'
 import nock from 'nock'
 
 import config from 'src/config'
+import {range} from 'src/common/util'
 import {
   getProjectById,
   updateProject,
@@ -88,6 +89,14 @@ export const useFixture = {
         })
       }
     })
+  },
+  createManyProjectsThatNeedReviews: async function ({coachId, chapterId, projectsWithCoachIdCount = 2, externalProjectsCount = 3}) { // eslint-disable-line object-shorthand
+    await Promise.all(
+      range(0, projectsWithCoachIdCount).map((x, projectReviewCount) => _createProjectThatNeedReviews({coachId, chapterId, projectReviewCount}))
+    )
+    await Promise.all(
+      range(0, externalProjectsCount).map((x, projectReviewCount) => _createProjectThatNeedReviews({chapterId, projectReviewCount}))
+    )
   },
   createChapterInReflectionState() {
     beforeEach(function () {
@@ -241,4 +250,36 @@ export const useFixture = {
       global.window = this.window
     })
   }
+}
+
+async function _createProjectThatNeedReviews({coachId, chapterId, projectReviewCount}) {
+  const project = await factory.create('project', {
+    chapterId,
+    state: PROJECT_STATES.REVIEW
+  })
+
+  const survey = await factory.create('survey')
+  await updateProject({
+    id: project.id,
+    projectReviewSurveyId: survey.id,
+    coachId
+  })
+
+  const players = await factory.createMany('player', {chapterId}, projectReviewCount)
+
+  await Promise.all(
+    players.map(player => _createReview(player, project, survey))
+  )
+}
+
+async function _createReview(player, project, survey, responseAttrs = {}) {
+  const statCompleteness = await factory.create('stat', {descriptor: STAT_DESCRIPTORS.PROJECT_COMPLETENESS})
+  const question = {responseType: 'percentage', subjectType: 'project'}
+  const questionCompleteness = await factory.create('question', {...question, body: 'completeness', statId: statCompleteness.id})
+  const response = {...responseAttrs, respondentId: player.id, surveyId: survey.id, subjectId: project.id, value: 88}
+
+  return factory.create('response', {
+    ...response,
+    questionId: questionCompleteness.id
+  })
 }
