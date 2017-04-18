@@ -282,7 +282,7 @@ describe(testContext(__filename), () => {
         {userProjectStats: {a: 10}},
       ]
 
-      expect(_getAvgClosure(list2, 5)('a')).to.eq(5)
+      expect(_getAvgClosure(list2, 5)('a')).to.eq(3.75)
     })
   })
 
