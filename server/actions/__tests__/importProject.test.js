@@ -6,6 +6,7 @@ import factory from 'src/test/factories'
 import {truncateDBTables, useFixture} from 'src/test/helpers'
 import {expectArraysToContainTheSameElements} from 'src/test/helpers/expectations'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
+import {PROJECT_STATES} from 'src/common/models/project'
 
 import importProject from '../importProject'
 
@@ -50,6 +51,17 @@ describe(testContext(__filename), function () {
       useFixture.nockGetGoalInfo(this.goalNumber)
       const result = importProject({...this.importData, playerIdentifiers: undefined})
       return expect(result).to.eventually.be.rejectedWith(/must specify at least one user/)
+    })
+
+    it('throws an error if the project is no longer IN_PROGRESS', async function () {
+      const newProject = await factory.create('project', {
+        ...this.importData,
+        state: PROJECT_STATES.REVIEW,
+      })
+      useFixture.nockIDMFindUsers(this.users)
+      useFixture.nockGetGoalInfo(this.goalNumber)
+      const result = importProject({...this.importData, projectIdentifier: newProject.name})
+      return expect(result).to.eventually.be.rejectedWith(/not allowed.*IN_PROGRESS/)
     })
 
     it('creates a new project a projectIdentifier is not specified', async function () {

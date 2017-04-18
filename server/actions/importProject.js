@@ -1,3 +1,4 @@
+import {PROJECT_STATES} from 'src/common/models/project'
 import logger from 'src/server/util/logger'
 import findUsers from 'src/server/actions/findUsers'
 import getChapter from 'src/server/actions/getChapter'
@@ -86,6 +87,9 @@ async function _parseProjectInput(data) {
   if (projectIdentifier) {
     project = await getProject(projectIdentifier)
     if (project) {
+      if (project.state !== PROJECT_STATES.IN_PROGRESS) {
+        throw new LGBadRequestError(`Import for project ${projectIdentifier} not allowed because it is no longer ${PROJECT_STATES.IN_PROGRESS}`)
+      }
       if (project.chapterId !== chapter.id) {
         throw new LGBadRequestError(`Project ${projectIdentifier} chapter ID ${project.chapterId} does not match chapter ${chapterIdentifier} ID ${chapter.id}`)
       }
