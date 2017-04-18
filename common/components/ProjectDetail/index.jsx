@@ -6,11 +6,12 @@ import FontIcon from 'react-toolbox/lib/font_icon'
 import moment from 'moment-timezone'
 import {Tab, Tabs} from 'react-toolbox'
 
+import {PROJECT_STATES} from 'src/common/models/project'
 import ContentHeader from 'src/common/components/ContentHeader'
 import ContentTable from 'src/common/components/ContentTable'
 import ProjectUserSummary from 'src/common/components/ProjectUserSummary'
 import {Flex} from 'src/common/components/Layout'
-import {safeUrl, objectValuesAreAllNull, getStatRenderer} from 'src/common/util'
+import {safeUrl, urlParts, objectValuesAreAllNull, getStatRenderer} from 'src/common/util'
 import {STAT_DESCRIPTORS} from 'src/common/models/stat'
 import {renderGoalAsString} from 'src/common/models/goal'
 
@@ -41,13 +42,15 @@ class ProjectDetail extends Component {
   }
 
   renderHeader() {
-    const {project: {name, goal, artifactURL}, allowEdit, onClickEdit} = this.props
+    const {project: {name, goal, state}, allowEdit, onClickEdit} = this.props
 
+    const projectIsStillEditable = state === PROJECT_STATES.IN_PROGRESS
     const editButton = allowEdit ? (
       <IconButton
         icon="mode_edit"
         onClick={onClickEdit}
         primary
+        disabled={!projectIsStillEditable}
         />
     ) : null
 
@@ -58,19 +61,9 @@ class ProjectDetail extends Component {
       </Flex>
     )
 
-    const artifactLinkUrl = safeUrl(artifactURL)
-    const artifactLink = artifactLinkUrl ? (
-      <Link to={artifactLinkUrl} target="_blank">
-        <FontIcon className={styles.fontIcon} value="open_in_new"/>
-      </Link>
-    ) : null
-
     const subtitle = goal ? (
       <div className={styles.subtitle}>
-        <div>{renderGoalAsString(goal)}{' '}{artifactLink}</div>
-        <div className={styles.subtitleLinkAlt}>
-          {artifactURL && !artifactLink ? artifactURL : null}
-        </div>
+        <div>{renderGoalAsString(goal)}</div>
       </div>
     ) : null
 
@@ -96,11 +89,22 @@ class ProjectDetail extends Component {
       )
     })
 
+    const {artifactURL} = project
+    const artifactLinkUrl = safeUrl(artifactURL)
+    const artifactHeader = artifactLinkUrl ? <div>Artifact</div> : null
+    const artifactLink = artifactLinkUrl ? (
+      <Link to={artifactLinkUrl} target="_blank">
+        <span>{`${urlParts(artifactLinkUrl).hostname} `}</span>
+        <FontIcon className={styles.fontIcon} value="open_in_new"/>
+      </Link>
+    ) : null
+
     return (
       <div className={styles.details}>
         <div className={styles.section}>
           <Flex className={styles.list}>
             <Flex className={styles.listLeftCol} flexDirection="column">
+              {artifactHeader}
               <div>Members</div>
               <div>Coach</div>
               <div>Chapter</div>
@@ -114,6 +118,7 @@ class ProjectDetail extends Component {
               <div>Hours</div>
             </Flex>
             <Flex className={styles.listRightCol} flexDirection="column">
+              {artifactLink}
               <div>{memberList}</div>
               <div>{project.coach && project.coach.handle || '--'}</div>
               <div>{chapter ? chapter.name : '--'}</div>

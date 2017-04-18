@@ -1,4 +1,4 @@
-/* global window */
+/* global document, window */
 export {default as getGraphQLFetcher} from './getGraphQLFetcher'
 export {default as getOwnerAndRepoFromGitHubURL} from './getOwnerAndRepoFromGitHubURL'
 export {default as mergeEntities} from './mergeEntities'
@@ -71,6 +71,16 @@ export function safeUrl(url) {
   } catch (err) {
     return null
   }
+}
+
+export function urlParts(url) {
+  if (typeof document === 'undefined') {
+    return require('url').parse(url)
+  }
+  const parser = document.createElement('a')
+  parser.href = url
+  const {protocol, hostname, port, pathname, search, hash, host} = parser
+  return {protocol, hostname, port, pathname, search, hash, host}
 }
 
 export function objectValuesAreAllNull(obj) {
