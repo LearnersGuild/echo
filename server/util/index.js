@@ -1,5 +1,9 @@
 import fs from 'fs'
+import config from 'src/config'
 import autoloader from 'auto-loader'
+import raven from 'raven'
+
+const sentry = new raven.Client(config.server.sentryDSN)
 
 export function loadJSON(filePath, validateItem = item => item) {
   return new Promise((resolve, reject) => {
@@ -31,6 +35,13 @@ export function autoloadFunctions(directoryPath) {
     }
     return result
   }, {})
+}
+
+export function logRejection(promise, message = '') {
+  return promise.catch(err => {
+    console.warn(message, err.stack || err)
+    sentry.captureException(err)
+  })
 }
 
 export {

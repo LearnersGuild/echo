@@ -3,6 +3,8 @@ import {connect} from 'src/db'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
 import {STAT_DESCRIPTORS, PRO_PLAYER_STATS_BASELINE} from 'src/common/models/stat'
 import {addUserToTeam} from 'src/server/services/gitHubService'
+import {logRejection} from 'src/server/util'
+
 import {
   Moderator,
   Player,
@@ -107,7 +109,7 @@ async function addUserToChapterGitHubTeam(user, gameUser) {
   const chapter = await r.table('chapters').get(gameUser.chapterId).run()
   console.log(`Adding ${user.handle} to GitHub team ${chapter.channelName} (${chapter.githubTeamId})`)
 
-  return addUserToTeam(user.handle, chapter.githubTeamId)
+  return logRejection(addUserToTeam(user.handle, chapter.githubTeamId), 'Error while adding user to chapter GitHub team.')
 }
 
 function notifyCRMSystemOfPlayerSignUp(user) {
@@ -120,7 +122,7 @@ function notifyCRMSystemOfPlayerSignUp(user) {
     return Promise.resolve()
   }
 
-  return crmService.notifyContactSignedUp(user.email)
+  return logRejection(crmService.notifyContactSignedUp(user.email), 'Error while contacting CRM System.')
 }
 
 function _userHasRole(user, role) {
