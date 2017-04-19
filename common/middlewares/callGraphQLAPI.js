@@ -53,7 +53,7 @@ export default function callGraphQLAPI({dispatch, getState}) {
         }
       })
       .catch(err => {
-        console.error(err.stack)
+        console.error(err)
         return dispatch(Object.assign({}, payload, {
           error: err,
           type: failureType,

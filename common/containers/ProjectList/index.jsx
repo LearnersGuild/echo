@@ -4,7 +4,7 @@ import {push} from 'react-router-redux'
 
 import ProjectList from 'src/common/components/ProjectList'
 import {showLoad, hideLoad} from 'src/common/actions/app'
-import {findMyProjects, findProjects, findProjectsNeedingReview} from 'src/common/actions/project'
+import {findMyProjects, findProjects, findProjectsToReview} from 'src/common/actions/project'
 import {findUsers} from 'src/common/actions/user'
 import {userCan} from 'src/common/util'
 
@@ -35,10 +35,11 @@ class ProjectListContainer extends Component {
   }
 
   render() {
-    const {isBusy, currentUser, projects} = this.props
+    const {isBusy, currentUser, projects, projectsNeedingReview} = this.props
     return isBusy ? null : (
       <ProjectList
         projects={projects}
+        projectsNeedingReview={projectsNeedingReview}
         allowSelect={userCan(currentUser, 'viewProject')}
         allowImport={userCan(currentUser, 'importProject')}
         onSelectRow={this.handleSelectRow}
@@ -50,6 +51,7 @@ class ProjectListContainer extends Component {
 
 ProjectListContainer.propTypes = {
   projects: PropTypes.array.isRequired,
+  projectsNeedingReview: PropTypes.array.isRequired,
   isBusy: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   currentUser: PropTypes.object.isRequired,
@@ -62,10 +64,14 @@ ProjectListContainer.propTypes = {
 ProjectListContainer.fetchData = fetchData
 
 function fetchData(dispatch, props) {
+  // TODO: only load _either_ the projects needing review _or_ all projects
+  // depending on what is in props.location.hash
+
+  // TODO: since everyone can listProjects and findProjectsToReview, let's ignore all of the findMyProjects shit
   dispatch(findUsers())
 
   if (userCan(props.currentUser, 'findProjectsToReview')) {
-    dispatch(findProjectsNeedingReview(props.currentUser.id))
+    dispatch(findProjectsToReview(props.currentUser.id))
   }
 
   if (userCan(props.currentUser, 'listProjects')) {
@@ -76,18 +82,25 @@ function fetchData(dispatch, props) {
 }
 
 function mapStateToProps(state) {
+  // this value needs to be passed in to use: "ownProps"
   const {app, auth, projects, users} = state
-  const {projects: projectsById} = projects
+  // TODO: container should just take one array, projects, that is _either_ the ones
+  // needing review _or_ all of them (depending on ownProps.location.hash)
+  const {projects: projectsById, projectIdsAll, projectIdsNeedingReview} = projects
   const {users: usersById} = users
 
-  const projectsWithUsers = Object.values(projectsById).map(project => {
+  const projectWithUser = projectId => {
+    const project = projectsById[projectId]
     const coach = usersById[project.coachId]
     const members = (project.playerIds || []).map(userId => (usersById[userId] || {}))
     return {...project, members, coach}
-  })
+  }
+
+  const allProjectsWithUsers = projectIdsAll.map(projectWithUser)
+  const projectsNeedingReview = projectIdsNeedingReview.map(projectWithUser)
 
   // sort by cycle, title, name
-  const projectList = projectsWithUsers.sort((p1, p2) => {
+  const allProjects = allProjectsWithUsers.sort((p1, p2) => {
     return (((p2.cycle || {}).cycleNumber || 0) - ((p1.cycle || {}).cycleNumber || 0)) ||
       (((p1.goal || {}).title || '').localeCompare((p2.goal || {}).title || '')) ||
       p1.name.localeCompare(p2.name)
@@ -97,7 +110,8 @@ function mapStateToProps(state) {
     isBusy: projects.isBusy || users.isBusy,
     loading: app.showLoading,
     currentUser: auth.currentUser,
-    projects: projectList,
+    projects: allProjects,
+    projectsNeedingReview,
   }
 }
 

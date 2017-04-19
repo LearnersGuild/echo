@@ -13,16 +13,16 @@ export function findProjects(identifiers) {
   return _findProjects('findProjects', identifiers)
 }
 
-export function findProjectsNeedingReview(coachId) {
+export function findProjectsToReview(playerId) {
   return {
     types: [
-      types.FIND_PROJECTS_NEEDING_REVIEW_REQUEST,
-      types.FIND_PROJECTS_NEEDING_REVIEW_SUCCESS,
-      types.FIND_PROJECTS_NEEDING_REVIEW_FAILURE,
+      types.FIND_PROJECTS_THAT_NEED_REVIEW_REQUEST,
+      types.FIND_PROJECTS_THAT_NEED_REVIEW_SUCCESS,
+      types.FIND_PROJECTS_THAT_NEED_REVIEW_FAILURE,
     ],
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {
-      return getGraphQLFetcher(dispatch, getState())(queries.findProjectsNeedingReview(coachId))
+      return getGraphQLFetcher(dispatch, getState())(queries.findProjectsToReview(playerId))
         .then(graphQLResponse => graphQLResponse.data.findProjectsToReview)
         .then(projects => normalize(projects, schemas.projects))
     },

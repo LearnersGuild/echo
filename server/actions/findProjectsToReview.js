@@ -3,28 +3,37 @@ import {PROJECT_STATES} from 'src/common/models/project'
 
 const {REVIEW} = PROJECT_STATES
 
-export async function findProjectsToReview({coachId}) {
-  const {chapterId} = await Player.get(coachId)
-  // can you pass filter an object with two params
-  const reviewableProjects = Project.filter({state: REVIEW, chapterId})
-
-  const sortByNumExternalReviews = projects => projects
-    // Not sure about this line below. does it work.
-    .filter(project => project('playerIds').contains(coachId).not())
+export async function findProjectsToReview(playerId) {
+  const {chapterId} = await Player.get(playerId)
+  const reviewableProjects = Project
+    .filter({state: REVIEW, chapterId})
+    .filter(project => project('playerIds').contains(playerId).not())
     .getJoin({
       projectReviewSurvey: {
         responses: true
       }
     })
-    .orderBy(project => project('projectReviewSurvey')('responses').count())
 
-  const coachProjects = await sortByNumExternalReviews(
-    reviewableProjects.filter(project => project('coachId').eq(coachId))
-  )
+  const toProjectWithReviewSummary = project => ({
+    ...project,
+    // reviewSummary: {
+    //   externalReviewCount: project.projectReviewSurvey.responses.length,
+    //   currentUserHasReviewed: false, // FIXME: use real info here
+    //   coachHasReviewed: false,
+    // },
+  })
 
-  const otherProjects = await sortByNumExternalReviews(
-    reviewableProjects.filter(project => project('coachId').ne(coachId))
-  )
+  const coachProjects = (
+    await reviewableProjects
+      .filter(project => project('coachId').eq(playerId))
+  ).map(toProjectWithReviewSummary)
 
-  return coachProjects.concat(otherProjects)
+  const otherProjects = (
+    await reviewableProjects
+      .filter(project => project('coachId').ne(playerId))
+  ).map(toProjectWithReviewSummary)
+
+  const projectsNeedingReview = coachProjects.concat(otherProjects)
+
+  return projectsNeedingReview
 }
