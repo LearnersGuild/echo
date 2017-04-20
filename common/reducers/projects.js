@@ -33,7 +33,7 @@ export default function projects(state = initialState, action) {
     case GET_PROJECT_SUCCESS:
       {
         const projects = mergeEntities(state.projects, action.response.entities.projects)
-        const projectIdsAll = Object.keys(projects)
+        const projectIdsAll = Object.keys(action.response.entities.projects)
         return Object.assign({}, state, {
           isBusy: false,
           projects,

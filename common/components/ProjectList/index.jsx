@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react'
 import {Tab, Tabs} from 'react-toolbox'
 
-// import ContentHeader from 'src/common/components/ContentHeader'
+import ContentHeader from 'src/common/components/ContentHeader'
 import ContentTable from 'src/common/components/ContentTable'
 // import {Flex} from 'src/common/components/Layout'
 import {roundDecimal} from 'src/common/util'
@@ -18,15 +18,17 @@ const ProjectModel = {
   completeness: {title: 'Completeness', type: String},
 }
 
+const TABS = ['all', 'needing-review']
+
 export default class ProjectList extends Component {
   constructor(props) {
     super(props)
-    this.state = {index: 0}
-    this.handleChangeTab = this.handleChangeTab = this.handleChangeTab.bind(this)
+    this.handleSelectTab = this.handleSelectTab = this.handleSelectTab.bind(this)
   }
 
-  handleChangeTab(index) {
-    this.setState({index})
+  handleSelectTab(index) {
+    const {onSelectTab} = this.props
+    onSelectTab(TABS[index])
   }
 
   buildProjectRow(project) {
@@ -46,46 +48,45 @@ export default class ProjectList extends Component {
   }
 
   render() {
-    const {projects, projectsNeedingReview, allowSelect, onSelectRow} = this.props
-    // These value need to be imported from the this.props object: "allowImport", "onClickImport"
-    const allProjectsData = projects.map(this.buildProjectRow)
-    const projectsNeedingReviewData = projectsNeedingReview.map(this.buildProjectRow)
+    const {
+      projects,
+      allowSelect,
+      allowImport,
+      selectedTab,
+      onSelectRow,
+      onClickImport,
+    } = this.props
 
-    // const header = (
-    //   <ContentHeader
-    //     title="Projects"
-    //     buttonIcon={allowImport ? 'add_circle' : null}
-    //     onClickButton={allowImport ? onClickImport : null}
-    //     />
-    // )
-    const renderedAllProjects = allProjectsData.length > 0 ? (
+    const projectsData = projects.map(this.buildProjectRow)
+
+    const header = (
+      <ContentHeader
+        title="Projects"
+        buttonIcon={allowImport ? 'add_circle' : null}
+        onClickButton={allowImport ? onClickImport : null}
+        />
+    )
+    const renderedProjects = projectsData.length > 0 ? (
       <ContentTable
         model={ProjectModel}
-        source={allProjectsData}
+        source={projectsData}
         allowSelect={allowSelect}
         onSelectRow={allowSelect ? onSelectRow : null}
         />
     ) : (
       <div>No projects found.</div>
     )
-    const renderedProjectsNeedingReview = projectsNeedingReviewData.length > 0 ? (
-      <ContentTable
-        model={ProjectModel}
-        source={projectsNeedingReviewData}
-        allowSelect={allowSelect}
-        onSelectRow={allowSelect ? onSelectRow : null}
-        />
-      ) : (
-        <div>No projects currently need a review.</div>
-      )
+    const selectedIndex = TABS.indexOf(selectedTab)
+    const tabIndex = selectedIndex >= 0 ? selectedIndex : 0
 
     return (
-      // TODO: use props.location.hash property (string) to determine which tab is selected
-      // TODO: handleChangeTab should just append the correct hash to the route (https://github.com/reactjs/react-router-redux#what-if-i-want-to-issue-navigation-events-via-redux-actions)
-      <Tabs index={this.state.index} onChange={this.handleChangeTab}>
-        <Tab label="Projects">{renderedAllProjects}</Tab>
-        <Tab label="Needs Review">{renderedProjectsNeedingReview}</Tab>
-      </Tabs>
+      <div>
+        {header}
+        <Tabs index={tabIndex} onChange={this.handleSelectTab}>
+          <Tab label="All">{renderedProjects}</Tab>
+          <Tab label="Needing Review">{renderedProjects}</Tab>
+        </Tabs>
+      </div>
     )
   }
 }
@@ -110,11 +111,10 @@ export const ProjectPropType = PropTypes.shape({
 
 ProjectList.propTypes = {
   projects: PropTypes.arrayOf(ProjectPropType),
-  projectNeedingReview: PropTypes.arrayOf(ProjectPropType),
   allowSelect: PropTypes.bool,
   allowImport: PropTypes.bool,
+  selectedTab: PropTypes.string,
   onSelectRow: PropTypes.func,
   onClickImport: PropTypes.func,
-  onChangeTab: PropTypes.func,
-  projectsNeedingReview: PropTypes.array,
+  onSelectTab: PropTypes.func.isRequired,
 }
