@@ -8,6 +8,7 @@ export default function getRetrospectiveSurvey(projectName) {
           project {
             id,
             name,
+            artifactURL,
             chapter {
               id,
               name,

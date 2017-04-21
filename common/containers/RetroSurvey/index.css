@@ -36,6 +36,11 @@
   font-size: 1.1em;
 }
 
+.disabledListItemText {
+  opacity: 0.5;
+  font-style: italic;
+}
+
 .confirmation {
   padding: 20px 0;
 }

@@ -65,6 +65,9 @@ class RetroSurveyContainer extends Component {
   }
 
   handleClickProject(project) {
+    if (project.artifactURL === null) {
+      return event => event.preventDefault()
+    }
     return () => this.props.navigate(`/retro/${project.name}`)
   }
 
@@ -205,6 +208,14 @@ class RetroSurveyContainer extends Component {
   }
 
   renderProjectList() {
+    const renderProjectListItem = project => {
+      const projectInfo = `${project.name} (cycle ${project.cycle.cycleNumber})`
+      return project.artifactURL ? (
+        <a href="" onClick={this.handleClickProject(project)}>{projectInfo}</a>
+      ) : (
+        <span className={styles.disabledListItemText}>{projectInfo} - Project Artifact Needed</span>
+      )
+    }
     return (
       <div className={styles.projectList}>
         <div className={styles.header}>
@@ -216,11 +227,10 @@ class RetroSurveyContainer extends Component {
           {this.props.projects.map((project, i) => (
             <div key={i} className={styles.projectListItem}>
               {'• '}
-              <a href="" onClick={this.handleClickProject(project)}>
-                {`${project.name} (cycle ${project.cycle.cycleNumber})`}
-              </a>
+              {renderProjectListItem(project)}
             </div>
-          ))}
+            )
+          )}
         </div>
       </div>
     )
@@ -338,10 +348,12 @@ function mapStateToProps(state) {
   let initialValues = null
 
   let showProjects = false
-  let projects = null
+  const projects = surveys.map(r => r.project).sort((p1, p2) => (
+    (p1.cycle || {}).cycleNumber - (p2.cycle || {}).cycleNumber
+  ))
 
   // TODO: make more performant by parsing survey only when data changes
-  if (surveys.length === 1) {
+  if (surveys.length === 1 && surveys[0].project.artifactURL !== null) {
     try {
       const survey = surveys[0]
       surveyId = survey.id
@@ -357,11 +369,8 @@ function mapStateToProps(state) {
     }
   } else {
     showSurvey = false
-    if (surveys.length > 1) {
+    if (surveys.length > 0) {
       showProjects = true
-      projects = surveys.map(r => r.project).sort((p1, p2) => (
-        (p1.cycle || {}).cycleNumber - (p2.cycle || {}).cycleNumber
-      ))
     }
   }
 
