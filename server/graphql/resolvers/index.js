@@ -14,7 +14,7 @@ import findUserProjectEvaluations from 'src/server/actions/findUserProjectEvalua
 import handleSubmitSurvey from 'src/server/actions/handleSubmitSurvey'
 import handleSubmitSurveyResponses from 'src/server/actions/handleSubmitSurveyResponses'
 import handleCompleteSurvey from 'src/server/actions/handleCompleteSurvey'
-import {Chapter, Cycle, Project, Survey} from 'src/server/services/dataService'
+import {Chapter, Cycle, Project, Survey, Response} from 'src/server/services/dataService'
 import {LGBadRequestError, LGNotAuthorizedError} from 'src/server/util/error'
 import {mapById, roundDecimal, userCan} from 'src/common/util'
 
@@ -45,7 +45,13 @@ const {
   TECHNICAL_HEALTH,
 } = STAT_DESCRIPTORS
 
-export function resolveChapter(parent) {
+export function resolveProjectResponses(parent) {
+  return parent.projectResponses || _safeResolveAsync(
+    Response.get(parent.projectReviewSurveyId || null)
+  )
+}
+
+export function resolveChapter(parent) {                                                                          
   return parent.chapter || _safeResolveAsync(
     Chapter.get(parent.chapterId || null)
   )

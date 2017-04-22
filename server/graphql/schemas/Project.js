@@ -10,6 +10,7 @@ import {
   resolveProjectGoal,
   resolveProjectPlayers,
   resolveProjectStats,
+  resolveProjectResponses,
 } from 'src/server/graphql/resolvers'
 
 export default new GraphQLObjectType({
@@ -34,7 +35,8 @@ export default new GraphQLObjectType({
       coach: {type: UserProfile, description: 'The project coach', resolve: resolveProjectCoach},
       players: {type: new GraphQLList(UserProfile), description: 'The project members', resolve: resolveProjectPlayers},
       artifactURL: {type: GraphQLURL, description: 'The URL pointing to the output of this project'},
-      // externalReviewCount: {type: GraphQLInt, description: 'number of external reviews', resolve: () => 3},
+      projectResponses: {type: new GraphQLList(GraphQLString), description: 'Number of reviews submitted for this project', resolve: resolveProjectResponses},
+      projectReviewSurveyId: {type: GraphQLString, description: 'Return the review survey id'},
       closedAt: {type: GraphQLDateTime, description: 'When this project was closed'},
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
       updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},
