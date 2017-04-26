@@ -36,6 +36,7 @@ export default function app(state = initialState, action) {
         console.error(action.type, action.message)
         return {
           ...state,
+          showLoading: false,
           isBusy: false,
           errors: appendErrorMessage(state, action.message),
         }
