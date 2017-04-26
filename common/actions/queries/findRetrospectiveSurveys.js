@@ -8,6 +8,7 @@ export default function findRetrospectiveSurveys(filters) {
           project {
             id,
             name,
+            artifactURL,
             chapter {
               id,
               name,

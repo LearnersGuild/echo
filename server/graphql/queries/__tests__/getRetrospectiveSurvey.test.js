@@ -6,7 +6,7 @@ import nock from 'nock'
 
 import factory from 'src/test/factories'
 import {withDBCleanup, runGraphQLQuery, useFixture, mockIdmUsersById} from 'src/test/helpers'
-import {Survey} from 'src/server/services/dataService'
+import {Survey, Project} from 'src/server/services/dataService'
 
 import fields from '../index'
 
@@ -15,18 +15,18 @@ describe(testContext(__filename), function () {
   useFixture.buildSurvey()
 
   beforeEach('Setup Retrospective Survey Data', async function () {
-    const teamQuestion = await factory.create('question', {
+    this.teamQuestion = await factory.create('question', {
       responseType: 'relativeContribution',
       subjectType: 'team'
     })
-    const playerQuestion = await factory.create('question', {
+    this.playerQuestion = await factory.create('question', {
       body: 'What is one thing {{subject}} did well?',
       responseType: 'text',
       subjectType: 'player'
     })
     await this.buildSurvey([
-      {questionId: teamQuestion.id, subjectIds: () => this.project.playerIds},
-      {questionId: playerQuestion.id, subjectIds: () => [this.project.playerIds[1]]},
+      {questionId: this.teamQuestion.id, subjectIds: () => this.project.playerIds},
+      {questionId: this.playerQuestion.id, subjectIds: () => [this.project.playerIds[1]]},
     ])
     this.currentUser = await factory.build('user', {id: this.project.playerIds[0]})
     await mockIdmUsersById(this.project.playerIds)
@@ -45,6 +45,7 @@ describe(testContext(__filename), function () {
             project {
               id
               name
+              artifactURL
               chapter { id name }
               cycle { id cycleNumber }
             }
@@ -71,6 +72,7 @@ describe(testContext(__filename), function () {
       expect(result.data.getRetrospectiveSurvey.project.cycle.cycleNumber).to.exist
       expect(result.data.getRetrospectiveSurvey.project.chapter.id).to.eq(this.project.chapterId)
       expect(result.data.getRetrospectiveSurvey.project.chapter.name).to.exist
+      expect(result.data.getRetrospectiveSurvey.project.artifactURL).to.exist
     })
 
     it('treats the question body like a template', async function () {
@@ -113,6 +115,40 @@ describe(testContext(__filename), function () {
         {currentUser: this.currentUser}
       )
       expect(promise).to.be.rejectedWith(/no retrospective survey/)
+    })
+
+    it('throws an error when the project artifact is not set', async function () {
+      this.project = await Project.get(this.project.id).update({artifactURL: null})
+      const promise = runGraphQLQuery(
+        `query($projectName: String) {
+          getRetrospectiveSurvey(projectName: $projectName) {
+            id
+            project {
+              id
+              name
+              artifactURL
+              chapter { id name }
+              cycle { id cycleNumber }
+            }
+            questions {
+              id subjectType responseType body
+              subjects { id name handle }
+              response {
+                values {
+                  subjectId
+                  value
+                }
+              }
+            }
+          }
+        }
+        `,
+        fields,
+        {projectName: this.project.name},
+        {currentUser: this.currentUser}
+      )
+
+      return expect(promise).to.be.rejectedWith(/until the project artifact is set/)
     })
   })
 })
