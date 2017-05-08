@@ -24,6 +24,7 @@ const CAPABILITY_ROLES = {
   updateProject: ['moderator'],
   listProjects: GAME_VIEW,
   findProjects: GAME_VIEW,
+  findProjectsToReview: GAME_VIEW,
   viewProject: GAME_VIEW,
   viewProjectStats: GAME_VIEW,
   viewProjectSummary: GAME_VIEW,
