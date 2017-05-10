@@ -1,6 +1,7 @@
 import config from 'src/config'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
 import findOpenRetroSurveysForPlayer from 'src/server/actions/findOpenRetroSurveysForPlayer'
+import findUnreviewedProjectsForCoach from 'src/server/actions/findUnreviewedProjectsForCoach'
 import {
   Player,
   Vote,
@@ -35,6 +36,12 @@ async function _voteForGoals(user, goalDescriptors, responseURL) {
   const openRetroSurveys = await findOpenRetroSurveysForPlayer(player.id)
   if (openRetroSurveys.length !== 0) {
     throw new LGBadRequestError(`You must complete all pending retrospective surveys before voting for a new project! For a list of open retros see ${config.server.baseURL}/retro.`)
+  }
+
+  const unreviewedProjects = await findUnreviewedProjectsForCoach(player.id)
+  if (unreviewedProjects.length !== 0) {
+    const unreviewedNames = unreviewedProjects.map(project => project.name).join(', ')
+    throw new LGBadRequestError(`You must review the projects for which you were a coach before voting for a new project! These projects have yet to be reviewed: ${unreviewedNames}`)
   }
 
   const cycle = cycles[0]
