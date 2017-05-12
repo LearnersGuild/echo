@@ -42,6 +42,7 @@ export default function getRetrospectiveSurvey(projectName) {
               sum
               length
               integer
+              required
             }
           },
         },

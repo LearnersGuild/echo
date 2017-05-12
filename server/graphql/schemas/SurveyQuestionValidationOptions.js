@@ -3,7 +3,7 @@ import {GraphQLObjectType} from 'graphql/type'
 
 export default new GraphQLObjectType({
   name: 'SurveyQuestionValidationOptions',
-  description: 'Suvey question validation options',
+  description: 'Survey question validation options',
   fields: () => {
     return {
       min: {type: GraphQLInt, description: 'The minimum allowed value or length'},

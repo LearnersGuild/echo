@@ -115,6 +115,7 @@ describe(testContext(__filename), function () {
         assert.equal(field.name, 'qId', 'Field name should be same as question ID')
         assert.equal(field.label, 'these are the things', 'Field label should be same as question body')
         assert.equal(field.hint, 'do the things', 'Field hint should be same as question response instructions')
+        assert.deepEqual(field.validate, {required: true})
 
         assert.equal(field.options.length, 2, 'Field should contain exactly two option items')
         assert.deepEqual(field.options[0], {
