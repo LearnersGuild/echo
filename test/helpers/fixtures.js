@@ -17,7 +17,7 @@ export const useFixture = {
         this.cycleId = this.project.cycleId
         this.question = await factory.create('question', questionAttrs)
         this.survey = await factory.create('survey', {
-          questionRefs: [{questionId: this.question.id, subjectIds: subjectIds()}]
+          questionRefs: [{questionId: this.question.id, subjectIds: subjectIds(), optional: this.question.optional}]
         })
         await Project.get(this.project.id).update({
           retrospectiveSurveyId: this.survey.id,

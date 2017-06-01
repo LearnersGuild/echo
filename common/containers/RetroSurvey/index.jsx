@@ -69,9 +69,14 @@ class RetroSurveyContainer extends Component {
   handleClickSubmit(surveyFormValues) {
     try {
       // merge submitted form values with fuller field types
-      const mergedFields = this.props.surveyFields.map(field => (
-        {...field, value: surveyFormValues[field.name]}
-      ))
+      const mergedFields = this.props.surveyFields.map(field => {
+        return ({
+          ...field,
+          value: !surveyFormValues[field.name] ?
+            'No value provided' :
+            surveyFormValues[field.name]
+        })
+      })
 
       const {currentUser, surveyId, surveyGroupIndex} = this.props
       const defaults = {surveyId, respondentId: currentUser.id}

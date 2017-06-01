@@ -14,32 +14,46 @@
   defaultQuestionRefs:
     -
       questionId: cacefe2b-9193-41e1-9886-a0dd61fe9159
+      optional: false
     -
       questionId: 65cad3c5-e9e9-4284-999b-3a72c481c55e
+      optional: false
     -
       questionId: cd350a14-8a70-4593-9801-30cedab3dc75
+      optional: false
     -
       questionId: 60fb5922-6be7-4e76-aaa3-16d574489833
+      optional: false
     -
       questionId: 57bc052d-1a7e-4faa-9617-11a93619ff6e
+      optional: false
     -
       questionId: 4b3b9383-b107-4e16-995e-4617d8f9e0f9
+      optional: false
     -
       questionId: bb2927c9-a16d-49e9-8c3a-dd308a17315a
+      optional: false
     -
       questionId: 16d10fb3-463e-4d0a-b621-1557d9cfbeb9
+      optional: false
     -
       questionId: d495c218-15d0-4af2-9139-d1dcb4fb1182
+      optional: false
     -
       questionId: 206a8b26-28e7-489e-94cd-5fe3871869d2
+      optional: false
     -
       questionId: bbace690-b4c6-435f-a2f8-23bf95c97754
+      optional: false
     -
       questionId: 09dff295-c339-4326-8e21-71cf332e0895
+      optional: false
     -
       questionId: 767609ac-3e92-4c57-9d58-8e211891eec1
+      optional: false
     -
       questionId: ac3c2fa4-3baa-4343-8bc9-490202006adc
+      optional: true
 -
   id: 106c8683-4936-4c9b-b874-a70cfdd8ce20
   descriptor: projectReview
@@ -47,3 +61,4 @@
     -
       name: completeness
       questionId: 65cad3c5-e9e9-4284-999b-3a72c481c55e
+      optional: false
