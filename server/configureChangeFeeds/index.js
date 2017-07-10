@@ -5,6 +5,7 @@ import cycleStateChanged from './cycleStateChanged'
 import projectCreated from './projectCreated'
 import surveySubmitted from './surveySubmitted'
 import voteSubmitted from './voteSubmitted'
+import memberPhaseChanged from './memberPhaseChanged'
 
 export default function configureChangeFeeds() {
   const queueService = require('src/server/services/queueService')
@@ -20,6 +21,7 @@ export default function configureChangeFeeds() {
     projectCreated(queueService.getQueue('projectCreated'))
     surveySubmitted(queueService.getQueue('surveySubmitted'))
     voteSubmitted(queueService.getQueue('voteSubmitted'))
+    memberPhaseChanged(queueService.getQueue('memberPhaseChanged'))
   } catch (err) {
     console.error(`ERROR Configuring Change Feeds: ${err.stack ? err.stack : err}`)
     throw (err)
