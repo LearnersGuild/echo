@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import getMemberInfo from 'src/server/actions/getMemberInfo'
 import {Cycle, Phase, Project} from 'src/server/services/dataService'
 
-export default async function sendCycleInitializedAnnouncements(cycleId) {
+export default async function sendCycleReflectionAnnouncements(cycleId) {
   const [cycle, phases] = await Promise.all([
     await Cycle.get(cycleId),
     await Phase.filter({hasReflections: true}),

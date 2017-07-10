@@ -8,7 +8,7 @@ export function start() {
   jobService.processJobs('cycleReflectionStarted', processCycleReflectionStarted, notifyModeratorsAboutError)
 }
 
-async function processCycleReflectionStarted(cycle) {
+export async function processCycleReflectionStarted(cycle) {
   console.log(`Starting reflection for cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId}`)
 
   await reloadDefaultModelData()
