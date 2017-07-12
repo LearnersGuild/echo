@@ -12,11 +12,11 @@ export default function memberPhaseChanged(memberPhaseChangedQueue) {
 }
 
 function _getFeedProcessor(memberPhaseChangedQueue) {
-  return ({new_val: phaseNumber}) => {
+  return ({old_val, new_val}) => {
     const jobOpts = {
       attempts: 3,
       backoff: {type: 'fixed', delay: 5000},
     }
-    memberPhaseChangedQueue.add(phaseNumber, jobOpts)
+    memberPhaseChangedQueue.add({old_val, new_val}, jobOpts)
   }
 }
