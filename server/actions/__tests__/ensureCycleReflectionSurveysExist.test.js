@@ -11,7 +11,7 @@ import {
   ensureRetrospectiveSurveysExist,
 } from '../ensureCycleReflectionSurveysExist'
 
-describe(testContext(__filename), function () {
+describe.only(testContext(__filename), function () {
   beforeEach(resetDB)
 
   describe('ensureRetrospectiveSurveysExist', function () {
