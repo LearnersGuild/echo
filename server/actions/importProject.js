@@ -120,7 +120,7 @@ async function _validatePhase(phaseId, {goal}) {
   const phase = await Phase.get(phaseId)
   if (isFinite(goal.phase) && goal.phase !== phase.number) {
     throw new LGBadRequestError(
-      `Goal ${goal.number} is a Phase ${goal.phase} project and cannot be linked to a project in Phase ${phase.number}.`
+      `Goal ${goal.number} is a Phase ${goal.phase} goal and cannot be linked to a project for members in Phase ${phase.number}.`
     )
   }
   return phase

@@ -55,7 +55,7 @@ class ProjectForm extends Component {
     const projectName = project ? project.name : null
 
     const submitDisabled = Boolean(pristine || submitting || invalid)
-    const deleteDisabled = Boolean(project.retrospectiveSurveyId)
+    const deleteDisabled = project ? Boolean(project.retrospectiveSurveyId) : true
     const deleteDisabledTooltip = deleteDisabled ? 'Cannot delete a project that is not in progress' : null
 
     const title = formType === FORM_TYPES.CREATE ? 'Create Project' : `Edit ${projectName}`

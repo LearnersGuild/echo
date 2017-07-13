@@ -11,6 +11,11 @@ export function start() {
 export async function processMemberPhaseChangeCompleted({old_val: oldMember, new_val: newMember}) {
   const chatService = require('src/server/services/chatService')
 
+  if (!newMember.phaseId) {
+    console.log('Member removed from all phases; phase change handling aborted')
+    return
+  }
+
   const memberInfo = (await getMemberInfo([newMember.id]))[0]
   const newPhase = await Phase.get(newMember.phaseId)
 
@@ -21,9 +26,11 @@ export async function processMemberPhaseChangeCompleted({old_val: oldMember, new
   // update voting pools if voting is still open for the cycle
   const currentCycle = await getLatestCycleForChapter(newMember.chapterId)
   if (currentCycle.state === GOAL_SELECTION) {
-    const oldPhase = await Phase.get(oldMember.phaseId)
-    if (oldPhase.hasVoting === true) {
-      // TODO: remove from voting pool and delete submitted votes (if any)
+    if (oldMember.phaseId) {
+      const oldPhase = await Phase.get(oldMember.phaseId)
+      if (oldPhase.hasVoting === true) {
+        // TODO: remove from voting pool and delete submitted votes (if any)
+      }
     }
     if (newPhase.hasVoting === true) {
       const poolMember = await addMemberToPoolInCycle(currentCycle, newMember)
