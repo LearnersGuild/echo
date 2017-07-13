@@ -3,21 +3,7 @@ import Promise from 'bluebird'
 import {range, unique, groupById, shuffle} from 'src/common/util'
 import {Pool, PoolMember} from 'src/server/services/dataService'
 import findActiveVotingMembersInChapter from 'src/server/actions/findActiveVotingMembersInChapter'
-import {MAX_POOL_SIZE} from 'src/common/models/pool'
-
-const POOL_NAMES = [
-  'Red',
-  'Orange',
-  'Yellow',
-  'Green',
-  'Blue',
-  'Indigo',
-  'Violet',
-  'Black',
-  'White',
-  'Silver',
-  'Gold',
-]
+import {POOL_NAMES, MAX_POOL_SIZE} from 'src/common/models/pool'
 
 export default async function createPoolsForCycle(cycle) {
   const members = await findActiveVotingMembersInChapter(cycle.chapterId)

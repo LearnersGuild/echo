@@ -13,11 +13,11 @@ export default function poolModel(thinky) {
         .uuid(4)
         .allowNull(false),
 
-      name: string()
-        .allowNull(false),
-
       phaseId: string()
         .uuid(4)
+        .allowNull(false),
+
+      name: string()
         .allowNull(false),
 
       createdAt: date()

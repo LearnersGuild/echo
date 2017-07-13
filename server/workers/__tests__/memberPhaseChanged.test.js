@@ -3,9 +3,11 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
-import {resetDB} from 'src/test/helpers'
+import {resetDB, useFixture, mockIdmUsersById} from 'src/test/helpers'
+import {GOAL_SELECTION} from 'src/common/models/cycle'
+import {PoolMember} from 'src/server/services/dataService'
 
-describe.only(testContext(__filename), function () {
+describe(testContext(__filename), function () {
   beforeEach(resetDB)
 
   beforeEach(function () {
@@ -16,24 +18,51 @@ describe.only(testContext(__filename), function () {
     stubs.chatService.disable()
   })
 
-  describe('processPhaseChangeCompleted()', function () {
+  describe('processMemberPhaseChangeCompleted()', function () {
     const chatService = require('src/server/services/chatService')
 
-    const {processPhaseChangeCompleted} = require('../memberPhaseChanged')
+    const {processMemberPhaseChangeCompleted} = require('../memberPhaseChanged')
 
     describe('when a member changes phase', function () {
-      beforeEach(async function () {
-        this.user = await factory.build('user')
-        this.phase = await factory.create('phase', {hasVoting: false})
+      beforeEach('set up member phase data', async function () {
+        const [chapter, phase] = await Promise.all([
+          factory.create('chapter'),
+          factory.create('phase', {number: 3, hasVoting: true}),
+        ])
+        const [cycle, member, phaseOld] = await Promise.all([
+          factory.create('cycle', {chapterId: chapter.id, state: GOAL_SELECTION}),
+          factory.create('member', {chapterId: chapter.id, phaseId: phase.id}),
+          factory.create('phase', {number: phase.number - 1, hasVoting: false}),
+        ])
+        useFixture.nockClean()
+        this.user = (await mockIdmUsersById([member.id]))[0]
+        this.pool = factory.create('pool', {cycleId: cycle.id, phaseId: phase.id})
+        this.chapter = chapter
+        this.cycle = cycle
+        this.phase = phase
+        this.phaseOld = phaseOld
+        this.member = member
+        this.memberOld = Object.assign({}, member, {phaseId: phaseOld.id})
+
+        await processMemberPhaseChangeCompleted({
+          old_val: this.memberOld, // eslint-disable-line camelcase
+          new_val: this.member, // eslint-disable-line camelcase
+        })
       })
 
-      it('sends a message to user that they have changed phases', async function () {
-        console.log('=====this.user, this.phase======', this.user, this.phase)
-        await processPhaseChangeCompleted(this.phase.number)
-        expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.user.handle,
-            `${this.user.handle} is now in phase ${this.phase.number}`
-          )
+      it('invites the member to the new phase\'s channel', async function () {
+        expect(chatService.inviteToChannel).to.have.been
+          .calledWith(this.phase.channelName, [this.user.handle])
+      })
+
+      it('sends a welcome DM to the member', async function () {
+        expect(chatService.sendDirectMessage).to.have.been
+          .calledWithMatch(this.user.handle, `Welcome to Phase ${this.phase.number}!`)
+      })
+
+      it('adds the member to a voting pool for the phase', async function () {
+        const poolMember = await PoolMember.filter({poolId: this.pool.id, memberId: this.member.id})
+        expect(poolMember).to.be.ok
       })
     })
   })
