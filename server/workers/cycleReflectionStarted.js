@@ -13,7 +13,8 @@ export async function processCycleReflectionStarted(cycle) {
 
   await reloadDefaultModelData()
   await ensureCycleReflectionSurveysExist(cycle)
-  await sendCycleReflectionAnnouncements(cycle)
+  console.log('LOG ONE inside processCycleReflectionStarted!')
+  await sendCycleReflectionAnnouncements(cycle.id)
 
   console.log(`Cycle ${cycle.cycleNumber} of chapter ${cycle.chapterId} reflection successfully started`)
 }
