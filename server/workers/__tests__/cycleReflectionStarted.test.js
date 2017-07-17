@@ -25,32 +25,39 @@ describe.only(testContext(__filename), function () {
         beforeEach('setup data & mocks', async function () {
           useFixture.nockClean()
           this.cycle = await factory.create('cycle', {state: 'PRACTICE'})
-          this.phase = await factory.create('phase', {
+          this.phaseWithRetrospective = await factory.create('phase', {
             hasRetrospective: true,
             channelName: '#phase-channel-4'
           })
-          this.project = await factory.createMany('project', {
-            phaseId: this.phase.id,
+          this.phaseNoRetrospective = await factory.create('phase', {
+            hasRetrospective: false,
+            channelName: '#phase-channel-2'
+          })
+          this.projectWithRetrospective = await factory.createMany('project', {
+            phaseId: this.phaseWithRetrospective.id,
             cycleId: this.cycle.id,
           }, 3)
-          // console.log('Project Object!!!!!!', this.project)
-          this.users = await mockIdmUsersById(this.project.memberIds)
+          this.projectNoRetrospective = await factory.createMany('project', {
+            phaseId: this.phaseNoRetrospective.id,
+            cycleId: this.cycle.id,
+          }, 3)
+          this.usersWithRetrospective = await mockIdmUsersById(this.projectWithRetrospective.memberIds)
         })
 
         it('sends the cycle reflection announcement in direct message to phase project members', async function () {
-          const memberHandles = this.users.map(u => u.handle)
-          // console.log('this.cycle in TEST!!!!', this.cycle)
+          const memberHandles = this.usersWithRetrospective.map(u => u.handle)
           await processCycleReflectionStarted(this.cycle)
           expect(chatService.sendDirectMessage).to.have.been
             .calledWithMatch(memberHandles, 'Time to start your reflection process for cycle')
         })
 
         it('sends the cycle reflection announcement in phase channel', async function () {
-          // console.log('channelName:', this.phase.channelName)
           await processCycleReflectionStarted(this.cycle)
           expect(chatService.sendChannelMessage).to.have.been
-            .calledWithMatch(this.phase.channelName, 'Time to start your reflection process for cycle')
+            .calledWithMatch(this.phaseWithRetrospective.channelName, 'Time to start your reflection process for cycle')
         })
+
+        it('does not send a cycle reflection announcement to ')
       })
     })
   })

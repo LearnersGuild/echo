@@ -8,9 +8,7 @@ export default async function sendCycleReflectionAnnouncements(cycleId) {
     await Phase.filter({hasRetrospective: true})
   ])
   const message = _buildMessage(cycle)
-  // console.log('MESSAGE AND PHASES:', phases, message)
   await Promise.each(phases, async phase => {
-    // console.log('HI FROM INSIDE THE PROMISE!!!!')
     await _sendAnnouncementToPhaseChannel(cycle, phase, message)
     await _sendAnnouncementToPhaseMembers(cycle, phase, message)
   })
@@ -27,13 +25,13 @@ async function _sendAnnouncementToPhaseChannel(cycle, phase, message) {
 
 async function _sendAnnouncementToPhaseMembers(cycle, phase, message) {
   const chatService = require('src/server/services/chatService')
-  const phaseProjects =  await Project.filter({phaseId: phase.id})
+  const phaseProjects =
+    await Project.filter({phaseId: phase.id})
   const phaseProjectMemberIds = Object.keys(phaseProjects.reduce((result, project) => {
     result[project.memberIds] = true // in case anyone is in multiple projects
     return result
   }, {}))
   const phaseMembers = await getMemberInfo(phaseProjectMemberIds)
-  // console.log('phaseMembers!!!!!!!!!!!!!!!!!!!', phaseMembers, phaseProjectMemberIds)
   const phaseMemberHandles = phaseMembers.map(u => u.handle)
   try {
     await chatService.sendDirectMessage(phaseMemberHandles, message)
