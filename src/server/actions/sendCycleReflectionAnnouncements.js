@@ -2,10 +2,10 @@ import Promise from 'bluebird'
 import getMemberInfo from 'src/server/actions/getMemberInfo'
 import {Cycle, Phase, Project} from 'src/server/services/dataService'
 
-export default async function sendCycleInitializedAnnouncements(cycleId) {
+export default async function sendCycleReflectionAnnouncements(cycleId) {
   const [cycle, phases] = await Promise.all([
     await Cycle.get(cycleId),
-    await Phase.filter({hasReflections: true}),
+    await Phase.filter({hasRetrospective: true})
   ])
   const message = _buildMessage(cycle)
   await Promise.each(phases, async phase => {
@@ -16,7 +16,6 @@ export default async function sendCycleInitializedAnnouncements(cycleId) {
 
 async function _sendAnnouncementToPhaseChannel(cycle, phase, message) {
   const chatService = require('src/server/services/chatService')
-
   try {
     await chatService.sendChannelMessage(phase.channelName, message)
   } catch (err) {
@@ -26,8 +25,8 @@ async function _sendAnnouncementToPhaseChannel(cycle, phase, message) {
 
 async function _sendAnnouncementToPhaseMembers(cycle, phase, message) {
   const chatService = require('src/server/services/chatService')
-
-  const phaseProjects = Project.filter({phaseId: phase})
+  const phaseProjects =
+    await Project.filter({phaseId: phase.id})
   const phaseProjectMemberIds = Object.keys(phaseProjects.reduce((result, project) => {
     result[project.memberIds] = true // in case anyone is in multiple projects
     return result

@@ -16,10 +16,12 @@ const queues = {
 }
 
 function sendChannelMessage(channelName, message, options) {
+  console.log('sendChannelMessage Arguments!!!!', channelName, message)
   return _queueMessage('channel', channelName, message, options)
 }
 
 function sendDirectMessage(userName, message, options) {
+  console.log('sendDirectMessage Arguments!!!!', userName, message)
   return _queueMessage('users', userName, message, options)
 }
 
