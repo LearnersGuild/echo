@@ -11,6 +11,12 @@ import {
   SUBMIT_SURVEY_REQUEST,
   SUBMIT_SURVEY_SUCCESS,
   SUBMIT_SURVEY_FAILURE,
+  LOCK_SURVEY_REQUEST,
+  LOCK_SURVEY_SUCCESS,
+  LOCK_SURVEY_FAILURE,
+  UNLOCK_SURVEY_REQUEST,
+  UNLOCK_SURVEY_SUCCESS,
+  UNLOCK_SURVEY_FAILURE,
   SET_SURVEY_GROUP,
 } from 'src/common/actions/types'
 
@@ -29,6 +35,8 @@ export default function surveys(state = initialState, action) {
     case FIND_SURVEYS_REQUEST:
     case GET_SURVEY_REQUEST:
     case SAVE_SURVEY_RESPONSES_REQUEST:
+    case LOCK_SURVEY_REQUEST:
+    case UNLOCK_SURVEY_REQUEST:
       return Object.assign({}, state, {
         isBusy: true,
       })
@@ -61,6 +69,10 @@ export default function surveys(state = initialState, action) {
 
     case SUBMIT_SURVEY_SUCCESS:
     case SUBMIT_SURVEY_FAILURE:
+    case LOCK_SURVEY_SUCCESS:
+    case LOCK_SURVEY_FAILURE:
+    case UNLOCK_SURVEY_SUCCESS:
+    case UNLOCK_SURVEY_FAILURE:
       return Object.assign({}, state, {
         isBusy: false,
         isSubmitting: false,

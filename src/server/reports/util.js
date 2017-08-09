@@ -1,8 +1,6 @@
 import csvWriter from 'csv-write-stream'
 
-import config from 'src/config'
 import {Chapter, Cycle} from 'src/server/services/dataService'
-import graphQLFetcher from 'src/server/util/graphql'
 
 export async function getCycleId(chapterId, cycleNumber) {
   const cycles = await Cycle.filter({chapterId, cycleNumber})
@@ -32,25 +30,6 @@ export function writeCSV(rows, outStream, opts) {
   writer.pipe(outStream)
   rows.forEach(row => writer.write(row))
   writer.end()
-}
-
-export function getMemberInfoByIds(memberIds) {
-  return graphQLFetcher(config.server.idm.baseURL)({
-    query: `
-query ($memberIds: [ID]!) {
-  getUsersByIds(ids: $memberIds) {
-    id
-    email
-    name
-    handle
-  }
-}`,
-    variables: {memberIds},
-  })
-  .then(result => result.data.getUsersByIds.reduce(
-    (prev, member) => ({...prev, [member.id]: member}),
-    {}
-  ))
 }
 
 export function shortenedMemberId(rethinkDBid) {

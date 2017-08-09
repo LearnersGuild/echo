@@ -5,8 +5,8 @@ export const projectSchema = yup.object().shape({
   cycleIdentifier: yup.number().integer().required().min(1),
   goalIdentifier: yup.number().integer().positive().required(),
   memberIdentifiers: yup.string().trim().required().test(
-    'are-valid-user-identifiers',
-    'Invalid user identifier(s)',
+    'are-valid-member-identifiers',
+    'Invalid member identifier(s)',
     _isValidIdentifierList,
   ),
 })

@@ -1,11 +1,14 @@
 import React, {Component, PropTypes} from 'react'
 import {push} from 'react-router-redux'
 import {connect} from 'react-redux'
-import socketCluster from 'socketcluster-client'
 
 import {showLoad, hideLoad} from 'src/common/actions/app'
 import CycleVotingResults, {cycleVotingResultsPropType} from 'src/common/components/CycleVotingResults'
-import {getCycleVotingResults, receivedCycleVotingResults} from 'src/common/actions/cycle'
+import {
+  getCycleVotingResults,
+  subscribeToCycleVotingResults,
+  unsubscribeFromCycleVotingResults,
+} from 'src/common/actions/cycle'
 
 class CycleVotingResultsContainer extends Component {
   constructor() {
@@ -16,11 +19,11 @@ class CycleVotingResultsContainer extends Component {
   componentDidMount() {
     this.props.showLoad()
     this.props.fetchData()
-    this.subscribeToCycleVotingResults(this.currentCycleId())
+    this.subscribeToCycleVotingResults(this.getCurrentCycleId())
   }
 
   componentWillUnmount() {
-    this.unsubscribeFromCycleVotingResults(this.currentCycleId())
+    this.unsubscribeFromCycleVotingResults(this.getCurrentCycleId())
   }
 
   componentWillReceiveProps(nextProps) {
@@ -28,9 +31,8 @@ class CycleVotingResultsContainer extends Component {
       this.props.hideLoad()
     }
 
-    const newCycleId = nextProps.cycle && nextProps.cycle.id
-    const oldCycleId = this.currentCycleId()
-
+    const oldCycleId = this.props.cycle ? this.props.cycle.id : null
+    const newCycleId = nextProps.cycle ? nextProps.cycle.id : null
     if (!newCycleId) {
       this.unsubscribeFromCycleVotingResults(oldCycleId)
     } else if (oldCycleId !== newCycleId) {
@@ -38,31 +40,8 @@ class CycleVotingResultsContainer extends Component {
     }
   }
 
-  currentCycleId() {
-    return this.props.cycle && this.props.cycle.id
-  }
-
-  subscribeToCycleVotingResults(cycleId) {
-    if (cycleId) {
-      console.log(`subscribing to voting results for cycle ${cycleId} ...`)
-      this.socket = socketCluster.connect()
-      this.socket.on('connect', () => console.log('... socket connected'))
-      this.socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))
-      this.socket.on('connectAbort', () => null)
-      this.socket.on('error', error => console.warn(error.message))
-      const cycleVotingResultsChannel = this.socket.subscribe(`cycleVotingResults-${cycleId}`)
-      cycleVotingResultsChannel.watch(cycleVotingResults => {
-        this.props.receivedCycleVotingResults(cycleVotingResults)
-      })
-    }
-  }
-
-  unsubscribeFromCycleVotingResults(cycleId) {
-    if (this.socket && cycleId) {
-      console.log(`unsubscribing from voting results for cycle ${cycleId} ...`)
-      this.socket.unwatch(`cycleVotingResults-${cycleId}`)
-      this.socket.unsubscribe(`cycleVotingResults-${cycleId}`)
-    }
+  getCurrentCycleId() {
+    return this.props.cycle ? this.props.cycle.id : null
   }
 
   handleClose() {
@@ -94,13 +73,12 @@ CycleVotingResultsContainer.propTypes = Object.assign({}, cycleVotingResultsProp
 CycleVotingResultsContainer.fetchData = fetchData
 
 function fetchData(dispatch) {
-  dispatch(getCycleVotingResults({withUsers: true}))
+  dispatch(getCycleVotingResults({withMembers: true}))
 }
 
-function addUserDataToPools(pools, allUsers) {
+function addMembersToPools(pools, members) {
   pools.forEach(pool => {
-    const userDatas = pool.users.map(({id}) => allUsers[id]).filter(user => Boolean(user))
-    pool.users = userDatas
+    pool.members = pool.members.map(({id}) => members[id]).filter(m => m)
   })
 }
 
@@ -110,10 +88,10 @@ function mapStateToProps(state) {
     auth: {currentUser},
     cycles,
     chapters,
-    users,
+    members,
     cycleVotingResults: cvResults,
   } = state
-  const isBusy = cycles.isBusy || chapters.isBusy || cvResults.isBusy || users.isBusy
+  const isBusy = cycles.isBusy || chapters.isBusy || cvResults.isBusy || members.isBusy
   // this part of the state is a singleton, which is why this looks weird
   const cycleVotingResults = cvResults.cycleVotingResults.CURRENT
   let cycle
@@ -123,7 +101,7 @@ function mapStateToProps(state) {
     cycle = cycles.cycles[cycleVotingResults.cycle]
     chapter = cycle ? chapters.chapters[cycle.chapter] : null
     pools = cycleVotingResults.pools.map(pool => ({...pool})) // deep copy so we don't mutate state
-    addUserDataToPools(pools, users.users)
+    addMembersToPools(pools, members.members)
   }
 
   return {
@@ -143,7 +121,8 @@ function mapDispatchToProps(dispatch) {
     navigate: path => dispatch(push(path)),
     showLoad: () => dispatch(showLoad()),
     hideLoad: () => dispatch(hideLoad()),
-    receivedCycleVotingResults: results => dispatch(receivedCycleVotingResults(results)),
+    subscribeToCycleVotingResults: cycleId => dispatch(subscribeToCycleVotingResults(cycleId)),
+    unsubscribeFromCycleVotingResults: cycleId => dispatch(unsubscribeFromCycleVotingResults(cycleId)),
   }
 }
 

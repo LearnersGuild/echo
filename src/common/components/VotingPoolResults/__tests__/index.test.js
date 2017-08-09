@@ -29,13 +29,13 @@ describe(testContext(__filename), function () {
         currentUser,
         cycle,
         pool: {
+          candidateGoals,
+          voterMemberIds,
+          members: users,
           name: 'Turquoise',
           phase: {
             number: 1
           },
-          candidateGoals,
-          users,
-          voterMemberIds,
           votingIsStillOpen: true,
         },
         isOnlyPool: true,
@@ -85,7 +85,7 @@ describe(testContext(__filename), function () {
 
     it('does not render voter ratio unless it is available', function () {
       const props = this.getProps()
-      props.pool.users = []
+      props.pool.members = []
       props.pool.voterMemberIds = []
       const root = shallow(React.createElement(VotingPoolResults, props))
 

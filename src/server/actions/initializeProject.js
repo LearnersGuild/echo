@@ -1,6 +1,6 @@
 import {COMPLETE} from 'src/common/models/cycle'
 import logger from 'src/server/util/logger'
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import initializeChannel from 'src/server/actions/initializeChannel'
 import sendProjectWelcomeMessages from 'src/server/actions/sendProjectWelcomeMessages'
 import {LGBadRequestError} from 'src/server/util/error'
@@ -26,13 +26,14 @@ export default async function initializeProject(project) {
 
   logger.log(`Initializing project #${project.name}`)
 
-  const members = await getMemberInfo(project.memberIds)
-  const memberHandles = members.map(p => p.handle)
+  const memberUsers = await findMemberUsers(project.memberIds)
+  const memberChatUsernames = memberUsers.map(mu => mu.handle)
   const channelName = String(project.goal.number)
   const channelTopic = `${project.goal.title} (${project.goal.url})`
 
   if (phase.hasVoting) {
-    await initializeChannel(channelName, {topic: channelTopic, users: memberHandles})
+    await initializeChannel(channelName, {topic: channelTopic, users: memberChatUsernames})
   }
-  await sendProjectWelcomeMessages(project, {members})
+
+  await sendProjectWelcomeMessages(project, {memberUsers})
 }

@@ -1,8 +1,9 @@
 import parseArgs from 'minimist'
 
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {buildProjects} from 'src/server/actions/formProjects'
-import {Chapter, Cycle, Member} from 'src/server/services/dataService'
+import {Chapter, Cycle} from 'src/server/services/dataService'
+import {mapById} from 'src/server/util'
 import {finish} from './util'
 
 const LOG_PREFIX = `[${__filename.split('js')[0]}]`
@@ -54,24 +55,14 @@ function _parseCLIArgs(argv) {
 async function _expandProjectData(projects) {
   const allMembers = new Map()
   const allProjects = await Promise.all(projects.map(async project => {
-    const members = await Promise.all(project.memberIds.map(async memberId => {
-      const [users, member] = await Promise.all([
-        getMemberInfo([memberId]),
-        Member.get(memberId),
-      ])
-
-      const mergedUser = {
-        ...users[0],
-        ...member,
-      }
-
-      const memberProject = allMembers.get(member.id) || {...mergedUser, projects: []}
+    const memberUsersById = mapById(await findMemberUsers(project.memberIds))
+    const members = await Promise.all(project.memberIds.map(memberId => {
+      const memberUser = memberUsersById.get(memberId)
+      const memberProject = allMembers.get(memberId) || {...memberUser, projects: []}
       memberProject.projects.push(project)
-      allMembers.set(member.id, memberProject)
-
-      return mergedUser
+      allMembers.set(memberId, memberProject)
+      return memberUser
     }))
-
     return {...project, members}
   }))
 

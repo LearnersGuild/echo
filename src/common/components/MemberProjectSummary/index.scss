@@ -1,0 +1,40 @@
+@import "node_modules/react-toolbox/lib/_colors";
+
+.memberProjectSummary {
+  font-size: 1.3rem;
+  line-height: 2rem;
+  padding: 20px 0;
+  border-bottom: 1px solid $palette-grey-300;
+  min-width: 400px;
+}
+
+.summary {
+  .column {
+    margin-right: 30px;
+  }
+}
+
+.evaluation {
+  font-size: 1.4rem;
+  margin-top: 20px;
+  color: $palette-grey-500;
+  font-style: italic;
+}
+
+.projectLink {
+  color: $palette-grey-700;
+}
+.projectLink:hover {
+  text-decoration: underline;
+}
+
+.goalLine {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 290px;
+}
+
+.lineBreak {
+  margin-top: 2rem;
+}

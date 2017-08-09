@@ -1,12 +1,13 @@
 import {renderQuestionBodies} from 'src/common/models/survey'
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {Project, getFullRetrospectiveSurveyForMember} from 'src/server/services/dataService'
 import {customQueryError} from 'src/server/services/dataService/util'
 import {LGForbiddenError} from 'src/server/util/error'
+import {hashById} from 'src/server/util'
 
 export async function compileSurveyDataForMember(memberId, projectId) {
   const survey = await getFullRetrospectiveSurveyForMember(memberId, projectId)
-    .then(survey => inflateSurveySubjects(survey))
+    .then(survey => _inflateSurveySubjects(survey))
     .then(survey => Object.assign({}, survey, {
       questions: renderQuestionBodies(survey.questions)
     }))
@@ -22,20 +23,20 @@ export function compileSurveyQuestionDataForMember(memberId, questionNumber, pro
   return getFullRetrospectiveSurveyForMember(memberId, projectId)('questions')
     .nth(questionNumber - 1)
     .default(customQueryError(`There is no question number ${questionNumber}`))
-    .then(question => inflateSurveyQuestionSubjects([question]))
+    .then(question => _inflateSurveyQuestionSubjects([question]))
     .then(questions => renderQuestionBodies(questions))
     .then(questions => questions[0])
 }
 
-function inflateSurveySubjects(survey) {
-  return inflateSurveyQuestionSubjects(survey.questions)
+function _inflateSurveySubjects(survey) {
+  return _inflateSurveyQuestionSubjects(survey.questions)
     .then(questions => Object.assign({}, survey, {questions}))
 }
 
-async function inflateSurveyQuestionSubjects(questions) {
-  const subjectIds = getSubjects(questions)
-  const memberInfo = await getMemberInfoByIds(subjectIds)
-  const projectInfo = await getProjectInfoByIds(subjectIds)
+async function _inflateSurveyQuestionSubjects(questions) {
+  const subjectIds = _getSubjects(questions)
+  const memberInfo = await _getMemberUsersByIds(subjectIds)
+  const projectInfo = await _getProjectInfoByIds(subjectIds)
   const subjectInfo = {...memberInfo, ...projectInfo}
 
   const inflatedQuestions = questions.map(question => {
@@ -46,20 +47,23 @@ async function inflateSurveyQuestionSubjects(questions) {
   return inflatedQuestions
 }
 
-function getSubjects(questions) {
+function _getSubjects(questions) {
   return questions
     .reduce((prev, question) => prev.concat(question.subjectIds), [])
 }
 
-async function getProjectInfoByIds(projectIds = []) {
+async function _getProjectInfoByIds(projectIds = []) {
   const projects = await Project.getAll(...projectIds)
-  return projects.reduce((result, next) => ({...result, [next.id]: {id: next.id, handle: next.name, name: next.name}}), {})
+  return projects.reduce((result, project) => ({
+    ...result,
+    [project.id]: {
+      id: project.id,
+      handle: project.name,
+      name: project.name,
+    },
+  }), {})
 }
 
-async function getMemberInfoByIds(memberIds) {
-  const members = await getMemberInfo(memberIds)
-  return members.reduce((result, member) => {
-    result[member.id] = member
-    return result
-  }, {})
+async function _getMemberUsersByIds(memberIds) {
+  return hashById(await findMemberUsers(memberIds))
 }

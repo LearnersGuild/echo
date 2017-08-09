@@ -129,7 +129,7 @@ async function _buildVotingPool(pool) {
   const votes = poolVotes.map(({goals, memberId}) => ({memberId, votes: goals.map(({url}) => url)}))
   const goalsByUrl = _extractGoalsFromVotes(poolVotes)
   const goals = toArray(goalsByUrl).map(goal => ({goalDescriptor: goal.url, ...goal}))
-  const userFeedback = await _getUserFeedback([...members.keys()])
+  const memberFeedback = await _getMemberFeedback([...members.keys()])
 
   return {
     poolId: pool.id,
@@ -137,11 +137,11 @@ async function _buildVotingPool(pool) {
     cycleId: pool.cycleId,
     goals,
     votes,
-    userFeedback,
+    memberFeedback,
   }
 }
 
-async function _getUserFeedback(memberIds) {
+async function _getMemberFeedback(memberIds) {
   const pairings = flatten(memberIds.map(respondentId => {
     const teammates = memberIds.filter(id => id !== respondentId)
     return teammates.map(subjectId => ({respondentId, subjectId}))
@@ -153,13 +153,13 @@ async function _getUserFeedback(memberIds) {
     {concurrency: 20}
   )
 
-  const userFeedback = feedbackTuples.reduce((result, {respondentId, subjectId, feedback}) => {
+  const memberFeedback = feedbackTuples.reduce((result, {respondentId, subjectId, feedback}) => {
     result.respondentIds[respondentId] = result.respondentIds[respondentId] || {subjectIds: {}}
     result.respondentIds[respondentId].subjectIds[subjectId] = feedback
     return result
   }, {respondentIds: {}})
 
-  return userFeedback
+  return memberFeedback
 }
 
 function _findVotesForPool(poolId) {

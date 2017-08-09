@@ -21,7 +21,7 @@ export default function getCycleVotingResults() {
             id
             name
             voterMemberIds
-            users {
+            members {
               id
             }
             phase {

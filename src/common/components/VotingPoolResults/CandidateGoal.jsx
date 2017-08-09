@@ -122,6 +122,5 @@ CandidateGoal.propTypes = {
     email: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   }),
-
   candidateGoal: candidateGoalPropType.isRequired,
 }

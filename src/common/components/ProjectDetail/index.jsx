@@ -8,7 +8,7 @@ import {Tab, Tabs} from 'react-toolbox'
 import Helmet from 'react-helmet'
 
 import ContentHeader from 'src/common/components/ContentHeader'
-import ProjectUserSummary from 'src/common/components/ProjectUserSummary'
+import ProjectMemberSummary from 'src/common/components/ProjectMemberSummary'
 import {Flex} from 'src/common/components/Layout'
 import {safeUrl, urlParts, objectValuesAreAllNull} from 'src/common/util'
 import {renderGoalAsString} from 'src/common/models/goal'
@@ -24,14 +24,12 @@ class ProjectDetail extends Component {
     this.renderHeader = this.renderHeader.bind(this)
     this.renderDetails = this.renderDetails.bind(this)
     this.renderTabs = this.renderTabs.bind(this)
-    this.renderUserSummaries = this.renderUserSummaries.bind(this)
+    this.renderMemberSummaries = this.renderMemberSummaries.bind(this)
   }
 
   renderHeader() {
-    const {project: {name, goal, retrospectiveSurveyId}, allowEdit, onClickEdit} = this.props
-
-    const editDisabled = Boolean(retrospectiveSurveyId)
-    const editButton = allowEdit ? (
+    const {project: {name, goal, showEdit}, editDisabled, onClickEdit} = this.props
+    const editButton = showEdit ? (
       <IconButton
         icon="mode_edit"
         onClick={onClickEdit}
@@ -61,15 +59,15 @@ class ProjectDetail extends Component {
   }
 
   renderDetails() {
-    const {project = {}, projectUserSummaries} = this.props
+    const {project = {}, projectMemberSummaries} = this.props
     const {chapter, cycle, phase} = project
 
-    const memberList = projectUserSummaries.map((projectUserSummary, index) => {
-      const {user} = projectUserSummary
+    const memberList = projectMemberSummaries.map((projectMemberSummary, index) => {
+      const {member} = projectMemberSummary
       const prefix = index > 0 ? ', ' : ''
       return (
-        <Link key={index} to={`/users/${user.handle}`}>
-          <em>{`${prefix}${user.handle}`}</em>
+        <Link key={index} to={`/members/${member.handle}`}>
+          <em>{`${prefix}${member.handle}`}</em>
         </Link>
       )
     })
@@ -114,48 +112,49 @@ class ProjectDetail extends Component {
     )
   }
 
-  renderUserSummaries() {
-    const {projectUserSummaries, project, unlockMemberSurvey, lockMemberSurvey, isLockingOrUnlocking} = this.props
-
-    const memberSummaries = (projectUserSummaries || [])
-      .map((userSummary, i) => {
-        const onUnlockMemberSurvey = () => unlockMemberSurvey(userSummary.user.id, project.id)
-        const onLockMemberSurvey = () => lockMemberSurvey(userSummary.user.id, project.id)
+  renderMemberSummaries() {
+    const {projectMemberSummaries, onClickUnlockRetro, onClickLockRetro, lockDisabled} = this.props
+    const memberSummaries = (projectMemberSummaries || [])
+      .map((memberSummary, i) => {
+        const handleClickUnlockRetro = () => onClickUnlockRetro(memberSummary.member)
+        const handleClickLockRetro = () => onClickLockRetro(memberSummary.member)
         return (
-          <ProjectUserSummary
-            key={i} {...userSummary}
-            isLockingOrUnlocking={isLockingOrUnlocking}
-            onUnlockMemberSurvey={onUnlockMemberSurvey}
-            onLockMemberSurvey={onLockMemberSurvey}
+          <ProjectMemberSummary
+            key={i}
+            lockDisabled={lockDisabled}
+            onClickUnlockRetro={handleClickUnlockRetro}
+            onClickLockRetro={handleClickLockRetro}
+            {...memberSummary}
             />
         )
       })
 
     return (
       <div>
-        {memberSummaries.length > 0 ?
-          memberSummaries :
-          <div>No project members.</div>
-        }
+        {memberSummaries.length > 0 ? memberSummaries : <div>No project members.</div>}
       </div>
     )
   }
 
   renderTabs() {
-    const {projectUserSummaries} = this.props
-    const hasProjectUserSummaries = (projectUserSummaries || []).length > 0
-    const hasViewableProjectUserSummaries = hasProjectUserSummaries && projectUserSummaries.every(({userProjectEvaluations}) => {
-      return !objectValuesAreAllNull({userProjectEvaluations})
+    const {projectMemberSummaries} = this.props
+    const hasMemberSummaries = (projectMemberSummaries || []).length > 0
+    const hasViewableMemberSummaries = hasMemberSummaries && projectMemberSummaries.every(({memberProjectEvaluations}) => {
+      return !objectValuesAreAllNull({memberProjectEvaluations})
     })
 
-    return hasViewableProjectUserSummaries ? (
+    return hasViewableMemberSummaries ? (
       <div className={styles.tabs}>
         <Tabs
           index={this.state.tabIndex}
           theme={theme}
           fixed
           >
-          <Tab label="Team Feedback"><div>{this.renderUserSummaries()}</div></Tab>
+          <Tab label="Team Feedback">
+            <div>
+              {this.renderMemberSummaries()}
+            </div>
+          </Tab>
         </Tabs>
       </div>
     ) : <div/>
@@ -200,14 +199,13 @@ ProjectDetail.propTypes = {
     phase: PropTypes.shape({
       number: PropTypes.number,
     }),
-    retrospectiveSurveyId: PropTypes.string,
   }),
-  projectUserSummaries: PropTypes.array,
-  isLockingOrUnlocking: PropTypes.bool,
-  allowEdit: PropTypes.bool,
+  projectMemberSummaries: PropTypes.array,
+  editDisabled: PropTypes.bool,
+  lockDisabled: PropTypes.bool,
   onClickEdit: PropTypes.func,
-  unlockMemberSurvey: PropTypes.func,
-  lockMemberSurvey: PropTypes.func,
+  onClickUnlockRetro: PropTypes.func,
+  onClickLockRetro: PropTypes.func,
 }
 
 export default ProjectDetail

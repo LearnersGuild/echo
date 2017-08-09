@@ -25,7 +25,7 @@ describe(testContext(__filename), function () {
             number: 1
           },
           candidateGoals: [],
-          users: [],
+          members: [],
           voterMemberIds: [],
           votingIsStillOpen: true,
         }, {
@@ -34,7 +34,7 @@ describe(testContext(__filename), function () {
             number: 2
           },
           candidateGoals: [],
-          users: [],
+          members: [],
           voterMemberIds: [],
           votingIsStillOpen: false,
         }],
@@ -102,9 +102,9 @@ describe(testContext(__filename), function () {
 
     describe('collapsed / expanded', function () {
       beforeEach(async function () {
-        const myPoolUsers = await factory.buildMany('user', 3)
-        myPoolUsers.push(this.currentUser)
-        const myPoolVoterMemberIds = [this.currentUser.id, myPoolUsers[0].id]
+        const myPoolMembers = await factory.buildMany('user', 3)
+        myPoolMembers.push(this.currentUser)
+        const myPoolVoterMemberIds = [this.currentUser.id, myPoolMembers[0].id]
         const myPoolMemberGoalRank = await factory.build('memberGoalRank', {memberId: this.currentUser.id})
         this.myPoolCandidateGoals = new Array(3).fill({
           memberGoalRanks: [myPoolMemberGoalRank],
@@ -120,7 +120,7 @@ describe(testContext(__filename), function () {
             number: 2
           },
           candidateGoals: this.myPoolCandidateGoals,
-          users: myPoolUsers,
+          members: myPoolMembers,
           voterMemberIds: myPoolVoterMemberIds,
           votingIsStillOpen: true,
         }
@@ -142,7 +142,7 @@ describe(testContext(__filename), function () {
             number: 1
           },
           candidateGoals: this.otherCandidateGoals,
-          users: otherUsers,
+          members: otherUsers,
           voterMemberIds: otherVoterMemberIds,
           votingIsStillOpen: true,
         }

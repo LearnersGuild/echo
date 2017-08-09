@@ -1,11 +1,11 @@
-import findUsers from 'src/server/actions/findUsers'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {Member} from 'src/server/services/dataService'
 import {mapById} from 'src/common/util'
 
 export default async function findActiveMembersForPhase(phaseId) {
   const phaseMembers = await Member.filter({phaseId})
   const phaseMemberIds = phaseMembers.map(m => m.id)
-  const memberUsers = await findUsers(phaseMemberIds)
+  const memberUsers = await findMemberUsers(phaseMemberIds)
   const activeMemberUsers = (memberUsers).filter(u => u.active)
   return _mergeById(activeMemberUsers, phaseMembers)
 }

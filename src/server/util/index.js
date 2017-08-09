@@ -53,6 +53,7 @@ export {
   toPairs,
   pickRandom,
   mapById,
+  hashById,
   groupById,
   safePushInt,
   unique,

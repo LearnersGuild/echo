@@ -1,7 +1,5 @@
 import {CYCLE_STATES, PRACTICE, REFLECTION, COMPLETE} from 'src/common/models/cycle'
 import {userCan} from 'src/common/util'
-import getUser from 'src/server/actions/getUser'
-
 import assertUserIsMember from 'src/server/actions/assertUserIsMember'
 import createNextCycleForChapter from 'src/server/actions/createNextCycleForChapter'
 import {Cycle, getCyclesInStateForChapter, getLatestCycleForChapter} from 'src/server/services/dataService'
@@ -14,15 +12,18 @@ import {
 
 const subcommands = {
   async init(args, {user}) {
-    const mergedUser = await getUser(user.id)
+    if (!userCan(user, 'createCycle')) {
+      throw new LGNotAuthorizedError()
+    }
 
-    const currentCycle = await getLatestCycleForChapter(mergedUser.chapterId)
+    const member = await assertUserIsMember(user.id)
+    const currentCycle = await getLatestCycleForChapter(member.chapterId)
 
     if (currentCycle.state !== REFLECTION && currentCycle.state !== COMPLETE) {
       throw new LGBadRequestError('Failed to initialize a new cycle because the current cycle is still in progress.')
     }
 
-    await _createCycle(mergedUser)
+    await createNextCycleForChapter(member.chapterId)
 
     return {
       text: '🔃  Initializing Cycle ... stand by.'
@@ -53,15 +54,6 @@ export async function invoke(args, options) {
   }
 
   throw new LGCLIUsageError()
-}
-
-async function _createCycle(user) {
-  if (!userCan(user, 'createCycle')) {
-    throw new LGNotAuthorizedError()
-  }
-
-  const member = await assertUserIsMember(user.id)
-  return await createNextCycleForChapter(member.chapterId)
 }
 
 async function _changeCycleState(user, newState) {

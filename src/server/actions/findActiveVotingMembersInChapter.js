@@ -1,6 +1,6 @@
 import {r, Member, Phase} from 'src/server/services/dataService'
 import {mapById} from 'src/server/util'
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 
 export default async function findActiveVotingMembersInChapter(chapterId) {
   const votingPhaseIds = (await Phase.filter({hasVoting: true}).pluck('id')).map(p => p.id)
@@ -10,6 +10,6 @@ export default async function findActiveVotingMembersInChapter(chapterId) {
     votingPhaseIdsExpr.contains(row('phaseId'))
   ))
   const votingMemberIds = votingMembers.map(m => m.id)
-  const idmUserMap = mapById(await getMemberInfo(votingMemberIds))
+  const idmUserMap = mapById(await findMemberUsers(votingMemberIds, {skipNoMatch: false}))
   return votingMembers.filter(m => idmUserMap.get(m.id).active)
 }

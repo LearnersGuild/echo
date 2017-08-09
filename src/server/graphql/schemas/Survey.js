@@ -11,7 +11,7 @@ export default new GraphQLObjectType({
     const {Project, SurveyQuestion} = require('src/server/graphql/schemas')
 
     return {
-      id: {type: new GraphQLNonNull(GraphQLID), description: "The survey's user UUID"},
+      id: {type: new GraphQLNonNull(GraphQLID), description: "The survey's UUID"},
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
       updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},
       questions: {type: new GraphQLNonNull(new GraphQLList(SurveyQuestion)), description: 'The questions for the survey'},

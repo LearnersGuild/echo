@@ -36,7 +36,7 @@ describe(testContext(__filename), function () {
     ([0, 50, 100]).forEach(v => {
       it(`returns ${v} when everyone rated all their teammates ${v}`, function () {
         const feedback = {[TEAM_PLAY]: v, [TECHNICAL_COMPREHENSION]: v}
-        const userFeedback = {
+        const memberFeedback = {
           respondentIds: {
             p0: {subjectIds: {p1: feedback, p2: feedback, p3: feedback}},
             p1: {subjectIds: {p0: feedback, p2: feedback, p3: feedback}},
@@ -44,7 +44,7 @@ describe(testContext(__filename), function () {
             p3: {subjectIds: {p0: feedback, p1: feedback, p2: feedback}},
           }
         }
-        const pool = {...poolDefaults, userFeedback}
+        const pool = {...poolDefaults, memberFeedback}
 
         const appraiser = new MembersGetTeammatesTheyGaveGoodFeedbackAppraiser(pool)
         const score = appraiser.score(teamFormationPlan)
@@ -56,7 +56,7 @@ describe(testContext(__filename), function () {
     it('weights each member correctly', function () {
       const perfectScore = {[TEAM_PLAY]: 100, [TECHNICAL_COMPREHENSION]: 100}
       const halfScore = {[TEAM_PLAY]: 50, [TECHNICAL_COMPREHENSION]: 50}
-      const userFeedback = {
+      const memberFeedback = {
         respondentIds: {
           p0: {
             subjectIds: {
@@ -70,7 +70,7 @@ describe(testContext(__filename), function () {
           p3: {subjectIds: {p0: perfectScore, p1: perfectScore, p2: perfectScore}},
         }
       }
-      const pool = {...poolDefaults, userFeedback}
+      const pool = {...poolDefaults, memberFeedback}
 
       const appraiser = new MembersGetTeammatesTheyGaveGoodFeedbackAppraiser(pool)
       const score = appraiser.score(teamFormationPlan)
@@ -83,7 +83,7 @@ describe(testContext(__filename), function () {
   })
 
   context('when the teams are not complete', function () {
-    const userFeedback = {
+    const memberFeedback = {
       respondentIds: {
         p0: {subjectIds: {p1: 0  , p2: 100, p3: 0}},
         p1: {subjectIds: {p0: 0  , p2: 0  , p3: 0}},
@@ -99,7 +99,7 @@ describe(testContext(__filename), function () {
           {goalDescriptor: 'g3', memberIds: []},
         ]
       }
-      const pool = {...poolDefaults, userFeedback}
+      const pool = {...poolDefaults, memberFeedback}
       const appraiser = new MembersGetTeammatesTheyGaveGoodFeedbackAppraiser(pool)
       const score = appraiser.score(teamFormationPlan)
 
@@ -113,7 +113,7 @@ describe(testContext(__filename), function () {
           {goalDescriptor: 'g3', memberIds: ['p1']},
         ]
       }
-      const pool = {...poolDefaults, userFeedback}
+      const pool = {...poolDefaults, memberFeedback}
       const appraiser = new MembersGetTeammatesTheyGaveGoodFeedbackAppraiser(pool)
       const score = appraiser.score(teamFormationPlan)
 

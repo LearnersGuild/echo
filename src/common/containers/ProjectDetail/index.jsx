@@ -3,14 +3,17 @@ import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
 
 import {showLoad, hideLoad} from 'src/common/actions/app'
-import {unlockSurvey, lockSurvey, getProjectSummary} from 'src/common/actions/project'
-import ProjectDetail from 'src/common/components/ProjectDetail'
+import {getProjectSummary} from 'src/common/actions/project'
+import {unlockSurveyForMember, lockSurveyForMember} from 'src/common/actions/survey'
 import {userCan} from 'src/common/util'
+import ProjectDetail from 'src/common/components/ProjectDetail'
 
 class ProjectDetailContainer extends Component {
   constructor(props) {
     super(props)
     this.handleClickEdit = this.handleClickEdit.bind(this)
+    this.handleClickUnlockRetro = this.handleClickUnlockRetro.bind(this)
+    this.handleClickLockRetro = this.handleClickLockRetro.bind(this)
   }
 
   componentDidMount() {
@@ -19,7 +22,7 @@ class ProjectDetailContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.isBusy && nextProps.loading) {
+    if (this.props.isBusy && !nextProps.isBusy) {
       this.props.hideLoad()
     }
   }
@@ -31,48 +34,56 @@ class ProjectDetailContainer extends Component {
     this.props.navigate(`/projects/${this.props.project.name}/edit`)
   }
 
+  handleClickUnlockRetro(member) {
+    const {project, unlockSurveyForMember} = this.props
+    unlockSurveyForMember(project.retrospectiveSurveyId, member.id)
+  }
+
+  handleClickLockRetro(member) {
+    const {project, lockSurveyForMember} = this.props
+    lockSurveyForMember(project.retrospectiveSurveyId, member.id)
+  }
+
   render() {
     const {
-      currentUser,
       isBusy,
-      isLockingOrUnlocking,
       project,
-      projectUserSummaries,
-      unlockMemberSurvey,
-      lockMemberSurvey,
+      projectMemberSummaries,
+      showEdit,
+      editDisabled,
+      lockDisabled,
     } = this.props
 
     return isBusy ? null : (
       <ProjectDetail
         project={project}
-        projectUserSummaries={projectUserSummaries}
-        allowEdit={userCan(currentUser, 'importProject')}
+        projectMemberSummaries={projectMemberSummaries}
+        showEdit={showEdit}
+        editDisabled={editDisabled}
+        lockDisabled={lockDisabled}
         onClickEdit={this.handleClickEdit}
-        isLockingOrUnlocking={isLockingOrUnlocking}
-        unlockMemberSurvey={unlockMemberSurvey}
-        lockMemberSurvey={lockMemberSurvey}
+        onClickUnlockRetro={this.handleClickUnlockRetro}
+        onClickLockRetro={this.handleClickLockRetro}
         />
     )
   }
 }
 
 ProjectDetailContainer.propTypes = {
-  project: PropTypes.object,
-  projectUserSummaries: PropTypes.array,
   isBusy: PropTypes.bool.isRequired,
-  isLockingOrUnlocking: PropTypes.bool.isRequired,
-  loading: PropTypes.bool.isRequired,
-  currentUser: PropTypes.object,
+  project: PropTypes.object,
+  projectMemberSummaries: PropTypes.array,
+  showEdit: PropTypes.bool.isRequired,
+  editDisabled: PropTypes.bool.isRequired,
+  lockDisabled: PropTypes.bool.isRequired,
   fetchData: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
   showLoad: PropTypes.func.isRequired,
   hideLoad: PropTypes.func.isRequired,
-  unlockMemberSurvey: PropTypes.func.isRequired,
-  lockMemberSurvey: PropTypes.func.isRequired,
+  unlockSurveyForMember: PropTypes.func.isRequired,
+  lockSurveyForMember: PropTypes.func.isRequired,
 }
 
-ProjectDetailContainer.unlockMemberSurvey = unlockSurvey
-ProjectDetailContainer.lockMemberSurvey = lockSurvey
 ProjectDetailContainer.fetchData = fetchData
 
 function fetchData(dispatch, props) {
@@ -81,23 +92,26 @@ function fetchData(dispatch, props) {
 
 function mapStateToProps(state, ownProps) {
   const {identifier} = ownProps.params
-  const {app, auth, projectSummaries} = state
-  const {isLockingOrUnlocking, projectSummaries: projectSummariesByProjectId} = projectSummaries
+  const {app, auth, projectSummaries, surveys} = state
+  const {projectSummaries: projectSummariesByProjectId} = projectSummaries
 
   const projectSummary = Object.values(projectSummariesByProjectId).find(projectSummary => {
     return projectSummary.project && (
-      projectSummary.project.name === identifier ||
+      projectSummary.project.name.toLowerCase() === identifier.toLowerCase() ||
         projectSummary.project.id === identifier
     )
   }) || {}
 
+  const {project = {}} = projectSummary
+
   return {
-    project: projectSummary.project,
-    projectUserSummaries: projectSummary.projectUserSummaries,
-    isBusy: projectSummaries.isBusy,
-    isLockingOrUnlocking,
-    loading: app.showLoading,
-    currentUser: auth.currentUser,
+    project,
+    projectMemberSummaries: projectSummary.projectMemberSummaries,
+    showEdit: userCan(auth.currentUser, 'importProject'),
+    editDisabled: !project || !project.retrospectiveSurveyId,
+    lockDisabled: !userCan(auth.currentUser, 'lockAndUnlockSurveys'),
+    lockIsBusy: surveys.isBusy,
+    isBusy: projectSummaries.isBusy || app.showLoading,
   }
 }
 
@@ -107,8 +121,8 @@ function mapDispatchToProps(dispatch, props) {
     navigate: path => dispatch(push(path)),
     showLoad: () => dispatch(showLoad()),
     hideLoad: () => dispatch(hideLoad()),
-    unlockMemberSurvey: (memberId, projectId) => dispatch(unlockSurvey(memberId, projectId)),
-    lockMemberSurvey: (memberId, projectId) => dispatch(lockSurvey(memberId, projectId)),
+    unlockSurveyForMember: (surveyId, memberId) => dispatch(unlockSurveyForMember(surveyId, memberId)),
+    lockSurveyForMember: (surveyId, memberId) => dispatch(lockSurveyForMember(surveyId, memberId)),
   }
 }
 

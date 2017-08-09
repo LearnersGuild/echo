@@ -29,9 +29,9 @@ const navItems = [
     path: '/projects',
   },
   {
-    label: 'Users',
-    permission: 'listUsers',
-    path: '/users',
+    label: 'Members',
+    permission: 'listMembers',
+    path: '/members',
   },
   {
     label: 'Chapters',

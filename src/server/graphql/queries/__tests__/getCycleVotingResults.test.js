@@ -50,7 +50,7 @@ describe(testContext(__filename), function () {
               id
               number
             },
-            users { id },
+            members { id },
             voterMemberIds,
             candidateGoals {
               goal {url},
@@ -115,7 +115,7 @@ describe(testContext(__filename), function () {
         const responsePool = response.pools.find(({name}) => name === pool.name)
         expect(responsePool.name).to.equal(pool.name)
         expect(responsePool.votingIsStillOpen).to.be.true
-        expect(responsePool.users.map(_ => _.id).sort(), 'members').to.deep.equal(this.poolMembers[i].map(_ => _.id).sort())
+        expect(responsePool.members.map(_ => _.id).sort(), 'members').to.deep.equal(this.poolMembers[i].map(_ => _.id).sort())
         expect(responsePool.voterMemberIds.sort(), 'voterMemberIds').to.deep.equal(this.poolVoters[i].map(_ => _.id).sort())
         expect(responsePool.candidateGoals[0].goal.url).to.match(new RegExp(`/${voteDataForPools[i].firstPlaceGoalNumber}$`))
         expect(responsePool.candidateGoals[1].goal.url).to.match(new RegExp(`/${voteDataForPools[i].secondPlaceGoalNumber}$`))

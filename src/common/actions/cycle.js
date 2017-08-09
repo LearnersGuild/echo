@@ -1,7 +1,8 @@
 import {normalize} from 'normalizr'
+import socketCluster from 'socketcluster-client'
 
 import {flatten, getGraphQLFetcher} from 'src/common/util'
-import {findUsers} from './user'
+import {findMembers} from './member'
 import types from './types'
 import schemas from './schemas'
 import queries from './queries'
@@ -25,33 +26,48 @@ export function getCycleVotingResults(options = {}) {
 
     return dispatch(action)
       .then(() => {
-        return options.withUsers ? _findUsersForCycleVotingResults(dispatch, getState) : null
+        return options.withMembers ? _findMembersForCycleVotingResults(dispatch, getState) : null
       })
   }
 }
 
-export function receivedCycleVotingResults(cycleVotingResults) {
+export function subscribeToCycleVotingResults(cycleId) {
   return (dispatch, getState) => {
-    dispatch(_receivedCycleVotingResultsWithoutLoadingUsers(cycleVotingResults))
-    return _findUsersForCycleVotingResults(dispatch, getState)
+    if (cycleId) {
+      console.log(`subscribing to voting results for cycle ${cycleId} ...`)
+      this.socket = socketCluster.connect()
+      this.socket.on('connect', () => console.log('... socket connected'))
+      this.socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))
+      this.socket.on('connectAbort', () => null)
+      this.socket.on('error', error => console.warn(error.message))
+      const cycleVotingResultsChannel = this.socket.subscribe(`cycleVotingResults-${cycleId}`)
+      cycleVotingResultsChannel.watch(cycleVotingResults => {
+        const response = normalize(cycleVotingResults, schemas.cycleVotingResults)
+        dispatch({type: types.RECEIVED_CYCLE_VOTING_RESULTS, response})
+        dispatch(_findMembersForCycleVotingResults(dispatch, getState))
+      })
+    }
   }
 }
 
-function _findUsersForCycleVotingResults(dispatch, getState) {
-  // we'll only load users from IDM that haven't already been loaded, because
+export function unsubscribeFromCycleVotingResults(cycleId) {
+  if (this.socket && cycleId) {
+    console.log(`unsubscribing from voting results for cycle ${cycleId} ...`)
+    this.socket.unwatch(`cycleVotingResults-${cycleId}`)
+    this.socket.unsubscribe(`cycleVotingResults-${cycleId}`)
+  }
+}
+
+function _findMembersForCycleVotingResults(dispatch, getState) {
+  // we'll only load members that haven't already been loaded, because
   // it's unlikely that their names, handles, and avatars have changed since
   // the last load, and those are the attributes we use in the voting results
   const {
     cycleVotingResults: {cycleVotingResults: {CURRENT: cycleVotingResults}},
-    users: {users},
+    members: {members},
   } = getState()
 
-  const memberIds = flatten(cycleVotingResults.pools.map(_ => _.users.map(_ => _.id)))
-  const userIdsToLoad = memberIds.filter(memberId => !users[memberId])
-  return userIdsToLoad.length === 0 ? null : dispatch(findUsers(userIdsToLoad))
-}
-
-function _receivedCycleVotingResultsWithoutLoadingUsers(cycleVotingResults) {
-  const response = normalize(cycleVotingResults, schemas.cycleVotingResults)
-  return {type: types.RECEIVED_CYCLE_VOTING_RESULTS, response}
+  const memberIds = flatten(cycleVotingResults.pools.map(pool => pool.members.map(m => m.id)))
+  const memberIdsToLoad = memberIds.filter(memberId => !members[memberId])
+  return memberIdsToLoad.length === 0 ? null : dispatch(findMembers(memberIdsToLoad))
 }

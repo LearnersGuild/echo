@@ -103,40 +103,6 @@ export function importProject(values) {
   }
 }
 
-export function unlockSurvey(memberId, projectId) {
-  return {
-    types: [
-      types.UNLOCK_SURVEY_REQUEST,
-      types.UNLOCK_SURVEY_SUCCESS,
-      types.UNLOCK_SURVEY_FAILURE,
-    ],
-    shouldCallAPI: () => true,
-    callAPI: (dispatch, getState) => {
-      const query = queries.unlockSurvey(memberId, projectId)
-      return getGraphQLFetcher(dispatch, getState().auth)(query)
-        .then(graphQLResponse => graphQLResponse.data.unlockRetroSurveyForUser)
-    },
-    payload: {memberId, projectId},
-  }
-}
-
-export function lockSurvey(memberId, projectId) {
-  return {
-    types: [
-      types.LOCK_SURVEY_REQUEST,
-      types.LOCK_SURVEY_SUCCESS,
-      types.LOCK_SURVEY_FAILURE,
-    ],
-    shouldCallAPI: () => true,
-    callAPI: (dispatch, getState) => {
-      const query = queries.lockSurvey(memberId, projectId)
-      return getGraphQLFetcher(dispatch, getState().auth)(query)
-        .then(graphQLResponse => graphQLResponse.data.lockRetroSurveyForUser)
-    },
-    payload: {memberId, projectId},
-  }
-}
-
 export function deleteProject(identifier) {
   return {
     types: [

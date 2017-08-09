@@ -4,11 +4,11 @@ import {GraphQLList} from 'graphql/type'
 import {userCan} from 'src/common/util'
 import reassignMembersToChapter from 'src/server/actions/reassignMembersToChapter'
 import {Chapter, errors} from 'src/server/services/dataService'
-import {User} from 'src/server/graphql/schemas'
+import {Member} from 'src/server/graphql/schemas'
 import {LGNotAuthorizedError, LGBadRequestError} from 'src/server/util/error'
 
 export default {
-  type: new GraphQLList(User),
+  type: new GraphQLList(Member),
   args: {
     memberIds: {type: new GraphQLList(GraphQLID)},
     chapterId: {type: new GraphQLNonNull(GraphQLID)},

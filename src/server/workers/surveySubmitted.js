@@ -1,5 +1,5 @@
 import {mapById} from 'src/common/util'
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {Survey, getProjectBySurveyId} from 'src/server/services/dataService'
 import sendRetroCompletedNotification from 'src/server/actions/sendRetroCompletedNotification'
 import {entireProjectTeamHasCompletedSurvey} from 'src/server/util/project'
@@ -42,8 +42,8 @@ function buildRetroAnnouncement(project, survey) {
 
 async function announce(project, announcement) {
   const chatService = require('src/server/services/chatService')
-  const projectUsersById = mapById(await getMemberInfo(project.memberIds))
-  const handles = project.memberIds.map(memberId => projectUsersById.get(memberId).handle)
+  const projectMemberMap = mapById(await findMemberUsers(project.memberIds))
+  const handles = project.memberIds.map(memberId => projectMemberMap.get(memberId).handle)
 
   chatService.sendDirectMessage(handles, announcement)
 }

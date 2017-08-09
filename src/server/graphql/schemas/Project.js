@@ -14,7 +14,7 @@ export default new GraphQLObjectType({
   name: 'Project',
   description: 'A project engaged in by learners to complete some goal',
   fields: () => {
-    const {Chapter, Cycle, Goal, Phase, UserProfile} = require('src/server/graphql/schemas')
+    const {Chapter, Cycle, Goal, Phase, Member} = require('src/server/graphql/schemas')
 
     return {
       id: {type: new GraphQLNonNull(GraphQLID), description: "The project's UUID"},
@@ -27,7 +27,7 @@ export default new GraphQLObjectType({
       phase: {type: Phase, description: 'The phase', resolve: resolvePhase},
       goal: {type: Goal, description: 'The project goal', resolve: resolveProjectGoal},
       memberIds: {type: new GraphQLList(GraphQLID), description: 'The project member UUIDs'},
-      members: {type: new GraphQLList(UserProfile), description: 'The project members', resolve: resolveProjectMembers},
+      members: {type: new GraphQLList(Member), description: 'The project members', resolve: resolveProjectMembers},
       artifactURL: {type: GraphQLURL, description: 'The URL pointing to the output of this project'},
       retrospectiveSurveyId: {type: GraphQLID, description: "The retrospective survey's UUID"},
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},

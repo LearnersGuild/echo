@@ -2,7 +2,7 @@ import express from 'express'
 import raven from 'raven'
 
 import config from 'src/config'
-import getUser from 'src/server/actions/getUser'
+import getMemberUser from 'src/server/actions/getMemberUser'
 import {
   LGCLIUsageError,
   LGNotAuthorizedError,
@@ -21,7 +21,7 @@ async function authenticateCommand(req, res, next) {
         throw new LGNotAuthorizedError('Your CLI authorization token does not match.')
       }
     } else {
-      req.user = await getUser(handle)
+      req.user = await getMemberUser(handle)
     }
     next()
   } catch (err) {

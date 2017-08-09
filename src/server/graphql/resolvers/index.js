@@ -5,14 +5,15 @@ import {surveyCompletedBy, surveyLockedFor} from 'src/common/models/survey'
 import findActiveMembersInChapter from 'src/server/actions/findActiveMembersInChapter'
 import findActiveProjectsForChapter from 'src/server/actions/findActiveProjectsForChapter'
 import findActiveMembersForPhase from 'src/server/actions/findActiveMembersForPhase'
-import getUser from 'src/server/actions/getUser'
-import findUsers from 'src/server/actions/findUsers'
-import findUserProjectEvaluations from 'src/server/actions/findUserProjectEvaluations'
+import getMemberUser from 'src/server/actions/getMemberUser'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
+import findMemberProjectEvaluations from 'src/server/actions/findMemberProjectEvaluations'
+
 import handleSubmitSurvey from 'src/server/actions/handleSubmitSurvey'
 import handleSubmitSurveyResponses from 'src/server/actions/handleSubmitSurveyResponses'
 import {
   Chapter, Cycle, Member, Project, Survey, Phase,
-  findProjectsForUser,
+  findProjectsForMember,
   getLatestCycleForChapter,
 } from 'src/server/services/dataService'
 import {LGBadRequestError, LGNotAuthorizedError, LGInternalServerError} from 'src/server/util/error'
@@ -129,27 +130,27 @@ export function resolveProjectMembers(project) {
   if (project.members) {
     return project.members
   }
-  return findUsers(project.memberIds)
+  return findMemberUsers(project.memberIds)
 }
 
-export async function resolveProjectUserSummaries(projectSummary, args, {rootValue: {currentUser}}) {
+export async function resolveProjectMemberSummaries(projectSummary, args, {rootValue: {currentUser}}) {
   const {project} = projectSummary
   if (!project) {
-    throw new Error('Invalid project for user summaries')
+    throw new Error('Invalid project for member summaries')
   }
 
-  if (projectSummary.projectUserSummaries) {
-    return projectSummary.projectUserSummaries
+  if (projectSummary.projectMemberSummaries) {
+    return projectSummary.projectMemberSummaries
   }
 
-  const projectUsers = await findUsers(project.memberIds)
+  const projectMembers = await findMemberUsers(project.memberIds)
 
-  const projectUserMap = mapById(projectUsers)
+  const projectMemberMap = mapById(projectMembers)
 
-  return Promise.map(projectUsers, async user => {
-    const canViewSummary = user.id === currentUser.id || userCan(currentUser, 'viewProjectUserSummary')
-    const summary = canViewSummary ? await getUserProjectSummary(user, project, projectUserMap, currentUser) : {}
-    return {user, ...summary}
+  return Promise.map(projectMembers, async member => {
+    const canViewSummary = member.id === currentUser.id || userCan(currentUser, 'viewProjectMemberSummary')
+    const summary = canViewSummary ? await _getMemberProjectSummary(member, project, projectMemberMap, currentUser) : {}
+    return {member, ...summary}
   })
 }
 
@@ -166,65 +167,65 @@ export function resolveWeekStartedAt(parent) {
     parentStartedAt.startOf('isoweek').toDate()
 }
 
-export async function resolveUser(source, {identifier}, {rootValue: {currentUser}}) {
-  if (!userCan(currentUser, 'viewUser')) {
+export async function resolveMember(source, {identifier}, {rootValue: {currentUser}}) {
+  if (!userCan(currentUser, 'viewMember')) {
     throw new LGNotAuthorizedError()
   }
-  const user = await getUser(identifier)
-  if (!user) {
-    throw new LGBadRequestError(`User not found for identifier ${identifier}`)
+  const member = await getMemberUser(identifier)
+  if (!member) {
+    throw new LGBadRequestError(`Member not found for identifier ${identifier}`)
   }
-  return user
+  return member
 }
 
-export async function resolveUserProjectSummaries(userSummary, args, {rootValue: {currentUser}}) {
-  const {user} = userSummary
-  if (!user) {
+export async function resolveMemberProjectSummaries(memberSummary, args, {rootValue: {currentUser}}) {
+  const {member} = memberSummary
+  if (!member) {
     throw new Error('Invalid user for project summaries')
   }
-  if (userSummary.userProjectSummaries) {
-    return userSummary.userProjectSummaries
+  if (memberSummary.memberProjectSummaries) {
+    return memberSummary.memberProjectSummaries
   }
 
-  const projects = await findProjectsForUser(user.id)
-  const projectUserIds = projects.reduce((result, project) => {
+  const projects = await findProjectsForMember(member.id)
+  const projectMemberIds = projects.reduce((result, project) => {
     if (project.memberIds && project.memberIds.length > 0) {
       result.push(...project.memberIds)
     }
     return result
   }, [])
 
-  const projectUserMap = mapById(await findUsers(projectUserIds))
+  const projectMemberMap = mapById(await findMemberUsers(projectMemberIds))
 
   const sortedProjects = projects.sort((a, b) => a.createdAt - b.createdAt).reverse()
   return Promise.map(sortedProjects, async project => {
-    const summary = await getUserProjectSummary(user, project, projectUserMap, currentUser)
+    const summary = await _getMemberProjectSummary(member, project, projectMemberMap, currentUser)
     return {project, ...summary}
   })
 }
 
-async function getUserProjectSummary(user, project, projectUserMap, currentUser) {
-  if (user.id !== currentUser.id && !userCan(currentUser, 'viewUserFeedback')) {
+async function _getMemberProjectSummary(member, project, projectMemberMap, currentUser) {
+  if (member.id !== currentUser.id && !userCan(currentUser, 'viewMemberFeedback')) {
     return null
   }
-  const userProjectEvaluations = await findUserProjectEvaluations(user, project)
-  userProjectEvaluations.forEach(evaluation => {
-    evaluation.submittedBy = projectUserMap.get(evaluation.submittedById)
+  const memberProjectEvaluations = await findMemberProjectEvaluations(member, project)
+  memberProjectEvaluations.forEach(evaluation => {
+    evaluation.submittedBy = projectMemberMap.get(evaluation.submittedById)
   })
 
-  let userRetrospectiveComplete
-  let userRetrospectiveUnlocked
+  let memberRetrospectiveComplete
+  let memberRetrospectiveUnlocked
 
   if (project.retrospectiveSurveyId) {
     const survey = await Survey.get(project.retrospectiveSurveyId)
-    userRetrospectiveComplete = surveyCompletedBy(survey, user.id)
-    userRetrospectiveUnlocked = !surveyLockedFor(survey, user.id)
+    memberRetrospectiveComplete = surveyCompletedBy(survey, member.id)
+    memberRetrospectiveUnlocked = !surveyLockedFor(survey, member.id)
   }
 
   return {
-    userProjectEvaluations,
-    userRetrospectiveComplete,
-    userRetrospectiveUnlocked,
+    memberProjectEvaluations,
+    memberRetrospectiveComplete,
+    memberRetrospectiveUnlocked,
   }
 }
 

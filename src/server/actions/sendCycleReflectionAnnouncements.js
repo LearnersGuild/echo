@@ -1,5 +1,5 @@
 import Promise from 'bluebird'
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {Cycle, Phase, Project} from 'src/server/services/dataService'
 
 export default async function sendCycleReflectionAnnouncements(cycleId) {
@@ -30,10 +30,10 @@ async function _sendAnnouncementToPhaseMembers(cycle, phase, message) {
     result[project.memberIds] = true // in case anyone is in multiple projects
     return result
   }, {}))
-  const phaseMembers = await getMemberInfo(phaseProjectMemberIds)
-  const phaseMemberHandles = phaseMembers.map(u => u.handle)
+  const phaseMemberUsers = await findMemberUsers(phaseProjectMemberIds)
+  const phaseMemberChatUsernames = phaseMemberUsers.map(u => u.handle)
   try {
-    await chatService.sendDirectMessage(phaseMemberHandles, message)
+    await chatService.sendDirectMessage(phaseMemberChatUsernames, message)
   } catch (err) {
     console.warn(`Failed to send cycle reflection announcement to Phase ${phase.number} for cycle ${cycle.cycleNumber}: ${err}`)
   }

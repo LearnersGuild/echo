@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import Promise from 'bluebird'
 
-import getUser from 'src/server/actions/getUser'
-import findUsers from 'src/server/actions/findUsers'
+import getMemberUser from 'src/server/actions/getMemberUser'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {Project, Response} from 'src/server/services/dataService'
 import {mapById} from 'src/server/util'
 import {LGBadRequestError} from 'src/server/util/error'
@@ -28,39 +28,39 @@ export default async function handleRequest(req, res) {
   }
 
   const userHandle = String(handle).trim()
-  const user = await getUser(userHandle)
-  if (!user) {
+  const memberUser = await getMemberUser(userHandle)
+  if (!memberUser) {
     throw new LGBadRequestError(`User not found for handle ${userHandle}`)
   }
 
-  const reportRows = await generateReport(user)
+  const reportRows = await generateReport(memberUser)
 
   res.setHeader('Content-disposition', `attachment; filename=memberRetroFeedback_${userHandle}.csv`)
   return writeCSV(reportRows, res, {headers: HEADERS})
 }
 
-async function generateReport(user) {
-  const projects = await findUserProjects(user.id)
+async function generateReport(memberUser) {
+  const projects = await _findMemberProjects(memberUser.id)
 
   return Promise.reduce(projects, async (result, project) => {
     const {cycle} = project
     const [retroSurveyResponses, projectMembers] = await Promise.all([
-      getSurveyResponsesForSubject(user.id, project.retrospectiveSurveyId),
-      findUsers(project.memberIds),
+      _getSurveyResponsesForSubject(memberUser.id, project.retrospectiveSurveyId),
+      findMemberUsers(project.memberIds),
     ])
 
-    const projectMembersById = mapById(projectMembers)
+    const projectMemberMap = mapById(projectMembers)
 
     const reportRows = retroSurveyResponses.map(response => {
-      const respondent = projectMembersById.get(response.respondentId)
+      const respondent = projectMemberMap.get(response.respondentId)
       if (!respondent) {
         console.warn('Survey response found for user no longer a member of project')
         return result
       }
 
       return {
-        subject_handle: user.handle,
-        subject_name: user.name,
+        subject_handle: memberUser.handle,
+        subject_name: memberUser.name,
         cycle_number: cycle.cycleNumber,
         project_name: project.name,
         respondent_handle: respondent.handle,
@@ -76,16 +76,16 @@ async function generateReport(user) {
   }, [])
 }
 
-function getSurveyResponsesForSubject(subjectId, surveyId) {
+function _getSurveyResponsesForSubject(subjectId, surveyId) {
   return Response
     .filter({subjectId, surveyId})
     .getJoin({question: {feedbackType: true}})
     .orderBy('questionId', 'respondentId')
 }
 
-function findUserProjects(userId) {
+function _findMemberProjects(memberId) {
   return Project
-    .filter(row => row('memberIds').contains(userId))
+    .filter(row => row('memberIds').contains(memberId))
     .getJoin({cycle: true})
     .orderBy('createdAt')
 }

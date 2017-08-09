@@ -1,5 +1,5 @@
 import config from 'src/config'
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {LGBadRequestError} from 'src/server/util/error'
 
 export default async function sendProjectWelcomeMessages(project, options = {}) {
@@ -17,14 +17,14 @@ export default async function sendProjectWelcomeMessages(project, options = {}) 
     return
   }
 
-  const projectMembers = options.members || await getMemberInfo(project.memberIds)
-  const projectMemberHandles = projectMembers.map(u => u.handle)
+  const projectMemberUsers = options.memberUsers || await findMemberUsers(project.memberIds)
+  const projectMemberUserHandles = projectMemberUsers.map(mu => mu.handle)
   const message = phase.hasVoting === true ?
-    _buildGoalProjectMessage(project, projectMembers) :
+    _buildGoalProjectMessage(project, projectMemberUsers) :
     _buildPhaseProjectMessage(project, phase)
 
   try {
-    await chatService.sendDirectMessage(projectMemberHandles, message)
+    await chatService.sendDirectMessage(projectMemberUserHandles, message)
   } catch (err) {
     console.warn(err)
   }
@@ -41,11 +41,11 @@ You should find everything you need to guide you in your work at the resources b
 `
 }
 
-function _buildGoalProjectMessage(project, projectMembers) {
+function _buildGoalProjectMessage(project, projectMemberUsers) {
   const goalLink = `<${project.goal.url}|${project.goal.number}: ${project.goal.title}>`
-  const teamMembers = (projectMembers.length > 1 ? `
+  const teamMembers = (projectMemberUsers.length > 1 ? `
 *Your team is:*
-${projectMembers.map(u => `• _${u.name}_ - @${u.handle}`).join('\n  ')}
+${projectMemberUsers.map(u => `• _${u.name}_ - @${u.handle}`).join('\n  ')}
 ` : '')
 
   return `

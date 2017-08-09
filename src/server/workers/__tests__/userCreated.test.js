@@ -14,7 +14,7 @@ describe(testContext(__filename), function () {
   beforeEach(resetDB)
 
   describe('processUserCreated', function () {
-    describe('when there is a new user', function () {
+    describe('when there is a new user w/ a member role', function () {
       beforeEach(async function () {
         this.chapter = await factory.create('chapter', {
           inviteCodes: ['test']
@@ -23,7 +23,7 @@ describe(testContext(__filename), function () {
           chapterId: this.chapter.id,
           cycleNumber: 3,
         })
-        this.user = await factory.build('user')
+        this.user = await factory.build('user', {roles: ['member']})
         this.nockGitHub = (user, replyCallback = () => ({})) => {
           useFixture.nockClean()
           nock(config.server.github.baseURL)
@@ -52,7 +52,6 @@ describe(testContext(__filename), function () {
           this.nockGitHub(this.user)
           await processUserCreated(this.user)
           const user = await Member.get(this.user.id)
-
           expect(user).to.not.be.null
         })
 

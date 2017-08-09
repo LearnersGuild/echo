@@ -26,8 +26,8 @@ describe(testContext(__filename), function () {
         nock.cleanAll()
         this.phase = await factory.create('phase', {hasVoting: true})
         this.project = await factory.create('project', {phaseId: this.phase.id})
-        this.members = await mockIdmUsersById(this.project.memberIds, null, {times: 10})
-        this.memberHandles = this.members.map(p => p.handle)
+        this.users = await mockIdmUsersById(this.project.memberIds, null, {strict: true, times: 10})
+        this.memberHandles = this.users.map(p => p.handle)
       })
 
       afterEach(function () {

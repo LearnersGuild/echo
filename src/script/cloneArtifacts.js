@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import parseArgs from 'minimist'
 import clone from 'git-clone'
 
-import getMemberInfo from 'src/server/actions/getMemberInfo'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {Chapter, Cycle, Project} from 'src/server/services/dataService'
 import {finish} from './util'
 
@@ -33,7 +33,7 @@ async function run() {
   const projectsWithMembers = await Promise.all(projects.map(async (p, index) => {
     return {
       ...projects[index],
-      members: await getMemberInfo(p.memberIds)
+      members: await findMemberUsers(p.memberIds)
     }
   }))
 

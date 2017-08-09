@@ -36,9 +36,7 @@ describe(testContext(__filename), function () {
           questionAttrs: {responseType: 'text', subjectType: 'member'},
           subjectIds: () => [this.project.memberIds[1]],
         })
-        useFixture.nockClean()
-        const {memberIds} = this.project
-        this.users = await mockIdmUsersById(memberIds, null, {times: 10})
+        this.users = await mockIdmUsersById(this.project.memberIds, null, {times: 5})
         this.handles = this.users.map(user => user.handle)
       })
 

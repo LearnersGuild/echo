@@ -1,7 +1,7 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["UserAuthWrapper"]}] */
 /* global window */
 import React from 'react'
-import {Route, IndexRoute, IndexRedirect} from 'react-router'
+import {Route, IndexRoute, IndexRedirect, Redirect} from 'react-router'
 import {UserAuthWrapper as userAuthWrapper} from 'redux-auth-wrapper'
 import {push} from 'react-router-redux'
 
@@ -11,10 +11,10 @@ import {loginURL} from 'src/common/util/auth'
 import App from 'src/common/containers/App'
 import ChapterForm from 'src/common/containers/ChapterForm'
 import ChapterList from 'src/common/containers/ChapterList'
-import UserList from 'src/common/containers/UserList'
-import UserDetail from 'src/common/containers/UserDetail'
+import MemberForm from 'src/common/containers/MemberForm'
+import MemberList from 'src/common/containers/MemberList'
+import MemberDetail from 'src/common/containers/MemberDetail'
 import ProjectForm from 'src/common/containers/ProjectForm'
-import UserForm from 'src/common/containers/UserForm'
 import ProjectList from 'src/common/containers/ProjectList'
 import ProjectDetail from 'src/common/containers/ProjectDetail'
 import RetroSurvey from 'src/common/containers/RetroSurvey'
@@ -72,10 +72,12 @@ const routes = store => {
         <IndexRoute component={userCanVisit('saveResponse', store)(RetroSurvey)}/>
         <Route path=":projectName" component={userCanVisit('saveResponse', store)(RetroSurvey)}/>
       </Route>
-      <Route path="/users" component={Blank}>
-        <IndexRoute component={userCanVisit('listUsers', store)(UserList)}/>
-        <Route path=":identifier" component={userCanVisit('viewUserSummary', store)(UserDetail)}/>
-        <Route path=":identifier/edit" component={userCanVisit('updateUser', store)(UserForm)}/>
+      <Redirect from="/users" to="/members"/>
+      <Redirect from="/users/:identifier" to="/members/:identifier"/>
+      <Route path="/members" component={Blank}>
+        <IndexRoute component={userCanVisit('listMembers', store)(MemberList)}/>
+        <Route path=":identifier" component={userCanVisit('viewMemberSummary', store)(MemberDetail)}/>
+        <Route path=":identifier/edit" component={userCanVisit('updateMember', store)(MemberForm)}/>
       </Route>
       <Route path="/phases" component={Blank}>
         <IndexRoute component={userCanVisit('viewPhases', store)(Phases)}/>

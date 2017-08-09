@@ -1,16 +1,30 @@
-export default function findMembers() {
+export default function findMembers(identifiers) {
   return {
-    variables: {},
+    variables: {identifiers},
     query: `
-      query {
-        findMembers {
+      query ($identifiers: [String]) {
+        findMembers(identifiers: $identifiers) {
           id
+          chapterId
           chapter {
             id
             name
             channelName
             timezone
             inviteCodes
+          }
+          phone
+          email
+          name
+          handle
+          avatarUrl
+          profileUrl
+          timezone
+          active
+          phaseId
+          phase {
+            id
+            number
           }
           createdAt
           updatedAt

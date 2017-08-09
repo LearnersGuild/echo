@@ -148,6 +148,13 @@ export function mapById(arr, idKey = 'id') {
   }, new Map())
 }
 
+export function hashById(arr, idKey = 'id') {
+  return arr.reduce((result, item) => {
+    result[item[idKey]] = item
+    return result
+  }, {})
+}
+
 export function groupById(arr, idKey = 'id') {
   return arr.reduce((result, item) => {
     const groupKey = item[idKey]
@@ -259,4 +266,8 @@ export function flatten(potentialArray) {
     return potentialArray
   }
   return potentialArray.reduce((result, next) => result.concat(flatten(next)), [])
+}
+
+export function without(values = [], excludedValue) {
+  return values.filter(value => value !== excludedValue)
 }

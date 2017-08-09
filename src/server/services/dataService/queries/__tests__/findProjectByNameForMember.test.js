@@ -7,7 +7,7 @@ import factory from 'src/test/factories'
 import findProjectByNameForMember from '../findProjectByNameForMember'
 
 describe(testContext(__filename), function () {
-  useFixture.setCurrentCycleAndUserForProject()
+  useFixture.setCurrentCycleAndMemberForProject()
 
   beforeEach(resetDB)
 
@@ -16,7 +16,7 @@ describe(testContext(__filename), function () {
   })
 
   it('finds the project with the given name where the user is or was a team member', async function () {
-    await this.setCurrentCycleAndUserForProject(this.project)
+    await this.setCurrentCycleAndMemberForProject(this.project)
     const project = await findProjectByNameForMember(this.project.name, this.currentUser.id)
     return expect(project.memberIds).to.contain(this.currentUser.id)
   })
@@ -28,7 +28,7 @@ describe(testContext(__filename), function () {
   })
 
   it('throws an error if there is no project with the given name', async function () {
-    await this.setCurrentCycleAndUserForProject(this.project)
+    await this.setCurrentCycleAndMemberForProject(this.project)
     const projectPromise = findProjectByNameForMember('non-existent-project-name', this.currentUser.id)
     return expect(projectPromise).to.be.rejectedWith(/Project.*.not found/)
   })

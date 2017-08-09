@@ -1,6 +1,6 @@
 import {
   getLatestCycleForChapter,
-  findProjectsForUser,
+  findProjectsForMember,
   Project,
 } from 'src/server/services/dataService'
 import assertUserIsMember from 'src/server/actions/assertUserIsMember'
@@ -18,7 +18,7 @@ export default {
     const cycle = await getLatestCycleForChapter(member.chapterId)
 
     const numActiveProjectsForCycle = await Project.filter({chapterId: member.chapterId, cycleId: cycle.id}).count()
-    const numTotalProjectsForMember = await findProjectsForUser(member.id).count()
+    const numTotalProjectsForMember = await findProjectsForMember(member.id).count()
 
     return {numActiveProjectsForCycle, numTotalProjectsForMember}
   },

@@ -1,5 +1,5 @@
 import logger from 'src/server/util/logger'
-import findUsers from 'src/server/actions/findUsers'
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import getChapter from 'src/server/actions/getChapter'
 import saveProject from 'src/server/actions/saveProject'
 import {Phase, getCycleForChapter, getProject} from 'src/server/services/dataService'
@@ -57,7 +57,7 @@ async function _validateMembers(userIdentifiers = []) {
   }
 
   const userOptions = {idmFields: ['id', 'handle']}
-  const memberUsers = userIdentifiers.length > 0 ? await findUsers(userIdentifiers, userOptions) : []
+  const memberUsers = userIdentifiers.length > 0 ? await findMemberUsers(userIdentifiers, userOptions) : []
 
   const memberPhaseIds = new Map()
   const members = userIdentifiers.map(userIdentifier => {

@@ -34,18 +34,18 @@ export default function getProjectSummary(identifier) {
             number
           }
         }
-        projectUserSummaries {
-          user {
+        projectMemberSummaries {
+          member {
             id
             name
             handle
             avatarUrl
           }
-          userProjectEvaluations {
+          memberProjectEvaluations {
             ${FEEDBACK_TYPE_DESCRIPTORS.GENERAL_FEEDBACK}
           }
-          userRetrospectiveComplete
-          userRetrospectiveUnlocked
+          memberRetrospectiveComplete
+          memberRetrospectiveUnlocked
         }
       }
     }`,

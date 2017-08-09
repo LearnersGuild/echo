@@ -77,6 +77,40 @@ export function submitSurvey(surveyId) {
   }
 }
 
+export function unlockSurveyForMember(surveyId, memberId) {
+  return {
+    types: [
+      types.UNLOCK_SURVEY_REQUEST,
+      types.UNLOCK_SURVEY_SUCCESS,
+      types.UNLOCK_SURVEY_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      const query = queries.unlockSurveyForMember(surveyId, memberId)
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.unlockSurveyForMember)
+    },
+    payload: {surveyId, memberId},
+  }
+}
+
+export function lockSurveyForMember(surveyId, memberId) {
+  return {
+    types: [
+      types.LOCK_SURVEY_REQUEST,
+      types.LOCK_SURVEY_SUCCESS,
+      types.LOCK_SURVEY_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      const query = queries.lockSurveyForMember(surveyId, memberId)
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.lockSurveyForMember)
+    },
+    payload: {surveyId, memberId},
+  }
+}
+
 export function setSurveyGroup(groupIndex) {
   return {type: types.SET_SURVEY_GROUP, groupIndex}
 }

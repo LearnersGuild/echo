@@ -32,7 +32,7 @@ function _mergeCandidateGoals(pool) {
 
 function _mergeUsers(pool) {
   return {
-    users: findMembersInPool(pool('id')).coerceTo('array')
+    members: findMembersInPool(pool('id')).coerceTo('array')
   }
 }
 

@@ -16,9 +16,9 @@ const query = `
         id
         chapter { id }
       }
-      projectUserSummaries {
-        user { id handle }
-        userProjectEvaluations {
+      projectMemberSummaries {
+        member { id handle }
+        memberProjectEvaluations {
           submittedBy { id handle }
           createdAt
           ${FEEDBACK_TYPE_DESCRIPTORS.GENERAL_FEEDBACK}
@@ -52,7 +52,7 @@ describe(testContext(__filename), function () {
     const returned = result.data.getProjectSummary
     expect(returned.project.id).to.equal(this.project.id)
     expect(returned.project.chapter.id).to.equal(this.project.chapterId)
-    expect(returned.projectUserSummaries).to.be.an('array')
+    expect(returned.projectMemberSummaries).to.be.an('array')
   })
 
   it('throws an error if project is not found', function () {

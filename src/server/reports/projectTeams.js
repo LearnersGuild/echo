@@ -1,9 +1,10 @@
+import findMemberUsers from 'src/server/actions/findMemberUsers'
 import {getPoolByCycleIdAndMemberId, r} from 'src/server/services/dataService'
+import {hashById} from 'src/server/util'
 import {
   getChapterId,
   getCycleId,
   writeCSV,
-  getMemberInfoByIds,
   parseCycleReportArgs,
 } from './util'
 
@@ -23,10 +24,10 @@ export async function runReport(args) {
   const cycleId = await getCycleId(chapterId, cycleNumber)
 
   const memberIds = await r.table('members').filter({chapterId})('id')
-  const memberInfo = await getMemberInfoByIds(memberIds)
+  const memberUserHash = hashById(await findMemberUsers(memberIds))
 
-  const query = r.expr(memberInfo).do(memberInfoExpr => {
-    const getInfo = id => memberInfoExpr(id).default({id, name: '?', email: '?', handle: '?'})
+  const query = r.expr(memberUserHash).do(memberUserHashExpr => {
+    const getInfo = id => memberUserHashExpr(id).default({id, name: '?', email: '?', handle: '?'})
     return r.table('projects')
       .filter({chapterId})
       .merge(row => ({projectName: row('name')}))

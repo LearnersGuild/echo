@@ -8,6 +8,7 @@ import {
   range,
   segment,
   sortByAttr,
+  without,
 } from '../index'
 
 describe(testContext(__filename), function () {
@@ -149,6 +150,16 @@ describe(testContext(__filename), function () {
         range(0, 0)
       ).to.deep.eq(
         []
+      )
+    })
+  })
+
+  describe('without()', function () {
+    it('excludes correct element', function () {
+      expect(
+        without([1, 2, 3], 3)
+      ).to.deep.eq(
+        [1, 2]
       )
     })
   })

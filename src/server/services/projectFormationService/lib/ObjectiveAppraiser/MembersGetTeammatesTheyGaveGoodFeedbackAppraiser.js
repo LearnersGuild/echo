@@ -1,7 +1,7 @@
 import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
 
 import {repeat, flatten, sum} from '../util'
-import {getMemberIds, getUserFeedback} from '../pool'
+import {getMemberIds, getMemberFeedback} from '../pool'
 
 export const FEEDBACK_TYPE_WEIGHTS = {
   [FEEDBACK_TYPE_DESCRIPTORS.TEAM_PLAY]: 1,
@@ -66,6 +66,6 @@ export default class MembersGetTeammatesTheyGaveGoodFeedbackAppraiser {
   }
 
   getFeedback({respondentId, subjectId}) {
-    return getUserFeedback(this.pool, {respondentId, subjectId})
+    return getMemberFeedback(this.pool, {respondentId, subjectId})
   }
 }

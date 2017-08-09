@@ -7,12 +7,12 @@ export default new GraphQLObjectType({
   name: 'PhaseSummary',
   description: 'Phase summary',
   fields: () => {
-    const {UserProfile, Phase, Project} = require('src/server/graphql/schemas')
+    const {Member, Phase, Project} = require('src/server/graphql/schemas')
 
     return {
       phase: {type: new GraphQLNonNull(Phase), description: 'The phase'},
       currentProjects: {type: new GraphQLList(Project), resolve: resolvePhaseCurrentProjects, description: 'The phases\'s currently active projects'},
-      currentMembers: {type: new GraphQLList(UserProfile), resolve: resolvePhaseCurrentMembers, description: 'The phases\'s currently active members'},
+      currentMembers: {type: new GraphQLList(Member), resolve: resolvePhaseCurrentMembers, description: 'The phases\'s currently active members'},
     }
   }
 })
