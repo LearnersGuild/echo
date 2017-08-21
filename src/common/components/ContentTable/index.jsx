@@ -6,15 +6,21 @@ import themeSelect from './themeSelect.scss'
 
 export default class ContentTable extends Component {
   render() {
-    const {allowSelect, onSelectRow} = this.props
+    const {allowSelect, onSelectRow, source, model} = this.props
+    const firstColumnName = Object.keys(model)[0]
+    const numberOfRows = source.length === 1 ? (<b>{source.length} row</b>) : (<b>{source.length} rows</b>)
+    const displaySource = source.concat({[firstColumnName]: numberOfRows})
     return (
-      <Table
-        {...this.props}
-        theme={allowSelect ? themeSelect : theme}
-        onRowClick={allowSelect ? onSelectRow : null}
-        selectable={false}
-        multiSelectable={false}
-        />
+      <div>
+        <Table
+          {...this.props}
+          source={displaySource}
+          theme={allowSelect ? themeSelect : theme}
+          onRowClick={allowSelect ? onSelectRow : null}
+          selectable={false}
+          multiSelectable={false}
+          />
+      </div>
     )
   }
 }
@@ -22,4 +28,6 @@ export default class ContentTable extends Component {
 ContentTable.propTypes = {
   allowSelect: PropTypes.bool,
   onSelectRow: PropTypes.func,
+  source: PropTypes.array.isRequired,
+  model: PropTypes.object.isRequired,
 }
