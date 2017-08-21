@@ -1,5 +1,5 @@
 import cacheManager from 'cache-manager'
-
+import Promise from 'bluebird'
 import getChannelList from './getChannelList'
 import getUserList from './getUserList'
 import {usernameFor} from './util'
@@ -9,42 +9,28 @@ const memoryCache = cacheManager.caching({
   ttl: 5 * 60, // seconds
 })
 
+const USER_KEY = 'user_'
+const CHANNEL_KEY = 'channel_'
+
 export async function getUserId(userHandle) {
-  const userIdMap = await _getUserIdMap()
-  return userIdMap.get(usernameFor(userHandle))
+  const userName = usernameFor(userHandle)
+  const userKey = _buildKey(USER_KEY, userName)
+  return memoryCache.wrap(userKey, async () => {
+    const users = (await getUserList()).members
+    await Promise.each(users, ({name, id}) => memoryCache.set(_buildKey(USER_KEY, name), id))
+    return memoryCache.get(userKey)
+  })
 }
 
 export async function getChannelId(channelName) {
-  const channelIdMap = await _getChannelIdMap()
-  return channelIdMap.get(channelName)
-}
-
-function _getUserIdMap() {
-  return memoryCache.wrap('userIdMap', () => {
-    return _getUserIdMapUncached()
+  const channelKey = _buildKey(CHANNEL_KEY, channelName)
+  return memoryCache.wrap(channelKey, async () => {
+    const channels = (await getChannelList()).channels
+    await Promise.each(channels, ({name, id}) => memoryCache.set(_buildKey(CHANNEL_KEY, name), id))
+    return memoryCache.get(channelKey)
   })
 }
 
-function _getChannelIdMap() {
-  return memoryCache.wrap('channelIdMap', () => {
-    return _getChannelIdMapUncached()
-  })
-}
-
-async function _getUserIdMapUncached() {
-  return await _getIdMapUncached(getUserList, 'members')
-}
-
-async function _getChannelIdMapUncached() {
-  return await _getIdMapUncached(getChannelList, 'channels')
-}
-
-async function _getIdMapUncached(getListFromAPI, attrName) {
-  const apiResult = await getListFromAPI()
-  const list = apiResult[attrName]
-  const map = list.reduce((result, {id, name}) => {
-    result.set(name, id)
-    return result
-  }, new Map())
-  return map
+function _buildKey(keyType, name) {
+  return keyType + name.toLowerCase()
 }
