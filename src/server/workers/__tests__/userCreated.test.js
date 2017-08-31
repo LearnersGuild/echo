@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global expect, assert, testContext */
+/* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 
 import factory from 'src/test/factories'
@@ -65,18 +65,14 @@ describe(testContext(__filename), function () {
       })
 
       describe('for an existing member', function () {
-        it('does not replace the given member', async function () {
+        it('fails hard if member already exists', async function () {
           await processUserCreated(this.user)
-          const oldMember = await Member.get(this.user.id)
 
-          assert.doesNotThrow(async function () {
+          const getRejection = async () => {
             await processUserCreated(this.user)
-          }, Error)
+          }
 
-          await processUserCreated({...this.user, name: 'new name'})
-          const updatedUser = await Member.get(this.user.id)
-
-          expect(updatedUser.createdAt).to.eql(oldMember.createdAt)
+          return expect(getRejection()).to.be.rejectedWith(/already exists/i)
         })
       })
     })
