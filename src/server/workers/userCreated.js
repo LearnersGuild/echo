@@ -37,7 +37,12 @@ export async function processUserCreated(idmUser) {
       newMember.phaseId = defaultPhase.id
     }
 
-    await Member.upsert(newMember)
+    const matchingMember = await Member.filter({id: idmUser.id})
+    if (matchingMember && matchingMember.length > 0) {
+      throw new Error('IDM user already exists as member of echo.')
+    }
+
+    await Member.insert(newMember)
 
     try {
       await _addUserToChapterGitHubTeam(idmUser.handle, chapter.githubTeamId)
