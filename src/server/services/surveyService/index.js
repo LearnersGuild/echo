@@ -1,7 +1,7 @@
 import Promise from 'bluebird'
 import {Question, Response} from 'src/server/services/dataService'
 
-export async function getFeedbackResponsesBySubjectId(subjectId) {
+export default async function getFeedbackResponsesBySubjectId(subjectId) {
   const responses = await Response.filter({subjectId})
 
   const getFeedbackTypeDescriptor = _memoizedFeedbackTypeDescriptorFetcher()

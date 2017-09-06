@@ -1,4 +1,4 @@
-export function NoValidPlanFoundError(message) {
+export default function NoValidPlanFoundError(message) {
   this.name = 'NoValidPlanFoundError'
   this.message = message
 }

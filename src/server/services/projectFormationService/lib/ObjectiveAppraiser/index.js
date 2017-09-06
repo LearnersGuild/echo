@@ -11,7 +11,9 @@ const WEIGHTED_OBJECTIVES = [
 ]
 
 function load(objective) {
-  const module = require(`./${objective}Appraiser`)
+  /* TODO security concern? Linting says to not make */ // eslint-disable-line
+  /* dynamic imports but we're ignoring that warning */ // eslint-disable-line
+  const module = require(`./${objective}Appraiser`) // eslint-disable-line import/no-dynamic-require
   return module.default || module
 }
 

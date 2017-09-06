@@ -1,6 +1,6 @@
 import socketCluster from 'socketcluster-client'
 
-export function subscribe(channelName, onChange) {
+export default function subscribe(channelName, onChange) {
   const socket = socketCluster.connect()
   socket.on('connect', () => console.log('... socket connected'))
   socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))

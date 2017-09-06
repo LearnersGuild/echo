@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+/* eslint-disable no-warning-comments */
 import React from 'react'
 import {renderToString} from 'react-dom/server'
 import {RouterContext, match} from 'react-router'
@@ -100,6 +101,7 @@ function _getInitialState(req) {
     },
   }
 
+  // eslint-disable-line:start
   // This is kind of a hack. Rather than enabling sessions (which would require
   // Redis or another store of some kind), we just pass error codes through the
   // query string so that they can be rendered properly in the UI.

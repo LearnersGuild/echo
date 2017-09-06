@@ -1,10 +1,10 @@
 import validate from 'validate.js'
 
-export * from './chapter'
-export * from './cycle'
-export * from './inviteCode'
-export * from './project'
-export * from './user'
+export {default as chapterSchema} from './chapter'
+export {default as cycleSchema} from './cycle'
+export {default as inviteCodeSchema} from './inviteCode'
+export {default as projectSchema} from './project'
+export {default as userSchema} from './user'
 
 export function validationErrorToReduxFormErrors(error) {
   const errorMap = {}

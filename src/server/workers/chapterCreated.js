@@ -3,7 +3,7 @@ import {getOwnerAndRepoFromGitHubURL} from 'src/common/util'
 import {Chapter} from 'src/server/services/dataService'
 import {getTeam, createTeam} from 'src/server/services/gitHubService'
 
-export function start() {
+export default function start() {
   const jobService = require('src/server/services/jobService')
   jobService.processJobs('chapterCreated', processChapterCreated)
 }

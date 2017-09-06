@@ -85,9 +85,9 @@ describe(testContext(__filename), function () {
   })
 
   describe.skip('props.sum, props.onChange', function () {
-    // FIXME: having trouble figuring out how to properly get the
-    // onChange event handler invoked. simulating a 'change' event
-    // on a <Slider> component doesn't seem to cut it.
+    /* FIXME: having trouble figuring out how to properly get the */ // eslint-disable-line no-warning-comments
+    /* onChange event handler invoked. simulating a 'change' event */ // eslint-disable-line no-warning-comments
+    /* on a <Slider> component doesn't seem to cut it. */ // eslint-disable-line no-warning-comments
     it('passes value to provided callback')
     it('limits sum of value changes to no more than the specified sum')
     it('returns a value for every option, even if some options have a null or 0 value')

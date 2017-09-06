@@ -1,6 +1,6 @@
 import yup from 'yup'
 
-export const projectSchema = yup.object().shape({
+const projectSchema = yup.object().shape({
   chapterIdentifier: yup.string().trim().required().min(3),
   cycleIdentifier: yup.number().integer().required().min(1),
   goalIdentifier: yup.number().integer().positive().required(),
@@ -19,3 +19,5 @@ function _isValidIdentifierList(value) {
       .filter(v => v)
   ).length > 0
 }
+
+export default projectSchema

@@ -5,7 +5,7 @@ import {ADMIN} from 'src/common/models/user'
 
 const JWT_ISSUER = 'learnersguild.org'
 
-export function serverToServerJWT() {
+export default function serverToServerJWT() {
   /* eslint-disable camelcase */
   const now = Math.floor(Date.now() / 1000)
   const claims = {

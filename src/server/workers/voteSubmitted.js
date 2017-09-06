@@ -4,7 +4,7 @@ import {Cycle, Pool, Vote, r} from 'src/server/services/dataService'
 import {getGoalInfo} from 'src/server/services/goalLibraryService'
 import getCycleVotingResults from 'src/server/actions/getCycleVotingResults'
 
-export function start() {
+export default function start() {
   const jobService = require('src/server/services/jobService')
   jobService.processJobs('voteSubmitted', processVoteSubmitted)
 }

@@ -46,7 +46,7 @@ const subcommands = {
   },
 }
 
-export async function invoke(args, options) {
+export default async function invoke(args, options) {
   if (args._.length >= 1) {
     const subcommand = args._[0]
     return await subcommands[subcommand](args.$[subcommand], options)

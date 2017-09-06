@@ -250,7 +250,7 @@ function mapStateToProps(state) {
   let showProjects = false
   let projects = null
 
-  // TODO: make more performant by parsing survey only when data changes
+  /* TODO: make more performant by parsing survey only when data changes */ // eslint-disable-line no-warning-comments
   if (surveys.length === 1) {
     try {
       const survey = surveys[0]

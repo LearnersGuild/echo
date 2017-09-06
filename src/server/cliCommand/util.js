@@ -5,7 +5,9 @@ export function getCommand(command) {
   let commandImpl
   try {
     commandSpec = require('@learnersguild/echo-cli')[command]
-    commandImpl = require(`src/server/cliCommand/commands/${command}`)
+    /* TODO security concern? Linting says to not make */ // eslint-disable-line
+    /* dynamic imports but we're ignoring that warning */ // eslint-disable-line
+    commandImpl = require(`src/server/cliCommand/commands/${command}`) // eslint-disable-line import/no-dynamic-require
   } catch (err) {
     if (err.code !== 'MODULE_NOT_FOUND') {
       throw err

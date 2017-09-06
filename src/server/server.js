@@ -19,7 +19,7 @@ import {formatServerError} from './util/error'
 
 const sentry = new raven.Client(config.server.sentryDSN)
 
-export function start() {
+export default function start() {
   // capture unhandled exceptions
   raven.patchGlobal(config.server.sentryDSN)
 

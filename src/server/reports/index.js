@@ -23,7 +23,9 @@ function requestHandler(req, res, next) {
   assertReportNameIsValid(reportName)
   assertUserCanViewReport(req.user)
 
-  const reportHandler = require(`./${reportName}`)
+  /* TODO security concern? Linting says to not make */ // eslint-disable-line
+  /* dynamic imports but we're ignoring that warning */ // eslint-disable-line
+  const reportHandler = require(`./${reportName}`) // eslint-disable-line import/no-dynamic-require
   const handleReport = typeof reportHandler === 'function' ? reportHandler : reportHandler.default
 
   res.set('Content-Type', 'text/csv')

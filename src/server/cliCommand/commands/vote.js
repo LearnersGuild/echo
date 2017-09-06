@@ -55,7 +55,7 @@ async function _voteForGoals(user, goalDescriptors, responseURL) {
   return {...savedVote, member, cycle}
 }
 
-export async function invoke(args, {user, responseURL}) {
+export default async function invoke(args, {user, responseURL}) {
   const attachments = []
   if (args._.length > 0) {
     await _voteForGoals(user, args._, responseURL)
