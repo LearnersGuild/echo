@@ -1,5 +1,19 @@
 import thinky from 'thinky'
 
+import {default as chapter} from 'src/server/services/dataService/models/chapter'
+import {default as cycle} from 'src/server/services/dataService/models/cycle'
+import {default as feedbackType} from 'src/server/services/dataService/models/feedbackType'
+import {default as member} from 'src/server/services/dataService/models/member'
+import {default as phase} from 'src/server/services/dataService/models/phase'
+import {default as pool} from 'src/server/services/dataService/models/pool'
+import {default as poolMember} from 'src/server/services/dataService/models/poolMember'
+import {default as project} from 'src/server/services/dataService/models/project'
+import {default as question} from 'src/server/services/dataService/models/question'
+import {default as response} from 'src/server/services/dataService/models/response'
+import {default as survey} from 'src/server/services/dataService/models/survey'
+import {default as surveyBlueprint} from 'src/server/services/dataService/models/surveyBlueprint'
+import {default as vote} from 'src/server/services/dataService/models/vote'
+
 import config from 'src/config'
 import r from '../r'
 
@@ -8,19 +22,19 @@ const errors = t.Errors
 
 // load model configurations
 const modelDefinitions = {
-  chapter: require('src/server/services/dataService/models/chapter'),
-  cycle: require('src/server/services/dataService/models/cycle'),
-  feedbackType: require('src/server/services/dataService/models/feedbackType'),
-  member: require('src/server/services/dataService/models/member'),
-  phase: require('src/server/services/dataService/models/phase'),
-  pool: require('src/server/services/dataService/models/pool'),
-  poolMember: require('src/server/services/dataService/models/poolMember'),
-  project: require('src/server/services/dataService/models/project'),
-  question: require('src/server/services/dataService/models/question'),
-  response: require('src/server/services/dataService/models/response'),
-  survey: require('src/server/services/dataService/models/survey'),
-  surveyBlueprint: require('src/server/services/dataService/models/surveyBlueprint'),
-  vote: require('src/server/services/dataService/models/vote'),
+  chapter,
+  cycle,
+  feedbackType,
+  member,
+  phase,
+  pool,
+  poolMember,
+  project,
+  question,
+  response,
+  survey,
+  surveyBlueprint,
+  vote,
 }
 
 // initiate models
