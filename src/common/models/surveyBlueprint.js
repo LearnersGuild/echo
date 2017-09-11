@@ -1,3 +1,1 @@
-const RETROSPECTIVE_DESCRIPTOR = 'retrospective'
-
-export default RETROSPECTIVE_DESCRIPTOR
+export const RETROSPECTIVE_DESCRIPTOR = 'retrospective'

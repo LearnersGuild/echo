@@ -1,15 +1,11 @@
 import thinky from 'thinky'
-
 import config from 'src/config'
-// import {autoloadFunctions} from 'src/server/util'
-
 import r from '../r'
 
 const t = thinky({r, createDatabase: false})
 const errors = t.Errors
 
 // load model configurations
-// const modelDefinitions = autoloadFunctions(__dirname)
 const modelDefinitions = {
   chapter: require('src/server/services/dataService/models/chapter'),
   cycle: require('src/server/services/dataService/models/cycle'),

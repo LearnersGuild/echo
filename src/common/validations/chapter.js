@@ -2,7 +2,7 @@
 import yup from 'yup'
 import moment from 'moment-timezone'
 
-const chapterSchema = yup.object().shape({
+export const chapterSchema = yup.object().shape({
   name: yup.string().required().min(3),
   channelName: yup.string().required().min(3),
   timezone: yup.string().required().test(
@@ -12,4 +12,3 @@ const chapterSchema = yup.object().shape({
   ),
 })
 
-export default chapterSchema
