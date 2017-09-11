@@ -1,6 +1,5 @@
 import fs from 'fs'
 import config from 'src/config'
-import autoloader from 'auto-loader'
 import raven from 'raven'
 
 const sentry = new raven.Client(config.server.sentryDSN)
@@ -25,16 +24,6 @@ export function loadJSON(filePath, validateItem = item => item) {
       }
     })
   })
-}
-
-export function autoloadFunctions(directoryPath) {
-  const moduleExports = autoloader.load(directoryPath)
-  return Object.keys(moduleExports).reduce((result, key) => {
-    if (typeof moduleExports[key] === 'function') {
-      result[key] = moduleExports[key]
-    }
-    return result
-  }, {})
 }
 
 export function logRejection(promise, message = '') {
