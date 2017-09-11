@@ -1,7 +1,7 @@
 import micromustache from 'micromustache'
 
 export const QUESTION_SUBJECT_TYPES = {
-  COACH: 'coach', // FIXME: only being kept because of an unnecessarry migration.
+  COACH: 'coach', /* FIXME: only being kept because of an unnecessarry migration. */ // eslint-disable-line no-warning-comments
   TEAM: 'team',
   MEMBER: 'member',
   PROJECT: 'project',

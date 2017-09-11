@@ -104,7 +104,7 @@ function _getInitialState(req) {
   // Redis or another store of some kind), we just pass error codes through the
   // query string so that they can be rendered properly in the UI.
   switch (req.query.err) {
-    // TODO: why is this commented out?
+    /* TODO: why is this commented out? */ // eslint-disable-line no-warning-comments
     // case 'auth':
     //   initialState.errors = {
     //     messages: ['Authentication failed. Are you sure you have an account?']
