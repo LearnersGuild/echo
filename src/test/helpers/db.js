@@ -1,4 +1,6 @@
-import {truncateTables} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
+
+const {truncateTables} = Models
 
 export function resetDB() {
   // truncating tables can sometimes take a long time

@@ -3,8 +3,11 @@
 import nock from 'nock'
 
 import config from 'src/config'
-import {Cycle, Project} from 'src/server/services/dataService'
+import {default as Models} from 'src/server/services/dataService'
 import factory from 'src/test/factories'
+
+const Cycle = Models.Cycle
+const Project = Models.Project
 
 export const useFixture = {
   buildOneQuestionSurvey() {

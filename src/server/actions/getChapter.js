@@ -1,4 +1,6 @@
-import {r, errors, Chapter} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
+
+const {r, errors, Chapter} = Models
 
 export default function getChapter(identifier) {
   const identifierLower = String(identifier).toLowerCase()

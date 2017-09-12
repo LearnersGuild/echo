@@ -1,7 +1,9 @@
 import getMemberInfo from 'src/server/actions/getMemberInfo'
 import addMemberToPoolInCycle from 'src/server/actions/addMemberToPoolInCycle'
-import {Phase, getLatestCycleForChapter} from 'src/server/services/dataService'
+import {default as Models} from 'src/server/services/dataService'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
+
+const {Phase, getLatestCycleForChapter} = Models
 
 export function start() {
   const jobService = require('src/server/services/jobService')

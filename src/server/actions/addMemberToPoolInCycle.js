@@ -1,5 +1,7 @@
-import {r, errors, Cycle, Member, Phase, Pool, PoolMember} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
 import {LGBadRequestError, LGInternalServerError} from 'src/server/util/error'
+
+const {r, errors, Cycle, Member, Phase, Pool, PoolMember} = Models
 
 export default async function addMemberToPoolInCycle(cycleId, memberId) {
   const cycle = typeof cycleId === 'string' ? await Cycle.get(cycleId) : cycleId

@@ -1,5 +1,7 @@
 import Promise from 'bluebird'
-import {Question, Response} from 'src/server/services/dataService'
+import {default as Models} from 'src/server/services/dataService'
+
+const {Question, Response} = Models
 
 export async function getFeedbackResponsesBySubjectId(subjectId) {
   const responses = await Response.filter({subjectId})

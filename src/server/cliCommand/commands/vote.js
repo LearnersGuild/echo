@@ -1,16 +1,13 @@
 import config from 'src/config'
 import {GOAL_SELECTION} from 'src/common/models/cycle'
-import {
-  Member,
-  Vote,
-  getCyclesInStateForChapter,
-  getPoolByCycleIdAndMemberId,
-} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
 import {
   LGNotAuthorizedError,
   LGBadRequestError,
   LGForbiddenError,
 } from 'src/server/util/error'
+
+const {Member, Vote, getCyclesInStateForChapter, getPoolByCycleIdAndMemberId} = Models
 
 async function _voteForGoals(user, goalDescriptors, responseURL) {
   if (!user) {

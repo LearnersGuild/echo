@@ -1,7 +1,9 @@
 import config from 'src/config'
 import {getOwnerAndRepoFromGitHubURL} from 'src/common/util'
-import {Chapter} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
 import {getTeam, createTeam} from 'src/server/services/gitHubService'
+
+const {Chapter} = Models
 
 export function start() {
   const jobService = require('src/server/services/jobService')

@@ -4,13 +4,15 @@ import getUser from 'src/server/actions/getUser'
 
 import assertUserIsMember from 'src/server/actions/assertUserIsMember'
 import createNextCycleForChapter from 'src/server/actions/createNextCycleForChapter'
-import {Cycle, getCyclesInStateForChapter, getLatestCycleForChapter} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
 import {
   LGCLIUsageError,
   LGNotAuthorizedError,
   LGForbiddenError,
   LGBadRequestError,
 } from 'src/server/util/error'
+
+const {Cycle, getCyclesInStateForChapter, getLatestCycleForChapter} = Models
 
 const subcommands = {
   async init(args, {user}) {

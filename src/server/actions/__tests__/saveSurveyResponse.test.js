@@ -2,9 +2,11 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
 import {resetDB, useFixture} from 'src/test/helpers'
-import {Response} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
 
 import saveSurveyResponse, {_assertValidResponseValues} from '../saveSurveyResponse'
+
+const {Response} = Models
 
 describe(testContext(__filename), function () {
   useFixture.buildOneQuestionSurvey()

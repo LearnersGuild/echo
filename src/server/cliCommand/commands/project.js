@@ -2,10 +2,12 @@ import config from 'src/config'
 
 import {userCan} from 'src/common/util'
 import findActiveProjectsForMember from 'src/server/actions/findActiveProjectsForMember'
-import {Project, findProjectByNameForMember} from 'src/server/services/dataService'
+import Models from 'src/server/services/dataService'
 import {LGCLIUsageError, LGNotAuthorizedError} from 'src/server/util/error'
 
 import {deprecatedCommand} from '../util'
+
+const {Project, findProjectByNameForMember} = Models
 
 async function _getCurrentProjectForUser(user) {
   const activeProjects = await findActiveProjectsForMember(user.id)

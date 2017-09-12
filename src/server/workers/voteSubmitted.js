@@ -1,8 +1,10 @@
 import Promise from 'bluebird'
 
-import {Cycle, Pool, Vote, r} from 'src/server/services/dataService'
+import {default as Models} from 'src/server/services/dataService'
 import {getGoalInfo} from 'src/server/services/goalLibraryService'
 import getCycleVotingResults from 'src/server/actions/getCycleVotingResults'
+
+const {Cycle, Pool, Vote, r} = Models
 
 export function start() {
   const jobService = require('src/server/services/jobService')
