@@ -1,8 +1,9 @@
 import config from 'src/config'
 import {getOwnerAndRepoFromGitHubURL} from 'src/common/util'
 import Models from 'src/server/services/dataService'
-import {getTeam, createTeam} from 'src/server/services/gitHubService'
+import GithubServices from 'src/server/services/gitHubService'
 
+const {getTeam, createTeam} = GithubServices
 const {Chapter} = Models
 
 export function start() {

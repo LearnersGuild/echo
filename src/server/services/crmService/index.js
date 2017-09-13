@@ -16,7 +16,7 @@ const paths = {
  * certain stubbing functionality functionality for testing that relies on the
  * way the module is cached and later required by dependent modules.
  */
-export default {
+export {
   getContactByEmail,
   notifyContactSignedUp,
 }
