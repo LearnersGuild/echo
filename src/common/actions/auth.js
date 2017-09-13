@@ -1,4 +1,6 @@
-import {UPDATE_JWT, UNAUTHENTICATED_ERROR} from './types'
+import Types from './types'
+
+const {UPDATE_JWT, UNAUTHENTICATED_ERROR} = Types
 
 export function updateJWT(lgJWT) {
   return {type: UPDATE_JWT, lgJWT}
