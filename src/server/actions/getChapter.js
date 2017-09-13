@@ -2,6 +2,14 @@ import Models from 'src/server/services/dataService'
 
 const {r, errors, Chapter} = Models
 
+console.log(`
+  Are we destructuring each of these?
+  r: ${r}
+  errors: ${errors}
+  Chapter: ${Chapter}
+  Models: ${Models}
+`)
+
 export default function getChapter(identifier) {
   const identifierLower = String(identifier).toLowerCase()
   return Chapter.filter(row => r.or(

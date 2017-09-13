@@ -18,5 +18,6 @@ export default {
   Survey: models.Survey,
   SurveyBlueprint: models.SurveyBlueprint,
   Vote: models.Vote,
+  errors: models.errors,
   ...queries,
 }
