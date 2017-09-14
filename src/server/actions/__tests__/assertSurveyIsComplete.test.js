@@ -6,6 +6,9 @@ import {resetDB, useFixture} from 'src/test/helpers'
 
 import assertSurveyIsComplete from '../assertSurveyIsComplete'
 
+console.log('useFixture inside test~~~>', useFixture)
+console.log('resetDB inside test~~~>', resetDB)
+
 describe(testContext(__filename), function () {
   useFixture.buildOneQuestionSurvey()
 

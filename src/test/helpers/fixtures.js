@@ -3,13 +3,10 @@
 import nock from 'nock'
 
 import config from 'src/config'
-import {default as Models} from 'src/server/services/dataService'
+import {Cycle, Project} from 'src/server/services/dataService'
 import factory from 'src/test/factories'
 
-const Cycle = Models.Cycle
-const Project = Models.Project
-
-export const useFixture = {
+const useFixture = {
   buildOneQuestionSurvey() {
     beforeEach(function () {
       this.buildOneQuestionSurvey = async function ({questionAttrs, subjectIds}) {
@@ -181,3 +178,5 @@ export const useFixture = {
     })
   }
 }
+
+export default useFixture
