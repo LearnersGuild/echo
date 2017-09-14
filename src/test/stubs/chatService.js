@@ -1,5 +1,7 @@
 import chatService from 'src/server/services/chatService'
-import {stubServiceAPIs} from './util'
+import stubServiceAPIs from './util'
+
+console.log('stub ~~~~~> ', stubServiceAPIs)
 
 const stubbedAPIs = stubServiceAPIs(chatService, {
   createChannel: () => Promise.resolve({}),
