@@ -4,7 +4,7 @@ import clone from 'git-clone'
 
 import getMemberInfo from 'src/server/actions/getMemberInfo'
 import {Chapter, Cycle, Project} from 'src/server/services/dataService'
-import {finish} from './util'
+import finish from './util'
 
 run()
   .then(() => finish())

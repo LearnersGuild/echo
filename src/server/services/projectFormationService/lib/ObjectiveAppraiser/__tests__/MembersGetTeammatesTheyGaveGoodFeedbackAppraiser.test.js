@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks, no-multi-spaces, comma-spacing  */
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 import MembersGetTeammatesTheyGaveGoodFeedbackAppraiser, {
   NOVELTY_WEIGHT,

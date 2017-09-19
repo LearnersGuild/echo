@@ -9,7 +9,7 @@ import Helmet from 'react-helmet'
 
 import InviteCodeForm from 'src/common/containers/InviteCodeForm'
 import ContentHeader from 'src/common/components/ContentHeader'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import {renderInput} from 'src/common/util/form'
 import {slugify} from 'src/common/util'
 

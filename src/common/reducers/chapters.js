@@ -1,4 +1,7 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+import {mergeEntities} from '../util'
+
+const {
   GET_CHAPTER_REQUEST,
   GET_CHAPTER_SUCCESS,
   GET_CHAPTER_FAILURE,
@@ -15,9 +18,7 @@ import {
   REASSIGN_MEMBERS_TO_CHAPTER_SUCCESS,
   GET_CYCLE_VOTING_RESULTS_SUCCESS,
   RECEIVED_CYCLE_VOTING_RESULTS,
-} from 'src/common/actions/types'
-
-import {mergeEntities} from '../util'
+} = ActionTypes
 
 const initialState = {
   chapters: {},

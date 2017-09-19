@@ -6,7 +6,7 @@ import Promise from 'bluebird'
 import factory from 'src/test/factories'
 import {resetDB, useFixture} from 'src/test/helpers'
 import {Project} from 'src/server/services/dataService'
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 import findUserProjectEvaluations from '../findUserProjectEvaluations'
 

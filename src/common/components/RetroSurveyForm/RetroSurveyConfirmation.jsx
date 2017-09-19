@@ -1,5 +1,5 @@
 import React from 'react'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import styles from './index.scss'
 
 export default function RetroSurveyConfirmation() {

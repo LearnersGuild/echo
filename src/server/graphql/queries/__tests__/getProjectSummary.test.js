@@ -5,7 +5,7 @@ import Promise from 'bluebird'
 
 import factory from 'src/test/factories'
 import {resetDB, runGraphQLQuery, useFixture} from 'src/test/helpers'
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 import fields from '../index'
 

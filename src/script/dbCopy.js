@@ -5,7 +5,7 @@ import s3 from 's3'
 
 import config from 'src/config'
 import dbConfig from 'src/config/db'
-import {finish} from './util'
+import finish from './util'
 
 const s3Client = s3.createClient({s3Options: config.server.aws.s3})
 

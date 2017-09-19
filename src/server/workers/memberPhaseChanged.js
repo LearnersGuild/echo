@@ -22,7 +22,7 @@ export async function processMemberPhaseChangeCompleted({old_val: oldMember, new
   const currentCycle = await getLatestCycleForChapter(newMember.chapterId)
   if (currentCycle.state === GOAL_SELECTION) {
     if (oldMember.phaseId) {
-      // TODO: remove from voting pool and delete submitted votes (if any)
+      /* TODO: remove from voting pool and delete submitted votes (if any) */ // eslint-disable-line no-warning-comments
     }
     if (newPhase.hasVoting === true) {
       const poolMember = await addMemberToPoolInCycle(currentCycle, newMember)

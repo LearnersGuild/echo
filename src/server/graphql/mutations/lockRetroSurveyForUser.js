@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql'
 import {lockRetroSurveyForUser} from 'src/server/actions/retroSurveyLockUnlock'
 import userCan from 'src/common/util/userCan'
-import {Project} from 'src/server/services/dataService/models'
+import Project from 'src/server/services/dataService/models'
 import {LGNotAuthorizedError} from 'src/server/util/error'
 
 import {ProjectSummary} from 'src/server/graphql/schemas'

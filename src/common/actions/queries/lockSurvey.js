@@ -1,4 +1,4 @@
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 export default function lockSurvey(memberId, projectId) {
   return {

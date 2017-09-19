@@ -6,7 +6,7 @@ import Helmet from 'react-helmet'
 
 import ContentHeader from 'src/common/components/ContentHeader'
 import NotFound from 'src/common/components/NotFound'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import {FORM_TYPES, renderDropdown} from 'src/common/util/form'
 
 import styles from './index.scss'

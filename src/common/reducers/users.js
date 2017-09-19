@@ -1,10 +1,11 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+import {mergeEntities} from 'src/common/util'
+
+const {
   FIND_USERS_REQUEST,
   FIND_USERS_SUCCESS,
   FIND_USERS_FAILURE,
-} from 'src/common/actions/types'
-
-import {mergeEntities} from 'src/common/util'
+} = ActionTypes
 
 const initialState = {
   users: {},

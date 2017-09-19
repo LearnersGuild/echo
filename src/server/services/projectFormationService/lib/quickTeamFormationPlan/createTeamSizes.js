@@ -1,4 +1,4 @@
-import {NoValidPlanFoundError} from '../errors'
+import NoValidPlanFoundError from '../errors'
 import {getMinTeamSize} from '../pool'
 
 export default function createTeamSizes(recTeamSize, numMembers) {

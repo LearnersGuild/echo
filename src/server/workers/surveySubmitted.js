@@ -2,7 +2,7 @@ import {mapById} from 'src/common/util'
 import getMemberInfo from 'src/server/actions/getMemberInfo'
 import {Survey, getProjectBySurveyId} from 'src/server/services/dataService'
 import sendRetroCompletedNotification from 'src/server/actions/sendRetroCompletedNotification'
-import {entireProjectTeamHasCompletedSurvey} from 'src/server/util/project'
+import entireProjectTeamHasCompletedSurvey from 'src/server/util/project'
 
 export function start() {
   const jobService = require('src/server/services/jobService')

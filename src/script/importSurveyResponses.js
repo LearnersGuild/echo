@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 import {Response} from 'src/server/services/dataService'
-import {finish} from './util'
+import finish from './util'
 
 const LOG_PREFIX = '[importSurveyResponses]'
 const DATA_FILE_PATH = path.resolve(__dirname, '../tmp/survey-responses.json')

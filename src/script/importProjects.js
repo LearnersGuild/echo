@@ -11,7 +11,7 @@ import parseArgs from 'minimist'
 
 import importProject from 'src/server/actions/importProject'
 import {loadJSON} from 'src/server/util'
-import {finish} from './util'
+import finish from './util'
 
 run()
   .then(() => finish())

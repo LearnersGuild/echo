@@ -1,9 +1,10 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+import {mergeEntities} from 'src/common/util'
+
+const {
   GET_CYCLE_VOTING_RESULTS_SUCCESS,
   RECEIVED_CYCLE_VOTING_RESULTS,
-} from 'src/common/actions/types'
-
-import {mergeEntities} from 'src/common/util'
+} = ActionTypes
 
 const initialState = {
   cycles: {},

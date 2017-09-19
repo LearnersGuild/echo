@@ -1,7 +1,7 @@
 import {Response, Member, Project} from 'src/server/services/dataService'
 import {groupById} from 'src/server/util'
 import {extractValueForReponseQuestionFeedbackType} from 'src/server/util/feedback'
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 import {LGBadRequestError} from 'src/server/util/error'
 
 const evaluationFeedbackTypeDescriptors = [

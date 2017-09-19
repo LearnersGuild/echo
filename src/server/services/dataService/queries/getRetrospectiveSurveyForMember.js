@@ -1,5 +1,5 @@
 import {REFLECTION} from 'src/common/models/cycle'
-import {RETROSPECTIVE_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
+import RETROSPECTIVE_DESCRIPTOR from 'src/common/models/surveyBlueprint'
 
 import r from '../r'
 import {customQueryError} from '../util'

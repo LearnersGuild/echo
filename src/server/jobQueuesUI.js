@@ -5,7 +5,7 @@ import toureiro from 'toureiro'
 import config from 'src/config'
 import {userCan} from 'src/common/util'
 import {LGNotAuthorizedError} from 'src/server/util/error'
-import {loginURL} from 'src/common/util/auth'
+import loginURL from 'src/common/util/auth'
 
 const app = new express.Router()
 const redisConfig = url.parse(config.server.redis.url)

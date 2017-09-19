@@ -1,4 +1,6 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+
+const {
   APP_SHOW_LOADING,
   APP_HIDE_LOADING,
   AUTHORIZATION_ERROR,
@@ -7,7 +9,7 @@ import {
   FETCH_DATA_FAILURE,
   FETCH_DATA_SUCCESS,
   UNLOCK_SURVEY_FAILURE,
-} from 'src/common/actions/types'
+} = ActionTypes
 
 const initialState = {
   isBusy: false,

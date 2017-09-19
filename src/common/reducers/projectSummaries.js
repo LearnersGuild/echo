@@ -1,4 +1,6 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+
+const {
   GET_PROJECT_SUMMARY_REQUEST,
   GET_PROJECT_SUMMARY_SUCCESS,
   GET_PROJECT_SUMMARY_FAILURE,
@@ -6,7 +8,7 @@ import {
   LOCK_SURVEY_SUCCESS,
   UNLOCK_SURVEY_REQUEST,
   UNLOCK_SURVEY_SUCCESS,
-} from 'src/common/actions/types'
+} = ActionTypes
 
 const initialState = {
   projectSummaries: {},

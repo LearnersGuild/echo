@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react'
 import {Link} from 'react-router'
 
-import {Flex} from 'src/common/components/Layout'
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import Flex from 'src/common/components/Layout'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 import {IconButton} from 'react-toolbox/lib/button'
 import {ProgressBar} from 'react-toolbox/lib/progress_bar'
 

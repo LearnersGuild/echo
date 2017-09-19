@@ -6,7 +6,7 @@ import config from 'src/config'
 import {Cycle, Project} from 'src/server/services/dataService'
 import factory from 'src/test/factories'
 
-export const useFixture = {
+export default {
   buildOneQuestionSurvey() {
     beforeEach(function () {
       this.buildOneQuestionSurvey = async function ({questionAttrs, subjectIds}) {

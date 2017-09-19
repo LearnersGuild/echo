@@ -1,7 +1,7 @@
 /* eslint-disable no-console, camelcase */
 import processChangeFeedWithAutoReconnect from 'rethinkdb-changefeed-reconnect'
 
-import {handleConnectionError} from './handleConnectionError'
+import handleConnectionError from './handleConnectionError'
 
 export default function processStateChangefeed(options = {}) {
   const {getFeed, changefeedName} = options

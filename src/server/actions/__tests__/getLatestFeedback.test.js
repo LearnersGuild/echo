@@ -4,7 +4,7 @@
 /* eslint array-callback-return: "off" */
 import factory from 'src/test/factories'
 import {resetDB, useFixture} from 'src/test/helpers'
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 import getLatestFeedback from '../getLatestFeedback'
 

@@ -4,9 +4,7 @@
 
 import {buildTestPool} from '../../../__tests__/helpers'
 
-import {
-  getQuickTeamFormationPlan,
-} from '../index'
+import getQuickTeamFormationPlan from '../index'
 
 import {getAssignedMemberIds} from '../../teamFormationPlan'
 

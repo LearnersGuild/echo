@@ -1,5 +1,5 @@
 import gitHubService from 'src/server/services/gitHubService'
-import {stubServiceAPIs} from './util'
+import stubServiceAPIs from './util'
 
 const stubbedAPIs = stubServiceAPIs(gitHubService, {
   getTeam: () => Promise.resolve({}),

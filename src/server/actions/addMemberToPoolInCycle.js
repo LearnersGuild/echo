@@ -22,7 +22,7 @@ export default async function addMemberToPoolInCycle(cycleId, memberId) {
     throw new LGInternalServerError(`No existing pool found for voting phase ${phase.id} and cycle ${cycle.id} for member ${member.id}`)
   }
 
-  // TODO: if pool is now too big with member added, split
+  /* TODO: if pool is now too big with member added, split */ // eslint-disable-line no-warning-comments
 
   return PoolMember.save({
     poolId: newestPool.id,

@@ -1,5 +1,7 @@
-import crmService from 'src/server/services/crmService'
-import {stubServiceAPIs} from './util'
+import {getContactByEmail, notifyContactSignedUp} from 'src/server/services/crmService'
+import stubServiceAPIs from './util'
+
+const crmService = {getContactByEmail, notifyContactSignedUp}
 
 const stubbedAPIs = stubServiceAPIs(crmService, {
   getContactByEmail: () => Promise.resolve({}),

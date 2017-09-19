@@ -1,7 +1,7 @@
 import Promise from 'bluebird'
 
 import {QUESTION_RESPONSE_TYPES, QUESTION_SUBJECT_TYPES} from 'src/common/models/survey'
-import {RETROSPECTIVE_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
+import RETROSPECTIVE_DESCRIPTOR from 'src/common/models/surveyBlueprint'
 import {r, Phase, Project, Question, Survey, getSurveyBlueprintByDescriptor} from 'src/server/services/dataService'
 import {LGBadRequestError} from 'src/server/util/error'
 

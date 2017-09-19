@@ -1,8 +1,10 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+
+const {
   FIND_PHASE_SUMMARIES_REQUEST,
   FIND_PHASE_SUMMARIES_SUCCESS,
   FIND_PHASE_SUMMARIES_FAILURE,
-} from 'src/common/actions/types'
+} = ActionTypes
 
 const initialState = {
   phaseSummaries: {},

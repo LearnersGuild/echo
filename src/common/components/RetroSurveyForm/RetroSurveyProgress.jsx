@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import ProgressBar from 'react-toolbox/lib/progress_bar'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 
 export default function RetroSurveyProgress(props) {
   const {surveyFieldGroups, surveyGroupIndex} = props

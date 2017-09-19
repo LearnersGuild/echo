@@ -4,7 +4,7 @@ import {Tab, Tabs} from 'react-toolbox'
 
 import ContentHeader from 'src/common/components/ContentHeader'
 import ContentTable from 'src/common/components/ContentTable'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 
 export default class TabbedContentTable extends Component {
   render() {

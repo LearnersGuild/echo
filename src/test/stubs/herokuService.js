@@ -1,5 +1,5 @@
 import herokuService from 'src/server/services/herokuService'
-import {stubServiceAPIs} from './util'
+import stubServiceAPIs from './util'
 
 const stubbedAPIs = stubServiceAPIs(herokuService, {
   addCollaboratorToApp: () => Promise.resolve(true),

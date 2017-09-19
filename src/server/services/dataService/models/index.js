@@ -1,15 +1,41 @@
 import thinky from 'thinky'
 
-import config from 'src/config'
-import {autoloadFunctions} from 'src/server/util'
+import chapter from 'src/server/services/dataService/models/chapter'
+import cycle from 'src/server/services/dataService/models/cycle'
+import feedbackType from 'src/server/services/dataService/models/feedbackType'
+import member from 'src/server/services/dataService/models/member'
+import phase from 'src/server/services/dataService/models/phase'
+import pool from 'src/server/services/dataService/models/pool'
+import poolMember from 'src/server/services/dataService/models/poolMember'
+import project from 'src/server/services/dataService/models/project'
+import question from 'src/server/services/dataService/models/question'
+import response from 'src/server/services/dataService/models/response'
+import survey from 'src/server/services/dataService/models/survey'
+import surveyBlueprint from 'src/server/services/dataService/models/surveyBlueprint'
+import vote from 'src/server/services/dataService/models/vote'
 
+import config from 'src/config'
 import r from '../r'
 
 const t = thinky({r, createDatabase: false})
 const errors = t.Errors
 
 // load model configurations
-const modelDefinitions = autoloadFunctions(__dirname)
+const modelDefinitions = {
+  chapter,
+  cycle,
+  feedbackType,
+  member,
+  phase,
+  pool,
+  poolMember,
+  project,
+  question,
+  response,
+  survey,
+  surveyBlueprint,
+  vote,
+}
 
 // initiate models
 const models = {r, errors}

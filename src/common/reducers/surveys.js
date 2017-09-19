@@ -1,4 +1,6 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+
+const {
   FIND_SURVEYS_REQUEST,
   FIND_SURVEYS_SUCCESS,
   FIND_SURVEYS_FAILURE,
@@ -12,7 +14,7 @@ import {
   SUBMIT_SURVEY_SUCCESS,
   SUBMIT_SURVEY_FAILURE,
   SET_SURVEY_GROUP,
-} from 'src/common/actions/types'
+} = ActionTypes
 
 const initialState = {
   isBusy: true,

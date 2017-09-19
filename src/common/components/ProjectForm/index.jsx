@@ -9,7 +9,7 @@ import ConfirmationDialog from 'src/common/components/ConfirmationDialog'
 import ContentHeader from 'src/common/components/ContentHeader'
 import NotFound from 'src/common/components/NotFound'
 import WrappedButton from 'src/common/components/WrappedButton'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import {FORM_TYPES, renderInput} from 'src/common/util/form'
 
 import styles from './index.scss'

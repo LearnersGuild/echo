@@ -1,6 +1,6 @@
 import {assertValidSurvey} from './survey'
 
-export function entireProjectTeamHasCompletedSurvey(project, survey) {
+export default function entireProjectTeamHasCompletedSurvey(project, survey) {
   assertValidSurvey(survey)
 
   if (project.memberIds.length !== survey.completedBy.length) {

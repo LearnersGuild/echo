@@ -1,11 +1,13 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+
+const {
   DEACTIVATE_USER_REQUEST,
   DEACTIVATE_USER_SUCCESS,
   DEACTIVATE_USER_FAILURE,
   GET_USER_SUMMARY_REQUEST,
   GET_USER_SUMMARY_SUCCESS,
   GET_USER_SUMMARY_FAILURE,
-} from 'src/common/actions/types'
+} = ActionTypes
 
 const initialState = {
   userSummaries: {},

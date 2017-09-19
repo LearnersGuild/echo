@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import dbConfig from 'src/config/db'
-import {finish} from './util'
+import finish from './util'
 
 const configOutputPath = path.resolve(__dirname, '../data/database.json')
 

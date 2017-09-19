@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import Chip from 'react-toolbox/lib/chip'
 import Slider from 'react-toolbox/lib/slider'
 
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 
 import styles from './index.css'
 

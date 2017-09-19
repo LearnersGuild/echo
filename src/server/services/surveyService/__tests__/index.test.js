@@ -11,7 +11,7 @@ import {
   useFixture
 } from 'src/test/helpers'
 
-import {getFeedbackResponsesBySubjectId} from '../index'
+import getFeedbackResponsesBySubjectId from '../index'
 
 describe(testContext(__filename), function () {
   useFixture.buildSurvey()

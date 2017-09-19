@@ -1,12 +1,12 @@
 import ObjectiveAppraiser from './lib/ObjectiveAppraiser'
 import {buildPool} from './lib/pool'
-import {getQuickTeamFormationPlan} from './lib/quickTeamFormationPlan'
+import getQuickTeamFormationPlan from './lib/quickTeamFormationPlan'
 import enumerateGoalChoices from './lib/enumerateGoalChoices'
 import enumerateMemberAssignmentChoices from './lib/enumerateMemberAssignmentChoices'
 import {teamFormationPlanToString} from './lib/teamFormationPlan'
 import {logger} from './lib/util'
 
-export {NoValidPlanFoundError} from './lib/errors'
+export {default as NoValidPlanFoundError} from './lib/errors'
 
 export function getTeamFormationPlan(poolAttributes) {
   const pool = buildPool(poolAttributes)

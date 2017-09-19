@@ -5,7 +5,7 @@
 import url from 'url'
 import getAvatarImageURL from 'src/common/util/getAvatarImageURL'
 
-// TODO: use nock to mock gravatar API
+/* TODO: use nock to mock gravatar API */ // eslint-disable-line no-warning-comments
 describe(testContext(__filename), function () {
   it('returns throws an exception if the user has no handle', function () {
     expect(() => getAvatarImageURL({handle: null})).to.throw(/user has no handle/)

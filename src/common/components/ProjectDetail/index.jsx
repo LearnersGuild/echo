@@ -9,7 +9,7 @@ import Helmet from 'react-helmet'
 
 import ContentHeader from 'src/common/components/ContentHeader'
 import ProjectUserSummary from 'src/common/components/ProjectUserSummary'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import {safeUrl, urlParts, objectValuesAreAllNull} from 'src/common/util'
 import {renderGoalAsString} from 'src/common/models/goal'
 

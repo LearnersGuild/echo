@@ -2,7 +2,7 @@ import {GraphQLString} from 'graphql'
 import {GraphQLObjectType} from 'graphql/type'
 import {GraphQLDateTime} from 'graphql-custom-types'
 
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 export default new GraphQLObjectType({
   name: 'UserProjectEvaluation',

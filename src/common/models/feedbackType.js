@@ -1,4 +1,4 @@
-export const FEEDBACK_TYPE_DESCRIPTORS = {
+export default {
   CHALLENGE: 'challenge',
   GENERAL_FEEDBACK: 'generalFeedback',
   TEAM_PLAY: 'teamPlay',

@@ -11,7 +11,7 @@ import {Field} from 'redux-form'
 
 import {FORM_INPUT_TYPES} from 'src/common/util/survey'
 
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import SurveyFormInputText from 'src/common/components/SurveyFormInputText'
 import SurveyFormInputNumeric from 'src/common/components/SurveyFormInputNumeric'
 import SurveyFormInputRadio from 'src/common/components/SurveyFormInputRadio'

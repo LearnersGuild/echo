@@ -1,9 +1,11 @@
 import config from 'src/config'
 import {getOwnerAndRepoFromGitHubURL} from 'src/common/util'
 import {Chapter} from 'src/server/services/dataService'
-import {getTeam, createTeam} from 'src/server/services/gitHubService'
+import {getTeam, createTeam} from 'src/server/services/gitHubService' // eslint-disable-line import/named
+// Ignoring line because we're not allowed to change way these
+// are exported due to note found in 'src/server/services/gitHubService'
 
-export function start() {
+export default function start() {
   const jobService = require('src/server/services/jobService')
   jobService.processJobs('chapterCreated', processChapterCreated)
 }

@@ -1,10 +1,11 @@
-import {
+import ActionTypes from 'src/common/actions/types'
+import {mergeEntities} from '../util'
+
+const {
   FIND_PHASES_REQUEST,
   FIND_PHASES_SUCCESS,
   FIND_PHASES_FAILURE,
-} from 'src/common/actions/types'
-
-import {mergeEntities} from '../util'
+} = ActionTypes
 
 const initialState = {
   phases: {},

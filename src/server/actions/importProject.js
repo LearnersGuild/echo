@@ -3,7 +3,7 @@ import findUsers from 'src/server/actions/findUsers'
 import getChapter from 'src/server/actions/getChapter'
 import saveProject from 'src/server/actions/saveProject'
 import {Phase, getCycleForChapter, getProject} from 'src/server/services/dataService'
-import {getGoalInfo} from 'src/server/services/goalLibraryService'
+import getGoalInfo from 'src/server/services/goalLibraryService'
 import {LGBadRequestError} from 'src/server/util/error'
 
 export default async function importProject(data = {}) {

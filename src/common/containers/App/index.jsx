@@ -10,7 +10,7 @@ import {IconMenu, MenuItem, MenuDivider} from 'react-toolbox/lib/menu'
 import Helmet from 'react-helmet'
 
 import ErrorBar from 'src/common/components/ErrorBar'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import {dismissError} from 'src/common/actions/app'
 import {userCan} from 'src/common/util'
 

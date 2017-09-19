@@ -16,12 +16,8 @@ const paths = {
  * certain stubbing functionality functionality for testing that relies on the
  * way the module is cached and later required by dependent modules.
  */
-export default {
-  getContactByEmail,
-  notifyContactSignedUp,
-}
 
-async function getContactByEmail(email) {
+export async function getContactByEmail(email) {
   const url = _crmURL(paths.contactProfileByEmail(encodeURIComponent(email)))
 
   const resp = await fetch(url, {
@@ -38,7 +34,7 @@ async function getContactByEmail(email) {
   return resp.json()
 }
 
-async function notifyContactSignedUp(email) {
+export async function notifyContactSignedUp(email) {
   const contact = await getContactByEmail(email)
 
   const url = _crmURL(paths.contactProfileByVID(contact.vid))

@@ -1,7 +1,7 @@
 module.exports = Object.assign({},
-  require('./db'),
+  {resetDB: require('./db')},
   require('./graphql'),
-  require('./fixtures'),
+  {useFixture: require('./fixtures')},
   require('./expectations'),
   require('./idmMocks'),
 )

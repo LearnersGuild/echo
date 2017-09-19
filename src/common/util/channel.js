@@ -1,6 +1,8 @@
 import socketCluster from 'socketcluster-client'
 
-export function subscribe(channelName, onChange) {
+/* NOTE: Nothing is using this file! It's not being imported anywhere */ // eslint-disable-line
+
+export default function subscribe(channelName, onChange) {
   const socket = socketCluster.connect()
   socket.on('connect', () => console.log('... socket connected'))
   socket.on('disconnect', () => console.log('socket disconnected, will try to reconnect socket ...'))

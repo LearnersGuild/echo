@@ -12,7 +12,7 @@ export default async function getCycleVotingResults(chapterId, cycleId) {
   const cycleVotingResultsByPool = await findVotingResultsForCycle(cycle)
 
   return {
-    id: 'CURRENT', // TODO: make this the cycleId? Need an id for normalizr on the client-side
+    id: 'CURRENT', /* TODO: make this the cycleId? Need an id for normalizr on the client-side */ // eslint-disable-line no-warning-comments
     pools: cycleVotingResultsByPool,
     cycle,
   }

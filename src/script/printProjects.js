@@ -3,7 +3,7 @@ import parseArgs from 'minimist'
 
 import getMemberInfo from 'src/server/actions/getMemberInfo'
 import {Chapter, Cycle, Project} from 'src/server/services/dataService'
-import {finish} from './util'
+import finish from './util'
 
 const LOG_PREFIX = `${__filename.split('.js')[0]}`
 

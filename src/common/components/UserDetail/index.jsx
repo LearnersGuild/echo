@@ -8,7 +8,7 @@ import ConfirmationDialog from 'src/common/components/ConfirmationDialog'
 import WrappedButton from 'src/common/components/WrappedButton'
 import ContentSidebar from 'src/common/components/ContentSidebar'
 import UserProjectSummary from 'src/common/components/UserProjectSummary'
-import {Flex} from 'src/common/components/Layout'
+import Flex from 'src/common/components/Layout'
 import {formatPartialPhoneNumber} from 'src/common/util/format'
 import {userCan} from 'src/common/util'
 

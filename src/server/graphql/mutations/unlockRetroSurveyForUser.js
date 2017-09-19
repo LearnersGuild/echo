@@ -1,10 +1,12 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql'
 import {unlockRetroSurveyForUser} from 'src/server/actions/retroSurveyLockUnlock'
 import userCan from 'src/common/util/userCan'
-import {Project} from 'src/server/services/dataService/models'
+import Models from 'src/server/services/dataService/models'
 import {LGNotAuthorizedError} from 'src/server/util/error'
 
 import {ProjectSummary} from 'src/server/graphql/schemas'
+
+const {Project} = Models
 
 export default {
   type: ProjectSummary,

@@ -2,7 +2,7 @@
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import Promise from 'bluebird'
-import {RETROSPECTIVE_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
+import RETROSPECTIVE_DESCRIPTOR from 'src/common/models/surveyBlueprint'
 import {Project, Survey} from 'src/server/services/dataService'
 import {resetDB, expectSetEquality} from 'src/test/helpers'
 import factory from 'src/test/factories'

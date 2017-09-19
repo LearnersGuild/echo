@@ -1,5 +1,7 @@
+import ActionTypes from 'src/common/actions/types'
 import {mergeEntities} from 'src/common/util'
-import {
+
+const {
   FIND_PROJECTS_REQUEST,
   FIND_PROJECTS_SUCCESS,
   FIND_PROJECTS_FAILURE,
@@ -9,7 +11,7 @@ import {
   DELETE_PROJECT_REQUEST,
   DELETE_PROJECT_SUCCESS,
   DELETE_PROJECT_FAILURE,
-} from 'src/common/actions/types'
+} = ActionTypes
 
 const initialState = {
   projects: {},

@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch'
 
 import config from 'src/config'
 import handleGraphQLError from 'src/common/util/handleGraphQLError'
-import {serverToServerJWT} from 'src/server/util/jwt'
+import serverToServerJWT from 'src/server/util/jwt'
 
 export default function graphQLFetcher(baseURL, lgJWT = serverToServerJWT()) {
   return graphQLParams => {

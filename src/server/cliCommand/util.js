@@ -6,6 +6,7 @@ export function getCommand(command) {
   try {
     commandSpec = require('@learnersguild/echo-cli')[command]
     commandImpl = require(`src/server/cliCommand/commands/${command}`)
+    commandImpl = require('src/server/cliCommand/commands/' + command)
   } catch (err) {
     if (err.code !== 'MODULE_NOT_FOUND') {
       throw err

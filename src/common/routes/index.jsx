@@ -7,7 +7,7 @@ import {push} from 'react-router-redux'
 
 import {userCan} from 'src/common/util'
 import {authorizationError} from 'src/common/actions/app'
-import {loginURL} from 'src/common/util/auth'
+import loginURL from 'src/common/util/auth'
 import App from 'src/common/containers/App'
 import ChapterForm from 'src/common/containers/ChapterForm'
 import ChapterList from 'src/common/containers/ChapterList'

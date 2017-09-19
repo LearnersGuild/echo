@@ -4,7 +4,7 @@
 import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {resetDB, useFixture, mockIdmUsersById} from 'src/test/helpers'
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 describe(testContext(__filename), function () {
   beforeEach(resetDB)

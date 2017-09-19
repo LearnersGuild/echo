@@ -40,7 +40,7 @@ export function * enumerateSubsets(list, subsetSize, shouldPrune) {
   const shouldPruneByIndexes = subsetIndexes => shouldPrune && shouldPrune(indexesToValues(subsetIndexes))
 
   const seen = new Set()
-  for (const subsetIndexes of enumerateNchooseKIndexes(n, k, shouldPruneByIndexes)) {
+  for (const subsetIndexes of enumerateNchooseKIndexes({n, k, shouldPrune: shouldPruneByIndexes})) {
     const subset = indexesToValues(subsetIndexes)
     const key = subset.toString()
 
@@ -56,7 +56,7 @@ export function * enumerateSubsets(list, subsetSize, shouldPrune) {
 // number of elements from a list.
 //
 // From: http://www.cs.colostate.edu/~anderson/cs161/wiki/doku.php?do=export_s5&id=slides:week8
-function * enumerateNchooseKIndexes(n, k, shouldPrune, p = 0, low = 0, subset = []) {
+function * enumerateNchooseKIndexes({n, k, shouldPrune, p = 0, low = 0, subset = []}) {
   const high = n - 1 - k + p + 1
 
   for (let i = low; i <= high; i++) {
@@ -69,7 +69,7 @@ function * enumerateNchooseKIndexes(n, k, shouldPrune, p = 0, low = 0, subset = 
     if (p >= k - 1) {
       yield subset.concat()
     } else {
-      yield * enumerateNchooseKIndexes(n, k, shouldPrune, p + 1, i + 1, subset)
+      yield * enumerateNchooseKIndexes({n, k, shouldPrune, p: p + 1, low: i + 1, subset})
     }
   }
 }

@@ -7,7 +7,7 @@ import {
 
 import createTeamSizes from './createTeamSizes'
 
-export function getQuickTeamFormationPlan(pool) {
+export default function getQuickTeamFormationPlan(pool) {
   const seatCount = getPoolSize(pool)
   const goal = mostPopularGoal(pool)
   const teams = getTeamsForGoal(pool, goal)

@@ -3,7 +3,7 @@ import Promise from 'bluebird'
 import generateProjectName from 'src/server/actions/generateProjectName'
 import sendCycleLaunchAnnouncements from 'src/server/actions/sendCycleLaunchAnnouncements'
 import {formProjectsIfNoneExist} from 'src/server/actions/formProjects'
-import {getGoalInfo} from 'src/server/services/goalLibraryService'
+import getGoalInfo from 'src/server/services/goalLibraryService'
 import {Phase, Member, Project} from 'src/server/services/dataService'
 
 export function start() {

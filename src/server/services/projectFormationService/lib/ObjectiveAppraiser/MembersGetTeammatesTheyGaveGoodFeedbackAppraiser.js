@@ -1,4 +1,4 @@
-import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
+import FEEDBACK_TYPE_DESCRIPTORS from 'src/common/models/feedbackType'
 
 import {repeat, flatten, sum} from '../util'
 import {getMemberIds, getUserFeedback} from '../pool'

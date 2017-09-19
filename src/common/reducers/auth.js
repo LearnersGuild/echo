@@ -1,4 +1,6 @@
-import {UPDATE_JWT, UNAUTHENTICATED_ERROR} from 'src/common/actions/types'
+import ActionTypes from 'src/common/actions/types'
+
+const {UPDATE_JWT, UNAUTHENTICATED_ERROR} = ActionTypes
 
 const initialState = {
   currentUser: null,
