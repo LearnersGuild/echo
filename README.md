@@ -16,37 +16,30 @@ Before you can run echo you need:
 
 ### SETTING UP THE ECHO SERVICE
 
-##### 1. **Globally** install [nvm][nvm], [avn][avn], and [avn-nvm][avn-nvm].
+##### 1. When you installed IDM (or earlier), you globally installed [nvm][nvm], [avn][avn], [avn-nvm][avn-nvm], [mehserve][mehserve], and [RethinkDB][rethinkdb], and created a free AWS account.
 
-```bash
-curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-npm install -g avn avn-nvm
-avn setup
-```
+The echo service, too, depends on them.
 
-##### 2. Fork and clone the repository.
+##### 2. Fork and clone this (echo) repository.
 
-##### 3. Setup and run [mehserve][mehserve].
+##### 3. Run [mehserve][mehserve].
 
 Figure out which port you intend to use and create the mehserve config file:
+
 ```bash
 echo 9005 > ~/.mehserve/echo.learnersguild
+mehserve run
 ```
 
-##### 4. Set your `NODE_ENV` environment variable:
+##### 4. Set your `NODE_ENV` environment variable. Warning: This setting is not persistent. If you open another terminal window for any subsequent commands, repeat this command there before entering other commands.
 
 ```bash
 export NODE_ENV=development
 ```
 
-##### 5. [Install RethinkDB][install-rethinkdb].
+##### 5. Find your AWS access key ID and secret access key in the `.env.development` file in your IDM development project directory. You'll need to include these in your  environment variables in the next step.
 
-##### 6. Create a free AWS account:
-[https://aws.amazon.com](https://aws.amazon.com/)
-
-Make a copy of your access key ID and secret access key. You'll need to include these in your  environment variables in the next step.
-
-##### 7. Create your `.env.development` file for your environment.
+##### 6. Create the `.env.development` file for your environment.
 Take out all comments in your final version.
 Example:
 ```
@@ -56,15 +49,15 @@ REDIS_URL=redis://localhost:6379
 RETHINKDB_URL=rethinkdb://localhost:28015/echo_development
 # IDM / JWT settings, including session extension
 IDM_BASE_URL=http://idm.learnersguild.dev
-JWT_PRIVATE_KEY="<get from IDM service>"
-JWT_PUBLIC_KEY="<get from IDM service>"
+JWT_PRIVATE_KEY="<get from .env.development file in your IDM directory>"
+JWT_PUBLIC_KEY="<get from .env.development file in your IDM directory>"
 # External API settings
 GITHUB_ORG_ADMIN_TOKEN="<GitHub token with permissions in LearnersGuild, GuildCrafts, and GuildCraftsTesting>"
 GITHUB_CRAFTS_REPO="https://github.com/GuildCraftsTesting/web-development-js-testing"
 S3_BUCKET=guild-development
 S3_KEY_PREFIX=db
-AWS_ACCESS_KEY_ID=<YOUR_AWS_ACCESS_KEY_ID>
-AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
+AWS_ACCESS_KEY_ID=<YOUR_AWS_ACCESS_KEY_ID with \n replacing newlines>
+AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY with \n replacing newlines>
 ```
 
 ##### 8. Install dependencies:
@@ -73,7 +66,7 @@ AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
 npm install
 ```
 
-##### 9. Create a development & test databases:
+##### 9. Create development & test databases:
 
 ```bash
 npm run db:create
@@ -85,20 +78,20 @@ npm run db:migrate:up
 NODE_ENV=test npm run db:migrate:up
 ```
 
-Optionally, seed your development database with test member and project data:
-```bash
-npm run db:copy -- <STATE>
-```
+Optionally, seed your development database with test member and project data. In the command below, replace `<STATE>` with any of these:
 
-Available `STATE` options:
 - `GOAL_SELECTION` (default)
 - `GOAL_SELECTION_VOTES`
 - `PRACTICE`
 - `REFLECTION`
 
+```bash
+npm run db:copy -- <STATE>
+```
+
 ### RUNNING THE SERVER
 
-**NOTE:** you'll need [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
+**NOTE:** You'll need [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
 
 ```bash
 npm start
@@ -126,14 +119,14 @@ Add the following to your `.env.development`:
 ```
 # Slack / command CLI settings
 CHAT_BASE_URL=https://slack.com
-CHAT_API_TOKEN=<the Slack bot user's OAuth access token. obtain from a teammate or in the Slack team's app settings>
+CHAT_API_TOKEN=<the Slack bot user's OAuth access token; obtain from a teammate or in the Slack team's app settings>
 ```
 
 ##### 3. Configure your dev environment for INBOUND calls _from_ Slack (for /slash commands).
 
 Add the following to your `.env.development`:
 ```
-CLI_COMMAND_TOKEN=<the Slack app's verification token. obtain from a teammate or in the Slack team's app settings>
+CLI_COMMAND_TOKEN=<the Slack app's verification token; obtain from a teammate or in the Slack team's app settings>
 ```
 
 ##### 4. Set up localtunnel and run the `slackslash` script:
@@ -143,10 +136,11 @@ npm install -g localtunnel
 npm run slackslash
 ```
 
-**NOTE:** You can ignore this message after starting localtunnel:
+**NOTE:** You should see the following message after starting localtunnel:
 ```
 your url is: https://slackslash.localtunnel.me
 ```
+
 It's not a URL you're meant to visit in the browser directly; it is the URL already configured in the dev Slack team's echo app and where incoming requests for /slash commands are sent. With localtunnel running and configured properly (along with `echo`, `idm` and `mehserve`), when you issue a slash command in a channel in the dev Slack team, the request will be sent to https://slackslash.localtunnel.me and served by the echo service running on your local machine.
 
 ## CONTINUOUS INTEGRATION
@@ -166,7 +160,7 @@ See the [LICENSE](./LICENSE) file.
 
 [idm]: https://github.com/LearnersGuild/idm
 [github-register-application]: https://github.com/settings/applications/new
-[install-rethinkdb]: https://www.rethinkdb.com/docs/install/
+[rethinkdb]: https://www.rethinkdb.com/docs
 [mehserve]: https://github.com/timecounts/mehserve
 [nvm]: https://github.com/creationix/nvm
 [avn]: https://github.com/wbyoung/avn
