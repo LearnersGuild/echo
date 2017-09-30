@@ -22,9 +22,7 @@ The echo service, too, depends on them.
 
 ##### 2. Fork and clone this (echo) repository.
 
-##### 3. Run [mehserve][mehserve].
-
-Figure out which port you intend to use and create the mehserve config file:
+##### 3. Figure out which port you intend to use for mehserve, then create the mehserve config file, and finally run [mehserve][mehserve].
 
 ```bash
 echo 9005 > ~/.mehserve/echo.learnersguild
