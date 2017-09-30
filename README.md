@@ -52,7 +52,6 @@ IDM_BASE_URL=http://idm.learnersguild.dev
 JWT_PRIVATE_KEY="<get from .env.development file in your IDM directory>"
 JWT_PUBLIC_KEY="<get from .env.development file in your IDM directory>"
 # External API settings
-GITHUB_ORG_ADMIN_TOKEN="<GitHub token with permissions in LearnersGuild, GuildCrafts, and GuildCraftsTesting>"
 GITHUB_CRAFTS_REPO="https://github.com/GuildCraftsTesting/web-development-js-testing"
 S3_BUCKET=guild-development
 S3_KEY_PREFIX=db
