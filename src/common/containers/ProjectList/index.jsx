@@ -136,7 +136,8 @@ function mapStateToProps(state) {
   })
 
   const oldestCycleNumber = projectList.length > 0 ?
-    projectList[projectList.length - 1].cycle.cycleNumber : null
+    (projectList[projectList.length - 1].cycle || {}).cycleNumber : null
+    // projectList[projectList.length - 1].cycle.cycleNumber : null
 
   return {
     isBusy: projects.isBusy || users.isBusy,
