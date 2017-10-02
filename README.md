@@ -29,11 +29,7 @@ echo 9005 > ~/.mehserve/echo.learnersguild
 mehserve run
 ```
 
-##### 4. Set your `NODE_ENV` environment variable. Warning: This setting is not persistent. If you open another terminal window for any subsequent commands, repeat this command there before entering other commands.
-
-```bash
-export NODE_ENV=development
-```
+##### 4. As explained in the installation instructions for IDM, ensure that your `NODE_ENV` environment variable has the value `development`.
 
 ##### 5. Find your AWS access key ID and secret access key in the `.env.development` file in your IDM development project directory. You'll need to include these in your  environment variables in the next step.
 
