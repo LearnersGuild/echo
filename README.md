@@ -59,7 +59,20 @@ AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
 npm install
 ```
 
-##### 9. Create development & test databases:
+##### 9. Make sure that RethinkDB is still running:
+
+```bash
+brew services list
+```
+
+If it is no longer running, run it:
+
+```bash
+brew services run rethinkdb
+```
+
+
+##### 10. Create development & test databases:
 
 ```bash
 npm run db:create
@@ -71,7 +84,7 @@ npm run db:migrate:up
 NODE_ENV=test npm run db:migrate:up
 ```
 
-Optionally, seed your development database with test member and project data. In the command below, replace `<STATE>` with any of these:
+Optionally, seed your development database with test member and project data representing one of the possible states of the system. In the command below, replace `<STATE>` with any one of these:
 
 - `GOAL_SELECTION` (default)
 - `GOAL_SELECTION_VOTES`
