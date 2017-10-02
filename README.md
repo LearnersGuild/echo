@@ -97,7 +97,13 @@ npm run db:copy -- <STATE>
 
 ### RUNNING THE SERVER
 
-**NOTE:** You'll need [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
+Make sure that the following services are **all** running:
+
+- mehserve(see above)
+- RethinkDB (see above)
+- [idm][idm] (in your `idm` directory, enter `npm start`)
+
+Then start the `echo` service:
 
 ```bash
 npm start
