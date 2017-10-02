@@ -53,8 +53,8 @@ JWT_PUBLIC_KEY="<get from .env.development file in your IDM directory>"
 GITHUB_CRAFTS_REPO="https://github.com/GuildCraftsTesting/web-development-js-testing"
 S3_BUCKET=guild-development
 S3_KEY_PREFIX=db
-AWS_ACCESS_KEY_ID=<YOUR_AWS_ACCESS_KEY_ID with \n replacing newlines>
-AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY with \n replacing newlines>
+AWS_ACCESS_KEY_ID=<YOUR_AWS_ACCESS_KEY_ID>
+AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
 ```
 
 ##### 8. Install dependencies:
