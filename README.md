@@ -94,13 +94,14 @@ npm run db:copy -- <STATE>
 npm start
 ```
 
-Visit the server in your browser:
+Visit the server in your browser and sign in with Github:
 
 ```bash
 open http://echo.learnersguild.dev
 ```
 
-Start the workers
+You should then see a display of phases, with options to choose projects or users. In a new terminal tab (with NODE_ENV set to development as always), start the workers:
+
 ```bash
 npm run workers
 npm run workers:cycleLaunched
