@@ -16,37 +16,24 @@ Before you can run echo you need:
 
 ### SETTING UP THE ECHO SERVICE
 
-##### 1. **Globally** install [nvm][nvm], [avn][avn], and [avn-nvm][avn-nvm].
+##### 1. When you installed IDM (or earlier), you globally installed [nvm][nvm], [avn][avn], [avn-nvm][avn-nvm], [mehserve][mehserve], and [RethinkDB][rethinkdb], and created a free AWS account.
 
-```bash
-curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-npm install -g avn avn-nvm
-avn setup
-```
+The echo service, too, depends on them.
 
-##### 2. Fork and clone the repository.
+##### 2. Fork and clone this (echo) repository.
 
-##### 3. Setup and run [mehserve][mehserve].
+##### 3. Figure out which port you intend to use for mehserve, then create the mehserve config file, and finally run [mehserve][mehserve].
 
-Figure out which port you intend to use and create the mehserve config file:
 ```bash
 echo 9005 > ~/.mehserve/echo.learnersguild
+mehserve run
 ```
 
-##### 4. Set your `NODE_ENV` environment variable:
+##### 4. As explained in the installation instructions for IDM, ensure that your `NODE_ENV` environment variable has the value `development`.
 
-```bash
-export NODE_ENV=development
-```
+##### 5. Find your AWS access key ID and secret access key in the `.env.development` file in your IDM development project directory. You'll need to include these in your  environment variables in the next step.
 
-##### 5. [Install RethinkDB][install-rethinkdb].
-
-##### 6. Create a free AWS account:
-[https://aws.amazon.com](https://aws.amazon.com/)
-
-Make a copy of your access key ID and secret access key. You'll need to include these in your  environment variables in the next step.
-
-##### 7. Create your `.env.development` file for your environment.
+##### 6. Create the `.env.development` file for your environment.
 Take out all comments in your final version.
 Example:
 ```
@@ -56,10 +43,9 @@ REDIS_URL=redis://localhost:6379
 RETHINKDB_URL=rethinkdb://localhost:28015/echo_development
 # IDM / JWT settings, including session extension
 IDM_BASE_URL=http://idm.learnersguild.dev
-JWT_PRIVATE_KEY="<get from IDM service>"
-JWT_PUBLIC_KEY="<get from IDM service>"
+JWT_PRIVATE_KEY="<get from .env.development file in your IDM directory>"
+JWT_PUBLIC_KEY="<get from .env.development file in your IDM directory>"
 # External API settings
-GITHUB_ORG_ADMIN_TOKEN="<GitHub token with permissions in LearnersGuild, GuildCrafts, and GuildCraftsTesting>"
 GITHUB_CRAFTS_REPO="https://github.com/GuildCraftsTesting/web-development-js-testing"
 S3_BUCKET=guild-development
 S3_KEY_PREFIX=db
@@ -73,7 +59,20 @@ AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
 npm install
 ```
 
-##### 9. Create a development & test databases:
+##### 9. Make sure that RethinkDB is still running:
+
+```bash
+brew services list
+```
+
+If it is no longer running, run it:
+
+```bash
+brew services run rethinkdb
+```
+
+
+##### 10. Create development & test databases:
 
 ```bash
 npm run db:create
@@ -85,69 +84,45 @@ npm run db:migrate:up
 NODE_ENV=test npm run db:migrate:up
 ```
 
-Optionally, seed your development database with test member and project data:
-```bash
-npm run db:copy -- <STATE>
-```
+Optionally, seed your development database with test member and project data representing one of the possible states of the system. In the command below, replace `<STATE>` with any one of these:
 
-Available `STATE` options:
 - `GOAL_SELECTION` (default)
 - `GOAL_SELECTION_VOTES`
 - `PRACTICE`
 - `REFLECTION`
 
+```bash
+npm run db:copy -- <STATE>
+```
+
 ### RUNNING THE SERVER
 
-**NOTE:** you'll need [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
+Make sure that the following services are **all** running:
+
+- mehserve(see above)
+- RethinkDB (see above)
+- [idm][idm] (in your `idm` directory, enter `npm start`)
+
+Then start the `echo` service:
 
 ```bash
 npm start
 ```
 
-Visit the server in your browser:
+Visit the server in your browser and sign in with Github:
 
 ```bash
-open http://echo.learnersguild.dev
+http://echo.learnersguild.dev
 ```
 
-Start the workers
+You should then see a display of phases, with options to choose projects or users. In a new terminal tab (with NODE_ENV set to development as always), start the workers and leave them running. This requires two different terminal tabs, one for each.
+
 ```bash
 npm run workers
 npm run workers:cycleLaunched
 ```
 
-### USING THE DEV SLACK INSTANCE WITH YOUR LOCAL ECHO SERVICE
-
-##### 1. Join the dev Slack team by requesting (and accepting) an invitation from a teammate.
-
-##### 2. Configure your dev environment for OUTBOUND calls _to_ the Slack API.
-
-Add the following to your `.env.development`:
-```
-# Slack / command CLI settings
-CHAT_BASE_URL=https://slack.com
-CHAT_API_TOKEN=<the Slack bot user's OAuth access token. obtain from a teammate or in the Slack team's app settings>
-```
-
-##### 3. Configure your dev environment for INBOUND calls _from_ Slack (for /slash commands).
-
-Add the following to your `.env.development`:
-```
-CLI_COMMAND_TOKEN=<the Slack app's verification token. obtain from a teammate or in the Slack team's app settings>
-```
-
-##### 4. Set up localtunnel and run the `slackslash` script:
-
-```bash
-npm install -g localtunnel
-npm run slackslash
-```
-
-**NOTE:** You can ignore this message after starting localtunnel:
-```
-your url is: https://slackslash.localtunnel.me
-```
-It's not a URL you're meant to visit in the browser directly; it is the URL already configured in the dev Slack team's echo app and where incoming requests for /slash commands are sent. With localtunnel running and configured properly (along with `echo`, `idm` and `mehserve`), when you issue a slash command in a channel in the dev Slack team, the request will be sent to https://slackslash.localtunnel.me and served by the echo service running on your local machine.
+You should expect to see an error message caused by your `.env.development` file not containing two required entries for CHAT_BASE_URL and CHAT_API_TOKEN. Your work will not be affected by this error, so you may disregard it.
 
 ## CONTINUOUS INTEGRATION
 
@@ -166,7 +141,7 @@ See the [LICENSE](./LICENSE) file.
 
 [idm]: https://github.com/LearnersGuild/idm
 [github-register-application]: https://github.com/settings/applications/new
-[install-rethinkdb]: https://www.rethinkdb.com/docs/install/
+[rethinkdb]: https://www.rethinkdb.com/docs
 [mehserve]: https://github.com/timecounts/mehserve
 [nvm]: https://github.com/creationix/nvm
 [avn]: https://github.com/wbyoung/avn
