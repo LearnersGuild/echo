@@ -122,39 +122,7 @@ npm run workers
 npm run workers:cycleLaunched
 ```
 
-### USING THE DEV SLACK INSTANCE WITH YOUR LOCAL ECHO SERVICE
-
-##### 1. Join the dev Slack team by requesting (and accepting) an invitation from a teammate.
-
-##### 2. Configure your dev environment for OUTBOUND calls _to_ the Slack API.
-
-Add the following to your `.env.development`:
-```
-# Slack / command CLI settings
-CHAT_BASE_URL=https://slack.com
-CHAT_API_TOKEN=<the Slack bot user's OAuth access token; obtain from a teammate or in the Slack team's app settings>
-```
-
-##### 3. Configure your dev environment for INBOUND calls _from_ Slack (for /slash commands).
-
-Add the following to your `.env.development`:
-```
-CLI_COMMAND_TOKEN=<the Slack app's verification token; obtain from a teammate or in the Slack team's app settings>
-```
-
-##### 4. Set up localtunnel and run the `slackslash` script:
-
-```bash
-npm install -g localtunnel
-npm run slackslash
-```
-
-**NOTE:** You should see the following message after starting localtunnel:
-```
-your url is: https://slackslash.localtunnel.me
-```
-
-It's not a URL you're meant to visit in the browser directly; it is the URL already configured in the dev Slack team's echo app and where incoming requests for /slash commands are sent. With localtunnel running and configured properly (along with `echo`, `idm` and `mehserve`), when you issue a slash command in a channel in the dev Slack team, the request will be sent to https://slackslash.localtunnel.me and served by the echo service running on your local machine.
+You should expect to see an error message caused by your `.env.development` file not containing two required entries for CHAT_BASE_URL and CHAT_API_TOKEN. Your work will not be affected by this error, so you may disregard it.
 
 ## CONTINUOUS INTEGRATION
 
