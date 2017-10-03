@@ -115,7 +115,7 @@ Visit the server in your browser and sign in with Github:
 open http://echo.learnersguild.dev
 ```
 
-You should then see a display of phases, with options to choose projects or users. In a new terminal tab (with NODE_ENV set to development as always), start the workers:
+You should then see a display of phases, with options to choose projects or users. In a new terminal tab (with NODE_ENV set to development as always), start the workers and leave them running. This requires two different terminal tabs, one for each.
 
 ```bash
 npm run workers
