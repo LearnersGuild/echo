@@ -6,6 +6,7 @@ export default function findPhases() {
         findPhases {
           id
           number
+          name
         }
       }
     `,

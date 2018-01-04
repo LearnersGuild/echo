@@ -17,6 +17,7 @@ export default function findUsers(identifiers) {
           phase {
             id
             number
+            name
           }
           createdAt
           updatedAt
