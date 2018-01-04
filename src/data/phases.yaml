@@ -10,42 +10,17 @@
 # - you should never replace an item completely while keeping the UUID the same
 # - if you don't know what you're doing, ask!
 -
-  id: ac13b0b8-0dc3-44ae-8bb6-0894fd06f0ca
-  number: 1
-  channelName: phase-1
-  hasVoting: false
-  hasRetrospective: false
-  practiceGoalNumber: null
-  interviewGoalNumber: 416
--
   id: e9548492-6106-4b06-bb54-a42d9479efb1
   number: 2
-  channelName: phase-2
-  hasVoting: false
-  hasRetrospective: false
-  practiceGoalNumber: null
-  interviewGoalNumber: 417
+  name: Foundations
+  channelName: phase-foundations
 -
   id: 80c22650-b0e4-4223-a073-fa0004e8785d
   number: 3
-  channelName: phase-3
-  hasVoting: false
-  hasRetrospective: false
-  practiceGoalNumber: null
-  interviewGoalNumber: 418
+  name: Practice
+  channelName: phase-practice
 -
   id: ab4e7c93-1ce3-4c15-81a4-69f92e23854f
   number: 4
-  channelName: phase-4
-  hasVoting: false
-  hasRetrospective: false
-  practiceGoalNumber: null
-  interviewGoalNumber: null
--
-  id: 44222a6b-97de-42e8-9e11-f3427e975420
-  number: 5
-  channelName: phase-5
-  hasVoting: false
-  hasRetrospective: false
-  practiceGoalNumber: null
-  interviewGoalNumber: null
+  name: Apprenticeship
+  channelName: phase-apprenticeship

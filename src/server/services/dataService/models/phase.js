@@ -3,7 +3,7 @@ require('require-yaml') // eslint-disable-line import/no-unassigned-import
 const PHASES = require('src/data/phases.yaml')
 
 export default function phaseModel(thinky) {
-  const {r, type: {string, number, date, boolean}} = thinky
+  const {r, type: {string, date, number}} = thinky
 
   return {
     name: 'Phase',
@@ -15,26 +15,14 @@ export default function phaseModel(thinky) {
 
       number: number()
         .integer()
+        .min(1)
+        .allowNull(false),
+
+      name: string()
         .allowNull(false),
 
       channelName: string()
         .allowNull(false),
-
-      hasVoting: boolean()
-        .allowNull(false)
-        .default(false),
-
-      hasRetrospective: boolean()
-        .allowNull(false)
-        .default(false),
-
-      practiceGoalNumber: number() // workaround for the goal service API not having a search feature.
-        .integer()
-        .allowNull(true),
-
-      interviewGoalNumber: number() // workaround for the goal service API not having a search feature.
-        .integer()
-        .allowNull(true),
 
       createdAt: date()
         .allowNull(false)
