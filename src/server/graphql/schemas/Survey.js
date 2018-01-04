@@ -6,7 +6,7 @@ import {resolveProject} from 'src/server/graphql/resolvers'
 
 export default new GraphQLObjectType({
   name: 'Survey',
-  description: 'A survey of questions used for retrospectives',
+  description: 'A survey of questions given to learners',
   fields: () => {
     const {Project, SurveyQuestion} = require('src/server/graphql/schemas')
 

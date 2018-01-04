@@ -20,3 +20,10 @@
       questionId: 663fb86e-b2d1-4271-950b-8aafbfa23ad7
     -
       questionId: 09dff295-c339-4326-8e21-71cf332e0895
+
+-
+  id: c204d435-abe0-4a37-befe-fecc5e425b83
+  descriptor: workplan
+  defaultQuestionRefs:
+    -
+      questionId: 933463ae-241a-4f70-824d-551be84da271
