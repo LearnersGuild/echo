@@ -13,6 +13,10 @@
   descriptor: retrospective
   defaultQuestionRefs:
     -
+      questionId: 0578b6c2-2596-40cc-a7d6-6e0bf5313968
+    -
+      questionId: d47feb36-2d24-470c-9d4c-b76ecbf390d1
+    -
       questionId: cd350a14-8a70-4593-9801-30cedab3dc75
     -
       questionId: bb2927c9-a16d-49e9-8c3a-dd308a17315a
