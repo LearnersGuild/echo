@@ -116,46 +116,6 @@ export async function resolveFindProjectsForCycle(source, args = {}, {currentUse
   return projects
 }
 
-export function resolveProject(parent) {
-  return parent.project ||
-    parent.projectId ? _safeResolveAsync(Project.get(parent.projectId)) : null
-}
-
-export function resolveProjectGoal(project) {
-  if (!project.goal) {
-    return null
-  }
-  return project.goal
-}
-
-export function resolveProjectMembers(project) {
-  if (project.members) {
-    return project.members
-  }
-  return findUsers(project.memberIds)
-}
-
-export async function resolveProjectUserSummaries(projectSummary, args, {currentUser}) {
-  const {project} = projectSummary
-  if (!project) {
-    throw new Error('Invalid project for user summaries')
-  }
-
-  if (projectSummary.projectUserSummaries) {
-    return projectSummary.projectUserSummaries
-  }
-
-  const projectUsers = await findUsers(project.memberIds)
-
-  const projectUserMap = mapById(projectUsers)
-
-  return Promise.map(projectUsers, async user => {
-    const canViewSummary = user.id === currentUser.id || userCan(currentUser, 'viewProjectUserSummary')
-    const summary = canViewSummary ? await getUserProjectSummary(user, project, projectUserMap, currentUser) : {}
-    return {user, ...summary}
-  })
-}
-
 export function resolveWeekStartedAt(parent) {
   if (parent.weekStartedAt) {
     return parent.weekStartedAt

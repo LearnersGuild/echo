@@ -9,7 +9,6 @@ export default new GraphQLObjectType({
     return {
       id: {type: new GraphQLNonNull(GraphQLID), description: 'The phase UUID'},
       number: {type: new GraphQLNonNull(GraphQLInt), description: 'The phase number'},
-      hasVoting: {type: new GraphQLNonNull(GraphQLBoolean), description: 'Projects in the phase can be formed by voting'},
       hasRetrospective: {type: new GraphQLNonNull(GraphQLBoolean), description: 'Projects in the phase will have a retrospective'},
       createdAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was created'},
       updatedAt: {type: new GraphQLNonNull(GraphQLDateTime), description: 'When this record was last updated'},
