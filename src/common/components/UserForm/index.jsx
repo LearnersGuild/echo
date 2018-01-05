@@ -149,7 +149,7 @@ class UserForm extends Component {
             name="phaseNumber"
             type="number"
             icon="trending_up"
-            label="Phase Number"
+            label="Phase Name"
             hint={'e.g. "2"'}
             source={phaseOptions}
             auto

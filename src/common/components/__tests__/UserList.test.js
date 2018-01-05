@@ -13,7 +13,7 @@ describe(testContext(__filename), function () {
       handle: {type: String},
       name: {type: String},
       chapterName: {title: 'Chapter', type: String},
-      phaseNumber: {title: 'Phase', type: Number},
+      phaseName: {title: 'Phase', type: String},
       email: {type: String},
       active: {type: String},
     }
@@ -22,7 +22,7 @@ describe(testContext(__filename), function () {
         name: 'Ivanna Lerntokode',
         handle: 'ivannalerntokode',
         chapterName: 'Over the Rainbow',
-        phaseNumber: 4,
+        phaseName: 'Apprenticeship',
         email: 'walks@thebeach',
         active: 'Yes',
       },
@@ -30,7 +30,7 @@ describe(testContext(__filename), function () {
         name: 'Already Lerndtokode!',
         handle: 'alreadylerndtokode',
         chapterName: 'Under the Rainbow',
-        phaseNumber: 3,
+        phaseName: 'Practice',
         email: 'swims@thepool',
         active: 'Yes',
       }

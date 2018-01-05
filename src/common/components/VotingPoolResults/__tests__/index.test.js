@@ -31,7 +31,7 @@ describe(testContext(__filename), function () {
         pool: {
           name: 'Turquoise',
           phase: {
-            number: 1
+            name: 'Foundations'
           },
           candidateGoals,
           users,

@@ -76,18 +76,18 @@ function mapStateToProps(state, props) {
   const {identifier} = props.params
   const {app, users, phases, auth} = state
   const user = findAny(users.users, identifier, ['id', 'handle'])
+  const phase = user && user.phase ? user.phase : {}
 
-  const sortedPhases = Object.values(phases.phases).sort((p1, p2) => p1.number - p2.number)
-  const sortedPhaseOptions = [...sortedPhases.map(phaseToOption), {value: null, label: 'No Phase'}]
+  const sortedPhaseOptions = phasesToOptions(phases.phases)
 
-  let formType = FORM_TYPES.UPDATE
-  if (identifier && !user && !users.isBusy) {
-    formType = FORM_TYPES.NOT_FOUND
-  }
+  const formType = identifier && user && !users.isBusy ?
+    FORM_TYPES.NOT_FOUND :
+    FORM_TYPES.UPDATE
 
   const initialValues = user ? {
     id: user.id,
-    phaseNumber: user.phase ? user.phase.number : null,
+    phaseNumber: phase.number || null,
+    phaseName: phase.name || null,
     roles: user.roles
   } : null
 
@@ -103,8 +103,13 @@ function mapStateToProps(state, props) {
   }
 }
 
+function phasesToOptions(phases) {
+  const sortedPhases = Object.values(phases).sort((p1, p2) => p1.number - p2.number)
+  return [...sortedPhases.map(phaseToOption), {value: null, label: 'No Phase'}]
+}
+
 function phaseToOption(phase) {
-  return {value: phase.number, label: phase.number}
+  return {value: phase.number, label: phase.name}
 }
 
 function mapDispatchToProps(dispatch, props) {

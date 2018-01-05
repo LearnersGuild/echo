@@ -104,7 +104,7 @@ class ProjectDetail extends Component {
               <div>{chapter ? chapter.name : '--'}</div>
               <div>{cycle ? cycle.cycleNumber : '--'}</div>
               <div>{cycle ? cycle.state : '--'}</div>
-              <div>{phase ? phase.number : '--'}</div>
+              <div>{phase ? phase.name : '--'}</div>
               <div>{moment(project.createdAt).format('MMM DD, YYYY')}</div>
               <div>{moment(project.updatedAt).format('MMM DD, YYYY')}</div>
             </Flex>
@@ -198,7 +198,7 @@ ProjectDetail.propTypes = {
       endTimestamp: PropTypes.date,
     }),
     phase: PropTypes.shape({
-      number: PropTypes.number,
+      name: PropTypes.string,
     }),
     retrospectiveSurveyId: PropTypes.string,
   }),

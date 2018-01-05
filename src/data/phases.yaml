@@ -14,13 +14,25 @@
   number: 2
   name: Foundations
   channelName: phase-foundations
+  hasVoting: false
+  hasRetrospective: false
+  practiceGoalNumber: null
+  interviewGoalNumber: null
 -
   id: 80c22650-b0e4-4223-a073-fa0004e8785d
   number: 3
   name: Practice
   channelName: phase-practice
+  hasVoting: false
+  hasRetrospective: false
+  practiceGoalNumber: null
+  interviewGoalNumber: null
 -
   id: ab4e7c93-1ce3-4c15-81a4-69f92e23854f
   number: 4
   name: Apprenticeship
   channelName: phase-apprenticeship
+  hasVoting: false
+  hasRetrospective: false
+  practiceGoalNumber: null
+  interviewGoalNumber: null

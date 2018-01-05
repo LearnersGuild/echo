@@ -149,7 +149,7 @@ function mapStateToProps(state) {
   return {
     isBusy: phaseSummaries.isBusy,
     loading: app.showLoading,
-    tabs: phaseSummaryList.map(phaseSummary => ({label: String(phaseSummary.phase.number)})),
+    tabs: phaseSummaryList.map(phaseSummary => ({label: String(phaseSummary.phase.name)})),
     tableSources,
   }
 }

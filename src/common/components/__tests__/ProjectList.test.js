@@ -19,7 +19,7 @@ describe(testContext(__filename), function () {
     state: {title: 'State', type: String},
     week: {title: 'Week', type: String},
     cycleNumber: {title: 'Cycle', type: String},
-    phaseNumber: {title: 'Phase', type: String},
+    phaseName: {title: 'Phase', type: String},
     goalTitle: {title: 'Goal', type: String},
     hasArtifact: {title: 'Artifact?', type: String},
     memberHandles: {title: 'Members', type: String},
@@ -38,7 +38,7 @@ describe(testContext(__filename), function () {
         state,
         week: '07-26-17',
         name: project.name,
-        phaseNumber: phase.number,
+        phaseName: phase.name,
         goalTitle: project.goal.title,
         memberHandles: users.map(u => u.handle).join(', '),
       })
