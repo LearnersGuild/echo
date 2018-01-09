@@ -28,11 +28,6 @@ export default async function initializeProject(project) {
 
   const members = await getMemberInfo(project.memberIds)
   const memberHandles = members.map(p => p.handle)
-  const channelName = String(project.goal.number)
-  const channelTopic = `${project.goal.title} (${project.goal.url})`
 
-  if (phase.hasVoting) {
-    await initializeChannel(channelName, {topic: channelTopic, users: memberHandles})
-  }
   await sendProjectWelcomeMessages(project, {members})
 }

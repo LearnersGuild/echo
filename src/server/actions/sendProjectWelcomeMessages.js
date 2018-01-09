@@ -19,9 +19,7 @@ export default async function sendProjectWelcomeMessages(project, options = {}) 
 
   const projectMembers = options.members || await getMemberInfo(project.memberIds)
   const projectMemberHandles = projectMembers.map(u => u.handle)
-  const message = phase.hasVoting === true ?
-    _buildGoalProjectMessage(project, projectMembers) :
-    _buildPhaseProjectMessage(project, phase)
+  const message = _buildPhaseProjectMessage(project, phase)
 
   try {
     await chatService.sendDirectMessage(projectMemberHandles, message)
@@ -39,24 +37,4 @@ You should find everything you need to guide you in your work at the resources b
 • <${config.server.curriculum.baseURL}|Guild Curriculum>
 • <${config.server.guide.baseURL}|Learner Guide>
 `
-}
-
-function _buildGoalProjectMessage(project, projectMembers) {
-  const goalLink = `<${project.goal.url}|${project.goal.number}: ${project.goal.title}>`
-  const teamMembers = (projectMembers.length > 1 ? `
-*Your team is:*
-${projectMembers.map(u => `• _${u.name}_ - @${u.handle}`).join('\n  ')}
-` : '')
-
-  return `
-🎊 *Welcome to the ${project.name} project!* 🎊
-${teamMembers}
-*Your goal is:* ${goalLink}
-
-*Time to start work on your project!*
-
->The first step is to create an appropriate project artifact.
->Once you've created the artifact, connect it to your project with the \`/project set-artifact\` command.
-
-Run \`/project set-artifact --help\` for more guidance.`
 }

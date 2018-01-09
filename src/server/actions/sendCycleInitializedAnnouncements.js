@@ -14,15 +14,8 @@ async function _sendAnnouncementToPhase(cycle, phase) {
   const chatService = require('src/server/services/chatService')
 
   try {
-    await chatService.sendChannelMessage(phase.channelName, _buildAnnouncement(cycle))
+    await chatService.sendChannelMessage(phase.channelName)
   } catch (err) {
     console.warn(`Failed to send cycle init announcement to Phase ${phase.number} for cycle ${cycle.cycleNumber}: ${err}`)
   }
-}
-
-function _buildAnnouncement(cycle) {
-  const banner = `🗳 *Voting is now open for cycle ${cycle.cycleNumber}*.`
-  const votingInstructions = `Have a look at <${config.server.goalLibrary.baseURL}|the goal library>, then to get started check out \`/vote --help.\``
-  const announcement = [banner, votingInstructions].join('\n')
-  return announcement
 }
