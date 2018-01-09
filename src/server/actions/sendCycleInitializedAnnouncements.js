@@ -1,5 +1,4 @@
 import Promise from 'bluebird'
-import config from 'src/config'
 import {Cycle, Phase} from 'src/server/services/dataService'
 
 export default async function sendCycleInitializedAnnouncements(cycleId) {

@@ -8,7 +8,6 @@ export default new GraphQLInputObjectType({
     chapterIdentifier: {type: new GraphQLNonNull(GraphQLString), description: 'The chapter identifier'},
     cycleIdentifier: {type: new GraphQLNonNull(GraphQLString), description: 'The cycle identifier'},
     projectIdentifier: {type: GraphQLString, description: 'The project identifier'},
-    goalIdentifier: {type: GraphQLInt, description: 'The goal identifier'},
     memberIdentifiers: {type: new GraphQLList(GraphQLString), description: 'The identifiers of the project members'},
   }),
 })

@@ -25,7 +25,6 @@ export default new GraphQLObjectType({
       cycle: {type: Cycle, description: 'The cycle', resolve: resolveCycle},
       phaseId: {type: GraphQLID, description: "The phase's UUID"},
       phase: {type: Phase, description: 'The phase', resolve: resolvePhase},
-      goal: {type: Goal, description: 'The project goal', resolve: resolveProjectGoal},
       memberIds: {type: new GraphQLList(GraphQLID), description: 'The project member UUIDs'},
       members: {type: new GraphQLList(UserProfile), description: 'The project members', resolve: resolveProjectMembers},
       artifactURL: {type: GraphQLURL, description: 'The URL pointing to the output of this project'},
