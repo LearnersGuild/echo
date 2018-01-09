@@ -1,14 +1,12 @@
 import getMemberInfo from 'src/server/actions/getMemberInfo'
-import addMemberToPoolInCycle from 'src/server/actions/addMemberToPoolInCycle'
-import {Phase, getLatestCycleForChapter} from 'src/server/services/dataService'
-import {GOAL_SELECTION} from 'src/common/models/cycle'
+import {Phase} from 'src/server/services/dataService'
 
 export function start() {
   const jobService = require('src/server/services/jobService')
   jobService.processJobs('memberPhaseChanged', processMemberPhaseChangeCompleted)
 }
 
-export async function processMemberPhaseChangeCompleted({old_val: oldMember, new_val: newMember}) {
+export async function processMemberPhaseChangeCompleted({new_val: newMember}) {
   const chatService = require('src/server/services/chatService')
 
   const memberInfo = (await getMemberInfo([newMember.id]))[0]
@@ -17,18 +15,6 @@ export async function processMemberPhaseChangeCompleted({old_val: oldMember, new
   // invite the member to the new phase channel and send welcome message
   await chatService.inviteToChannel(newPhase.channelName, [memberInfo.handle])
   await chatService.sendDirectMessage(memberInfo.handle, _phaseWelcomeMessage(newPhase))
-
-  // update voting pools if voting is still open for the cycle
-  const currentCycle = await getLatestCycleForChapter(newMember.chapterId)
-  if (currentCycle.state === GOAL_SELECTION) {
-    if (oldMember.phaseId) {
-      // TODO: remove from voting pool and delete submitted votes (if any)
-    }
-    if (newPhase.hasVoting === true) {
-      const poolMember = await addMemberToPoolInCycle(currentCycle, newMember)
-      console.log(`Member ${poolMember.memberId} added to pool ${poolMember.poolId}`)
-    }
-  }
 }
 
 function _phaseWelcomeMessage(phase) {

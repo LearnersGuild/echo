@@ -2,7 +2,6 @@
 import Promise from 'bluebird'
 import generateProjectName from 'src/server/actions/generateProjectName'
 import sendCycleLaunchAnnouncements from 'src/server/actions/sendCycleLaunchAnnouncements'
-import {formProjectsIfNoneExist} from 'src/server/actions/formProjects'
 import {getGoalInfo} from 'src/server/services/goalLibraryService'
 import {r, Phase, Member, Project} from 'src/server/services/dataService'
 
@@ -16,9 +15,6 @@ export async function processCycleLaunched(cycle) {
 
   const nonVotingProjects = await _createProjectsInCycleForNonVotingPhases(cycle)
   console.log(`${nonVotingProjects.length} project(s) created for non-voting phases`)
-
-  const votingProjects = await formProjectsIfNoneExist(cycle.id)
-  console.log(`${votingProjects.length} project(s) created for voting phases`)
 
   try {
     await sendCycleLaunchAnnouncements(cycle.id)
