@@ -19,7 +19,6 @@ const CAPABILITY_ROLES = {
   launchCycle: [ADMIN],
   updateCycle: [ADMIN],
   deleteProject: [ADMIN],
-  viewCycleVotingResults: GENERAL_USE,
 
   importProject: [ADMIN],
   updateProject: [ADMIN],
