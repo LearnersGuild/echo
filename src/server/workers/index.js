@@ -8,7 +8,6 @@ require('./memberPhaseChanged').start()
 require('./projectCreated').start()
 require('./surveySubmitted').start()
 require('./userInviteCodeUsed').start()
-require('./voteSubmitted').start()
 
 // start change feed listeners
 require('src/server/configureChangeFeeds')()

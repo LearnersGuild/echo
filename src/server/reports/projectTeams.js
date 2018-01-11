@@ -1,4 +1,4 @@
-import {getPoolByCycleIdAndMemberId, r} from 'src/server/services/dataService'
+import {r} from 'src/server/services/dataService'
 import {
   getChapterId,
   getCycleId,
@@ -34,51 +34,15 @@ export async function runReport(args) {
       .concatMap(row => (
         row('memberIds')
           .map(id => getInfo(id))
-          .merge(_mergePoolName(cycleId))
           .merge({
             cycleNumber,
             cycleId,
-            projectName: row('projectName'),
-            goalNum: row('goal')('url').split('/').nth(-1),
-            goalTitle: row('goal')('title'),
-            goalRecommendedTeamSize: row('goal')('teamSize'),
-            goalPhase: row('goal')('phase')
+            projectName: row('projectName')
           })
       ))
-      .merge(row => {
-        const goals = _findVotesForCycle(cycleId, {memberId: row('id')}).nth(0).default({})('goals').default([{url: ''}, {url: ''}])
-        return {
-          firstVote: goals.nth(0)('url').split('/').nth(-1),
-          secondVote: goals.nth(1)('url').split('/').nth(-1).default(null),
-        }
-      })
-      .merge(row => ({
-        gotVote: r.branch(
-          row('goalNum').eq(row('firstVote')), '1st',
-          row('goalNum').eq(row('secondVote')), '2nd',
-          'NONE'
-        )
-      }))
       .merge(row => ({memberId: row('id')})).without('id')
       .orderBy('projectName')
   })
 
   return await query
-}
-
-function _mergePoolName(cycleId) {
-  return row => ({
-    poolName: getPoolByCycleIdAndMemberId(cycleId, row('id'), {
-      returnNullIfNoneFound: true
-    }).default({name: 'n/a'})('name')
-  })
-}
-
-function _findVotesForCycle(cycleId, filters) {
-  const poolIdsExpr = r.table('pools')
-    .getAll(cycleId, {index: 'cycleId'})('id')
-    .coerceTo('array')
-  return r.table('votes')
-    .getAll(r.args(poolIdsExpr), {index: 'poolId'})
-    .filter(filters || {})
 }

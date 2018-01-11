@@ -1,4 +1,4 @@
-import {GraphQLString, GraphQLNonNull, GraphQLInt} from 'graphql'
+import {GraphQLString, GraphQLNonNull} from 'graphql'
 import {GraphQLInputObjectType, GraphQLList} from 'graphql/type'
 
 export default new GraphQLInputObjectType({
