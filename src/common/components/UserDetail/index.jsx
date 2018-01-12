@@ -162,6 +162,9 @@ UserDetail.propTypes = {
     chapter: PropTypes.shape({
       name: PropTypes.string,
     }),
+    phase: PropTypes.shape({
+      name: PropTypes.string,
+    }),
   }),
   currentUser: PropTypes.shape({
     id: PropTypes.string,

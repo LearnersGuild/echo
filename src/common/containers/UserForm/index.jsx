@@ -80,7 +80,7 @@ function mapStateToProps(state, props) {
 
   const sortedPhaseOptions = phasesToOptions(phases.phases)
 
-  const formType = identifier && user && !users.isBusy ?
+  const formType = identifier && !user && !users.isBusy ?
     FORM_TYPES.NOT_FOUND :
     FORM_TYPES.UPDATE
 
