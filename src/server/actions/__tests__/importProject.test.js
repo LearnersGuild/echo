@@ -17,19 +17,16 @@ describe(testContext(__filename), function () {
     this.phase = await factory.create('phase', {number: 1})
     this.members = await factory.createMany('member', {chapterId: this.chapter.id, phaseId: this.phase.id}, 3)
     this.users = this.members.map(_idmPropsForUser)
-    this.goalNumber = 1
     this.importData = {
       chapterIdentifier: this.chapter.name,
       cycleIdentifier: this.cycle.cycleNumber,
       memberIdentifiers: this.members.map(p => p.id),
-      goalIdentifier: this.goalNumber,
     }
   })
 
   beforeEach(function () {
     useFixture.nockClean()
     useFixture.nockIDMFindUsers(this.users)
-    useFixture.nockGetGoalInfo(this.goalNumber)
   })
 
   describe('importProject()', function () {
@@ -54,7 +51,6 @@ describe(testContext(__filename), function () {
 
       useFixture.nockClean()
       useFixture.nockIDMFindUsers([...this.users, noPhaseMember])
-      useFixture.nockGetGoalInfo(this.goalNumber)
 
       const result = importProject({...this.importData, memberIdentifiers})
       return expect(result).to.eventually.be.rejectedWith(/All project members must be in a phase/)

@@ -32,7 +32,6 @@ async function run() {
       chapterIdentifier: item.chapterName,
       cycleIdentifier: item.cycleNumber,
       projectIdentifier: item.projectName,
-      goalIdentifier: item.goalNumber,
       memberIdentifiers: item.memberHandles,
     }).catch(err => {
       errors.push(err)
@@ -51,8 +50,6 @@ function validateProject(data) {
     chapterName,
     cycleNumber,
     memberHandles,
-    projectName,
-    goalNumber,
   } = data || {}
 
   if (typeof chapterName !== 'string' || chapterName.length === 0) {
@@ -60,9 +57,6 @@ function validateProject(data) {
   }
   if (isNaN(cycleNumber)) {
     throw new Error('Must specify a valid cycle number')
-  }
-  if ((typeof projectName !== 'string' || projectName === '') && isNaN(goalNumber)) {
-    throw new Error('Must specify a project name or goal number')
   }
   if (!Array.isArray(memberHandles) || memberHandles.length === 0) {
     throw new Error('Must specify at least one valid member handle')

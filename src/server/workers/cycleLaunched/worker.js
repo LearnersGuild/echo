@@ -2,7 +2,6 @@
 import Promise from 'bluebird'
 import generateProjectName from 'src/server/actions/generateProjectName'
 import sendCycleLaunchAnnouncements from 'src/server/actions/sendCycleLaunchAnnouncements'
-import {getGoalInfo} from 'src/server/services/goalLibraryService'
 import {r, Phase, Member, Project} from 'src/server/services/dataService'
 
 export function start() {
@@ -49,15 +48,12 @@ async function _createProjectsInCycleForNonVotingPhases(cycle) {
       return
     }
 
-    const goal = await getGoalInfo(phase.practiceGoalNumber)
-
     const projects = await Promise.map(members, async member => ({
       name: await generateProjectName(),
       chapterId: cycle.chapterId,
       cycleId: cycle.id,
       phaseId: phase.id,
       memberIds: [member.id],
-      goal,
     }), {concurrency: 5})
 
     const savedProjects = await Project.save(projects)

@@ -13,7 +13,6 @@ import ChapterForm from 'src/common/containers/ChapterForm'
 import ChapterList from 'src/common/containers/ChapterList'
 import UserList from 'src/common/containers/UserList'
 import UserDetail from 'src/common/containers/UserDetail'
-import ProjectForm from 'src/common/containers/ProjectForm'
 import UserForm from 'src/common/containers/UserForm'
 import ProjectList from 'src/common/containers/ProjectList'
 import ProjectDetail from 'src/common/containers/ProjectDetail'
@@ -60,8 +59,6 @@ const routes = store => {
       <Route path="/not-found" component={NotFound}/>
       <Route path="/projects" component={Blank}>
         <IndexRoute component={userCanVisit('listProjects', store)(ProjectList)}/>
-        <Route path="new" component={userCanVisit('importProject', store)(ProjectForm)}/>
-        <Route path=":identifier/edit" component={userCanVisit('importProject', store)(ProjectForm)}/>
         <Route path=":identifier" component={userCanVisit('viewProjectSummary', store)(ProjectDetail)}/>
       </Route>
       <Route path="/retro" component={Blank}>

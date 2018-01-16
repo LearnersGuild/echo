@@ -6,12 +6,10 @@ import FontIcon from 'react-toolbox/lib/font_icon'
 import moment from 'moment-timezone'
 import {Tab, Tabs} from 'react-toolbox'
 import Helmet from 'react-helmet'
-
 import ContentHeader from 'src/common/components/ContentHeader'
 import ProjectUserSummary from 'src/common/components/ProjectUserSummary'
 import {Flex} from 'src/common/components/Layout'
 import {safeUrl, urlParts, objectValuesAreAllNull} from 'src/common/util'
-import {renderGoalAsString} from 'src/common/models/goal'
 
 import styles from './index.scss'
 import theme from './theme.scss'
@@ -28,7 +26,7 @@ class ProjectDetail extends Component {
   }
 
   renderHeader() {
-    const {project: {name, goal, retrospectiveSurveyId}, allowEdit, onClickEdit} = this.props
+    const {project: {name, retrospectiveSurveyId}, allowEdit, onClickEdit} = this.props
 
     const editDisabled = Boolean(retrospectiveSurveyId)
     const editButton = allowEdit ? (
@@ -47,11 +45,8 @@ class ProjectDetail extends Component {
       </Flex>
     )
 
-    const subtitle = goal ? (
-      <div className={styles.subtitle}>
-        <div>{renderGoalAsString(goal)}</div>
-      </div>
-    ) : null
+    // Not currently used after removing goals
+    const subtitle = null
 
     return (
       <div className={styles.header}>
@@ -185,9 +180,6 @@ ProjectDetail.propTypes = {
     artifactURL: PropTypes.string,
     createdAt: PropTypes.date,
     updatedAt: PropTypes.date,
-    goal: PropTypes.shape({
-      title: PropTypes.string,
-    }),
     chapter: PropTypes.shape({
       name: PropTypes.string,
     }),
