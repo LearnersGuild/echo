@@ -21,7 +21,7 @@ const CAPABILITY_ROLES = {
   deleteProject: [ADMIN],
   viewCycleVotingResults: GENERAL_USE,
 
-  importProject: [ADMIN, LEARNER],
+  importProject: GENERAL_USE,
   updateProject: [ADMIN],
   listProjects: GENERAL_USE,
   findProjects: GENERAL_USE,

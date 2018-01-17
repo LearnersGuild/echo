@@ -1,11 +1,16 @@
 import logger from 'src/server/util/logger'
 import findUsers from 'src/server/actions/findUsers'
 import saveProject from 'src/server/actions/saveProject'
+// TODO: check if getChapter, below, is correct
 import {getChapter, getCycleForChapter, getProject} from 'src/server/services/dataService'
 import {LGBadRequestError} from 'src/server/util/error'
 
 export default async function importProject(data = {}) {
-  const {chapter, cycle, project, members, descriptionURL} = await _parseProjectInput(data)
+  const {projectIdentifier, members, descriptionURL} = await _parseProjectInput(data)
+
+  const chapter = getChapter(members[0].chapterId)
+  const cycle = getCycleForChapter(chapter.id)
+  const project = await _validateProject(projectIdentifier, {chapter, cycle})
 
   const projectValues = {
     cycleId: cycle.id,
@@ -38,11 +43,7 @@ async function _parseProjectInput(data) {
     _validateMembers(memberIdentifiers),
   ])
 
-  const chapter = getChapter(members[0].chapterId)
-  const cycle = getCycleForChapter(chapter.id)
-  const project = await _validateProject(projectIdentifier, {chapter, cycle})
-
-  return {chapter, cycle, project, members, descriptionURL}
+  return {projectIdentifier, members, descriptionURL}
 }
 
 async function _validateMembers(userIdentifiers = []) {
