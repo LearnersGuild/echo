@@ -45,6 +45,7 @@ const CAPABILITY_ROLES = {
   saveResponse: GENERAL_USE,
   getRetrospectiveSurvey: GENERAL_USE,
   findRetrospectiveSurveys: GENERAL_USE,
+  getWorkPlanSurvey: GENERAL_USE,
   lockAndUnlockSurveys: [ADMIN],
 
   viewSensitiveReports: [ADMIN],

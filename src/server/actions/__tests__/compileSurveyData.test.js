@@ -5,6 +5,7 @@ import nock from 'nock'
 import factory from 'src/test/factories'
 import {resetDB, useFixture, mockIdmUsersById} from 'src/test/helpers'
 import {Survey} from 'src/server/services/dataService'
+import {RETROSPECTIVE_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
 
 import {
   compileSurveyQuestionDataForMember,
@@ -53,13 +54,13 @@ describe(testContext(__filename), function () {
       const questionNumber = 2 // <-- 1-based
       const questionIndex = 1 // <-- 0-based
 
-      return compileSurveyQuestionDataForMember(this.currentUser.id, questionNumber).then(result =>
+      return compileSurveyQuestionDataForMember(this.currentUser.id, questionNumber, null, RETROSPECTIVE_DESCRIPTOR).then(result =>
         expect(result).to.have.property('id', this.survey.questionRefs[questionIndex].questionId)
       )
     })
 
     it('renders the question body template', function () {
-      return compileSurveyQuestionDataForMember(this.currentUser.id, 2).then(question => {
+      return compileSurveyQuestionDataForMember(this.currentUser.id, 2, null, RETROSPECTIVE_DESCRIPTOR).then(question => {
         expect(question.body)
           .to.contain(`@${question.subjects[0].handle}`)
       })
@@ -68,25 +69,25 @@ describe(testContext(__filename), function () {
 
   describe('compileSurveyDataForMember()', function () {
     it('returns the survey for the correct cycle and project for the current user', function () {
-      return compileSurveyDataForMember(this.currentUser.id).then(result =>
+      return compileSurveyDataForMember(this.currentUser.id, null, RETROSPECTIVE_DESCRIPTOR).then(result =>
         expect(result.id).to.eq(this.survey.id)
       )
     })
 
     it('renders the question body templates', async function () {
-      const result = await compileSurveyDataForMember(this.currentUser.id)
+      const result = await compileSurveyDataForMember(this.currentUser.id, null, RETROSPECTIVE_DESCRIPTOR)
       expect(result.questions[1].body).to.contain(`@${this.members[1].handle}`)
     })
 
     it('returns a meaningful error when lookup fails', async function () {
       await Survey.get(this.survey.id).delete().execute()
-      const result = compileSurveyDataForMember(this.currentUser.id)
+      const result = compileSurveyDataForMember(this.currentUser.id, null, RETROSPECTIVE_DESCRIPTOR)
       return expect(result).to.be.rejectedWith(/no retrospective survey/)
     })
 
     it('returns a rejected promise if the survey is locked', async function () {
       await Survey.get(this.survey.id).update({completedBy: [this.currentUser.id]})
-      const result = compileSurveyDataForMember(this.currentUser.id)
+      const result = compileSurveyDataForMember(this.currentUser.id, null, RETROSPECTIVE_DESCRIPTOR)
       return expect(result).to.be.rejectedWith(/is locked/)
     })
   })

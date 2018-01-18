@@ -5,10 +5,11 @@ import factory from 'src/test/factories'
 import {resetDB, useFixture} from 'src/test/helpers'
 import {parseQueryError} from 'src/server/util/error'
 import {PRACTICE} from 'src/common/models/cycle'
+import {RETROSPECTIVE_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
 
 import r from '../../r'
-import getRetrospectiveSurveyForMember from '../getRetrospectiveSurveyForMember'
-import getFullRetrospectiveSurveyForMember from '../getFullRetrospectiveSurveyForMember'
+import getSurveyForMember from '../getSurveyForMember'
+import getFullSurveyForMember from '../getFullSurveyForMember'
 
 describe(testContext(__filename), function () {
   useFixture.buildSurvey()
@@ -22,9 +23,9 @@ describe(testContext(__filename), function () {
     })
 
     it('adds a questions array with subjectIds and responseInstructions', function () {
-      return getFullRetrospectiveSurveyForMember(this.project.memberIds[0])
+      return getFullSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
         .then(async result => {
-          const {questionRefs} = await getRetrospectiveSurveyForMember(this.project.memberIds[0])
+          const {questionRefs} = await getSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
           expect(questionRefs).to.have.length.gt(0)
           expect(result).to.have.property('questions').with.length(questionRefs.length)
           result.questions.forEach(question => expect(question).to.have.property('subjectIds'))
@@ -53,7 +54,7 @@ describe(testContext(__filename), function () {
     })
 
     it('includes the response', function () {
-      return getFullRetrospectiveSurveyForMember(this.project.memberIds[0])
+      return getFullSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
         .then(result => {
           expect(result.questions[0].response.values[0]).to.have.property('subjectId', this.project.memberIds[1])
           expect(result.questions[0].response.values[0]).to.have.property('value', 'some value')
@@ -70,7 +71,7 @@ describe(testContext(__filename), function () {
     })
 
     it('sets response.values to an empty array', function () {
-      return getFullRetrospectiveSurveyForMember(this.project.memberIds[0])
+      return getFullSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
         .then(result => {
           expect(result.questions[0].response.values).to.deep.eq([])
         })
@@ -98,7 +99,7 @@ describe(testContext(__filename), function () {
 
     it('includes all response parts', function () {
       const sortBySubjectId = (a, b) => a.subjectId < b.subjectId ? -1 : 1
-      return getFullRetrospectiveSurveyForMember(this.project.memberIds[0])
+      return getFullSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
         .then(result => {
           expect(
             result.questions[0].response.values.sort(sortBySubjectId)
@@ -120,7 +121,7 @@ describe(testContext(__filename), function () {
 
     it('rejects the promise with an appropriate error', function () {
       return expect(
-        getFullRetrospectiveSurveyForMember(this.project.memberIds[0])
+        getSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
           .catch(err => parseQueryError(err))
       ).to.eventually
        .have.property('message')
@@ -138,7 +139,7 @@ describe(testContext(__filename), function () {
 
     it('rejects the promise with an appropriate error', function () {
       return expect(
-        getFullRetrospectiveSurveyForMember(this.project.memberIds[0])
+        getFullSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
           .catch(err => parseQueryError(err))
       ).to.eventually
        .have.property('message')
@@ -156,7 +157,7 @@ describe(testContext(__filename), function () {
 
     it('rejects the promise with an appropriate error', function () {
       return expect(
-        getFullRetrospectiveSurveyForMember(this.project.memberIds[0])
+        getFullSurveyForMember(this.project.memberIds[0], null, RETROSPECTIVE_DESCRIPTOR)
           .catch(err => parseQueryError(err))
       ).to.eventually
        .have.property('message')
