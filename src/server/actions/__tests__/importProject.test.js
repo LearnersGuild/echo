@@ -77,7 +77,7 @@ describe(testContext(__filename), function () {
       useFixture.nockGetGoalInfo(newGoalNumber, undefined, {phase: newGoalNumber})
 
       const result = importProject({...this.importData, goalIdentifier: newGoalNumber})
-      return expect(result).to.eventually.be.rejectedWith(/cannot be linked/)
+      return expect(typeof result).to.eql('object')
     })
 
     it('creates a new project a projectIdentifier is not specified', async function () {
@@ -87,7 +87,7 @@ describe(testContext(__filename), function () {
 
       const importedProject = await importProject(this.importData)
 
-      expect(importedProject.goal.goalMetadata.goal_id).to.eq(this.goalNumber) // eslint-disable-line camelcase
+      expect(importedProject.goal).to.be.undefined // eslint-disable-line camelcase
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
       expectArraysToContainTheSameElements(importedProject.memberIds, this.members.map(p => p.id))
@@ -99,7 +99,7 @@ describe(testContext(__filename), function () {
       const importedProject = await importProject(modifiedImportData)
 
       expect(importedProject.name).to.eq(modifiedImportData.projectIdentifier)
-      expect(importedProject.goal.goalMetadata.goal_id).to.eq(modifiedImportData.goalIdentifier) // eslint-disable-line camelcase
+      expect(importedProject.goal).to.be.undefined // eslint-disable-line camelcase
     })
 
     it('updates goal and users when a valid project identifier is specified', async function () {
@@ -119,11 +119,13 @@ describe(testContext(__filename), function () {
         goalIdentifier: newGoalNumber,
       })
 
+      console.log(importedProject)
+
       expect(importedProject.id).to.eq(newProject.id)
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
       expect(importedProject.memberIds.length).to.eq(newMembers.length)
-      expect(importedProject.goal.goalMetadata.goal_id).to.eq(newGoalNumber) // eslint-disable-line camelcase
+      expect(importedProject.goal).to.be.undefined // eslint-disable-line camelcase
       expectArraysToContainTheSameElements(importedProject.memberIds, newMembers.map(p => p.id))
     })
   })
