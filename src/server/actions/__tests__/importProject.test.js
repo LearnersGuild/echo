@@ -33,16 +33,6 @@ describe(testContext(__filename), function () {
   })
 
   describe('importProject()', function () {
-    it('throws an error if chapterIdentifier is invalid', function () {
-      const result = importProject({...this.importData, chapterIdentifier: 'fake.chapter.id'})
-      return expect(result).to.eventually.be.rejectedWith(/Chapter not found/)
-    })
-
-    it('throws an error if cycleIdentifier is invalid', function () {
-      const result = importProject({...this.importData, cycleIdentifier: 10101010})
-      return expect(result).to.eventually.be.rejectedWith(/Cycle not found/)
-    })
-
     it('throws an error if member identifiers list is not an array when importing a new project', function () {
       const result = importProject({...this.importData, memberIdentifiers: undefined})
       return expect(result).to.eventually.be.rejectedWith(/Must specify at least one project member/)

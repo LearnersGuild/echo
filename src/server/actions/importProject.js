@@ -1,8 +1,9 @@
 import logger from 'src/server/util/logger'
 import findUsers from 'src/server/actions/findUsers'
+import getChapter from 'src/server/actions/getChapter'
 import saveProject from 'src/server/actions/saveProject'
 // TODO: check if getChapter, below, is correct
-import {getChapter, getCycleForChapter, getProject} from 'src/server/services/dataService'
+import {getCycleForChapter, getProject} from 'src/server/services/dataService'
 import {LGBadRequestError} from 'src/server/util/error'
 
 export default async function importProject(data = {}) {
