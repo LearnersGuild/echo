@@ -13,7 +13,7 @@ const sentry = new raven.Client(config.server.sentryDSN)
 const corsOptions = {
   origin: [
     /\.learnersguild.org/,
-    /\.learnersguild.dev/,
+    /\.learnersguild.meh/,
   ],
   exposedHeaders: ['LearnersGuild-JWT'],
 }
