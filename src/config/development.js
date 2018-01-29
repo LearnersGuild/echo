@@ -1,7 +1,7 @@
 module.exports = {
   server: {
     sockets: {
-      host: 'echo.learnersguild.dev',
+      host: 'echo.learnersguild.meh',
     },
   },
 }

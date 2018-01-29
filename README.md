@@ -51,11 +51,11 @@ Take out all comments in your final version.
 Example:
 ```
 PORT=9005
-APP_BASE_URL=http://echo.learnersguild.dev
+APP_BASE_URL=http://echo.learnersguild.meh
 REDIS_URL=redis://localhost:6379
 RETHINKDB_URL=rethinkdb://localhost:28015/echo_development
 # IDM / JWT settings, including session extension
-IDM_BASE_URL=http://idm.learnersguild.dev
+IDM_BASE_URL=http://idm.learnersguild.meh
 JWT_PRIVATE_KEY="<get from IDM service>"
 JWT_PUBLIC_KEY="<get from IDM service>"
 # External API settings
@@ -107,7 +107,7 @@ npm start
 Visit the server in your browser:
 
 ```bash
-open http://echo.learnersguild.dev
+open http://echo.learnersguild.meh
 ```
 
 Start the workers
