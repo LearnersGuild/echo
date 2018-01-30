@@ -14,7 +14,6 @@ const tableModel = {
   memberName: {title: 'Name', type: String},
   memberHandle: {title: 'Handle', type: String},
   projectName: {title: 'Project', type: String},
-  projectGoalTitle: {title: 'Goal', type: String},
   projectArtifact: {title: 'Artifact?', type: String},
 }
 
@@ -95,7 +94,6 @@ function mapStateToProps(state) {
       ))
       .map(phaseMember => {
         let projectName = null
-        let projectGoalTitle = null
         let projectArtifact = null
         const project = projectsByMemberId[phaseMember.id]
         if (project) {
@@ -105,15 +103,6 @@ function mapStateToProps(state) {
               to={`/projects/${project.name}`}
               >
               {project.name}
-            </Link>
-          )
-          projectGoalTitle = (
-            <Link
-              key={`${phaseMember.handle}_${project.name}_goal_${i}`}
-              to={project.goal.url}
-              target="_blank"
-              >
-              {project.goal.title}
             </Link>
           )
           projectArtifact = project.artifactURL ? (
@@ -140,7 +129,6 @@ function mapStateToProps(state) {
           memberName,
           memberHandle,
           projectName,
-          projectGoalTitle,
           projectArtifact,
         }
       })
