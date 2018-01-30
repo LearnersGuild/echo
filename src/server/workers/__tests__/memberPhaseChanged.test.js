@@ -4,7 +4,6 @@
 import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {resetDB, useFixture, mockIdmUsersById} from 'src/test/helpers'
-import {GOAL_SELECTION} from 'src/common/models/cycle'
 
 describe(testContext(__filename), function () {
   beforeEach(resetDB)
@@ -26,16 +25,14 @@ describe(testContext(__filename), function () {
       beforeEach('set up member phase data', async function () {
         const [chapter, phase] = await Promise.all([
           factory.create('chapter'),
-          factory.create('phase', {number: 3, hasVoting: true}),
+          factory.create('phase', {number: 3}),
         ])
-        const [cycle, member] = await Promise.all([
-          factory.create('cycle', {chapterId: chapter.id, state: GOAL_SELECTION}),
+        const [member] = await Promise.all([
           factory.create('member', {chapterId: chapter.id, phaseId: phase.id}),
-          factory.create('phase', {number: phase.number - 1, hasVoting: false}),
+          factory.create('phase', {number: phase.number - 1}),
         ])
         useFixture.nockClean()
         this.user = (await mockIdmUsersById([member.id]))[0]
-        this.pool = factory.create('pool', {cycleId: cycle.id, phaseId: phase.id})
         this.phase = phase
         this.member = member
       })

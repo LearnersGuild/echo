@@ -5,7 +5,7 @@ import {Cycle, Phase} from 'src/server/services/dataService'
 export default async function sendCycleInitializedAnnouncements(cycleId) {
   const [cycle, phases] = await Promise.all([
     await Cycle.get(cycleId),
-    await Phase.filter({hasVoting: true}),
+    await Phase.run(),
   ])
   await Promise.each(phases, phase => _sendAnnouncementToPhase(cycle, phase))
 }

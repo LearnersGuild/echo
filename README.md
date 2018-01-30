@@ -92,8 +92,6 @@ npm run db:copy -- <STATE>
 ```
 
 Available `STATE` options:
-- `GOAL_SELECTION` (default)
-- `GOAL_SELECTION_VOTES`
 - `PRACTICE`
 - `REFLECTION`
 

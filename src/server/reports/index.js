@@ -11,7 +11,6 @@ app.get('/reports/:reportName', requestHandler)
 export default app
 
 const SENSITIVE_REPORTS = [
-  'projectTeams',
   'memberRetroFeedback',
 ]
 const PUBLIC_REPORTS = [

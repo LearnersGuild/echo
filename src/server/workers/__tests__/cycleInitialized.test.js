@@ -24,7 +24,7 @@ describe(testContext(__filename), function () {
 
     describe('when a new cycle is created', function () {
       beforeEach(async function () {
-        this.phase = await factory.create('phase', {hasVoting: true})
+        this.phase = await factory.create('phase')
         this.cycle = await factory.create('cycle', {cycleNumber: 2})
         useFixture.nockClean()
         useFixture.nockIDMGetUsersById([], {times: 10})

@@ -10,10 +10,6 @@ export default function define(factory) {
     number: factory.sequence(n => n),
     name: factory.sequence(n => `phase-name-${n}`),
     channelName: factory.sequence(n => `phase-${n}`),
-    hasVoting: false,
-    hasRetrospective: false,
-    practiceGoalNumber: 1,
-    interviewGoalNumber: 1001,
     createdAt: cb => cb(null, now),
     updatedAt: cb => cb(null, now),
   })

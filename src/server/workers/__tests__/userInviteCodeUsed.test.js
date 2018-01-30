@@ -2,19 +2,10 @@
 /* global expect testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import factory from 'src/test/factories'
-import stubs from 'src/test/stubs'
 import {resetDB} from 'src/test/helpers'
 
 describe(testContext(__filename), function () {
   beforeEach(resetDB)
-
-  beforeEach(function () {
-    stubs.gitHubService.enable()
-  })
-
-  afterEach(function () {
-    stubs.gitHubService.disable()
-  })
 
   describe('processUserInviteCodeUsed', function () {
     const {Member} = require('src/server/services/dataService')

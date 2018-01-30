@@ -76,9 +76,6 @@ module.exports = {
         region: process.env.AWS_S3_REGION || 'us-west-2',
       },
     },
-    goalLibrary: {
-      baseURL: process.env.GOAL_LIBRARY_BASE_URL || 'https://curriculum.learnersguild.org',
-    },
     curriculum: {
       baseURL: process.env.CURRICULUM_BASE_URL || 'https://curriculum.learnersguild.org',
     },
