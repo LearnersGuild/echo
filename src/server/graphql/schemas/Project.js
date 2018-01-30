@@ -6,15 +6,14 @@ import {
   resolveChapter,
   resolveCycle,
   resolvePhase,
-  resolveProjectGoal,
   resolveProjectMembers,
 } from 'src/server/graphql/resolvers'
 
 export default new GraphQLObjectType({
   name: 'Project',
-  description: 'A project engaged in by learners to complete some goal',
+  description: 'A collection of work completed during a cycle',
   fields: () => {
-    const {Chapter, Cycle, Goal, Phase, UserProfile} = require('src/server/graphql/schemas')
+    const {Chapter, Cycle, Phase, UserProfile} = require('src/server/graphql/schemas')
 
     return {
       id: {type: new GraphQLNonNull(GraphQLID), description: "The project's UUID"},
@@ -25,7 +24,6 @@ export default new GraphQLObjectType({
       cycle: {type: Cycle, description: 'The cycle', resolve: resolveCycle},
       phaseId: {type: GraphQLID, description: "The phase's UUID"},
       phase: {type: Phase, description: 'The phase', resolve: resolvePhase},
-      goal: {type: Goal, description: 'The project goal', resolve: resolveProjectGoal},
       memberIds: {type: new GraphQLList(GraphQLID), description: 'The project member UUIDs'},
       members: {type: new GraphQLList(UserProfile), description: 'The project members', resolve: resolveProjectMembers},
       artifactURL: {type: GraphQLURL, description: 'The URL pointing to the output of this project'},

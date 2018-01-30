@@ -15,29 +15,6 @@ export default function define(factory) {
       const createCycles = factory.assocMany('cycle', 'id', 1, [{chapterId, state: REFLECTION}])
       createCycles((err, cycleIds) => cb(err, cycleIds[0]))
     },
-    goal: factory.sequence(n => {
-      const url = `https://goals.learnersguild.test/${n}`
-      const title = `Goal #${n}`
-      const teamSize = 2
-      const phase = 1
-      const dynamic = false
-      return {
-        number: n,
-        url,
-        title,
-        teamSize,
-        phase,
-        dynamic,
-        goalMetadata: {
-          url,
-          title,
-          goal_id: n, // eslint-disable-line camelcase
-          team_size: teamSize, // eslint-disable-line camelcase
-          phase,
-          dynamic,
-        },
-      }
-    }),
     artifactURL: factory.sequence(n => `http://artifact.example.com/${n}`),
     createdAt: cb => cb(null, now),
     updatedAt: cb => cb(null, now),

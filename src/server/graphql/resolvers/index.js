@@ -121,13 +121,6 @@ export function resolveProject(parent) {
     parent.projectId ? _safeResolveAsync(Project.get(parent.projectId)) : null
 }
 
-export function resolveProjectGoal(project) {
-  if (!project.goal) {
-    return null
-  }
-  return project.goal
-}
-
 export function resolveProjectMembers(project) {
   if (project.members) {
     return project.members
