@@ -18,7 +18,6 @@ import UserForm from 'src/common/containers/UserForm'
 import ProjectList from 'src/common/containers/ProjectList'
 import ProjectDetail from 'src/common/containers/ProjectDetail'
 import RetroSurvey from 'src/common/containers/RetroSurvey'
-import CycleVotingResults from 'src/common/containers/CycleVotingResults'
 import Blank from 'src/common/components/Blank'
 import NotFound from 'src/common/components/NotFound'
 import Phases from 'src/common/containers/Phases'
@@ -57,9 +56,6 @@ const routes = store => {
         <IndexRoute component={userCanVisit('listChapters', store)(ChapterList)}/>
         <Route path="new" component={userCanVisit('createChapter', store)(ChapterForm)}/>
         <Route path=":identifier" component={userCanVisit('updateChapter', store)(ChapterForm)}/>
-      </Route>
-      <Route path="/cycle-voting-results" component={Blank}>
-        <IndexRoute component={userCanVisit('viewCycleVotingResults', store)(CycleVotingResults)}/>
       </Route>
       <Route path="/not-found" component={NotFound}/>
       <Route path="/projects" component={Blank}>
