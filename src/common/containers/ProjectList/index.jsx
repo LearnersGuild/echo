@@ -19,7 +19,7 @@ const ProjectModel = {
   state: {title: 'State', type: String},
   week: {title: 'Week', type: String},
   cycleNumber: {title: 'Cycle', type: String},
-  phaseNumber: {title: 'Phase', type: String},
+  phaseName: {title: 'Phase', type: String},
   goalTitle: {title: 'Goal', type: String},
   hasArtifact: {title: 'Artifact?', type: String},
   memberHandles: {title: 'Members', type: String},
@@ -72,7 +72,7 @@ class ProjectListContainer extends Component {
           </Link>
         ),
         cycleNumber: cycle.cycleNumber,
-        phaseNumber: phase.number,
+        phaseName: phase.name,
         hasArtifact: project.artifactURL ? (
           <Link to={project.artifactURL} target="_blank">
             <FontIcon className={styles.fontIcon} value="open_in_new"/>

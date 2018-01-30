@@ -114,7 +114,7 @@ export default class VotingPoolResults extends Component {
     }
 
     const current = isCurrent ? ' *' : ''
-    const phase = pool.phase ? ` (P${pool.phase.number})` : ''
+    const phase = pool.phase ? ` (P${pool.phase.name})` : ''
     const title = `${pool.name} Pool${phase}${current}`
     const iconName = isCollapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up'
     const toggle = e => {
@@ -153,7 +153,7 @@ export default class VotingPoolResults extends Component {
 export const poolPropType = PropTypes.shape({
   name: PropTypes.string.required,
   phase: PropTypes.shape({
-    number: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
   }),
   candidateGoals: PropTypes.arrayOf(candidateGoalPropType),
   users: PropTypes.arrayOf(PropTypes.shape({

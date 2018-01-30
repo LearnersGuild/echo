@@ -84,7 +84,7 @@ class UserDetail extends Component {
                 <div>{phoneLink || '--'}</div>
                 <div><span>&nbsp;</span></div>
                 <div>{user.chapter ? user.chapter.name : '--'}</div>
-                <div>{user.phase ? user.phase.number : '--'}</div>
+                <div>{user.phase ? user.phase.name : '--'}</div>
                 <div>{moment(user.createdAt).format('MMM DD, YYYY') || '--'}</div>
                 <div>{moment(user.updatedAt).format('MMM DD, YYYY') || '--'}</div>
                 <div><span>&nbsp;</span></div>
@@ -160,6 +160,9 @@ UserDetail.propTypes = {
     name: PropTypes.string,
     avatarUrl: PropTypes.string,
     chapter: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    phase: PropTypes.shape({
       name: PropTypes.string,
     }),
   }),

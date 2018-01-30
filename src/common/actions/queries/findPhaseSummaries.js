@@ -7,6 +7,7 @@ export default function findPhaseSummaries() {
           phase {
             id
             number
+            name
           }
           currentProjects {
             id

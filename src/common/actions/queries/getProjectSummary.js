@@ -32,6 +32,7 @@ export default function getProjectSummary(identifier) {
           phase {
             id
             number
+            name
           }
         }
         projectUserSummaries {

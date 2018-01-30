@@ -18,6 +18,7 @@ export default function getUserSummary(identifier) {
           phase {
             id
             number
+            name
           }
           createdAt
           updatedAt

@@ -3,7 +3,7 @@ require('require-yaml') // eslint-disable-line import/no-unassigned-import
 const PHASES = require('src/data/phases.yaml')
 
 export default function phaseModel(thinky) {
-  const {r, type: {string, number, date, boolean}} = thinky
+  const {r, type: {string, date, number, boolean}} = thinky
 
   return {
     name: 'Phase',
@@ -15,6 +15,10 @@ export default function phaseModel(thinky) {
 
       number: number()
         .integer()
+        .min(1)
+        .allowNull(false),
+
+      name: string()
         .allowNull(false),
 
       channelName: string()

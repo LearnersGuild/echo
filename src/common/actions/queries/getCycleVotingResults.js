@@ -27,6 +27,7 @@ export default function getCycleVotingResults() {
             phase {
               id
               number
+              name
             }
             votingIsStillOpen
             candidateGoals {

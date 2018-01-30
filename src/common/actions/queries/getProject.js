@@ -22,6 +22,7 @@ export default function getProject(identifier) {
           phase {
             id
             number
+            name
           }
           goal {
             url
