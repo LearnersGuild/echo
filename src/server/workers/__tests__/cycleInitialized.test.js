@@ -19,7 +19,6 @@ describe(testContext(__filename), function () {
 
   describe('processCycleInitialized()', function () {
     const chatService = require('src/server/services/chatService')
-    const {Pool} = require('src/server/services/dataService')
 
     const {processCycleInitialized} = require('../cycleInitialized')
 
@@ -37,23 +36,10 @@ describe(testContext(__filename), function () {
         expect(chatService.sendChannelMessage.callCount).to.eq(1)
 
         expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.phase.channelName, `Voting is now open for cycle ${this.cycle.cycleNumber}`)
+          .calledWithMatch(this.phase.channelName, `Cycle ${this.cycle.cycleNumber}`)
 
         expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.phase.channelName, `<${config.server.goalLibrary.baseURL}|the goal library>`)
-
-        expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.phase.channelName, '/vote --help')
-      })
-
-      it('will not recreate pools if they already exist', async function () {
-        await processCycleInitialized(this.cycle)
-        const poolsAfterFirstRun = await Pool.filter({cycleId: this.cycle.id})
-
-        await processCycleInitialized(this.cycle)
-        const poolsAfterSecondRun = await Pool.filter({cycleId: this.cycle.id})
-
-        expect(poolsAfterFirstRun.length).to.eq(poolsAfterSecondRun.length)
+          .calledWithMatch(this.phase.channelName, `To create a new project, visit: ${config.app.projectURL}.`)
       })
     })
   })

@@ -17,7 +17,6 @@ describe(testContext(__filename), function () {
   })
 
   describe('processUserInviteCodeUsed', function () {
-    const gitHubService = require('src/server/services/gitHubService')
     const {Member} = require('src/server/services/dataService')
 
     const {processUserInviteCodeUsed} = require('../userInviteCodeUsed')
@@ -33,12 +32,6 @@ describe(testContext(__filename), function () {
         await processUserInviteCodeUsed(this.user)
         const member = await Member.get(this.user.id)
         expect(member.chapterId).to.eq(this.chapter.id)
-      })
-
-      it('adds the member to the github team', async function () {
-        await processUserInviteCodeUsed(this.user)
-        expect(gitHubService.addUserToTeam).to.have.been
-          .calledWith(this.user.handle, this.chapter.githubTeamId)
       })
     })
   })

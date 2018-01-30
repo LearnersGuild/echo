@@ -88,6 +88,7 @@ module.exports = {
   },
   app: {
     baseURL: process.env.APP_BASE_URL,
+    projectURL: process.env.APP_PROJECT_URL,
     sentryDSN: process.env.SENTRY_CLIENT_DSN,
     playbookURL: process.env.PLAYBOOK_URL || 'https://playbook.learnersguild.org',
     minify: false,

@@ -21,8 +21,9 @@ async function _sendAnnouncementToPhase(cycle, phase) {
 }
 
 function _buildAnnouncement(cycle) {
-  const banner = `🗳 *Voting is now open for cycle ${cycle.cycleNumber}*.`
-  const votingInstructions = `Have a look at <${config.server.goalLibrary.baseURL}|the goal library>, then to get started check out \`/vote --help.\``
-  const announcement = [banner, votingInstructions].join('\n')
-  return announcement
+  const banner = `🗳 *Cycle ${cycle.cycleNumber}* has begun!`
+  const projectInstructions = `To create a new project, visit: ${config.app.projectURL}.`
+  console.log('banner:', banner)
+  console.log('projectInstructions:', projectInstructions)
+  return [banner, projectInstructions].join('\n')
 }

@@ -1,4 +1,7 @@
 module.exports = {
+  app: {
+    projectURL: 'http://echo.learnersguild.test/projects',
+  },
   server: {
     secure: false,
     rethinkdb: {
