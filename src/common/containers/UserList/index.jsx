@@ -17,7 +17,7 @@ const UserModel = {
   handle: {type: String},
   name: {type: String},
   chapterName: {title: 'Chapter', type: String},
-  phaseNumber: {title: 'Phase', type: Number},
+  phaseName: {title: 'Phase', type: String},
   email: {type: String},
   active: {type: String},
 }
@@ -58,7 +58,7 @@ class UserListContainer extends Component {
         handle: <Link to={userURL}>{user.handle}</Link>,
         name: <Link to={userURL}>{user.name}</Link>,
         chapterName: (user.chapter || {}).name,
-        phaseNumber: ((user || {}).phase || {}).number,
+        phaseName: ((user || {}).phase || {}).name,
         email: <Link to={mailtoURL}>{user.email}</Link>,
         active: user.active ? 'Yes' : 'No',
       })
