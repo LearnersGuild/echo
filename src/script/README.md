@@ -23,7 +23,6 @@ Example - creating a NEW project:
 [{
   "chapterName": 'Oakland',
   "cycleNumber": 14,
-  "goalNumber": 86,
   "memberHandles": ["superawsm", "malookwhaticando"]
 }]
 ```

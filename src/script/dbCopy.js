@@ -10,8 +10,6 @@ import {finish} from './util'
 const s3Client = s3.createClient({s3Options: config.server.aws.s3})
 
 const STATE_OPTIONS = {
-  GOAL_SELECTION: 'GOAL_SELECTION',
-  GOAL_SELECTION_VOTES: 'GOAL_SELECTION_VOTES',
   PRACTICE: 'PRACTICE',
   REFLECTION: 'REFLECTION',
 }
