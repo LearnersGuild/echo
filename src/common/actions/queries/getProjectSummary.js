@@ -12,12 +12,6 @@ export default function getProjectSummary(identifier) {
           retrospectiveSurveyId
           createdAt
           updatedAt
-          goal {
-            number
-            title
-            phase
-            url
-          }
           chapter {
             id
             name

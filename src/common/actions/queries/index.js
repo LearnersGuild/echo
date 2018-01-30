@@ -10,7 +10,6 @@ export default {
   findRetrospectiveSurveys: require('./findRetrospectiveSurveys'),
   findUsers: require('./findUsers'),
   getChapter: require('./getChapter'),
-  getCycleVotingResults: require('./getCycleVotingResults'),
   getProject: require('./getProject'),
   getProjectSummary: require('./getProjectSummary'),
   getRetrospectiveSurvey: require('./getRetrospectiveSurvey'),
