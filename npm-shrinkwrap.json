@@ -17,9 +17,9 @@
       }
     },
     "@learnersguild/idm-jwt-auth": {
-      "version": "2.1.0",
-      "resolved": "https://registry.npmjs.org/@learnersguild/idm-jwt-auth/-/idm-jwt-auth-2.1.0.tgz",
-      "integrity": "sha1-qaBLCJ+9b3HRr+9MVOU6GMLVbF4=",
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/@learnersguild/idm-jwt-auth/-/idm-jwt-auth-2.1.1.tgz",
+      "integrity": "sha1-fKiiWLM0CtgYbADQYoSeFGl1dBw=",
       "requires": {
         "babel-runtime": "6.23.0",
         "isomorphic-fetch": "2.2.1",
