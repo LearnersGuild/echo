@@ -20,7 +20,6 @@ const ProjectModel = {
   week: {title: 'Week', type: String},
   cycleNumber: {title: 'Cycle', type: String},
   phaseName: {title: 'Phase', type: String},
-  goalTitle: {title: 'Goal', type: String},
   hasArtifact: {title: 'Artifact?', type: String},
   memberHandles: {title: 'Members', type: String},
 }
@@ -52,7 +51,6 @@ class ProjectListContainer extends Component {
     const projectData = projects.map(project => {
       const cycle = project.cycle || {}
       const phase = project.phase || {}
-      const projectGoal = project.goal || {}
       const projectURL = `/projects/${project.name}`
       const memberHandles = (project.members || []).map(member => {
         const memberURL = `/users/${member.handle}`
@@ -66,11 +64,6 @@ class ProjectListContainer extends Component {
         ) : project.name,
         state: cycle.state,
         week: formatDate(cycle.weekStartedAt),
-        goalTitle: (
-          <Link to={projectGoal.url} target="_blank">
-            {projectGoal.title}
-          </Link>
-        ),
         cycleNumber: cycle.cycleNumber,
         phaseName: phase.name,
         hasArtifact: project.artifactURL ? (
@@ -131,7 +124,6 @@ function mapStateToProps(state) {
   // sort by cycle number (desc), title, name
   const projectList = expandedProjects.sort((p1, p2) => {
     return (((p2.cycle || {}).cycleNumber || 0) - ((p1.cycle || {}).cycleNumber || 0)) ||
-      (((p1.goal || {}).title || '').localeCompare((p2.goal || {}).title || '')) ||
       p1.name.localeCompare(p2.name)
   })
 

@@ -5,7 +5,7 @@ import {Cycle, Phase, Project} from 'src/server/services/dataService'
 export default async function sendCycleReflectionAnnouncements(cycleId) {
   const [cycle, phases] = await Promise.all([
     await Cycle.get(cycleId),
-    await Phase.filter({hasRetrospective: true})
+    await Phase.run(),
   ])
   const message = _buildMessage(cycle)
   await Promise.each(phases, async phase => {

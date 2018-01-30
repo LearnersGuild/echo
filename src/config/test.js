@@ -1,4 +1,7 @@
 module.exports = {
+  app: {
+    projectURL: 'http://echo.learnersguild.test/projects',
+  },
   server: {
     secure: false,
     rethinkdb: {
@@ -23,9 +26,6 @@ module.exports = {
     },
     heroku: {
       baseURL: process.env.HEROKU_BASE_URL || 'http://api.github.test'
-    },
-    goalLibrary: {
-      baseURL: process.env.GOAL_LIBRARY_BASE_URL || 'https://curriculum.learnersguild.test',
     },
     jwt: {
       privateKey: process.env.JWT_PRIVATE_KEY || `-----BEGIN RSA PRIVATE KEY-----

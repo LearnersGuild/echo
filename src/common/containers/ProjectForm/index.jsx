@@ -66,7 +66,6 @@ function mapStateToProps(state, props) {
   const project = findAny(projects.projects, identifier, ['id', 'name'])
   const chapter = (project ? project.chapter : null) || {}
   const cycle = (project ? project.cycle : null) || {}
-  const goal = project ? project.goal : {}
 
   let formType = project ? FORM_TYPES.UPDATE : FORM_TYPES.CREATE
   if (identifier && !project && !projects.isBusy) {
@@ -77,7 +76,6 @@ function mapStateToProps(state, props) {
     projectIdentifier: identifier,
     chapterIdentifier: chapter.name,
     cycleIdentifier: cycle.cycleNumber,
-    goalIdentifier: goal.number,
     memberIdentifiers: (project.members || []).map(member => member.handle).join(', '),
   } : null
 
@@ -103,7 +101,7 @@ function mapDispatchToProps(dispatch, props) {
 const formOptions = {
   form: FORM_NAME,
   enableReinitialize: true,
-  asyncBlurFields: ['chapterIdentifier', 'cycleIdentifier', 'goalIdentifier', 'memberIdentifiers'],
+  asyncBlurFields: ['chapterIdentifier', 'cycleIdentifier', 'memberIdentifiers'],
   asyncValidate: asyncValidate(projectSchema, {abortEarly: false}),
 }
 

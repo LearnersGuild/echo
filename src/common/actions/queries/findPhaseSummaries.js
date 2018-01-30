@@ -18,10 +18,6 @@ export default function findPhaseSummaries() {
             retrospectiveSurveyId
             createdAt
             updatedAt
-            goal {
-              title
-              url
-            }
           }
           currentMembers {
             id

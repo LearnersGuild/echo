@@ -1,5 +1,5 @@
 export default function projectModel(thinky) {
-  const {r, type: {string, date, array, object}} = thinky
+  const {r, type: {string, date, array}} = thinky
 
   return {
     name: 'Project',
@@ -30,10 +30,6 @@ export default function projectModel(thinky) {
 
       retrospectiveSurveyId: string()
         .uuid(4),
-
-      goal: object()
-        .allowNull(true)
-        .allowExtra(true),
 
       artifactURL: string()
         .min(1),

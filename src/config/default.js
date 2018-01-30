@@ -76,9 +76,6 @@ module.exports = {
         region: process.env.AWS_S3_REGION || 'us-west-2',
       },
     },
-    goalLibrary: {
-      baseURL: process.env.GOAL_LIBRARY_BASE_URL || 'https://curriculum.learnersguild.org',
-    },
     curriculum: {
       baseURL: process.env.CURRICULUM_BASE_URL || 'https://curriculum.learnersguild.org',
     },
@@ -88,6 +85,7 @@ module.exports = {
   },
   app: {
     baseURL: process.env.APP_BASE_URL,
+    projectURL: process.env.APP_PROJECT_URL,
     sentryDSN: process.env.SENTRY_CLIENT_DSN,
     playbookURL: process.env.PLAYBOOK_URL || 'https://playbook.learnersguild.org',
     minify: false,

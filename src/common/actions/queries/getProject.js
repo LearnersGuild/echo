@@ -24,10 +24,6 @@ export default function getProject(identifier) {
             number
             name
           }
-          goal {
-            url
-            number
-          }
           members {
             id
             handle

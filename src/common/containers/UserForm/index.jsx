@@ -68,7 +68,8 @@ function fetchData(dispatch, props) {
 
 function handleSubmit(dispatch) {
   return values => {
-    return dispatch(updateUser(values))
+    const {id, roles, phaseNumber} = values || {}
+    return dispatch(updateUser({id, roles, phaseNumber}))
   }
 }
 

@@ -17,19 +17,16 @@ describe(testContext(__filename), function () {
     this.phase = await factory.create('phase', {number: 1})
     this.members = await factory.createMany('member', {chapterId: this.chapter.id, phaseId: this.phase.id}, 3)
     this.users = this.members.map(_idmPropsForUser)
-    this.goalNumber = 1
     this.importData = {
       chapterIdentifier: this.chapter.name,
       cycleIdentifier: this.cycle.cycleNumber,
       memberIdentifiers: this.members.map(p => p.id),
-      goalIdentifier: this.goalNumber,
     }
   })
 
   beforeEach(function () {
     useFixture.nockClean()
     useFixture.nockIDMFindUsers(this.users)
-    useFixture.nockGetGoalInfo(this.goalNumber)
   })
 
   describe('importProject()', function () {
@@ -54,7 +51,6 @@ describe(testContext(__filename), function () {
 
       useFixture.nockClean()
       useFixture.nockIDMFindUsers([...this.users, noPhaseMember])
-      useFixture.nockGetGoalInfo(this.goalNumber)
 
       const result = importProject({...this.importData, memberIdentifiers})
       return expect(result).to.eventually.be.rejectedWith(/All project members must be in a phase/)
@@ -67,31 +63,17 @@ describe(testContext(__filename), function () {
 
       useFixture.nockClean()
       useFixture.nockIDMFindUsers([...this.users, noPhaseMember])
-      useFixture.nockGetGoalInfo(this.goalNumber)
 
       const result = importProject({...this.importData, memberIdentifiers})
       return expect(result).to.eventually.be.rejectedWith(/Project members must be in the same phase/)
     })
 
-    it('throws an error if phase for members has a different goal number than the specified goal', function () {
-      const newGoalNumber = 2
-
-      useFixture.nockClean()
-      useFixture.nockIDMFindUsers(this.users)
-      useFixture.nockGetGoalInfo(newGoalNumber, undefined, {phase: newGoalNumber})
-
-      const result = importProject({...this.importData, goalIdentifier: newGoalNumber})
-      return expect(result).to.eventually.be.rejectedWith(/cannot be linked/)
-    })
-
     it('creates a new project a projectIdentifier is not specified', async function () {
       useFixture.nockClean()
       useFixture.nockIDMFindUsers(this.users)
-      useFixture.nockGetGoalInfo(this.goalNumber, {times: 3})
 
       const importedProject = await importProject(this.importData)
 
-      expect(importedProject.goal.goalMetadata.goal_id).to.eq(this.goalNumber) // eslint-disable-line camelcase
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
       expectArraysToContainTheSameElements(importedProject.memberIds, this.members.map(p => p.id))
@@ -103,31 +85,26 @@ describe(testContext(__filename), function () {
       const importedProject = await importProject(modifiedImportData)
 
       expect(importedProject.name).to.eq(modifiedImportData.projectIdentifier)
-      expect(importedProject.goal.goalMetadata.goal_id).to.eq(modifiedImportData.goalIdentifier) // eslint-disable-line camelcase
     })
 
-    it('updates goal and users when a valid project identifier is specified', async function () {
+    it('updates users when a valid project identifier is specified', async function () {
       const newProject = await factory.create('project', {chapterId: this.chapter.id, cycleId: this.cycle.id, phaseId: this.phase.id})
       const newMembers = await factory.createMany('member', {chapterId: this.chapter.id, phaseId: this.phase.id}, 4)
       const newUsers = newMembers.map(_idmPropsForUser)
-      const newGoalNumber = 2
 
       useFixture.nockClean()
       useFixture.nockIDMFindUsers(newUsers)
-      useFixture.nockGetGoalInfo(newGoalNumber)
 
       const importedProject = await importProject({
         ...this.importData,
         projectIdentifier: newProject.name,
         memberIdentifiers: newMembers.map(p => newUsers.find(u => u.id === p.id).handle),
-        goalIdentifier: newGoalNumber,
       })
 
       expect(importedProject.id).to.eq(newProject.id)
       expect(importedProject.chapterId).to.eq(this.chapter.id)
       expect(importedProject.cycleId).to.eq(this.cycle.id)
       expect(importedProject.memberIds.length).to.eq(newMembers.length)
-      expect(importedProject.goal.goalMetadata.goal_id).to.eq(newGoalNumber) // eslint-disable-line camelcase
       expectArraysToContainTheSameElements(importedProject.memberIds, newMembers.map(p => p.id))
     })
   })

@@ -4,7 +4,6 @@ import moment from 'moment-timezone'
 
 import {Flex} from 'src/common/components/Layout'
 import {FEEDBACK_TYPE_DESCRIPTORS} from 'src/common/models/feedbackType'
-import {renderGoalAsString} from 'src/common/models/goal'
 
 import styles from './index.scss'
 
@@ -17,7 +16,7 @@ export default class UserProjectSummary extends Component {
 
   renderSummary() {
     const {project} = this.props
-    const {cycle, goal} = project || {}
+    const {cycle} = project || {}
     const startDate = cycle.startTimestamp ? moment(cycle.startTimestamp).format('MMM D') : ''
     const endDate = cycle.endTimestamp ? ` - ${moment(cycle.endTimestamp).format('MMM D')}` : ''
 
@@ -29,7 +28,6 @@ export default class UserProjectSummary extends Component {
               <strong>{project.name}</strong>
             </Link>
           </div>
-          <div className={styles.goalLine}>{renderGoalAsString(goal)}</div>
           <div>{`${startDate}${endDate}`} [cycle {cycle.cycleNumber}]</div>
         </Flex>
       </Flex>
@@ -72,10 +70,6 @@ UserProjectSummary.propTypes = {
       endTimestamp: PropTypes.date,
     }),
     state: PropTypes.string,
-    goal: PropTypes.shape({
-      number: PropTypes.number,
-      title: PropTypes.string,
-    }),
   }),
   userProjectEvaluations: PropTypes.arrayOf(PropTypes.shape({
     [FEEDBACK_TYPE_DESCRIPTORS.GENERAL_FEEDBACK]: PropTypes.string,

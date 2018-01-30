@@ -39,11 +39,6 @@ export default function getUserSummary(identifier) {
               startTimestamp
               endTimestamp
             }
-            goal {
-              title
-              number
-              phase
-            }
           }
           userProjectEvaluations {
             ${FEEDBACK_TYPE_DESCRIPTORS.GENERAL_FEEDBACK}

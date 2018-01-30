@@ -52,6 +52,7 @@ Example:
 ```
 PORT=9005
 APP_BASE_URL=http://echo.learnersguild.meh
+APP_PROJECT_URL=http://echo.learnersguild.meh/projects
 REDIS_URL=redis://localhost:6379
 RETHINKDB_URL=rethinkdb://localhost:28015/echo_development
 # IDM / JWT settings, including session extension
@@ -91,8 +92,6 @@ npm run db:copy -- <STATE>
 ```
 
 Available `STATE` options:
-- `GOAL_SELECTION` (default)
-- `GOAL_SELECTION_VOTES`
 - `PRACTICE`
 - `REFLECTION`
 

@@ -113,15 +113,6 @@ class ProjectForm extends Component {
             required
             />
           <Field
-            name="goalIdentifier"
-            type="text"
-            icon="track_changes"
-            label="Goal Number"
-            hint={'e.g. "77"'}
-            component={renderInput}
-            required
-            />
-          <Field
             name="memberIdentifiers"
             type="text"
             icon="people"

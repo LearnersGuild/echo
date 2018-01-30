@@ -17,10 +17,6 @@ export default function findProjects({page, identifiers} = {}) {
             cycleNumber
             state
           }
-          goal {
-            title
-            url
-          }
         }
       }
     `,

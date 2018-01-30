@@ -1,4 +1,0 @@
-/* override the left style from the react-toolbox theme to wrap the user images */
-.left {
-  flex-shrink: initial;
-}

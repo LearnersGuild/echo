@@ -13,11 +13,6 @@ export default function unlockSurvey(memberId, projectId) {
             retrospectiveSurveyId
             createdAt
             updatedAt
-            goal {
-              number
-              title
-              phase
-            }
             chapter {
               id
               name

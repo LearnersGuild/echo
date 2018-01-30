@@ -13,7 +13,6 @@ const query = `
       id
       chapter { id }
       cycle { id }
-      goal { number title url }
     }
   }
 `

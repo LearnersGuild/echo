@@ -18,9 +18,6 @@ export default function findProjectsForCycle({cycleNumber} = {}) {
             state
             weekStartedAt
           }
-          goal {
-            title
-          }
         }
       }
     `,
