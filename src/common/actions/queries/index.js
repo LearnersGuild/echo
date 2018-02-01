@@ -14,6 +14,7 @@ export default {
   getProjectSummary: require('./getProjectSummary'),
   getRetrospectiveSurvey: require('./getRetrospectiveSurvey'),
   getUserSummary: require('./getUserSummary'),
+  getWorkPlanSurvey: require('./getWorkPlanSurvey'),
   importProject: require('./importProject'),
   lockRetroSurveyForUser: require('./lockRetroSurveyForUser'),
   reassignMembersToChapter: require('./reassignMembersToChapter'),

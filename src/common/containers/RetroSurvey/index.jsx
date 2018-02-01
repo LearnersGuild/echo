@@ -210,6 +210,7 @@ RetroSurveyContainer.propTypes = {
 RetroSurveyContainer.fetchData = fetchData
 
 function fetchData(dispatch, props) {
+  console.log('RetroContainer: dispatch', dispatch)
   if (props.params.projectName) {
     dispatch(getRetrospectiveSurvey(props.params.projectName))
   } else {
