@@ -23,7 +23,7 @@
 
 -
   id: c204d435-abe0-4a37-befe-fecc5e425b83
-  descriptor: workplan
+  descriptor: workPlan
   defaultQuestionRefs:
     -
       questionId: 933463ae-241a-4f70-824d-551be84da271

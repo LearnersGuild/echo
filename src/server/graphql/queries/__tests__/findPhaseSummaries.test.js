@@ -9,6 +9,7 @@ import {
   mockIdmUsersById,
   expectArraysToContainTheSameElements,
 } from 'src/test/helpers'
+import {Phase} from 'src/server/services/dataService'
 
 import findPhaseSummaries from '../findPhaseSummaries'
 
@@ -44,7 +45,7 @@ describe(testContext(__filename), function () {
       chapterId: chapter.id,
       state: 'PRACTICE',
     })
-    this.phases = await factory.createMany('phase', 3)
+    this.phases = await Phase.run()
     this.members = await factory.createMany('member', {
       chapterId: chapter.id,
       phaseId: this.phases[0].id,

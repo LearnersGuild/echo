@@ -126,7 +126,7 @@ describe(testContext(__filename), function () {
       ).to.eventually
        .have.property('message')
        .and
-       .match(/no project for a cycle in the reflection state/i)
+       .match(/no project for a cycle/i)
     })
   })
 

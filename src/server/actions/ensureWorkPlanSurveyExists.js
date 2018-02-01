@@ -6,14 +6,17 @@ import {LGBadRequestError} from 'src/server/util/error'
 
 // create a survey and add that survey's id to the project in the database
 export default async function ensureWorkPlanSurveyExists(project) {
-  const workPlanSurveyId = await buildSurvey(project, WORK_PLAN_DESCRIPTOR)
-  return Project.get(project.id).updateWithTimestamp({workPlanSurveyId})
+  const projectId = project && project.id ? project.id : project
+  if (!projectId) {
+    throw new LGBadRequestError('Must provide valid project input')
+  }
+  const projectCopy = await Project.get(projectId)
+  const workPlanSurveyId = await buildSurvey(projectCopy, WORK_PLAN_DESCRIPTOR)
+  await Project.get(projectCopy.id).updateWithTimestamp({workPlanSurveyId})
+  return workPlanSurveyId
 }
 
 async function buildSurvey(project, surveyDescriptor) {
-  if (!project || !project.id) {
-    throw new LGBadRequestError('Must provide valid project input')
-  }
   if (projectSurveyExists(project, surveyDescriptor)) {
     throw new LGBadRequestError(`${surveyDescriptor} survey already exists for project ${project.name}.`)
   }

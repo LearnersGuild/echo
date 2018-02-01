@@ -9,5 +9,4 @@ export function start() {
 export async function processProjectCreated(project) {
   await reloadDefaultModelData()
   await ensureWorkPlanSurveyExists(project)
-  //
 }
