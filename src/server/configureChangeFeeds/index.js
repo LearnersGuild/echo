@@ -2,6 +2,7 @@ import {GOAL_SELECTION, REFLECTION} from 'src/common/models/cycle'
 
 import chapterCreated from './chapterCreated'
 import cycleStateChanged from './cycleStateChanged'
+import projectCreated from './projectCreated'
 import surveySubmitted from './surveySubmitted'
 // import memberPhaseChanged from './memberPhaseChanged'
 
@@ -14,6 +15,7 @@ export default function configureChangeFeeds() {
       [GOAL_SELECTION]: queueService.getQueue('cycleInitialized'),
       [REFLECTION]: queueService.getQueue('cycleReflectionStarted'),
     })
+    projectCreated(queueService.getQueue('projectCreated'))
     surveySubmitted(queueService.getQueue('surveySubmitted'))
     // memberPhaseChanged(queueService.getQueue('memberPhaseChanged'))
   } catch (err) {
