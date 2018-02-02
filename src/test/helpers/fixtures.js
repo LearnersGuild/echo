@@ -5,6 +5,8 @@ import nock from 'nock'
 import config from 'src/config'
 import {Cycle, Project} from 'src/server/services/dataService'
 import factory from 'src/test/factories'
+import {RETROSPECTIVE_DESCRIPTOR, WORK_PLAN_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
+import {GOAL_SELECTION, REFLECTION} from 'src/common/models/cycle'
 
 export const useFixture = {
   buildOneQuestionSurvey() {
@@ -24,33 +26,32 @@ export const useFixture = {
   },
   buildSurvey() {
     beforeEach(function () {
-      this.buildSurvey = async function (args = {}) {
-        const {
-          type = 'retrospective',
-          project = null,
-          ...surveyAttrs
-        } = args
-        this.project = project || await factory.create('project')
-        this.cycleId = this.project.cycleId
-        if (!surveyAttrs.questionRefs) {
+      this.buildSurvey = async function (surveyAttrs = {}) {
+        const descriptor = surveyAttrs.descriptor || RETROSPECTIVE_DESCRIPTOR
+        const cycleState = surveyAttrs.descriptor === WORK_PLAN_DESCRIPTOR ? GOAL_SELECTION : REFLECTION
+        this.cycle = surveyAttrs.cycle || await factory.create('cycle', {state: cycleState})
+        this.cycleId = this.cycle.id
+        this.project = surveyAttrs.project || await factory.create('project', {chapterId: this.cycle.chapterId, cycleId: this.cycle.id})
+        this.questionRefs = surveyAttrs.questionRefs
+        if (!this.questionRefs) {
           this.surveyQuestion = await factory.create('question', {
             subjectType: 'member',
             responseType: 'text',
           })
-          surveyAttrs.questionRefs = this.project.memberIds.map(memberId => ({
+          this.questionRefs = this.project.memberIds.map(memberId => ({
             subjectIds: () => [memberId],
-            questionId: this.surveyQuestion.id
+            questionId: this.surveyQuestion.id,
           }))
         }
         this.survey = await factory.create('survey', {
           ...surveyAttrs,
-          questionRefs: surveyAttrs.questionRefs.map(({subjectIds, ...rest}) => ({
+          questionRefs: this.questionRefs.map(({subjectIds, ...rest}) => ({
             subjectIds: typeof subjectIds === 'function' ? subjectIds() : subjectIds,
             ...rest
           })),
         })
         this.project = await Project.get(this.project.id).update({
-          [`${type}SurveyId`]: this.survey.id,
+          [`${descriptor}SurveyId`]: this.survey.id,
         })
         return this.survey
       }

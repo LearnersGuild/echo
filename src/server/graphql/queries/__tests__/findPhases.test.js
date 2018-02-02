@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 /* global expect, testContext */
 /* eslint-disable prefer-arrow-callback, no-unused-expressions */
-import factory from 'src/test/factories'
 import {resetDB, runGraphQLQuery} from 'src/test/helpers'
+import {Phase} from 'src/server/services/dataService'
 
 import findPhases from '../findPhases'
 
@@ -19,12 +19,13 @@ describe(testContext(__filename), function () {
   beforeEach(resetDB)
 
   it('returns all phases', async function () {
-    await factory.createMany('phase', 5)
     const results = await runGraphQLQuery(fields, query)
-    expect(results.data.findPhases.length).to.equal(5)
+    const phases = await Phase.run()
+    expect(results.data.findPhases.length).to.equal(phases.length)
   })
 
-  it('returns an empty array if there are no members', async function () {
+  it('returns an empty array if there are no phases', async function () {
+    await Phase.delete()
     const results = await runGraphQLQuery(fields, query)
     expect(results.data.findPhases.length).to.equal(0)
   })

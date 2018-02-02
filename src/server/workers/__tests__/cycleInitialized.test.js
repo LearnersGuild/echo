@@ -5,6 +5,7 @@ import config from 'src/config'
 import stubs from 'src/test/stubs'
 import factory from 'src/test/factories'
 import {resetDB, useFixture} from 'src/test/helpers'
+import {Phase} from 'src/server/services/dataService'
 
 describe(testContext(__filename), function () {
   beforeEach(resetDB)
@@ -24,7 +25,6 @@ describe(testContext(__filename), function () {
 
     describe('when a new cycle is created', function () {
       beforeEach(async function () {
-        this.phase = await factory.create('phase')
         this.cycle = await factory.create('cycle', {cycleNumber: 2})
         useFixture.nockClean()
         useFixture.nockIDMGetUsersById([], {times: 10})
@@ -33,13 +33,17 @@ describe(testContext(__filename), function () {
       it('sends a message to the phase chat channel', async function () {
         await processCycleInitialized(this.cycle)
 
-        expect(chatService.sendChannelMessage.callCount).to.eq(1)
+        const phases = await Phase.run()
 
-        expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.phase.channelName, `Cycle ${this.cycle.cycleNumber}`)
+        expect(chatService.sendChannelMessage.callCount).to.eq(phases.length)
 
-        expect(chatService.sendChannelMessage).to.have.been
-          .calledWithMatch(this.phase.channelName, `To create a new project, visit: ${config.app.projectURL}.`)
+        phases.forEach(phase => {
+          expect(chatService.sendChannelMessage).to.have.been
+            .calledWithMatch(phase.channelName, `Cycle ${this.cycle.cycleNumber}`)
+
+          expect(chatService.sendChannelMessage).to.have.been
+            .calledWithMatch(phase.channelName, `To create a new project, visit: ${config.app.projectURL}.`)
+        })
       })
     })
   })

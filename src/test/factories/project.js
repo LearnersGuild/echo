@@ -23,8 +23,7 @@ export default function define(factory) {
   factory.define('project', Project, {
     ...commonAttrs,
     memberIds(cb) {
-      const {chapterId} = this
-      const createMembers = factory.assocMany('member', 'id', 4, {chapterId})
+      const createMembers = factory.assocMany('member', 'id', 4, {chapterId: this.chapterId})
       createMembers((err, memberIds) => {
         cb(err, memberIds.slice(0, 4))
       })
@@ -34,8 +33,7 @@ export default function define(factory) {
   factory.define('single member project', Project, {
     ...commonAttrs,
     memberIds(cb) {
-      const {chapterId} = this
-      const createMembers = factory.assocMany('member', 'id', 1, {chapterId})
+      const createMembers = factory.assocMany('member', 'id', 1, {chapterId: this.chapterId})
       createMembers((err, memberIds) => {
         cb(err, memberIds.slice(0, 1))
       })
