@@ -30,6 +30,9 @@ export default function getSurveyForMember(memberId, projectId, surveyDescriptor
       )
     })
   }
+  if(surveyDescriptor === WORK_PLAN_DESCRIPTOR) {
+    return survey
+  }
   return excludeQuestionsAboutRespondent(survey, memberId)
 }
 

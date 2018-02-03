@@ -54,7 +54,7 @@ export default function surveys(state = initialState, action) {
     case GET_WORKPLAN_SUCCESS:
       return Object.assign({}, state, {
         isBusy: false,
-        data: action.response,
+        data: [action.response],
       })
 
     case FIND_SURVEYS_FAILURE:

@@ -27,10 +27,6 @@ export default function WorkPlanSurveyForm(props) {
       <Helmet>
         <title>{surveyShortTitle}</title>
       </Helmet>
-      {/*
-      <RetroSurveyHeader surveyTitle={surveyTitle} playbookURL={playbookURL}/>
-      <RetroSurveyProgress surveyFieldGroups={surveyFieldGroups} surveyGroupIndex={surveyGroupIndex}/>
-      */}
       <SurveyForm
         name={formName}
         title={((surveyFields || [])[0] || {}).title}
