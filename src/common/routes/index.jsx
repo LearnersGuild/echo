@@ -69,7 +69,7 @@ const routes = store => {
         <IndexRoute component={userCanVisit('saveResponse', store)(RetroSurvey)}/>
         <Route path=":projectName" component={userCanVisit('saveResponse', store)(RetroSurvey)}/>
       </Route>
-      <Route path="/workplan" component={Blank}>
+      <Route path="/work-plan" component={Blank}>
         <IndexRoute component={userCanVisit('saveResponse', store)(WorkPlanSurvey)}/>
         <Route path=":projectName" component={userCanVisit('saveResponse', store)(WorkPlanSurvey)}/>
       </Route>

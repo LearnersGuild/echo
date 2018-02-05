@@ -107,8 +107,8 @@ class WorkPlanSurveyContainer extends Component {
   render() {
     const {
       showSurvey,
-      showProjects,
-      projects,
+      // showProjects,
+      // projects,
       surveyTitle,
       surveyShortTitle,
       surveyFieldGroups,
@@ -141,14 +141,14 @@ class WorkPlanSurveyContainer extends Component {
       )
     }
 
-    if (showProjects) {
-      return (
-        <RetroProjectList
-          projects={projects}
-          onClickProject={this.handleClickProject}
-          />
-      )
-    }
+    // if (showProjects) {
+    //   return (
+    //     <RetroProjectList
+    //       projects={projects}
+    //       onClickProject={this.handleClickProject}
+    //       />
+    //   )
+    // }
 
     if (isBusy) {
       return null
@@ -157,7 +157,6 @@ class WorkPlanSurveyContainer extends Component {
     return (
       <div>No Work Plans.</div>
     )
-    console.log('WPContainer: finished render function')
   }
 }
 

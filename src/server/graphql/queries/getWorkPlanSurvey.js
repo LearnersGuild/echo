@@ -19,7 +19,6 @@ export default {
     if (!currentUser || !userCan(currentUser, 'getWorkPlanSurvey')) {
       throw new LGNotAuthorizedError()
     }
-    console.log('Inside server/graphql/queries/workplan');
     const project = projectName ? (await Project.filter({name: projectName}))[0] : null
     const projectId = project ? project.id : null
 

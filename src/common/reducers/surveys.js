@@ -38,7 +38,6 @@ export default function surveys(state = initialState, action) {
         isBusy: true,
       })
 
-
     case FIND_SURVEYS_SUCCESS:
       return Object.assign({}, state, {
         isBusy: false,

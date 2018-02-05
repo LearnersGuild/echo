@@ -19,7 +19,6 @@ export default {
     if (!currentUser || !userCan(currentUser, 'getRetrospectiveSurvey')) {
       throw new LGNotAuthorizedError()
     }
-    console.log('getting to server/queries/getRetros');
     const project = projectName ? (await Project.filter({name: projectName}))[0] : null
     const projectId = project ? project.id : null
 

@@ -2,14 +2,12 @@ import React, {PropTypes} from 'react'
 import Helmet from 'react-helmet'
 import SurveyForm from 'src/common/components/SurveyForm'
 import styles from '../RetroSurveyForm/index.scss'
+import WorkPlanSurveyConfirmation from './WorkPlanSurveyConfirmation'
 
 export default function WorkPlanSurveyForm(props) {
   const {
-    surveyTitle,
     surveyShortTitle,
-    playbookURL,
     formName,
-    surveyFieldGroups,
     surveyGroupIndex,
     surveyFields,
     handleSubmit,
@@ -17,10 +15,17 @@ export default function WorkPlanSurveyForm(props) {
     submitting,
     invalid,
     onClickSubmit,
-    onClickConfirm,
     onClickBack,
     getRef,
   } = props
+
+  if (!isBusy && (!surveyFields || surveyFields.length === 0)) {
+    return (
+      <WorkPlanSurveyConfirmation
+        onClickBack={onClickBack}
+        />
+    )
+  }
 
   return (
     <div className={styles.container} ref={getRef}>
@@ -31,7 +36,7 @@ export default function WorkPlanSurveyForm(props) {
         name={formName}
         title={((surveyFields || [])[0] || {}).title}
         fields={surveyFields}
-        submitLabel="Next"
+        submitLabel="Submit"
         submitDisabled={isBusy}
         onClickSubmit={onClickSubmit}
         showBackButton={surveyGroupIndex > 0}
