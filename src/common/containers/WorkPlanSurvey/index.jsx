@@ -15,17 +15,17 @@ import {reduxForm} from 'redux-form'
 
 import {showLoad, hideLoad} from 'src/common/actions/app'
 import {
-  groupSurveyQuestions,
-  formFieldsForQuestionGroup,
-  questionResponsesForFormFields,
-} from 'src/common/util/survey'
-import {
   getWorkPlanSurvey,
   findWorkPlanSurveys,
   saveWorkPlanSurveyResponses,
   submitSurvey,
   setSurveyGroup,
 } from 'src/common/actions/workplansurvey'
+import {
+  groupSurveyQuestions,
+  formFieldsForQuestionGroup,
+  questionResponsesForFormFields,
+} from 'src/common/util/survey'
 
 import WorkPlanSurveyForm from 'src/common/components/WorkPlanSurveyForm'
 
@@ -256,11 +256,18 @@ function mapStateToProps(state) {
       surveyFields = surveyFieldGroups[surveyGroupIndex]
       surveyTitle = 'Work Plan'
       surveyShortTitle = surveyTitle
-      initialValues = surveyFields.reduce((result, field) => {
-        result[field.name] = field.value
-        return result
-      }, {})
+      if (state.form.workPlanSurvey) {
+        if (!state.form.workPlanSurvey.values) {
+          initialValues = surveyFields.reduce((result, field) => {
+            result[field.name] = field.value
+            return result
+          }, {})
+        } else {
+          initialValues = state.form.workPlanSurvey.values
+        }
+      }
     } catch (err) {
+      console.error(err)
       surveyError = err
     }
   } else {

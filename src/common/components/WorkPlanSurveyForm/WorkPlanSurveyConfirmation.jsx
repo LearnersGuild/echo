@@ -4,7 +4,7 @@ import FontIcon from 'react-toolbox/lib/font_icon'
 
 export default function WorkPlanSurveyConfirmation(props) {
   const {
-    onClickBack
+    onClickBack,
   } = props
 
   const buttonStyle = {
