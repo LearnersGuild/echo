@@ -22,7 +22,6 @@ export default function getProject(identifier) {
           phase {
             id
             number
-            name
           }
           members {
             id

@@ -18,6 +18,7 @@ import UserForm from 'src/common/containers/UserForm'
 import ProjectList from 'src/common/containers/ProjectList'
 import ProjectDetail from 'src/common/containers/ProjectDetail'
 import RetroSurvey from 'src/common/containers/RetroSurvey'
+import WorkPlanSurvey from 'src/common/containers/WorkPlanSurvey'
 import Blank from 'src/common/components/Blank'
 import NotFound from 'src/common/components/NotFound'
 import Phases from 'src/common/containers/Phases'
@@ -67,6 +68,10 @@ const routes = store => {
       <Route path="/retro" component={Blank}>
         <IndexRoute component={userCanVisit('saveResponse', store)(RetroSurvey)}/>
         <Route path=":projectName" component={userCanVisit('saveResponse', store)(RetroSurvey)}/>
+      </Route>
+      <Route path="/work-plans" component={Blank}>
+        <IndexRoute component={userCanVisit('saveResponse', store)(WorkPlanSurvey)}/>
+        <Route path=":projectName" component={userCanVisit('saveResponse', store)(WorkPlanSurvey)}/>
       </Route>
       <Route path="/users" component={Blank}>
         <IndexRoute component={userCanVisit('listUsers', store)(UserList)}/>

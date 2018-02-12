@@ -5,6 +5,9 @@ import {
   GET_SURVEY_REQUEST,
   GET_SURVEY_SUCCESS,
   GET_SURVEY_FAILURE,
+  GET_WORKPLAN_REQUEST,
+  GET_WORKPLAN_SUCCESS,
+  GET_WORKPLAN_FAILURE,
   SAVE_SURVEY_RESPONSES_REQUEST,
   SAVE_SURVEY_RESPONSES_SUCCESS,
   SAVE_SURVEY_RESPONSES_FAILURE,
@@ -27,6 +30,7 @@ export default function surveys(state = initialState, action) {
       return Object.assign({}, state, {groupIndex: action.groupIndex})
 
     case FIND_SURVEYS_REQUEST:
+    case GET_WORKPLAN_REQUEST:
     case GET_SURVEY_REQUEST:
     case SAVE_SURVEY_RESPONSES_REQUEST:
       return Object.assign({}, state, {
@@ -45,7 +49,14 @@ export default function surveys(state = initialState, action) {
         data: [action.response],
       })
 
+    case GET_WORKPLAN_SUCCESS:
+      return Object.assign({}, state, {
+        isBusy: false,
+        data: [action.response],
+      })
+
     case FIND_SURVEYS_FAILURE:
+    case GET_WORKPLAN_FAILURE:
     case GET_SURVEY_FAILURE:
     case SAVE_SURVEY_RESPONSES_FAILURE:
     case SAVE_SURVEY_RESPONSES_SUCCESS:

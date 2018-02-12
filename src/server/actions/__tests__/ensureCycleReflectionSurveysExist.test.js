@@ -3,13 +3,11 @@
 /* eslint-disable prefer-arrow-callback, no-unused-expressions, max-nested-callbacks */
 import Promise from 'bluebird'
 import {RETROSPECTIVE_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
-import {Project, Survey} from 'src/server/services/dataService'
+import {Project, Question, Survey, SurveyBlueprint} from 'src/server/services/dataService'
 import {resetDB, expectSetEquality} from 'src/test/helpers'
 import factory from 'src/test/factories'
 
-import {
-  ensureRetrospectiveSurveysExist,
-} from '../ensureCycleReflectionSurveysExist'
+import {ensureRetrospectiveSurveysExist} from '../ensureCycleReflectionSurveysExist'
 
 describe(testContext(__filename), function () {
   beforeEach(resetDB)
@@ -37,21 +35,15 @@ describe(testContext(__filename), function () {
 
     describe('when there is a retrospective surveyBlueprint with questions', function () {
       beforeEach(async function () {
-        const teamQuestions = [await factory.create('question', {responseType: 'relativeContribution', subjectType: 'team'})]
-        const memberQuestions = await factory.createMany('question', {responseType: 'likert7Agreement', subjectType: 'member'}, 2)
-        const projectQuestions = await factory.createMany('question', {responseType: 'numeric', subjectType: 'project'}, 2)
-        this.questions = teamQuestions.concat(memberQuestions).concat(projectQuestions)
-        this.surveyBlueprint = await factory.create('surveyBlueprint', {
-          descriptor: RETROSPECTIVE_DESCRIPTOR,
-          defaultQuestionRefs: this.questions.map(q => ({questionId: q.id}))
-        })
+        this.surveyBlueprint = await SurveyBlueprint.filter({descriptor: RETROSPECTIVE_DESCRIPTOR}).nth(0)
+        const surveyQuestionIds = this.surveyBlueprint.defaultQuestionRefs.map(({questionId}) => questionId)
+        this.questions = await Question.getAll(...surveyQuestionIds)
       })
 
       it('creates a survey for each project team with all of the default retro questions', async function () {
         const numMembersPerProject = 4
         await this.createMembersAndProjects(numMembersPerProject)
         await ensureRetrospectiveSurveysExist(this.cycle)
-
         await _itBuildsTheSurveyProperly(this.projects, this.questions)
       })
 
@@ -59,7 +51,6 @@ describe(testContext(__filename), function () {
         const numMembersPerProject = 1
         await this.createMembersAndProjects(numMembersPerProject)
         await ensureRetrospectiveSurveysExist(this.cycle)
-
         await _itBuildsTheSurveyProperly(this.projects, this.questions, {shouldIncludeRelativeContribution: false})
       })
 
@@ -67,7 +58,6 @@ describe(testContext(__filename), function () {
         it('ignores them', async function () {
           const projectFromAnotherCycleBefore = await factory.create('project', {chapterId: this.cycle.chapterId})
           await ensureRetrospectiveSurveysExist(this.cycle)
-
           const projectFromAnotherCycleAfter = await Project.get(projectFromAnotherCycleBefore.id)
           expect(projectFromAnotherCycleAfter.retrospectiveSurveyId).to.deep.eq(projectFromAnotherCycleBefore.retrospectiveSurveyId)
           expect(projectFromAnotherCycleAfter.updatedAt).to.deep.eq(projectFromAnotherCycleBefore.updatedAt)
@@ -90,10 +80,11 @@ describe(testContext(__filename), function () {
       })
     })
 
-    describe('when there is no retrospective surveyBlueprint', function () {
+    describe('when there is no retrospective surveyBlueprint', async function () {
       it('rejects the promise', async function () {
         const numMembersPerProject = 4
         await this.createMembersAndProjects(numMembersPerProject)
+        await SurveyBlueprint.filter({descriptor: RETROSPECTIVE_DESCRIPTOR}).delete()
         return expect(ensureRetrospectiveSurveysExist(this.cycle)).to.be.rejected
       })
     })
@@ -103,13 +94,14 @@ describe(testContext(__filename), function () {
 async function _itBuildsTheSurveyProperly(projects, questions, opts = null) {
   const options = opts || {shouldIncludeRelativeContribution: true}
 
-  const tqFilter = options.shouldIncludeRelativeContribution ?
+  const teamQuestionFilter = options.shouldIncludeRelativeContribution ?
     question => question.subjectType === 'team' :
-    question => question.subjectType === 'team' && question.responseType !== 'relativeContribution'
-  const teamQuestions = questions.filter(tqFilter)
-  const memberQuestions = questions.filter(_ => _.subjectType === 'member')
-  const projectQuestions = questions.filter(_ => _.subjectType === 'project')
-  const rcQuestions = questions.filter(_ => _.responseType === 'relativeContribution')
+    question => question.subjectType === 'team' &&
+      question.responseType !== 'relativeContribution'
+  const teamQuestions = questions.filter(teamQuestionFilter)
+  const memberQuestions = questions.filter(q => q.subjectType === 'member')
+  const projectQuestions = questions.filter(q => q.subjectType === 'project')
+  const rcQuestions = questions.filter(q => q.responseType === 'relativeContribution')
 
   const surveys = await Survey.run()
   expect(surveys).to.have.length(projects.length)

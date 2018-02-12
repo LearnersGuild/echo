@@ -4,6 +4,7 @@ require('./chatMessageSent').start()
 require('./cycleInitialized').start()
 require('./cycleReflectionStarted').start()
 // require('./memberPhaseChanged').start()
+require('./projectCreated').start()
 require('./surveySubmitted').start()
 require('./userInviteCodeUsed').start()
 

@@ -31,6 +31,9 @@ export default function projectModel(thinky) {
       retrospectiveSurveyId: string()
         .uuid(4),
 
+      workPlanSurveyId: string()
+        .uuid(4),
+
       artifactURL: string()
         .min(1),
 

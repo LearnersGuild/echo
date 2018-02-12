@@ -1,11 +1,11 @@
 import {renderQuestionBodies} from 'src/common/models/survey'
 import getMemberInfo from 'src/server/actions/getMemberInfo'
-import {Project, getFullRetrospectiveSurveyForMember} from 'src/server/services/dataService'
+import {Project, getFullSurveyForMember} from 'src/server/services/dataService'
 import {customQueryError} from 'src/server/services/dataService/util'
 import {LGForbiddenError} from 'src/server/util/error'
 
-export async function compileSurveyDataForMember(memberId, projectId) {
-  const survey = await getFullRetrospectiveSurveyForMember(memberId, projectId)
+export async function compileSurveyDataForMember(memberId, projectId, surveyDescriptor) {
+  const survey = await getFullSurveyForMember(memberId, projectId, surveyDescriptor)
     .then(survey => inflateSurveySubjects(survey))
     .then(survey => Object.assign({}, survey, {
       questions: renderQuestionBodies(survey.questions)
@@ -18,8 +18,8 @@ export async function compileSurveyDataForMember(memberId, projectId) {
   return survey
 }
 
-export function compileSurveyQuestionDataForMember(memberId, questionNumber, projectId) {
-  return getFullRetrospectiveSurveyForMember(memberId, projectId)('questions')
+export function compileSurveyQuestionDataForMember(memberId, questionNumber, projectId, surveyDescriptor) {
+  return getFullSurveyForMember(memberId, projectId, surveyDescriptor)('questions')
     .nth(questionNumber - 1)
     .default(customQueryError(`There is no question number ${questionNumber}`))
     .then(question => inflateSurveyQuestionSubjects([question]))
