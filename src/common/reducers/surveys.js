@@ -25,7 +25,6 @@ const initialState = {
 }
 
 export default function surveys(state = initialState, action) {
-  console.log('ACTION::', action)
   switch (action.type) {
     case SET_SURVEY_GROUP:
       return Object.assign({}, state, {groupIndex: action.groupIndex})

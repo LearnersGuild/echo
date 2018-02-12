@@ -30,7 +30,6 @@ export function getRetrospectiveSurvey(projectName) {
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {
       const query = queries.getRetrospectiveSurvey(projectName)
-      console.log('retrospective query::', query)
       return getGraphQLFetcher(dispatch, getState().auth)(query)
         .then(graphQLResponse => graphQLResponse.data.getRetrospectiveSurvey)
     },

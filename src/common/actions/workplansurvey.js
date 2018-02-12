@@ -2,26 +2,8 @@ import {getGraphQLFetcher} from 'src/common/util'
 
 import types from './types'
 import queries from './queries'
-//
-// export function findWorkPlanSurvey() {
-//   return {
-//     types: [
-//       types.FIND_WORKPLAN_REQUEST,
-//       types.FIND_WORKPLAN_SUCCESS,
-//       types.FIND_WORKPLAN_FAILURE,
-//     ],
-//     shouldCallAPI: () => true,
-//     callAPI: (dispatch, getState) => {
-//       const query = queries.findRetrospectiveSurveys()
-//       return getGraphQLFetcher(dispatch, getState().auth)(query)
-//         .then(graphQLResponse => graphQLResponse.data.findWorkPlanSurveys)
-//     },
-//     payload: {},
-//   }
-// }
 
 export function getWorkPlanSurvey(projectName) {
-  console.log('executing getWorkPlanSurvey:: ==', projectName)
   return {
     types: [
       types.GET_WORKPLAN_REQUEST,
@@ -30,7 +12,6 @@ export function getWorkPlanSurvey(projectName) {
     ],
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {
-      console.log('WorkPlan Query::', queries.getWorkPlanSurvey, queries.getRetrospectiveSurvey, queries)
       const query = queries.getWorkPlanSurvey(projectName)
       return getGraphQLFetcher(dispatch, getState().auth)(query)
         .then(graphQLResponse => graphQLResponse.data.getWorkPlanSurvey)

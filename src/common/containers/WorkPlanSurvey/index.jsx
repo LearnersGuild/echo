@@ -1,13 +1,5 @@
 /* global window */
-/**
- * RetroSurvey
- * Controls the following:
- *   - fetching of survey data
- *   - transformation of (deeply nested) survey data to flat survey field collections
- *   - iteration through survey question groups ("pages")
- *   - transformation of flat field collections into survey responses
- *   - submitted survey data persistence
- */
+
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
@@ -20,7 +12,7 @@ import {
   saveWorkPlanSurveyResponses,
   submitSurvey,
   setSurveyGroup,
-} from 'src/common/actions/workplansurvey'
+} from 'src/common/actions/workPlanSurvey'
 import {
   groupSurveyQuestions,
   formFieldsForQuestionGroup,
@@ -107,8 +99,6 @@ class WorkPlanSurveyContainer extends Component {
   render() {
     const {
       showSurvey,
-      // showProjects,
-      // projects,
       surveyTitle,
       surveyShortTitle,
       surveyFieldGroups,
@@ -140,15 +130,6 @@ class WorkPlanSurveyContainer extends Component {
           />
       )
     }
-
-    // if (showProjects) {
-    //   return (
-    //     <RetroProjectList
-    //       projects={projects}
-    //       onClickProject={this.handleClickProject}
-    //       />
-    //   )
-    // }
 
     if (isBusy) {
       return null
@@ -205,7 +186,6 @@ WorkPlanSurveyContainer.propTypes = {
 WorkPlanSurveyContainer.fetchData = fetchData
 
 function fetchData(dispatch, props) {
-  console.log('WPContainer: dispatch', dispatch)
   if (props.params.projectName) {
     dispatch(getWorkPlanSurvey(props.params.projectName))
   } else {
@@ -225,7 +205,6 @@ function parseSurvey(survey) {
 }
 
 function mapStateToProps(state) {
-  console.log('state:', state)
   const {
     surveys: {
       isBusy,
