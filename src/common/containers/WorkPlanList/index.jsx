@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 
 import WorkPlanList from 'src/common/components/WorkPlanList'
 import {showLoad, hideLoad} from 'src/common/actions/app'
+import {findWorkPlanSurveys} from 'src/common/actions/workPlanSurvey'
 
 class WorkPlanListContainer extends Component {
   // constructor(props) {
@@ -10,8 +11,17 @@ class WorkPlanListContainer extends Component {
   // }
 
   componentDidMount() {
-    // this.props.showLoad()
-    // this.props.fetchData()
+    this.props.showLoad()
+    this.props.findWorkPlanSurveys()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isBusy) {
+      return
+    }
+    if (nextProps.loading) {
+      this.props.hideLoad()
+    }
   }
 
   render() {
@@ -28,14 +38,13 @@ class WorkPlanListContainer extends Component {
 }
 
 WorkPlanListContainer.propTypes = {
+  isBusy: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   auth: PropTypes.object.isRequired,
-  // fetchData: PropTypes.func.isRequired,
-  // showLoad: PropTypes.func.isRequired,
-  // hideLoad: PropTypes.func.isRequired,
-}
-
-function fetchData(dispatch) {
-  dispatch(findProjectsForUsers())
+  findWorkPlanSurveys: PropTypes.func.isRequired,
+  showLoad: PropTypes.func.isRequired,
+  hideLoad: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
 }
 
 function mapStateToProps(state) {
@@ -49,7 +58,11 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return {}
+  return {
+    findWorkPlanSurveys: () => dispatch(findWorkPlanSurveys()),
+    showLoad: () => dispatch(showLoad()),
+    hideLoad: () => dispatch(hideLoad()),
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorkPlanListContainer)

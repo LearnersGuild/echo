@@ -25,7 +25,7 @@ import {
   saveRetroSurveyResponses,
   submitSurvey,
   setSurveyGroup,
-} from 'src/common/actions/survey'
+} from 'src/common/actions/retroSurvey'
 
 import NoPendingRetros from 'src/common/components/NoPendingRetros'
 import RetroProjectList from 'src/common/components/RetroProjectList'

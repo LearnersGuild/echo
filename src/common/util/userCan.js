@@ -43,8 +43,9 @@ const CAPABILITY_ROLES = {
   listPhaseSummaries: GENERAL_USE,
 
   saveResponse: GENERAL_USE,
-  getRetrospectiveSurvey: GENERAL_USE,
   findRetrospectiveSurveys: GENERAL_USE,
+  getRetrospectiveSurvey: GENERAL_USE,
+  findWorkPlanSurveys: GENERAL_USE,
   getWorkPlanSurvey: GENERAL_USE,
   lockAndUnlockSurveys: GENERAL_USE,
 
@@ -67,5 +68,5 @@ export default function userCan(currentUser, capability) {
     CAPABILITY_ROLES[capability].indexOf(role) >= 0
   )).length > 0
 
-  return permitted
+  return [permitted]
 }
