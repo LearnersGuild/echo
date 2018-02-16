@@ -1,18 +1,22 @@
 import React, {PropTypes} from 'react'
 
 export default function WorkPlanList(props) {
-  const auth = props.auth
+  const {onClickProjectName, auth, surveys} = props
+
   return (
     <div>
-      <h1> Yay! </h1>
-      <h2> {auth.currentUser.email} </h2>
+      <h1> Work Plans for {auth.currentUser.handle}: </h1>
+      <h3> Select a project: </h3>
+      <br/>
+      <h4><ul> {surveys.data.map((survey, index) => {
+        return <li key={index}><a href="" onClick={onClickProjectName(survey.project)}>{survey.project.name}</a></li>
+      })} </ul></h4>
     </div>
   )
 }
 
 WorkPlanList.propTypes = {
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  surveys: PropTypes.object.isRequired,
+  onClickProjectName: PropTypes.func.isRequired
 }
-
-// list of workplans by project name
-  // info: project name link to work plan
