@@ -1,5 +1,5 @@
-import {REFLECTION, GOAL_SELECTION, PRACTICE} from 'src/common/models/cycle'
-import {WORK_PLAN_DESCRIPTOR, RETROSPECTIVE_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
+import {REFLECTION} from 'src/common/models/cycle'
+import {WORK_PLAN_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
 
 import r from '../r'
 import {customQueryError} from '../util'
@@ -10,17 +10,10 @@ const projectsTable = r.table('projects')
 
 export default function getSurveyForMember(memberId, projectId, surveyDescriptor) {
   let survey
-  // TODO: currently the 'workplace' condition shouldn't ever get hit, but I'm leaving it in until we decide what we're doing with the work-plan index route. If it's not going to render all work plan surveys that have not been filled out, then this probably needs to be changed
   if (!projectId) {
-    if (surveyDescriptor === RETROSPECTIVE_DESCRIPTOR) {
-      survey = _getCurrentProjectInCycleStatesForMember(memberId, REFLECTION).do(
-        project => _getProjectSurvey(project, surveyDescriptor).merge({projectId: project('id')})
-      )
-    } else if (surveyDescriptor === WORK_PLAN_DESCRIPTOR) {
-      survey = _getCurrentProjectInCycleStatesForMember(memberId, [GOAL_SELECTION, PRACTICE]).do(
-        project => _getProjectSurvey(project, surveyDescriptor).merge({projectId: project('id')})
-      )
-    }
+    survey = _getCurrentProjectInCycleStatesForMember(memberId, REFLECTION).do(
+      project => _getProjectSurvey(project, surveyDescriptor).merge({projectId: project('id')})
+    )
   } else {
     survey = projectsTable.get(projectId).do(project => {
       return r.branch(

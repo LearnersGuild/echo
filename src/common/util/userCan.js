@@ -20,7 +20,7 @@ const CAPABILITY_ROLES = {
   updateCycle: [ADMIN],
   deleteProject: [ADMIN],
 
-  importProject: [ADMIN],
+  importProject: GENERAL_USE,
   updateProject: [ADMIN],
   listProjects: GENERAL_USE,
   findProjects: GENERAL_USE,
@@ -45,6 +45,7 @@ const CAPABILITY_ROLES = {
   saveResponse: GENERAL_USE,
   findRetrospectiveSurveys: GENERAL_USE,
   getRetrospectiveSurvey: GENERAL_USE,
+  listWorkPlans: GENERAL_USE,
   findWorkPlanSurveys: GENERAL_USE,
   getWorkPlanSurvey: GENERAL_USE,
   lockAndUnlockSurveys: GENERAL_USE,
@@ -68,5 +69,5 @@ export default function userCan(currentUser, capability) {
     CAPABILITY_ROLES[capability].indexOf(role) >= 0
   )).length > 0
 
-  return [permitted]
+  return permitted
 }

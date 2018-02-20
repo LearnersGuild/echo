@@ -18,16 +18,13 @@ class WorkPlanListContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isBusy) {
-      return
-    }
-    if (nextProps.loading) {
+    if (!nextProps.isBusy && nextProps.loading) {
       this.props.hideLoad()
     }
   }
 
-  handleClickProjectName(project) {
-    return () => this.props.navigate(`/work-plans/${project.name}`)
+  handleClickProjectName(projectName) {
+    return () => this.props.navigate(`/work-plans/${projectName}`)
   }
 
   render() {

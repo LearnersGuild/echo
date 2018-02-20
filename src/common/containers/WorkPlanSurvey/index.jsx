@@ -99,6 +99,7 @@ class WorkPlanSurveyContainer extends Component {
   render() {
     const {
       showSurvey,
+      showNoWorkPlan,
       surveyTitle,
       surveyShortTitle,
       surveyFieldGroups,
@@ -135,8 +136,17 @@ class WorkPlanSurveyContainer extends Component {
       return null
     }
 
+    if (showNoWorkPlan) {
+      return (
+        <div>
+          <br/>
+          <h3>No work plans here...</h3>
+        </div>
+      )
+    }
+
     return (
-      <div>No Work Plans.</div>
+      <div>Loading Work Plan...</div>
     )
   }
 }
@@ -147,6 +157,7 @@ WorkPlanSurveyContainer.propTypes = {
   loading: PropTypes.bool.isRequired,
 
   showSurvey: PropTypes.bool.isRequired,
+  showNoWorkPlan: PropTypes.bool.isRequired,
   surveyId: PropTypes.string,
   surveyTitle: PropTypes.string,
   surveyShortTitle: PropTypes.string,
@@ -215,6 +226,7 @@ function mapStateToProps(state) {
   } = state
 
   let showSurvey = true
+  let showNoWorkPlan = false
   let surveyId = null
   let surveyTitle = null
   let surveyShortTitle = null
@@ -257,6 +269,8 @@ function mapStateToProps(state) {
       projects = surveys.map(r => r.project).sort((p1, p2) => (
         (p1.cycle || {}).cycleNumber - (p2.cycle || {}).cycleNumber
       ))
+    } else {
+      showNoWorkPlan = true
     }
   }
 
@@ -266,6 +280,7 @@ function mapStateToProps(state) {
     isBusy,
     isSubmitting,
     showSurvey,
+    showNoWorkPlan,
     showProjects,
     projects,
     surveyId,
