@@ -60,7 +60,6 @@ IDM_BASE_URL=http://idm.learnersguild.meh
 JWT_PRIVATE_KEY="<get from IDM service>"
 JWT_PUBLIC_KEY="<get from IDM service>"
 # External API settings
-GITHUB_ORG_ADMIN_TOKEN="<GitHub token with permissions in LearnersGuild, GuildCrafts, and GuildCraftsTesting>"
 GITHUB_CRAFTS_REPO="https://github.com/GuildCraftsTesting/web-development-js-testing"
 S3_BUCKET=guild-development
 S3_KEY_PREFIX=db
@@ -97,7 +96,7 @@ Available `STATE` options:
 
 ### RUNNING THE SERVER
 
-**NOTE:** you'll need [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
+**NOTE:** you'll need rethinkdb, [mehserve][mehserve], [idm][idm] and this server all running at the same time for things to work.
 
 ```bash
 npm start
@@ -110,6 +109,8 @@ open http://echo.learnersguild.meh
 ```
 
 Start the workers
+**NOTE:** you'll need to start redis for the workers to run correctly.
+
 ```bash
 npm run workers
 npm run workers:cycleLaunched
