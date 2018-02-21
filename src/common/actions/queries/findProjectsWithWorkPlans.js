@@ -1,8 +1,8 @@
-export default function findWorkPlanSurveys() {
+export default function findProjectsWithWorkPlans() {
   return {
     query: `
       query {
-        findWorkPlanSurveys {
+        findProjectsWithWorkPlans {
           id,
           name
         },

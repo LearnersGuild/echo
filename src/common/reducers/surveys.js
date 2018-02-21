@@ -5,9 +5,7 @@ import {
   GET_RETROSURVEY_REQUEST,
   GET_RETROSURVEY_SUCCESS,
   GET_RETROSURVEY_FAILURE,
-  FIND_WORKPLANSURVEYS_REQUEST,
-  FIND_WORKPLANSURVEYS_SUCCESS,
-  FIND_WORKPLANSURVEYS_FAILURE,
+  FIND_PROJECTSWITHWORKPLANS_SUCCESS,
   GET_WORKPLANSURVEY_REQUEST,
   GET_WORKPLANSURVEY_SUCCESS,
   GET_WORKPLANSURVEY_FAILURE,
@@ -34,7 +32,6 @@ export default function surveys(state = initialState, action) {
 
     case FIND_RETROSURVEYS_REQUEST:
     case GET_RETROSURVEY_REQUEST:
-    case FIND_WORKPLANSURVEYS_REQUEST:
     case GET_WORKPLANSURVEY_REQUEST:
     case SAVE_SURVEY_RESPONSES_REQUEST:
       return Object.assign({}, state, {
@@ -47,16 +44,15 @@ export default function surveys(state = initialState, action) {
         data: action.response,
       })
 
+    case FIND_PROJECTSWITHWORKPLANS_SUCCESS:
+      return Object.assign({}, state, {
+        isBusy: false,
+      })
+
     case GET_RETROSURVEY_SUCCESS:
       return Object.assign({}, state, {
         isBusy: false,
         data: [action.response],
-      })
-
-    case FIND_WORKPLANSURVEYS_SUCCESS:
-      return Object.assign({}, state, {
-        isBusy: false,
-        data: action.response,
       })
 
     case GET_WORKPLANSURVEY_SUCCESS:
@@ -67,7 +63,6 @@ export default function surveys(state = initialState, action) {
 
     case FIND_RETROSURVEYS_FAILURE:
     case GET_RETROSURVEY_FAILURE:
-    case FIND_WORKPLANSURVEYS_FAILURE:
     case GET_WORKPLANSURVEY_FAILURE:
     case SAVE_SURVEY_RESPONSES_FAILURE:
     case SAVE_SURVEY_RESPONSES_SUCCESS:

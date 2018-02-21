@@ -8,7 +8,7 @@ import {reduxForm} from 'redux-form'
 import {showLoad, hideLoad} from 'src/common/actions/app'
 import {
   getWorkPlanSurvey,
-  findWorkPlanSurveys,
+  findProjectsWithWorkPlans,
   saveWorkPlanSurveyResponses,
   submitSurvey,
   setSurveyGroup,
@@ -200,7 +200,7 @@ function fetchData(dispatch, props) {
   if (props.params.projectName) {
     dispatch(getWorkPlanSurvey(props.params.projectName))
   } else {
-    dispatch(findWorkPlanSurveys())
+    dispatch(findProjectsWithWorkPlans())
   }
 }
 

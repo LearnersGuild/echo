@@ -46,7 +46,7 @@ const CAPABILITY_ROLES = {
   findRetrospectiveSurveys: GENERAL_USE,
   getRetrospectiveSurvey: GENERAL_USE,
   listWorkPlans: GENERAL_USE,
-  findWorkPlanSurveys: GENERAL_USE,
+  findProjectsWithWorkPlans: GENERAL_USE,
   getWorkPlanSurvey: GENERAL_USE,
   lockAndUnlockSurveys: GENERAL_USE,
 

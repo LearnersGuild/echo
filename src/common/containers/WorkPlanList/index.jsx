@@ -4,7 +4,7 @@ import {push} from 'react-router-redux'
 
 import WorkPlanList from 'src/common/components/WorkPlanList'
 import {showLoad, hideLoad} from 'src/common/actions/app'
-import {findWorkPlanSurveys} from 'src/common/actions/workPlanSurvey'
+import {findProjectsWithWorkPlans} from 'src/common/actions/workPlanSurvey'
 
 class WorkPlanListContainer extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class WorkPlanListContainer extends Component {
 
   componentDidMount() {
     this.props.showLoad()
-    this.props.findWorkPlanSurveys()
+    this.props.findProjectsWithWorkPlans()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -30,13 +30,29 @@ class WorkPlanListContainer extends Component {
   render() {
     const {
       auth,
-      surveys,
+      projects,
+      isBusy
     } = this.props
+
+    if (isBusy) {
+      return (
+        <div>Loading...</div>
+      )
+    }
+
+    if (projects.length === 0) {
+      return (
+        <div>
+          <br/>
+          <h3>No work plans here...</h3>
+        </div>
+      )
+    }
 
     return (
       <WorkPlanList
         auth={auth}
-        surveys={surveys}
+        projects={projects}
         onClickProjectName={this.handleClickProjectName}
         />
     )
@@ -47,17 +63,17 @@ WorkPlanListContainer.propTypes = {
   isBusy: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   auth: PropTypes.object.isRequired,
-  findWorkPlanSurveys: PropTypes.func.isRequired,
+  findProjectsWithWorkPlans: PropTypes.func.isRequired,
   showLoad: PropTypes.func.isRequired,
   hideLoad: PropTypes.func.isRequired,
-  surveys: PropTypes.object.isRequired,
+  projects: PropTypes.object.isRequired,
   navigate: PropTypes.func.isRequired,
 }
 
 function mapStateToProps(state) {
   const {
     auth,
-    surveys,
+    projects,
     surveys: {
       isBusy,
     },
@@ -65,14 +81,14 @@ function mapStateToProps(state) {
   return {
     loading: state.app.showLoading,
     auth,
-    surveys,
+    projects,
     isBusy,
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    findWorkPlanSurveys: () => dispatch(findWorkPlanSurveys()),
+    findProjectsWithWorkPlans: () => dispatch(findProjectsWithWorkPlans()),
     showLoad: () => dispatch(showLoad()),
     hideLoad: () => dispatch(hideLoad()),
     navigate: path => dispatch(push(path)),

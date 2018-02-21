@@ -1,7 +1,7 @@
-import {Member, Project, filterProjectsWithWorkPlansForMember} from 'src/server/services/dataService'
+import {Member, filterProjectsWithWorkPlansForMember} from 'src/server/services/dataService'
 import {LGBadRequestError} from 'src/server/util/error'
 
-export default async function findWorkPlanSurveysForMember(memberIdentifier) {
+export default async function findProjectsWithWorkPlansForMember(memberIdentifier) {
   if (!memberIdentifier) {
     throw new LGBadRequestError(`Invalid member identifier: ${memberIdentifier}`)
   }
@@ -18,5 +18,5 @@ export default async function findWorkPlanSurveysForMember(memberIdentifier) {
     throw new LGBadRequestError(`Member not found for identifier: ${memberIdentifier}`)
   }
 
-  return await Project.filter(filterProjectsWithWorkPlansForMember(member.id))
+  return await filterProjectsWithWorkPlansForMember(member.id)
 }
