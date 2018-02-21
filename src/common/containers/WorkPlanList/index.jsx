@@ -40,15 +40,6 @@ class WorkPlanListContainer extends Component {
       )
     }
 
-    if (projects.length === 0) {
-      return (
-        <div>
-          <br/>
-          <h3>No work plans here...</h3>
-        </div>
-      )
-    }
-
     return (
       <WorkPlanList
         auth={auth}
