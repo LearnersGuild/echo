@@ -9,6 +9,7 @@ export default function define(factory) {
   const commonAttrs = {
     id: cb => cb(null, faker.random.uuid()),
     name: factory.sequence(n => `funky-falcon-${n}`),
+    workPlanSurveyId: cb => cb(null, faker.random.uuid()),
     chapterId: factory.assoc('chapter', 'id'),
     cycleId(cb) {
       const {chapterId} = this
