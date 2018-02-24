@@ -14,9 +14,13 @@ describe(testContext(__filename), function () {
   beforeEach('CREATE PROJECT AND USER', async function () {
     nock.cleanAll()
     this.userWithoutProject = await factory.build('user')
-    this.project = await factory.create('project')
+    this.project = await factory.create('project with work plan')
     this.currentUser = await factory.build('user', {id: this.project.memberIds[0]})
     await mockIdmUsersById(this.project.memberIds)
+  })
+
+  afterEach(function () {
+    nock.cleanAll()
   })
 
   it('throws an error if member identifier is invalid', function () {
