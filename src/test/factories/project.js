@@ -5,6 +5,15 @@ import {Project} from 'src/server/services/dataService'
 
 const now = new Date()
 
+function selectMemberIds(factory, numberOfMembers) {
+  return function (cb) {
+    const createMembers = factory.assocMany('member', 'id', numberOfMembers, {chapterId: this.chapterId})
+    createMembers((err, memberIds) => {
+      cb(err, memberIds.slice(0, numberOfMembers))
+    })
+  }
+}
+
 export default function define(factory) {
   const commonAttrs = {
     id: cb => cb(null, faker.random.uuid()),
@@ -22,21 +31,17 @@ export default function define(factory) {
 
   factory.define('project', Project, {
     ...commonAttrs,
-    memberIds(cb) {
-      const createMembers = factory.assocMany('member', 'id', 4, {chapterId: this.chapterId})
-      createMembers((err, memberIds) => {
-        cb(err, memberIds.slice(0, 4))
-      })
-    },
+    memberIds: selectMemberIds(factory, 4)
+  })
+
+  factory.define('project with work plan', Project, {
+    ...commonAttrs,
+    workPlanSurveyId: cb => cb(null, faker.random.uuid()),
+    memberIds: selectMemberIds(factory, 4)
   })
 
   factory.define('single member project', Project, {
     ...commonAttrs,
-    memberIds(cb) {
-      const createMembers = factory.assocMany('member', 'id', 1, {chapterId: this.chapterId})
-      createMembers((err, memberIds) => {
-        cb(err, memberIds.slice(0, 1))
-      })
-    },
+    memberIds: selectMemberIds(factory, 1)
   })
 }

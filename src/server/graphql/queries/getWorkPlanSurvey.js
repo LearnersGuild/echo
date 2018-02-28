@@ -4,7 +4,7 @@ import {userCan} from 'src/common/util'
 import {compileSurveyDataForMember} from 'src/server/actions/compileSurveyData'
 import {Project} from 'src/server/services/dataService'
 import {Survey} from 'src/server/graphql/schemas'
-import {LGNotAuthorizedError} from 'src/server/util/error'
+import {LGError, LGNotAuthorizedError} from 'src/server/util/error'
 import {WORK_PLAN_DESCRIPTOR} from 'src/common/models/surveyBlueprint'
 
 export default {
@@ -21,6 +21,10 @@ export default {
     }
     const project = projectName ? (await Project.filter({name: projectName}))[0] : null
     const projectId = project ? project.id : null
+
+    if (!project) {
+      throw new LGError(`${projectName} is not a valid project name`)
+    }
 
     return compileSurveyDataForMember(currentUser.id, projectId, WORK_PLAN_DESCRIPTOR)
   },

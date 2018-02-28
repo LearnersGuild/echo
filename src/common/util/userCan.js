@@ -20,7 +20,7 @@ const CAPABILITY_ROLES = {
   updateCycle: [ADMIN],
   deleteProject: [ADMIN],
 
-  importProject: [ADMIN],
+  importProject: GENERAL_USE,
   updateProject: [ADMIN],
   listProjects: GENERAL_USE,
   findProjects: GENERAL_USE,
@@ -43,8 +43,10 @@ const CAPABILITY_ROLES = {
   listPhaseSummaries: GENERAL_USE,
 
   saveResponse: GENERAL_USE,
-  getRetrospectiveSurvey: GENERAL_USE,
   findRetrospectiveSurveys: GENERAL_USE,
+  getRetrospectiveSurvey: GENERAL_USE,
+  listWorkPlans: GENERAL_USE,
+  findProjectsWithWorkPlans: GENERAL_USE,
   getWorkPlanSurvey: GENERAL_USE,
   lockAndUnlockSurveys: GENERAL_USE,
 

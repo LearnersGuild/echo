@@ -1,13 +1,14 @@
 import {
-  FIND_SURVEYS_REQUEST,
-  FIND_SURVEYS_SUCCESS,
-  FIND_SURVEYS_FAILURE,
-  GET_SURVEY_REQUEST,
-  GET_SURVEY_SUCCESS,
-  GET_SURVEY_FAILURE,
-  GET_WORKPLAN_REQUEST,
-  GET_WORKPLAN_SUCCESS,
-  GET_WORKPLAN_FAILURE,
+  FIND_RETROSURVEYS_REQUEST,
+  FIND_RETROSURVEYS_SUCCESS,
+  FIND_RETROSURVEYS_FAILURE,
+  GET_RETROSURVEY_REQUEST,
+  GET_RETROSURVEY_SUCCESS,
+  GET_RETROSURVEY_FAILURE,
+  FIND_PROJECTSWITHWORKPLANS_SUCCESS,
+  GET_WORKPLANSURVEY_REQUEST,
+  GET_WORKPLANSURVEY_SUCCESS,
+  GET_WORKPLANSURVEY_FAILURE,
   SAVE_SURVEY_RESPONSES_REQUEST,
   SAVE_SURVEY_RESPONSES_SUCCESS,
   SAVE_SURVEY_RESPONSES_FAILURE,
@@ -29,35 +30,40 @@ export default function surveys(state = initialState, action) {
     case SET_SURVEY_GROUP:
       return Object.assign({}, state, {groupIndex: action.groupIndex})
 
-    case FIND_SURVEYS_REQUEST:
-    case GET_WORKPLAN_REQUEST:
-    case GET_SURVEY_REQUEST:
+    case FIND_RETROSURVEYS_REQUEST:
+    case GET_RETROSURVEY_REQUEST:
+    case GET_WORKPLANSURVEY_REQUEST:
     case SAVE_SURVEY_RESPONSES_REQUEST:
       return Object.assign({}, state, {
         isBusy: true,
       })
 
-    case FIND_SURVEYS_SUCCESS:
+    case FIND_RETROSURVEYS_SUCCESS:
       return Object.assign({}, state, {
         isBusy: false,
         data: action.response,
       })
 
-    case GET_SURVEY_SUCCESS:
+    case FIND_PROJECTSWITHWORKPLANS_SUCCESS:
+      return Object.assign({}, state, {
+        isBusy: false,
+      })
+
+    case GET_RETROSURVEY_SUCCESS:
       return Object.assign({}, state, {
         isBusy: false,
         data: [action.response],
       })
 
-    case GET_WORKPLAN_SUCCESS:
+    case GET_WORKPLANSURVEY_SUCCESS:
       return Object.assign({}, state, {
         isBusy: false,
         data: [action.response],
       })
 
-    case FIND_SURVEYS_FAILURE:
-    case GET_WORKPLAN_FAILURE:
-    case GET_SURVEY_FAILURE:
+    case FIND_RETROSURVEYS_FAILURE:
+    case GET_RETROSURVEY_FAILURE:
+    case GET_WORKPLANSURVEY_FAILURE:
     case SAVE_SURVEY_RESPONSES_FAILURE:
     case SAVE_SURVEY_RESPONSES_SUCCESS:
       return Object.assign({}, state, {

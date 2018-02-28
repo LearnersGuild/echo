@@ -8,6 +8,7 @@ export default {
   findProjects: require('./findProjects'),
   findProjectsForCycle: require('./findProjectsForCycle'),
   findRetrospectiveSurveys: require('./findRetrospectiveSurveys'),
+  findProjectsWithWorkPlans: require('./findProjectsWithWorkPlans'),
   findUsers: require('./findUsers'),
   getChapter: require('./getChapter'),
   getProject: require('./getProject'),

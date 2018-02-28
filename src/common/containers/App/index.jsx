@@ -19,6 +19,11 @@ import theme from './theme.scss'
 
 const navItems = [
   {
+    label: 'Work Plans',
+    permission: 'listWorkPlans',
+    path: '/work-plans',
+  },
+  {
     label: 'Phases',
     permission: 'listPhases',
     path: '/phases',

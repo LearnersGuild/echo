@@ -6,9 +6,9 @@ import queries from './queries'
 export function findRetrospectiveSurveys() {
   return {
     types: [
-      types.FIND_SURVEYS_REQUEST,
-      types.FIND_SURVEYS_SUCCESS,
-      types.FIND_SURVEYS_FAILURE,
+      types.FIND_RETROSURVEYS_REQUEST,
+      types.FIND_RETROSURVEYS_SUCCESS,
+      types.FIND_RETROSURVEYS_FAILURE,
     ],
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {
@@ -23,9 +23,9 @@ export function findRetrospectiveSurveys() {
 export function getRetrospectiveSurvey(projectName) {
   return {
     types: [
-      types.GET_SURVEY_REQUEST,
-      types.GET_SURVEY_SUCCESS,
-      types.GET_SURVEY_FAILURE,
+      types.GET_RETROSURVEY_REQUEST,
+      types.GET_RETROSURVEY_SUCCESS,
+      types.GET_RETROSURVEY_FAILURE,
     ],
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {

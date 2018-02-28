@@ -3,12 +3,29 @@ import {getGraphQLFetcher} from 'src/common/util'
 import types from './types'
 import queries from './queries'
 
+export function findProjectsWithWorkPlans() {
+  return {
+    types: [
+      types.FIND_PROJECTSWITHWORKPLANS_REQUEST,
+      types.FIND_PROJECTSWITHWORKPLANS_SUCCESS,
+      types.FIND_PROJECTSWITHWORKPLANS_FAILURE,
+    ],
+    shouldCallAPI: () => true,
+    callAPI: (dispatch, getState) => {
+      const query = queries.findProjectsWithWorkPlans()
+      return getGraphQLFetcher(dispatch, getState().auth)(query)
+        .then(graphQLResponse => graphQLResponse.data.findProjectsWithWorkPlans)
+    },
+    payload: {},
+  }
+}
+
 export function getWorkPlanSurvey(projectName) {
   return {
     types: [
-      types.GET_WORKPLAN_REQUEST,
-      types.GET_WORKPLAN_SUCCESS,
-      types.GET_WORKPLAN_FAILURE,
+      types.GET_WORKPLANSURVEY_REQUEST,
+      types.GET_WORKPLANSURVEY_SUCCESS,
+      types.GET_WORKPLANSURVEY_FAILURE,
     ],
     shouldCallAPI: () => true,
     callAPI: (dispatch, getState) => {

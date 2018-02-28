@@ -9,11 +9,15 @@ import {
   DELETE_PROJECT_REQUEST,
   DELETE_PROJECT_SUCCESS,
   DELETE_PROJECT_FAILURE,
+  FIND_PROJECTSWITHWORKPLANS_REQUEST,
+  FIND_PROJECTSWITHWORKPLANS_SUCCESS,
+  FIND_PROJECTSWITHWORKPLANS_FAILURE,
 } from 'src/common/actions/types'
 
 const initialState = {
   projects: {},
   isBusy: false,
+  data: [],
 }
 
 export default function projects(state = initialState, action) {
@@ -21,6 +25,7 @@ export default function projects(state = initialState, action) {
     case FIND_PROJECTS_REQUEST:
     case GET_PROJECT_REQUEST:
     case DELETE_PROJECT_REQUEST:
+    case FIND_PROJECTSWITHWORKPLANS_REQUEST:
       return Object.assign({}, state, {isBusy: true})
 
     case FIND_PROJECTS_SUCCESS:
@@ -33,10 +38,17 @@ export default function projects(state = initialState, action) {
         })
       }
 
+    case FIND_PROJECTSWITHWORKPLANS_SUCCESS:
+      return Object.assign({}, state, {
+        isBusy: false,
+        data: action.response,
+      })
+
     case FIND_PROJECTS_FAILURE:
     case GET_PROJECT_FAILURE:
     case DELETE_PROJECT_FAILURE:
     case DELETE_PROJECT_SUCCESS:
+    case FIND_PROJECTSWITHWORKPLANS_FAILURE:
       return Object.assign({}, state, {isBusy: false})
 
     default:
