@@ -10,6 +10,26 @@
 # - you should never replace an item completely while keeping the UUID the same
 # - if you don't know what you're doing, ask!
 -
+  id: 0578b6c2-2596-40cc-a7d6-6e0bf5313968
+  body: |
+    Please provide the URL(s) to any PR(s) submitted for your work this week:
+
+    "URL(s)"
+  responseType: text
+  feedbackTypeId:  81b7085c-1c3e-4066-80a7-d5ac3b7fa838
+  subjectType: project
+  active: true
+-
+  id: d47feb36-2d24-470c-9d4c-b76ecbf390d1
+  body: |
+    Describe how much of your original work plan you were able to complete:
+
+    "I originally planned to complete 'this much' and completed 'this much'..."
+  responseType: text
+  feedbackTypeId:  81b7085c-1c3e-4066-80a7-d5ac3b7fa838
+  subjectType: project
+  active: true
+-
   id: cd350a14-8a70-4593-9801-30cedab3dc75
   body: |
     Give feedback to your teammate by completing the following sentence:
