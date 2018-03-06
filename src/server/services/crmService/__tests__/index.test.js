@@ -10,6 +10,7 @@ import crmContact from 'src/test/helpers/hubSpotContact'
 import {
   getContactByEmail,
   notifyContactSignedUp,
+  updateContactProperties,
 } from '../index'
 
 const crmBaseUrl = config.server.crm.baseURL
@@ -42,6 +43,21 @@ describe(testContext(__filename), function () {
 
     it('returns true on success', function () {
       const result = notifyContactSignedUp('tanner+test@learnersguild.org')
+      return expect(result).to.eventually.equal(true)
+    })
+  })
+
+  describe('updateContactProperties()', function () {
+    beforeEach(function () {
+      nock(crmBaseUrl)
+        .get(`/contacts/v1/contact/email/${contactEmail}/profile?hapikey=${crmKey}`)
+        .reply(200, crmContact)
+        .post(`/contacts/v1/contact/vid/${crmContact.vid}/profile?hapikey=${crmKey}`)
+        .reply(204)
+    })
+
+    it('returns true on success', function () {
+      const result = updateContactProperties('tanner+test@learnersguild.org')
       return expect(result).to.eventually.equal(true)
     })
   })
